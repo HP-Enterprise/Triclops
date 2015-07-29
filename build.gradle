@@ -1,0 +1,44 @@
+group "hp.com"
+version "1.0"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.+")
+    }
+}
+
+apply plugin: "java"
+apply plugin: "spring-boot"
+apply plugin: "idea"
+
+jar{
+    baseName = "triclops"
+    version = "1.0.0"
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-data-jpa:1.2.+")
+    runtime("mysql:mysql-connector-java:5.1.+")
+    testCompile("junit:junit:4.+")
+}
+
+test{
+    // show standard out and standard error of the test JVM(s) on the console
+    testLogging.showStandardStreams = true
+
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: " + descriptor)
+    }
+}
+
+defaultTasks "build"
