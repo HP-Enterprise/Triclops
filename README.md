@@ -15,4 +15,3 @@ $/src/test/resources/META-INF/_persistence.xml
 ```SHELL
 gradle
 ```
-sdfdfdfd
