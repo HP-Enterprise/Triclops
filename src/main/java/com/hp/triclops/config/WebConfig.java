@@ -33,13 +33,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("admin");
+		registry.addViewController("/admin").setViewName("admin");
 	}
 
 	@Bean
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setPrefix("/page");
+		viewResolver.setPrefix("/page/");
         viewResolver.setSuffix(".html");
         return viewResolver;
 	}
