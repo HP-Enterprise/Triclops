@@ -1,21 +1,18 @@
 package com.hp.triclops.config;
 
 import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
-import java.util.Properties;
 
 
 @Configuration
-@PropertySource("/conf/jdbc.properties")
+@PropertySource("jdbc.properties")
 public class DataSourceConfig {
     @Value("${jdbc.driverClass}") String driverClass;
     @Value("${jdbc.url}") String url;
@@ -24,6 +21,11 @@ public class DataSourceConfig {
 
     @Bean(autowire= Autowire.BY_TYPE)
     public DataSource dataSource() throws PropertyVetoException {
-        return null;
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setUrl(url);
+        dataSource.setDriverClassName(driverClass);
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+        return dataSource;
     }
 }

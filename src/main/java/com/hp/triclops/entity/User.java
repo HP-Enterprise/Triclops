@@ -3,9 +3,7 @@ package com.hp.triclops.entity;
 import javax.persistence.*;
 import java.sql.Date;
 
-/**
- * Created by LM on 2015/8/3.
- */
+
 @Entity
 @Table(name = "t_user", schema = "", catalog = "testssh")
 public class User {
@@ -65,29 +63,11 @@ public class User {
         this.birthday = birthday;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        if (id != user.id) return false;
-        if (age != null ? !age.equals(user.age) : user.age != null) return false;
-        if (birthday != null ? !birthday.equals(user.birthday) : user.birthday != null) return false;
-        if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (sex != null ? !sex.equals(user.sex) : user.sex != null) return false;
-
-        return true;
-    }
 
     @Override
-    public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (age != null ? age.hashCode() : 0);
-        result = 31 * result + (sex != null ? sex.hashCode() : 0);
-        result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
-        return result;
+    public String toString() {
+        return String.format(
+                "User[id=%d, name='%s', birthday='%s']",
+                id, name, birthday);
     }
 }

@@ -1,7 +1,7 @@
 package com.hp.triclops.service;
 
-/**
- * Created by LM on 2015/8/3.
- */
-public class UserService {
+import com.hp.triclops.entity.User;
+
+public interface UserService {
+    public Iterable<User> findAllUsers();
 }

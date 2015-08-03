@@ -3,9 +3,10 @@ package com.hp.triclops;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+
+import com.hp.triclops.entity.User;
+import com.hp.triclops.repostory.UserRepository;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
-import static org.junit.Assert.*;
-import java.util.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
