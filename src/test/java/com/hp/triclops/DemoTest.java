@@ -36,7 +36,7 @@ public class DemoTest {
         userRepository.save(new User("张三2",12,1,new Date(System.currentTimeMillis())));
         userRepository.save(new User("张三3",12,1,new Date(System.currentTimeMillis())));
         for(User user : userRepository.findAll()){
-            System.out.println(user);
+            System.out.println(user.getNick());
         }
     }
 }
