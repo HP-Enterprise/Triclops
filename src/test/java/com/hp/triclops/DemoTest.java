@@ -32,7 +32,7 @@ public class DemoTest {
     public void testCustomMethod() {
 
         for(User user : userRepository.findAll()){
-            System.out.println(user);
+            System.out.println(user.getNick());
         }
     }
 }
