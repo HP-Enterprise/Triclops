@@ -1,40 +1,41 @@
 package com.hp.triclops.entity;
 
 import javax.persistence.*;
-import java.sql.Date;
 
-
+/**
+ * Created by liz on 2015/8/3.
+ */
 @Entity
-@Table(name = "t_user", schema = "", catalog = "testssh")
+@Table(name = "t_user", schema = "", catalog = "briair")
 public class User {
-    private long id;
+    private int id;
     private String name;
-    private Integer age;
-    private Integer sex;
-    private Date birthday;
+    private Integer gender;
+    private String nick;
+    private String phone;
 
-    protected User() {}
+    public User() {}
 
-    public User(String name, Integer age, Integer sex, Date birthday) {
+    public User(String name, Integer gender, String nick, String phone) {
         this.name = name;
-        this.age = age;
-        this.sex = sex;
-        this.birthday = birthday;
+        this.gender = gender;
+        this.nick = nick;
+        this.phone = phone;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public long getId() {
+    @Column(name = "Id", nullable = false, insertable = true, updatable = true)
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
     @Basic
-    @Column(name = "name", nullable = true, insertable = true, updatable = true, length = 45)
+    @Column(name = "name", nullable = false, insertable = true, updatable = true, length = 50)
     public String getName() {
         return name;
     }
@@ -44,40 +45,34 @@ public class User {
     }
 
     @Basic
-    @Column(name = "age", nullable = true, insertable = true, updatable = true)
-    public Integer getAge() {
-        return age;
+    @Column(name = "gender", nullable = true, insertable = true, updatable = true)
+    public Integer getGender() {
+        return gender;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    @Basic
-    @Column(name = "sex", nullable = true, insertable = true, updatable = true)
-    public Integer getSex() {
-        return sex;
-    }
-
-    public void setSex(Integer sex) {
-        this.sex = sex;
+    public void setGender(Integer gender) {
+        this.gender = gender;
     }
 
     @Basic
-    @Column(name = "birthday", nullable = true, insertable = true, updatable = true)
-    public Date getBirthday() {
-        return birthday;
+    @Column(name = "nick", nullable = false, insertable = true, updatable = true, length = 50)
+    public String getNick() {
+        return nick;
     }
 
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+    public void setNick(String nick) {
+        this.nick = nick;
+    }
+
+    @Basic
+    @Column(name = "phone", nullable = true, insertable = true, updatable = true, length = 11)
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
 
-    @Override
-    public String toString() {
-        return String.format(
-                "User[id=%d, name='%s', birthday='%s']",
-                id, name, birthday);
-    }
 }
