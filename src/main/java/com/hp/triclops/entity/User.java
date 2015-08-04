@@ -13,7 +13,17 @@ public class User {
     private Integer sex;
     private Date birthday;
 
+    protected User() {}
+
+    public User(String name, Integer age, Integer sex, Date birthday) {
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+        this.birthday = birthday;
+    }
+
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     public long getId() {
         return id;
