@@ -3,7 +3,7 @@ package com.hp.triclops.entity;
 import javax.persistence.*;
 
 /**
- * Created by liz on 2015/8/3.
+ * 用户类
  */
 @Entity
 @Table(name = "t_user", schema = "", catalog = "briair")
