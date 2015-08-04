@@ -13,7 +13,6 @@ public class User {
     private Integer gender;
     private String nick;
     private String phone;
-    private String password;
 
     @Id
     @Column(name = "Id", nullable = false, insertable = true, updatable = true)
@@ -65,16 +64,6 @@ public class User {
         this.phone = phone;
     }
 
-    @Basic
-    @Column(name = "password", nullable = true, insertable = true, updatable = true, length = 100)
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,8 +76,6 @@ public class User {
         if (gender != null ? !gender.equals(user.gender) : user.gender != null) return false;
         if (nick != null ? !nick.equals(user.nick) : user.nick != null) return false;
         if (phone != null ? !phone.equals(user.phone) : user.phone != null) return false;
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
-
         return true;
     }
 
@@ -99,7 +86,6 @@ public class User {
         result = 31 * result + (gender != null ? gender.hashCode() : 0);
         result = 31 * result + (nick != null ? nick.hashCode() : 0);
         result = 31 * result + (phone != null ? phone.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
     }
 }
