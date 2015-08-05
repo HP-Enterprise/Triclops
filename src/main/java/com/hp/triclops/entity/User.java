@@ -1,12 +1,12 @@
-package com.hp.triclops;
+package com.hp.triclops.entity;
 
 import javax.persistence.*;
 
 /**
- * Created by liz on 2015/8/3.
+ * 用户类
  */
 @Entity
-@Table(name = "t_user", schema = "", catalog = "briair")
+@Table(name = "t_user")
 public class User {
     private int id;
     private String name;
@@ -14,7 +14,17 @@ public class User {
     private String nick;
     private String phone;
 
+    public User() {}
+
+    public User(String name, Integer gender, String nick, String phone) {
+        this.name = name;
+        this.gender = gender;
+        this.nick = nick;
+        this.phone = phone;
+    }
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false, insertable = true, updatable = true)
     public int getId() {
         return id;
@@ -64,28 +74,5 @@ public class User {
         this.phone = phone;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        User user = (User) o;
-
-        if (id != user.id) return false;
-        if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (gender != null ? !gender.equals(user.gender) : user.gender != null) return false;
-        if (nick != null ? !nick.equals(user.nick) : user.nick != null) return false;
-        if (phone != null ? !phone.equals(user.phone) : user.phone != null) return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (gender != null ? gender.hashCode() : 0);
-        result = 31 * result + (nick != null ? nick.hashCode() : 0);
-        result = 31 * result + (phone != null ? phone.hashCode() : 0);
-        return result;
-    }
 }
