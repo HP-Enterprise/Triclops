@@ -6,7 +6,7 @@ import javax.persistence.*;
  * 用户类
  */
 @Entity
-@Table(name = "t_user", schema = "", catalog = "briair")
+@Table(name = "t_user")
 public class User {
     private int id;
     private String name;
