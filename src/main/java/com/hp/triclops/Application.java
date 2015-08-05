@@ -1,23 +1,13 @@
 package com.hp.triclops;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-public class Application implements CommandLineRunner {
+@ComponentScan(basePackages = {"com.hp.triclops", "com.hp.briair"})
+public class Application {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class);
-    }
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Override
-    public void run(String... strings) throws Exception {
-        for(User user : userRepository.findAll()){
-            System.out.println(user);
-        }
+        SpringApplication.run(Application.class, args);
     }
 }
