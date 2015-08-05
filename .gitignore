@@ -2,7 +2,8 @@
 .idea/
 *.iml
 build/
+/db.properties
 
-src/main/resources/application.properties
+
 src/test/resources/META-INF/persistence.xml
 /settings.gradle
