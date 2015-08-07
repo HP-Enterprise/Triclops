@@ -3,7 +3,4 @@
 *.iml
 build/
 /db.properties
-
-
 src/test/resources/META-INF/persistence.xml
-/settings.gradle
