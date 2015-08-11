@@ -1,13 +1,16 @@
 package com.hp.triclops;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.hp.triclops", "com.hp.briair"})
-public class Application {
+public class Application implements CommandLineRunner {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+
+    public void run(String... args) throws Exception{
+        System.out.println("com.hp.triclops.Application.run...");
     }
 }

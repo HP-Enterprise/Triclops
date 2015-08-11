@@ -6,10 +6,10 @@
 - Gradle 2.5+
 
 ## 数据源配置项
-下面2个文件是数据源配置文件,请拷贝一份(去掉下划线前缀)放置到相同目录中,并修改连接配置以适合你自己的数据库
+下面2个文件是数据源配置文件,请拷贝一份(去掉**-sample**)放置到相同目录中,并修改连接配置以适合你自己的数据库
 ```
-$/src/main/resources/_application.properties
-$/src/test/resources/META-INF/_persistence.xml
+$/src/main/resources/application-sample.properties
+$/src/test/resources/application-sample.properties
 ```
 ## 运行
 ```SHELL
