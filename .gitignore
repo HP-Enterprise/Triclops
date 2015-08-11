@@ -1,6 +1,6 @@
-.gradle
+.gradle/
 .idea/
 *.iml
 build/
-/db.properties
-src/test/resources/META-INF/persistence.xml
+
+src/*/resources/application.properties
