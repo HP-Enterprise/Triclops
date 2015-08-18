@@ -84,7 +84,11 @@ public class SessionRedis {
 
     public void delSessionOfList(String sessionId,Object sessionValue){
         this.listOpts = this.redisTemplate.opsForList();
-        this.listOpts.remove(sessionId,0,sessionValue);
+        this.listOpts.remove(sessionId, 0, sessionValue);
+    }
+
+    public void delSessionAllOfList(String sessionId){
+        this.redisTemplate.delete(sessionId);
     }
 
 }
