@@ -16,23 +16,29 @@ public class SimpleConfig {
     public RedisConnectionFactory redisConnectionFactory(){
         JedisPoolConfig poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(10000);
-        poolConfig.setMinIdle(1000);
-        poolConfig.setMaxIdle(-1);
-        poolConfig.setMaxWaitMillis(500);
+        poolConfig.setMinIdle(-1);
+        poolConfig.setMaxIdle(1000);
+        poolConfig.setMaxWaitMillis(5000);
         poolConfig.setTestOnBorrow(true);
         poolConfig.setTestOnReturn(true);
 
-        return new JedisConnectionFactory(poolConfig);
+        JedisConnectionFactory jcf = new JedisConnectionFactory(poolConfig);
+        jcf.setHostName("120.55.98.235");
+        jcf.setPort(6379);
+        jcf.afterPropertiesSet();
+
+        return jcf;
     }
 
     @Bean
     public StringRedisTemplate stringRedisTemplate(){
+
         return new StringRedisTemplate(redisConnectionFactory());
     }
 
     @Bean
     public RedisTemplate<String,Object> redisTemplate(){
-        return new RedisTemplate<String,Object>();
+        return new RedisTemplate<String,Object>(redisConnectionFactory());
     }
 
 }
