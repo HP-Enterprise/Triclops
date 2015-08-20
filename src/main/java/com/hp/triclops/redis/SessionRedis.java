@@ -36,7 +36,7 @@ public class SessionRedis {
     }
 
     private long defaultExpireSeconds(int hours){
-        long expire = 0L;
+        long expire = 0;
         expire = hours * 3600;
         return expire;
     }
