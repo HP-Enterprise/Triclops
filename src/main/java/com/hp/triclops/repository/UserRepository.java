@@ -8,6 +8,5 @@ import org.springframework.data.repository.CrudRepository;
 
 @EnableJpaRepositories
 public interface UserRepository extends CrudRepository<User, Long> {
-
     List<User> findByNick(String nick);
 }
