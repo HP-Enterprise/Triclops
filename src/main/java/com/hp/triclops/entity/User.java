@@ -1,13 +1,14 @@
 package com.hp.triclops.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * 用户类
  */
 @Entity
 @Table(name = "t_user")
-public class User {
+public class User implements Serializable {
     private int id;
     private String name;
     private Integer gender;
