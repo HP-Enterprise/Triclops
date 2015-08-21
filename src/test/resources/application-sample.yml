@@ -1,0 +1,32 @@
+# Loggin level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
+login:
+    level:
+        org.hibernate: WARN
+
+# Spring settings
+spring:
+    datasource:
+        url: jdbc:mysql://127.0.0.1:3306/{yourDB}
+        username: {username}
+        password: {password}
+    jpa:
+        show-sql: true
+        hibernate:
+            # Hibernate DDL  auto: create, create-drop, update, validate
+            ddl-auto: update
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+            properties:
+                hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+    redis:
+        host: {yourRedisServer}
+        port: 6379
+        password:
+        database: 0
+        pool:
+            max-idle: 8
+            min-idle: 0
+            max-active: 8
+            max-wait: -1
+        sentinel:
+            master: # name of Redis server
+            nodes:  # comma-separated list of host:port pairs
