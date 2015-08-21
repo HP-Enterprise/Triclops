@@ -64,12 +64,15 @@ public class SessionRedis {
 
         sessionKey = setPreOfKey(1, sessionId);
         this.valOpts = this.stringRedisTemplate.opsForValue();
-        valOpts.set(sessionKey, sessionValue);
-        if(expireSeconds.length != 0) {
-            this.stringRedisTemplate.expire(sessionKey, expireSeconds[0], TimeUnit.SECONDS);
-        }
-        else {
-            this.stringRedisTemplate.expire(sessionKey, this.defaultExpireSeconds(24), TimeUnit.SECONDS);
+
+        if(!this.stringRedisTemplate.hasKey(sessionKey)){
+            valOpts.set(sessionKey, sessionValue);
+            if(expireSeconds.length != 0) {
+                this.stringRedisTemplate.expire(sessionKey, expireSeconds[0], TimeUnit.SECONDS);
+            }
+            else {
+                this.stringRedisTemplate.expire(sessionKey, this.defaultExpireSeconds(24), TimeUnit.SECONDS);
+            }
         }
 
     }
@@ -82,6 +85,9 @@ public class SessionRedis {
     public String getSessionOfVal(String sessionId){
         sessionKey = setPreOfKey(1,sessionId);
         this.valOpts = this.stringRedisTemplate.opsForValue();
+        if(!this.stringRedisTemplate.hasKey(sessionKey)){
+            return "null";
+        }
         return valOpts.get(sessionKey);
 
     }
@@ -108,8 +114,7 @@ public class SessionRedis {
     public boolean delSessionOfVal(String sessionId){
         sessionKey = setPreOfKey(1, sessionId);
         boolean ret = true;
-        this.valOpts = this.stringRedisTemplate.opsForValue();
-        if(valOpts.get(sessionKey).length() > 0 || !valOpts.get(sessionKey).equals("")){
+        if(this.stringRedisTemplate.hasKey(sessionKey)){
             this.stringRedisTemplate.delete(sessionKey);
         }
         else {
@@ -131,14 +136,18 @@ public class SessionRedis {
         sessionKey = setPreOfKey(0,sessionId);
         this.setRedisTemplatePro();
         this.valObjOpts = this.objectRedisTemplate.opsForValue();
-        this.valObjOpts.set(sessionKey, sessionValue);
 
-        if(expireSeconds.length != 0) {
-            this.objectRedisTemplate.expire(sessionKey,expireSeconds[0],TimeUnit.SECONDS);
+        if(!this.objectRedisTemplate.hasKey(sessionKey)){
+            this.valObjOpts.set(sessionKey, sessionValue);
+
+            if(expireSeconds.length != 0) {
+                this.objectRedisTemplate.expire(sessionKey,expireSeconds[0],TimeUnit.SECONDS);
+            }
+            else {
+                this.objectRedisTemplate.expire(sessionKey,this.defaultExpireSeconds(24),TimeUnit.SECONDS);
+            }
         }
-        else {
-            this.objectRedisTemplate.expire(sessionKey,this.defaultExpireSeconds(24),TimeUnit.SECONDS);
-        }
+
     }
 
     /**
@@ -150,6 +159,9 @@ public class SessionRedis {
         sessionKey = setPreOfKey(0,sessionId);
         this.setRedisTemplatePro();
         this.valObjOpts = this.objectRedisTemplate.opsForValue();
+        if(!this.objectRedisTemplate.hasKey(sessionKey)){
+            return null;
+        }
         return this.valObjOpts.get(sessionKey);
     }
 
@@ -174,7 +186,7 @@ public class SessionRedis {
     public boolean delSessionAllOfList(String sessionId){
         sessionKey = setPreOfKey(0,sessionId);
         boolean ret = true;
-        if(this.getSessionOfList(sessionId) != null){
+        if(this.objectRedisTemplate.hasKey(sessionKey)){
             this.objectRedisTemplate.delete(sessionKey);
         }
         else {
