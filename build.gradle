@@ -38,10 +38,6 @@ dependencies {
 test{
     // show standard out and standard error of the test JVM(s) on the console
     testLogging.showStandardStreams = true
-
-    beforeTest { descriptor ->
-        logger.lifecycle("Running test: " + descriptor)
-    }
 }
 
 defaultTasks "build"

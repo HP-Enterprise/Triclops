@@ -1,7 +1,8 @@
-# Loggin level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
-login:
+# Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
+logging:
     level:
         org.hibernate: WARN
+        org.springframework: WARN
 
 # Spring settings
 spring:
