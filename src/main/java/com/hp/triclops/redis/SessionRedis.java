@@ -39,9 +39,9 @@ public class SessionRedis {
      *设置对象存储默认序列化对象
      */
     private void setRedisTemplatePro(){
+        this.objectRedisTemplate.setKeySerializer(this.objectRedisTemplate.getStringSerializer());
         this.objectRedisTemplate.setValueSerializer(this.objectRedisTemplate.getDefaultSerializer());
         this.objectRedisTemplate.afterPropertiesSet();
-
     }
 
     public String setPreOfKey(int index,String sessionId){

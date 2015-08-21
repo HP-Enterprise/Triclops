@@ -35,19 +35,35 @@ public class RedisTest {
     @Test
     public void testRedis() {
 
-        List<User> userList = this.userRepository.findByNick("xq");
+        //List<User> userList = this.userRepository.findByNick("xq");
+        User user = new User();
+        user.setName("xiongqing");
+        user.setNick("xq");
+        user.setGender(1);
+        user.setPhone("123456789");
 
-        sessionRedis.saveSessionOfList("user001", userList.get(0));
+        User user1 = new User();
+        user1.setName("weisijie");
+        user1.setNick("sisi");
+        user1.setGender(0);
+        user1.setPhone("987654321");
 
-        User user1 = (User) sessionRedis.getSessionOfList("user001");
-        System.out.println(user1.getName());
+        sessionRedis.saveSessionOfList("user001",user);
 
-        //System.out.print(sessionRedis.delSessionAllOfList("user001"));
+        User user2 = (User) sessionRedis.getSessionOfList("user001");
+        System.out.println(user2.getName());
 
-        //sessionRedis.saveSessionOfVal("key1", "value3");
-        //out.println(sessionRedis.getSessionOfVal("key1"));
-        //System.out.println(sessionRedis.updateSessionOfVal("key1","value2"));
-        //System.out.println(sessionRedis.getSessionOfVal("key1"));
+        sessionRedis.updateSessionOfList("user001", user1);
+        user2 = (User) sessionRedis.getSessionOfList("user001");
+        System.out.println(user2.getName());
+
+        //System.out.print(sessionRedis.delSessionAllOfList("user002"));
+
+        /*sessionRedis.saveSessionOfVal("key3", "value3");
+        System.out.println(sessionRedis.getSessionOfVal("key1"));
+        sessionRedis.updateSessionOfVal("key3","value2");
+        System.out.println(sessionRedis.getSessionOfVal("key3"));*/
+
         //sessionRedis.delSessionOfVal("key1");
     }
 }
