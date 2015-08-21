@@ -37,12 +37,12 @@ public class RedisTest {
 
         List<User> userList = this.userRepository.findByNick("xq");
 
-        /*sessionRedis.saveSessionOfList("user001", userList.get(0));
+        sessionRedis.saveSessionOfList("user001", userList.get(0));
 
         User user1 = (User) sessionRedis.getSessionOfList("user001");
-        System.out.println(user1.getName());*/
+        System.out.println(user1.getName());
 
-        System.out.print(sessionRedis.delSessionAllOfList("user001"));
+        //System.out.print(sessionRedis.delSessionAllOfList("user001"));
 
         //sessionRedis.saveSessionOfVal("key1", "value3");
         //out.println(sessionRedis.getSessionOfVal("key1"));

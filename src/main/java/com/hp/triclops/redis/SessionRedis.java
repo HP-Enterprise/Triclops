@@ -23,8 +23,11 @@ public class SessionRedis {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    /*@Autowired
+    private RedisTemplate redisTemplate;*/
+
     @Autowired
-    private RedisTemplate redisTemplate;
+    RedisTemplate<String, Object> objectRedisTemplate;
 
     private String[] preStr = {"session:","code:"};
     private String sessionKey = "";
@@ -36,8 +39,8 @@ public class SessionRedis {
      *设置对象存储默认序列化对象
      */
     private void setRedisTemplatePro(){
-        this.redisTemplate.setValueSerializer(this.redisTemplate.getDefaultSerializer());
-        this.redisTemplate.afterPropertiesSet();
+        this.objectRedisTemplate.setValueSerializer(this.objectRedisTemplate.getDefaultSerializer());
+        this.objectRedisTemplate.afterPropertiesSet();
 
     }
 
@@ -127,14 +130,14 @@ public class SessionRedis {
 
         sessionKey = setPreOfKey(0,sessionId);
         this.setRedisTemplatePro();
-        this.valObjOpts = this.redisTemplate.opsForValue();
+        this.valObjOpts = this.objectRedisTemplate.opsForValue();
         this.valObjOpts.set(sessionKey, sessionValue);
 
         if(expireSeconds.length != 0) {
-            this.redisTemplate.expire(sessionKey,expireSeconds[0],TimeUnit.SECONDS);
+            this.objectRedisTemplate.expire(sessionKey,expireSeconds[0],TimeUnit.SECONDS);
         }
         else {
-            this.redisTemplate.expire(sessionKey,this.defaultExpireSeconds(24),TimeUnit.SECONDS);
+            this.objectRedisTemplate.expire(sessionKey,this.defaultExpireSeconds(24),TimeUnit.SECONDS);
         }
     }
 
@@ -146,7 +149,7 @@ public class SessionRedis {
     public Object getSessionOfList(String sessionId){
         sessionKey = setPreOfKey(0,sessionId);
         this.setRedisTemplatePro();
-        this.valObjOpts = this.redisTemplate.opsForValue();
+        this.valObjOpts = this.objectRedisTemplate.opsForValue();
         return this.valObjOpts.get(sessionKey);
     }
 
@@ -157,7 +160,7 @@ public class SessionRedis {
      */
     public void updateSessionOfList(String sessionId,Object sessionValue){
         sessionKey = setPreOfKey(0,sessionId);
-        long expireSeconds = this.redisTemplate.getExpire(sessionKey);
+        long expireSeconds = this.objectRedisTemplate.getExpire(sessionKey);
         this.delSessionAllOfList(sessionId);
         this.saveSessionOfList(sessionId,sessionValue,expireSeconds);
     }
@@ -172,7 +175,7 @@ public class SessionRedis {
         sessionKey = setPreOfKey(0,sessionId);
         boolean ret = true;
         if(this.getSessionOfList(sessionId) != null){
-            this.redisTemplate.delete(sessionKey);
+            this.objectRedisTemplate.delete(sessionKey);
         }
         else {
             return false;
