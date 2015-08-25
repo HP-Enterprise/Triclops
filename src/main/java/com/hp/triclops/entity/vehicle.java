@@ -30,7 +30,6 @@ public class vehicle {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "vin", nullable = false, insertable = true, updatable = true)
     public String getVin() {
         return vin;
