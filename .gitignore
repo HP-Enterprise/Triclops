@@ -2,6 +2,7 @@
 .idea/
 *.iml
 build/
+/*.properties
 
 /src/*/resources/application.properties
 /src/*/resources/application.yml
