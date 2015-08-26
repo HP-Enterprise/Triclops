@@ -42,7 +42,7 @@ public class Verifier {
     public int verifyCode(String target, String code){
         int result=2;
         String trueCode=sessionRedis.getSessionOfVal(target);
-        if (trueCode!=null)
+        if (trueCode!="null")
         {
             if(trueCode .equals(code)){
                 result=0;
