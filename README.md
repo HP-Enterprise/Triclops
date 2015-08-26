@@ -1,6 +1,8 @@
 # Triclops
 以人为本 桥接汽车企业
 
+[![Build Status](https://travis-ci.org/HP-Enterprise/Triclops.svg?branch=dev)](https://travis-ci.org/HP-Enterprise/Triclops)
+
 ## 前提条件
 - JDK 1.8+
 - Gradle 2.5+
