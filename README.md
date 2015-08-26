@@ -23,8 +23,10 @@ $/gradle-sample.properties
 可在 http://flywaydb.org/documentation/gradle/ 链接查看更多具体用法
 
 ### flyway创建表的命令规则
+```
 V<VERSION>__<NAME>.sql，<VERSION>可以写成1 或者 2_1或者3.1
 <VERSION>规定写成日期.序号,例如:20150804.1
+```
 
 ## 运行
 ```SHELL
