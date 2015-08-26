@@ -36,6 +36,13 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:1.2+")
 }
 
+javadoc {
+    options.encoding = "utf-8"
+    options.charSet = "utf-8"
+    options.locale = "en"
+    options.showFromPublic()
+}
+
 test{
     // show standard out and standard error of the test JVM(s) on the console
     testLogging.showStandardStreams = true
