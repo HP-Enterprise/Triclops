@@ -10,7 +10,11 @@ branches:
         - dev
 
 services:
-  - redis-server
+    - redis-server
+
+cache:
+    directories:
+        - $HOME/.m2
 
 before_script:
     - mysql -e 'CREATE DATABASE briair CHARACTER SET = utf8;'
