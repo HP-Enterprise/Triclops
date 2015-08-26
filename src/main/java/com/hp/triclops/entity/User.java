@@ -15,6 +15,7 @@ public class User implements Serializable {
     private String nick;
     private String phone;
     private int isVerified;
+    
 
     public User() {}
 
