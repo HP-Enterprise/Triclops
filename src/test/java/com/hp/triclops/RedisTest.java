@@ -48,7 +48,8 @@ public class RedisTest {
         user1.setGender(0);
         user1.setPhone("987654321");
 
-        sessionRedis.saveSessionOfList("user001",user);
+        sessionRedis.saveSessionOfList("user001", user);
+        sessionRedis.saveSessionOfList("user002",user1);
 
         User user2 = (User) sessionRedis.getSessionOfList("user001");
         System.out.println(user2.getName());
@@ -57,6 +58,13 @@ public class RedisTest {
         user2 = (User) sessionRedis.getSessionOfList("user001");
         System.out.println(user2.getName());*/
         //System.out.println(sessionRedis.getSessionOfList("user002"));
+
+        /*List<Object> listUser = sessionRedis.getSessionOfList();
+        for(int i = 0;i < listUser.size();i++){
+            User user3 = (User) listUser.get(i);
+            System.out.println(user3.getName());
+
+        }*/
 
         //System.out.print(sessionRedis.delSessionAllOfList("user002"));
 
