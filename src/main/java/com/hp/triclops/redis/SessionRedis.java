@@ -9,9 +9,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -163,6 +161,20 @@ public class SessionRedis {
             return null;
         }
         return this.valObjOpts.get(sessionKey);
+    }
+
+    /**
+     * 获取全部session值
+     * @return session对象列表
+     */
+    public List<Object> getSessionOfList(){
+
+        this.setRedisTemplatePro();
+        this.valObjOpts = this.objectRedisTemplate.opsForValue();
+
+        Set<String> setKey = this.objectRedisTemplate.keys("session*");
+
+        return this.valObjOpts.multiGet(setKey);
     }
 
     /**
