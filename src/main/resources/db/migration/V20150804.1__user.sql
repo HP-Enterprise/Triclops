@@ -7,3 +7,5 @@ CREATE TABLE t_user (
   isVerified int(1) DEFAULT 0 COMMENT '0表示未验证，1表示已验证',
   PRIMARY KEY (Id)
 ) DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+ALTER TABLE t_user ADD COLUMN isVerified int(1) DEFAULT 0 COMMENT '0表示未验证，1表示已验证';
