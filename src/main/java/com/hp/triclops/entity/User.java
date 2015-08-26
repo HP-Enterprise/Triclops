@@ -14,14 +14,16 @@ public class User implements Serializable {
     private Integer gender;
     private String nick;
     private String phone;
+    private int isVerified;
 
     public User() {}
 
-    public User(String name, Integer gender, String nick, String phone) {
+    public User(String name, Integer gender, String nick, String phone,int isVerified) {
         this.name = name;
         this.gender = gender;
         this.nick = nick;
         this.phone = phone;
+        this.isVerified = isVerified;
     }
 
     @Id
@@ -75,5 +77,14 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
+    @Basic
+    @Column(name = "is_verified", nullable = true, insertable = true, updatable = true, length = 5)
+    public int getIsVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(int isVerified) {
+        this.isVerified = isVerified;
+    }
 
 }
