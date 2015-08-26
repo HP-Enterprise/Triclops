@@ -36,6 +36,11 @@ public class VerifierTest {
         System.out.println("校验验证码"+verifier.verifyCode("aaaaa","123456"));
         System.out.println("校验验证码"+verifier.verifyCode("aaaaa",code));
 
-
+        int car= verifier.verifyCode("123",code);
+        int car1= verifier.verifyCode("aaaaa","123457");
+        int car2= verifier.verifyCode("aaaaa",code);
+        System.out.println(car);
+        System.out.println(car1);
+        System.out.println(car2);
     }
 }

@@ -24,7 +24,6 @@ public class Verifier {
     public String generateCode(String target, int expiredSeconds){
         StringBuffer buffer = new StringBuffer("0123456789");
         StringBuffer saltStr = new StringBuffer();
-
         Random random = new Random();
         int range = buffer.length();
         for(int i = 0;i < 6;i++){
@@ -38,15 +37,18 @@ public class Verifier {
      * 校验
      * @param target 校验目标
      * @param code 校验码
-     * @return 成功返回TRUE, 失败返回FALSE
+     * @return 成功返回0，失败返回1，验证码过期返回2
      */
-    public boolean verifyCode(String target, String code){
-        boolean result=false;
+    public int verifyCode(String target, String code){
+        int result=2;
         String trueCode=sessionRedis.getSessionOfVal(target);
         if (trueCode!=null)
         {
             if(trueCode .equals(code)){
-                result=true;
+                result=0;
+            }
+            else {
+                result=1;
             }
         }
         return result;
