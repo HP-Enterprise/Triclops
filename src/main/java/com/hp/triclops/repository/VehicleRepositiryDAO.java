@@ -16,17 +16,17 @@ public class VehicleRepositiryDAO<T>  {
     @PersistenceContext
     private EntityManager em;
 
-    
+
     /**
      *
-     * @param vin 传入参数为null或""时不做为查询条件
-     * @param vendor 传入参数为null或""时不做为查询条件
-     * @param model 传入参数为null或""时不做为查询条件
-     * @param t_flag 0 自然吸气 1 涡轮增压 其它数值不做为查询条件
-     * @param displacement 传入参数为null或""时不做为查询条件
-     * @param license_plate 传入参数为null或""时不做为查询条件
-     * @param start_date 出厂日期开始范围，传入参数为null不做为查询条件
-     * @param end_date 出厂日期结束范围，传入参数为null不做为查询条件
+     * @param vin 传入参数为null或""时不作为查询条件
+     * @param vendor 传入参数为null或""时不作为查询条件
+     * @param model 传入参数为null或""时不作为查询条件
+     * @param t_flag 0 自然吸气 1 涡轮增压 其它数值不作为查询条件
+     * @param displacement 传入参数为null或""时不作为查询条件
+     * @param license_plate 传入参数为null或""时不作为查询条件
+     * @param start_date 出厂日期开始范围，传入参数为null不作为查询条件
+     * @param end_date 出厂日期结束范围，传入参数为null不作为查询条件
      * @param orderByProperty 排序条件 Vehicle类的某一个属性,默认vin
      * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param pageSize 每页数据条数 必须大于0
