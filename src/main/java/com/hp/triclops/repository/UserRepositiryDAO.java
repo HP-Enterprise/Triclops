@@ -31,7 +31,7 @@ public class UserRepositiryDAO<T>  {
      * @param currentPage 获取指定页码数据 必须大于0
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page<T> findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
         String jpql="FROM User u where 1=1";
         String jpql_count="";
         id=(id==null)?-1:id;
@@ -95,8 +95,8 @@ public class UserRepositiryDAO<T>  {
         }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
-        List<T> items=query.getResultList();
+        List items=query.getResultList();
         Long count= (long) queryCount.getResultList().size();
-        return new Page<T>(currentPage,pageSize,count,items);
+        return new Page(currentPage,pageSize,count,items);
     }
 }
