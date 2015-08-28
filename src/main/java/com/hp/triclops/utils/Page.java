@@ -8,13 +8,13 @@ import java.util.List;
  * @author 柳明
  *
  */
-public class Page<T> {
+public class Page {
     private Integer currentPage;
     private Integer pageSize;
     private Long recordCount;
-    private List<T> items;
+    private List items;
 
-    public Page(Integer currentPage, Integer pageSize, Long recordCount, List<T> items) {
+    public Page(Integer currentPage, Integer pageSize, Long recordCount, List items) {
         this.currentPage = currentPage;
         this.pageSize = pageSize;
         this.recordCount = recordCount;
@@ -57,11 +57,11 @@ public class Page<T> {
     }
 
 
-    public List<T> getItems() {
+    public List getItems() {
         return items;
     }
 
-    public void setItems(List<T> items) {
+    public void setItems(List items) {
         this.items = items;
     }
 }

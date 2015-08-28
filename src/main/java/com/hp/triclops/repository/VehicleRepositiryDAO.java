@@ -12,7 +12,7 @@ import java.util.List;
  * Created by luj on 2015/8/26.
  */
 @Component
-public class VehicleRepositiryDAO<T>  {
+public class VehicleRepositiryDAO  {
     @PersistenceContext
     private EntityManager em;
 
@@ -33,7 +33,7 @@ public class VehicleRepositiryDAO<T>  {
      * @param currentPage 获取指定页码数据 必须大于0
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page<T> findVehiclesByKeys(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+    public Page findVehiclesByKeys(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
         String jpql="FROM Vehicle v where 1=1";
         String jpql_count="";
         vin=(vin==null)?"":vin;
@@ -112,9 +112,9 @@ public class VehicleRepositiryDAO<T>  {
         }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
-        List<T> items=query.getResultList();
+        List items=query.getResultList();
         Long count= (long) queryCount.getResultList().size();
-        return new Page<T>(currentPage,pageSize,count,items);
+        return new Page(currentPage,pageSize,count,items);
     }
 
 
