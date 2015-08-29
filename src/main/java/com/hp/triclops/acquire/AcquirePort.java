@@ -7,11 +7,11 @@ import org.springframework.stereotype.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.SocketAddress;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
+import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
+import java.nio.channels.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * 数据接收端口.<br>
@@ -24,6 +24,8 @@ public class AcquirePort {
     // 设备数据上报端口号
     @Value("${com.hp.acquire.port}")
     private int _acquirePort;
+
+    final String IP = "127.0.0.1";
 
     // 日志
     private Logger _logger;
@@ -56,6 +58,52 @@ public class AcquirePort {
 
             this._selectorAccept = Selector.open();
             this._channelListen.register(this._selectorAccept, SelectionKey.OP_ACCEPT);
+        }
+
+        try (AsynchronousServerSocketChannel asynchronousServerSocketChannel = AsynchronousServerSocketChannel
+                .open()) {
+            if (asynchronousServerSocketChannel.isOpen()) {
+                // set some options
+                asynchronousServerSocketChannel.setOption(
+                        StandardSocketOptions.SO_RCVBUF, 4 * 1024);
+                asynchronousServerSocketChannel.setOption(
+                        StandardSocketOptions.SO_REUSEADDR, true);
+                // bind the asynchronous server socket channel to local address
+                asynchronousServerSocketChannel.bind(new InetSocketAddress(IP,
+                        _acquirePort));// display a waiting message while ...
+                // waiting clients
+                System.out.println("Waiting for connections ...");
+                while (true) {
+                    Future<AsynchronousSocketChannel> asynchronousSocketChannelFuture = asynchronousServerSocketChannel
+                            .accept();
+                    try (AsynchronousSocketChannel asynchronousSocketChannel = asynchronousSocketChannelFuture.get()) {
+                        System.out.println("Incoming connection from: "
+                                + asynchronousSocketChannel.getRemoteAddress());
+                        final ByteBuffer buffer = ByteBuffer
+                                .allocateDirect(1024);
+                        // transmitting data
+                        while (asynchronousSocketChannel.read(buffer).get() != -1) {
+                            System.out.println(asynchronousSocketChannel.read(buffer).get());
+                            buffer.flip();
+                            asynchronousSocketChannel.write(buffer).get();
+                            if (buffer.hasRemaining()) {
+                                buffer.compact();
+                            } else {
+                                buffer.clear();
+                            }
+                        }
+                        System.out.println(asynchronousSocketChannel
+                                .getRemoteAddress()
+                                + " was successfully served!");
+                    } catch (IOException | InterruptedException | ExecutionException ex) {
+                        System.err.println(ex);
+                    }
+                }
+            } else {
+                System.out.println("The asynchronous server-socket channel cannot be opened!");
+            }
+        } catch (IOException ex) {
+            System.err.println(ex);
         }
     }
 }

@@ -21,11 +21,15 @@ public class Application implements CommandLineRunner {
     @Autowired
     private AcquirePort _acquirePort;
 
+    @Autowired
+    private HansServer _hansServer;
+
     public void run(String... args) throws Exception{
         this._logger = LoggerFactory.getLogger(Application.class);
         this._logger.info("Application is running...");
 
         // 启动数据接收端口
-        this._acquirePort.start();
+//        this._acquirePort.start();
+        this._hansServer.init();
     }
 }
