@@ -21,7 +21,7 @@ public class HansClient {
 
     public void init() throws IOException {
         selector = Selector.open();
-        InetSocketAddress isa = new InetSocketAddress("127.0.0.1", 9000);
+        InetSocketAddress isa = new InetSocketAddress(9000);//可以在第一个参数加上IP
         // 调用open静态方法创建连接到指定主机的SocketChannel
         sc = SocketChannel.open(isa);
         // 设置该sc以非阻塞方式工作
@@ -71,8 +71,8 @@ public class HansClient {
         }
     }
 
-//    public static void main(String[] args) throws IOException {
-//        new HansClient().init();
-//    }
+    public static void main(String[] args) throws IOException {
+        new HansClient().init();
+    }
 }
 

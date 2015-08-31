@@ -23,7 +23,7 @@ public class HansServer {
         selector = Selector.open();
         // 通过open方法来打开一个未绑定的ServerSocketChannel实例
         ServerSocketChannel server = ServerSocketChannel.open();
-        InetSocketAddress isa = new InetSocketAddress("127.0.0.1", _acquirePort);
+        InetSocketAddress isa = new InetSocketAddress(_acquirePort);
         // 将该ServerSocketChannel绑定到指定IP地址
         server.socket().bind(isa);
         // 设置ServerSocket以非阻塞方式工作
@@ -69,7 +69,7 @@ public class HansServer {
                             sk.channel().close();
                         }
                     }
-                    // 如果content的长度大于0，即聊天信息不为空
+                    // 如果content的长度大于0，即信息不为空
                     if (content.length() > 0) {
                         // 遍历该selector里注册的所有SelectKey
                         for (SelectionKey key : selector.keys()) {
