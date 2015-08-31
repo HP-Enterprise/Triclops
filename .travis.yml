@@ -20,6 +20,10 @@ before_script:
     - mysql -e 'CREATE DATABASE briair CHARACTER SET = utf8;'
     - gradle -Pflyway.url=jdbc:mysql://127.0.0.1:3306/briair flywayMigrate -Pflyway.user=travis
 
+script:
+    - gradle javadoc
+    - gradle check
+
 notifications:
     webhooks:
         - https://hook.lesschat.com/travisci/7ad63757ebba468f9f533790680be40d
