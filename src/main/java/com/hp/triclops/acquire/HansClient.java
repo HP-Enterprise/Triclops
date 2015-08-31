@@ -71,8 +71,8 @@ public class HansClient {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        new HansClient().init();
-    }
+//    public static void main(String[] args) throws IOException {
+//        new HansClient().init();
+//    }
 }
 
