@@ -1,15 +1,13 @@
 package com.hp.triclops.redis;
 
-import com.hp.triclops.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -124,7 +122,7 @@ public class SessionRedis {
 
 
     /**
-     * 存储对象泪类型数据
+     * 存储对象类型数据
      * @param sessionId 键
      * @param sessionValue 值
      * @param expireSeconds 该键值的过期时间，单位秒
