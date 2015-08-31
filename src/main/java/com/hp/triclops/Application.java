@@ -17,12 +17,13 @@ public class Application implements CommandLineRunner {
     // 日志
     private Logger _logger;
 
-    // 数据接收端口
-    @Autowired
-    private AcquirePort _acquirePort;
 
     @Autowired
     private HansServer _hansServer;
+
+    //设置在执行测试类的时候不执行回声服务器的标示
+    @Value("${com.hp.acquire.disabled}")
+    private boolean _disabled;
 
     public void run(String... args) throws Exception{
         this._logger = LoggerFactory.getLogger(Application.class);
@@ -30,6 +31,10 @@ public class Application implements CommandLineRunner {
 
         // 启动数据接收端口
 //        this._acquirePort.start();
-        this._hansServer.init();
+        if(_disabled){
+            return;
+        }else{
+           this._hansServer.init();
+        }
     }
 }

@@ -1,5 +1,7 @@
 # Acquire port
-com.hp.acquire.port: 9000
+com.hp.acquire:
+    disabled:true
+    port: 9000
 
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:
