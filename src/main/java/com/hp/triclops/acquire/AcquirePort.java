@@ -27,11 +27,10 @@ public class AcquirePort {
     // 日志
     private Logger _logger;
 
-
     private Selector selector = null;
 
     public void init() throws IOException {
-        this._logger = LoggerFactory.getLogger(Application.class);
+        this._logger = LoggerFactory.getLogger(AcquirePort.class);
         selector = Selector.open();
         // 通过open方法来打开一个未绑定的ServerSocketChannel实例
         ServerSocketChannel server = ServerSocketChannel.open();
@@ -42,6 +41,8 @@ public class AcquirePort {
         server.configureBlocking(false);
         // 将server注册到指定Selector对象
         server.register(selector, SelectionKey.OP_ACCEPT);
+        // 定义准备执行读取数据的ByteBuffer
+        ByteBuffer buff = ByteBuffer.allocate(1024);
         while (selector.select() > 0) {
             // 依次处理selector上的每个已选择的SelectionKey
             for (SelectionKey sk : selector.selectedKeys()) {
@@ -60,13 +61,18 @@ public class AcquirePort {
                 if (sk.isReadable()) {
                     // 获取该SelectionKey对应的Channel，该Channel中有可读的数据
                     SocketChannel sc = (SocketChannel) sk.channel();
-                    // 定义准备执行读取数据的ByteBuffer
-                    ByteBuffer buff = ByteBuffer.allocate(1024);
-//                  String content = "";
                     // 开始读取数据
+
                     try {
                         while (sc.read(buff) > 0) {
                             buff.flip();
+                            this._logger.info("content" + buff);
+                            sc.write(buff);
+                            if (buff.hasRemaining()) {
+                                buff.compact();
+                            } else {
+                                buff.clear();
+                            }
                         }
                         // 打印从该sk对应的Channel里读取到的数据
                         this._logger.info("accpect content" + buff);
@@ -78,20 +84,6 @@ public class AcquirePort {
                         sk.cancel();
                         if (sk.channel() != null) {
                             sk.channel().close();
-                        }
-                    }
-                    // 如果content的长度大于0，即信息不为空
-                    if (buff.hasRemaining()) {
-                        // 遍历该selector里注册的所有SelectKey
-                        for (SelectionKey key : selector.keys()) {
-                            // 获取该key对应的Channel
-                            Channel targetChannel = key.channel();
-                            // 如果该channel是SocketChannel对象
-                            if (targetChannel instanceof SocketChannel) {
-                                // 将读到的内容写入该Channel中
-                                SocketChannel dest = (SocketChannel) targetChannel;
-                                dest.write(buff);
-                            }
                         }
                     }
                 }

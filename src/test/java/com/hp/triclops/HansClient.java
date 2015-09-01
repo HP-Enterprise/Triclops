@@ -1,5 +1,8 @@
 package com.hp.triclops;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -18,8 +21,11 @@ public class HansClient {
     private Selector selector = null;
     // 客户端SocketChannel
     private SocketChannel sc = null;
+    // 日志
+    private Logger _logger;
 
     public void init() throws IOException {
+        this._logger = LoggerFactory.getLogger(HansClient.class);
         selector = Selector.open();
         InetSocketAddress isa = new InetSocketAddress(9000);//可以在第一个参数加上IP
         // 调用open静态方法创建连接到指定主机的SocketChannel
@@ -57,9 +63,9 @@ public class HansClient {
                             while (sc.read(buff) > 0) {
                                 sc.read(buff);
                                 buff.flip();
+                                // 打印输出读取的内容
+                                System.out.println("读取信息：" + buff);
                             }
-                            // 打印输出读取的内容
-                            System.out.println("读取信息：" + buff);
                         }
                     }
                 }
@@ -69,17 +75,6 @@ public class HansClient {
         }
     }
 
-    private static String getByteString(ByteBuffer bb){
-        bb.flip();
-        StringBuilder stringBuffer=new StringBuilder();
-        for(int i=0;i<bb.limit();i++){
-            String byteStr=Integer.toHexString(bb.get()).toUpperCase();
-            if(byteStr.length()==1)byteStr="0"+byteStr;
-            if(byteStr.length()!=2)byteStr=byteStr.substring(byteStr.length()-2);
-            stringBuffer.append(byteStr).append(" ");
-        }
-        return stringBuffer.toString();
-    }
 
     public static void main(String[] args) throws IOException {
         new HansClient().init();
