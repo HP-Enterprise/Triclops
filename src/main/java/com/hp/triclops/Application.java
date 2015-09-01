@@ -19,7 +19,7 @@ public class Application implements CommandLineRunner {
 
 
     @Autowired
-    private HansServer _hansServer;
+    private AcquirePort _acquirePort;
 
     //设置在执行测试类的时候不执行回声服务器的标示
     @Value("${com.hp.acquire.disabled}")
@@ -30,11 +30,10 @@ public class Application implements CommandLineRunner {
         this._logger.info("Application is running...");
 
         // 启动数据接收端口
-//        this._acquirePort.start();
         if(_disabled){
             return;
         }else{
-           this._hansServer.init();
+           this._acquirePort.init();
         }
     }
 }

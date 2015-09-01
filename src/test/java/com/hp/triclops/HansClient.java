@@ -1,4 +1,4 @@
-package com.hp.triclops.acquire;
+package com.hp.triclops;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -54,14 +54,12 @@ public class HansClient {
                             // 使用NIO读取Channel中的数据
                             SocketChannel sc = (SocketChannel) sk.channel();
                             ByteBuffer buff = ByteBuffer.allocate(1024);
-                            String content = "";
                             while (sc.read(buff) > 0) {
                                 sc.read(buff);
                                 buff.flip();
-                                content += StandardCharsets.UTF_8.decode(buff);
                             }
                             // 打印输出读取的内容
-                            System.out.println("读取信息：" + content);
+                            System.out.println("读取信息：" + buff);
                         }
                     }
                 }
@@ -71,8 +69,20 @@ public class HansClient {
         }
     }
 
-//    public static void main(String[] args) throws IOException {
-//        new HansClient().init();
-//    }
+    private static String getByteString(ByteBuffer bb){
+        bb.flip();
+        StringBuilder stringBuffer=new StringBuilder();
+        for(int i=0;i<bb.limit();i++){
+            String byteStr=Integer.toHexString(bb.get()).toUpperCase();
+            if(byteStr.length()==1)byteStr="0"+byteStr;
+            if(byteStr.length()!=2)byteStr=byteStr.substring(byteStr.length()-2);
+            stringBuffer.append(byteStr).append(" ");
+        }
+        return stringBuffer.toString();
+    }
+
+    public static void main(String[] args) throws IOException {
+        new HansClient().init();
+    }
 }
 
