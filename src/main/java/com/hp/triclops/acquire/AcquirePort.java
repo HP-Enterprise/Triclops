@@ -1,5 +1,7 @@
 package com.hp.triclops.acquire;
 
+
+import com.hp.triclops.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
@@ -7,11 +9,8 @@ import org.springframework.stereotype.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.SocketAddress;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
+import java.nio.ByteBuffer;
+import java.nio.channels.*;
 
 /**
  * 数据接收端口.<br>
@@ -21,41 +20,75 @@ import java.nio.channels.ServerSocketChannel;
  */
 @Component
 public class AcquirePort {
-    // 设备数据上报端口号
+    // 用于检测所有Channel状态的Selector
     @Value("${com.hp.acquire.port}")
     private int _acquirePort;
 
     // 日志
     private Logger _logger;
 
-    // 套接字信道
-    protected ServerSocketChannel _channelListen;
+    private Selector selector = null;
 
-    // accept选择器
-    protected Selector _selectorAccept;
-
-    public AcquirePort(){
+    public void init() throws IOException {
         this._logger = LoggerFactory.getLogger(AcquirePort.class);
+        selector = Selector.open();
+        // 通过open方法来打开一个未绑定的ServerSocketChannel实例
+        ServerSocketChannel server = ServerSocketChannel.open();
+        InetSocketAddress isa = new InetSocketAddress(_acquirePort);
+        // 将该ServerSocketChannel绑定到指定IP地址
+        server.socket().bind(isa);
+        // 设置ServerSocket以非阻塞方式工作
+        server.configureBlocking(false);
+        // 将server注册到指定Selector对象
+        server.register(selector, SelectionKey.OP_ACCEPT);
+        // 定义准备执行读取数据的ByteBuffer
+        ByteBuffer buff = ByteBuffer.allocate(1024);
+        while (selector.select() > 0) {
+            // 依次处理selector上的每个已选择的SelectionKey
+            for (SelectionKey sk : selector.selectedKeys()) {
+                // 从selector上的已选择Key集中删除正在处理的SelectionKey
+                selector.selectedKeys().remove(sk);
+                // 如果sk对应的通道包含客户端的连接请求
+                if (sk.isAcceptable()) {
+                    // 调用accept方法接受连接，产生服务器端对应的SocketChannel
+                    SocketChannel sc = server.accept();
+                    // 设置采用非阻塞模式
+                    sc.configureBlocking(false);
+                    // 将该SocketChannel也注册到selector
+                    sc.register(selector, SelectionKey.OP_READ);
+                }
+                // 如果sk对应的通道有数据需要读取
+                if (sk.isReadable()) {
+                    // 获取该SelectionKey对应的Channel，该Channel中有可读的数据
+                    SocketChannel sc = (SocketChannel) sk.channel();
+                    // 开始读取数据
+
+                    try {
+                        while (sc.read(buff) > 0) {
+                            buff.flip();
+                            this._logger.info("content" + buff);
+                            sc.write(buff);
+                            if (buff.hasRemaining()) {
+                                buff.compact();
+                            } else {
+                                buff.clear();
+                            }
+                        }
+                        // 打印从该sk对应的Channel里读取到的数据
+                        this._logger.info("accpect content" + buff);
+                    }
+                    // 如果捕捉到该sk对应的Channel出现了异常，即表明该Channel
+                    // 对应的Client出现了问题，所以从Selector中取消sk的注册
+                    catch (IOException ex) {
+                        // 从Selector中删除指定的SelectionKey
+                        sk.cancel();
+                        if (sk.channel() != null) {
+                            sk.channel().close();
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    /**
-     * 启动数据接收端口.<br>
-     * 如果com.hp.acquire.port为空或0或负数,则表示禁用数据接收端口.<br>
-     */
-    public void start() throws IOException {
-        // 已经有一个活动的端口了
-        if(this._channelListen != null) return;
-
-        if(this._acquirePort <= 0){
-            this._logger.info("The AcquirePort is disabled.");
-        }
-        else{
-            this._channelListen = ServerSocketChannel.open();
-            this._channelListen.socket().bind(new InetSocketAddress(this._acquirePort));
-            this._channelListen.configureBlocking(false);
-
-            this._selectorAccept = Selector.open();
-            this._channelListen.register(this._selectorAccept, SelectionKey.OP_ACCEPT);
-        }
-    }
 }
