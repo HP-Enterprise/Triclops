@@ -2,6 +2,8 @@ package com.hp.triclops.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 用户类
@@ -13,17 +15,31 @@ public class Organization implements Serializable {
     private String orgName;
     private String breCode;
     private int typeKey;
-    private int subOid;
-    private int parOid;
+    private Set<Organization> organizationSet;
 
-    public Organization() {}
 
-    public Organization(String orgName, String breCode, int typeKey, int subOid, int parOid) {
+    public Organization() {
+        this.organizationSet = new HashSet<Organization>();
+    }
+
+    public Organization(String orgName, String breCode, int typeKey, Set<Organization> organizationSet) {
         this.orgName = orgName;
         this.breCode = breCode;
         this.typeKey = typeKey;
-        this.subOid = subOid;
-        this.parOid = parOid;
+        this.organizationSet = organizationSet;
+    }
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organizationrelatived",
+            joinColumns ={@JoinColumn(name = "par_oid", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "sub_oid", referencedColumnName = "id")
+            })
+    public Set<Organization> getOrganizationSet() {
+        return organizationSet;
+    }
+
+    public void setOrganizationSet(Set<Organization> organizationSet) {
+        this.organizationSet = organizationSet;
     }
 
     @Id
@@ -67,23 +83,4 @@ public class Organization implements Serializable {
         this.breCode = breCode;
     }
 
-    @Basic
-    @Column(name = "sub_oid", nullable = true, insertable = true, updatable = true)
-    public int getSubOid() {
-        return subOid;
-    }
-
-    public void setSubOid(int subOid) {
-        this.subOid = subOid;
-    }
-
-    @Basic
-    @Column(name = "par_oid", nullable = true, insertable = true, updatable = true)
-    public int getParOid() {
-        return parOid;
-    }
-
-    public void setParOid(int parOid) {
-        this.parOid = parOid;
-    }
 }
