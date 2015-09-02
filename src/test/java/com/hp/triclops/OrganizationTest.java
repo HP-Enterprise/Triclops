@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.transaction.Transactional;
 import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,14 +28,15 @@ public class OrganizationTest {
     }
 
     @Test
+    @Transactional
     public void testOrganization() {
 
-        Organization organization = organizationRepository.findById(1); //
-        Organization subOrganization = organizationRepository.findById(2);
-
-        Set<Organization> set = organization.getOrganizationSet();
-        set.add(subOrganization);
-        organizationRepository.save(organization);
+//        Organization organization = organizationRepository.findById(1); //
+//        Organization subOrganization = organizationRepository.findById(2);
+//
+//        Set<Organization> set = organization.getOrganizationSet();
+//        set.add(subOrganization);
+//        organizationRepository.save(organization);
 
        /* //添加一条记录
         organizationRepository.save(new Organization("shebing","789",1,22,1));*/

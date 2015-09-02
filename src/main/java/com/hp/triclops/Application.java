@@ -26,6 +26,6 @@ public class Application implements CommandLineRunner {
         this._logger.info("Application is running...");
 
         // 启动数据接收端口
-        this._acquirePort.start();
+//        this._acquirePort.start();
     }
 }
