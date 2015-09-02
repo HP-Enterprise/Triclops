@@ -28,7 +28,7 @@ public class Organization implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "o_Id", nullable = false, insertable = true, updatable = true)
+    @Column(name = "Id", nullable = false, insertable = true, updatable = true)
     public int getId() {
         return id;
     }
