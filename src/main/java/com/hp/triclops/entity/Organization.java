@@ -30,7 +30,7 @@ public class Organization implements Serializable {
     }
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    @JoinTable(name = "t_organizationrelatived",
+    @JoinTable(name = "t_organization_relatived",
             joinColumns ={@JoinColumn(name = "par_oid", referencedColumnName = "id") },
             inverseJoinColumns = { @JoinColumn(name = "sub_oid", referencedColumnName = "id")
             })
