@@ -13,12 +13,12 @@ public class UserVehicleRelatived implements Serializable{
     private User uid;
     private Vehicle vin;
     private int iflag;
-    private User parentuser;
+    private int parentuser;
 
     public UserVehicleRelatived() {
     }
 
-    public UserVehicleRelatived(int id, User uid, Vehicle vin, int iflag, User parentuser) {
+    public UserVehicleRelatived(int id, User uid, Vehicle vin, int iflag, int parentuser) {
         this.id = id;
         this.uid = uid;
         this.vin = vin;
@@ -67,13 +67,15 @@ public class UserVehicleRelatived implements Serializable{
         this.vin = vin;
     }
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
-    @JoinColumn(name = "parent_user_id",referencedColumnName="Id")
-    public User getParentuser() {
+//    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+//    @JoinColumn(name = "parent_user_id",referencedColumnName="Id")
+    @Basic
+    @Column(name = "parent_user_id", nullable = false, insertable = true, updatable = true, length = 5)
+    public int getParentuser() {
         return parentuser;
     }
 
-    public void setParentuser(User parentuser) {
+    public void setParentuser(int parentuser) {
         this.parentuser = parentuser;
     }
 }
