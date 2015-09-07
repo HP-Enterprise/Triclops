@@ -3,6 +3,8 @@ package com.hp.triclops.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 用户类
@@ -17,8 +19,9 @@ public class Vehicle implements Serializable {
     private String displacement;
     private String license_plate;
     private Date product_date;
+    private Set<UserVehicleRelatived> vinSet;
 
-    public Vehicle() {}
+    public Vehicle() {this.vinSet = new HashSet<UserVehicleRelatived>();}
 
     public Vehicle(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date){
         this.vin = vin;
@@ -100,4 +103,12 @@ public class Vehicle implements Serializable {
         this.product_date = product_date;
     }
 
+    @OneToMany(mappedBy = "vin", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    public Set<UserVehicleRelatived> getVinSet() {
+        return vinSet;
+    }
+
+    public void setVinSet(Set<UserVehicleRelatived> vinSet) {
+        this.vinSet = vinSet;
+    }
 }

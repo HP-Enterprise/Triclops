@@ -2,6 +2,8 @@ package com.hp.triclops.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 用户类
@@ -15,8 +17,13 @@ public class User implements Serializable {
     private String nick;
     private String phone;
     private int isVerified;
+    private Set<UserVehicleRelatived> userSet;
+    private Set<UserVehicleRelatived> parentUserSet;
 
-    public User() {}
+    public User() {
+        this.userSet = new HashSet<UserVehicleRelatived>();
+        this.parentUserSet = new HashSet<UserVehicleRelatived>();
+    }
 
     public User(String name, Integer gender, String nick, String phone,int isVerified) {
         this.name = name;
@@ -87,4 +94,21 @@ public class User implements Serializable {
         this.isVerified = isVerified;
     }
 
+    @OneToMany(mappedBy = "uid", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    public Set<UserVehicleRelatived> getUserSet() {
+        return userSet;
+    }
+
+    public void setUserSet(Set<UserVehicleRelatived> userSet) {
+        this.userSet = userSet;
+    }
+
+    @OneToMany(mappedBy = "parentuser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    public Set<UserVehicleRelatived> getParentUserSet() {
+        return parentUserSet;
+    }
+
+    public void setParentUserSet(Set<UserVehicleRelatived> parentUserSet) {
+        this.parentUserSet = parentUserSet;
+    }
 }
