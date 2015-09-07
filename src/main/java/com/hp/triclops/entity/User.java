@@ -2,6 +2,8 @@ package com.hp.triclops.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 用户类
@@ -15,8 +17,11 @@ public class User implements Serializable {
     private String nick;
     private String phone;
     private int isVerified;
+    private Set<Organization> organizationSet;
 
-    public User() {}
+    public User() {
+        this.organizationSet = new HashSet<Organization>();
+    }
 
     public User(String name, Integer gender, String nick, String phone,int isVerified) {
         this.name = name;
@@ -85,6 +90,19 @@ public class User implements Serializable {
 
     public void setIsVerified(int isVerified) {
         this.isVerified = isVerified;
+    }
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organization_user",
+            joinColumns ={@JoinColumn(name = "uid", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "oid", referencedColumnName = "id")
+            })
+    public Set<Organization> getOrganizationSet() {
+        return organizationSet;
+    }
+
+    public void setOrganizationSet(Set<Organization> organizationSet) {
+        this.organizationSet = organizationSet;
     }
 
 }

@@ -3,6 +3,7 @@ package com.hp.triclops.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -22,7 +23,9 @@ public class Vehicle implements Serializable {
 
 
 
-    public Vehicle() {}
+    public Vehicle() {
+        this.organizationSet = new HashSet<Organization>();
+    }
 
     public Vehicle(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date){
         this.vin = vin;

@@ -16,14 +16,14 @@ public class Organization implements Serializable {
     private String breCode;
     private int typeKey;
     private Set<Organization> organizationSet;
-
-
-
     private Set<Vehicle> vehicleSet;
+    private Set<User> userSet;
 
 
     public Organization() {
         this.organizationSet = new HashSet<Organization>();
+        this.vehicleSet = new HashSet<Vehicle>();
+        this.userSet = new HashSet<User>();
     }
 
     public Organization(String orgName, String breCode, int typeKey, Set<Organization> organizationSet) {
@@ -99,5 +99,19 @@ public class Organization implements Serializable {
     public void setVehicleSet(Set<Vehicle> vehicleSet) {
         this.vehicleSet = vehicleSet;
     }
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organization_user",
+            joinColumns ={@JoinColumn(name = "oid", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "uid", referencedColumnName = "id")
+            })
+    public Set<User> getUserSet() {
+        return userSet;
+    }
+
+    public void setUserSet(Set<User> userSet) {
+        this.userSet = userSet;
+    }
+
 
 }
