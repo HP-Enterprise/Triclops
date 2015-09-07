@@ -104,7 +104,7 @@ public class SessionRedis {
 
     /**
      * 删除指定键值
-     * @param sessionId
+     * @param sessionId 键
      * @return 是否成功，true，成功；false，失败
      */
     public boolean delSessionOfVal(String sessionId){

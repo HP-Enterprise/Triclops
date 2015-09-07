@@ -7,3 +7,5 @@ CREATE TABLE t_user (
   is_verified  int(1) DEFAULT 0 COMMENT '0表示未验证，1表示已验证',
   PRIMARY KEY (Id)
 ) DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+INSERT INTO t_user(Id,name,nick) values('1','admin','admin4096');

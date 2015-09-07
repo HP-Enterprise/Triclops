@@ -17,15 +17,23 @@ public class Application implements CommandLineRunner {
     // 日志
     private Logger _logger;
 
-    // 数据接收端口
+
     @Autowired
     private AcquirePort _acquirePort;
+
+    //设置在执行测试类的时候不执行回声服务器的标示
+    @Value("${com.hp.acquire.disabled}")
+    private boolean _disabled;
 
     public void run(String... args) throws Exception{
         this._logger = LoggerFactory.getLogger(Application.class);
         this._logger.info("Application is running...");
 
         // 启动数据接收端口
-//        this._acquirePort.start();
+        if(_disabled){
+            return;
+        }else{
+           this._acquirePort.init();
+        }
     }
 }

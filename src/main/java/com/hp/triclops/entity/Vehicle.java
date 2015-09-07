@@ -20,7 +20,7 @@ public class Vehicle implements Serializable {
 
     public Vehicle() {}
 
-    public Vehicle(String name, Integer gender, String nick, String phone) {
+    public Vehicle(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date){
         this.vin = vin;
         this.vendor = vendor;
         this.model = model;
