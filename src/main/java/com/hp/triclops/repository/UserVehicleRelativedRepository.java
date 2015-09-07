@@ -17,5 +17,5 @@ import java.util.Set;
 @Configurable
 @EnableJpaRepositories
 public interface UserVehicleRelativedRepository extends CrudRepository<UserVehicleRelatived, Integer> {
-    List<UserVehicleRelatived> findByVehicle(Vehicle vehicle);
+    List<UserVehicleRelatived> findByVin(String vin);
 }
