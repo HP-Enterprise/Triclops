@@ -1,7 +1,9 @@
 package com.hp.triclops;
 
 import com.hp.triclops.entity.Organization;
+import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.repository.OrganizationRepository;
+import com.hp.triclops.repository.VehicleRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +20,8 @@ import java.util.Set;
 public class OrganizationTest {
     @Autowired
     private OrganizationRepository organizationRepository;
-
+    @Autowired
+    private VehicleRepository vehicleRepository;
     @Before
     public void setUp() {
     }
@@ -45,5 +48,11 @@ public class OrganizationTest {
         organization.setSubOid(12);
         organization.setParOid(0);
         organizationRepository.save(organization);*/
+        //测试一个组织下面的所有车
+//        Organization org = organizationRepository.findById(1);
+//        System.out.println(org.getVehicleSet().size());
+        //测试一台车所属的组织
+//        Vehicle vehicle = vehicleRepository.findByVin("INCAR00001");
+//        System.out.println(vehicle.getOrganizationSet().size());
     }
 }

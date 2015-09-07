@@ -18,6 +18,10 @@ public class Organization implements Serializable {
     private Set<Organization> organizationSet;
 
 
+
+    private Set<Vehicle> vehicleSet;
+
+
     public Organization() {
         this.organizationSet = new HashSet<Organization>();
     }
@@ -81,6 +85,19 @@ public class Organization implements Serializable {
 
     public void setBreCode(String breCode) {
         this.breCode = breCode;
+    }
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organization_vehicle",
+            joinColumns ={@JoinColumn(name = "oid", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "vin", referencedColumnName = "vin")
+            })
+    public Set<Vehicle> getVehicleSet() {
+        return vehicleSet;
+    }
+
+    public void setVehicleSet(Set<Vehicle> vehicleSet) {
+        this.vehicleSet = vehicleSet;
     }
 
 }

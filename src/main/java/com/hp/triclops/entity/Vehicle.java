@@ -3,6 +3,7 @@ package com.hp.triclops.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * 用户类
@@ -17,6 +18,9 @@ public class Vehicle implements Serializable {
     private String displacement;
     private String license_plate;
     private Date product_date;
+    private Set<Organization> organizationSet;
+
+
 
     public Vehicle() {}
 
@@ -100,4 +104,16 @@ public class Vehicle implements Serializable {
         this.product_date = product_date;
     }
 
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organization_vehicle",
+            joinColumns ={@JoinColumn(name = "vin", referencedColumnName = "vin") },
+            inverseJoinColumns = { @JoinColumn(name = "oid", referencedColumnName = "id")
+            })
+    public Set<Organization> getOrganizationSet() {
+        return organizationSet;
+    }
+
+    public void setOrganizationSet(Set<Organization> organizationSet) {
+        this.organizationSet = organizationSet;
+    }
 }
