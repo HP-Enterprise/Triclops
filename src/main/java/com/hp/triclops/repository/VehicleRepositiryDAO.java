@@ -19,6 +19,7 @@ public class VehicleRepositiryDAO  {
 
     /**
      * 模糊查询
+     * @param id 传入参数为null或""时不作为查询条件
      * @param vin 传入参数为null或""时不作为查询条件
      * @param vendor 传入参数为null或""时不作为查询条件
      * @param model 传入参数为null或""时不作为查询条件
@@ -34,9 +35,10 @@ public class VehicleRepositiryDAO  {
      * @param fuzzy 是否模糊查询
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findVehiclesByKeys(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy){
+    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy){
         String jpql="FROM Vehicle v where 1=1";
         String jpql_count="";
+        id=(id==null)?-1:id;
         vin=(vin==null)?"":vin;
         vendor=(vendor==null)?"":vendor;
         model=(model==null)?"":model;
@@ -50,6 +52,9 @@ public class VehicleRepositiryDAO  {
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
 
+        if(id>=0){
+            jpql=jpql+" And v.id =:id";
+        }
         if(!vin.equals("")){
          jpql=jpql+" And v.vin like :vin";
         }
@@ -79,6 +84,11 @@ public class VehicleRepositiryDAO  {
 
         TypedQuery query = em.createQuery(jpql, Vehicle.class);
         TypedQuery queryCount = em.createQuery(jpql_count, Vehicle.class);
+
+        if(id>=0){
+            query.setParameter("id",id);
+            queryCount.setParameter("id",id);
+        }
         if(!vin.equals("")){
             query.setParameter("vin","%"+vin+"%");
             queryCount.setParameter("vin","%"+vin+"%");
@@ -119,6 +129,7 @@ public class VehicleRepositiryDAO  {
     }
     /**
      * 精确查询
+     * @param id 传入参数为null或""时不作为查询条件
      * @param vin 传入参数为null或""时不作为查询条件
      * @param vendor 传入参数为null或""时不作为查询条件
      * @param model 传入参数为null或""时不作为查询条件
@@ -133,9 +144,10 @@ public class VehicleRepositiryDAO  {
      * @param currentPage 获取指定页码数据 必须大于0
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findVehiclesByKeys(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
         String jpql="FROM Vehicle v where 1=1";
         String jpql_count="";
+        id=(id==null)?-1:id;
         vin=(vin==null)?"":vin;
         vendor=(vendor==null)?"":vendor;
         model=(model==null)?"":model;
@@ -149,6 +161,9 @@ public class VehicleRepositiryDAO  {
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
 
+        if(id>=0){
+            jpql=jpql+" And v.id =:id";
+        }
         if(!vin.equals("")){
             jpql=jpql+" And v.vin = :vin";
         }
@@ -178,6 +193,11 @@ public class VehicleRepositiryDAO  {
 
         TypedQuery query = em.createQuery(jpql, Vehicle.class);
         TypedQuery queryCount = em.createQuery(jpql_count, Vehicle.class);
+
+        if(id>=0){
+            query.setParameter("id",id);
+            queryCount.setParameter("id",id);
+        }
         if(!vin.equals("")){
             query.setParameter("vin",vin);
             queryCount.setParameter("vin",vin);
