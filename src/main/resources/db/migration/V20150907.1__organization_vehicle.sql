@@ -1,7 +1,6 @@
-DROP TABLE  t_organization_vehicle;
 CREATE TABLE t_organization_vehicle (
   Id int(11) NOT NULL AUTO_INCREMENT,
-  oid int(11) NOT NULL DEFAULT '0' COMMENT '◊È÷Øid',
-  vin varchar(50) NOT NULL DEFAULT '' COMMENT '≥µvin¬Î',
+  oid int(11) NOT NULL DEFAULT '0' COMMENT 'ÁªÑÁªáid',
+  vin varchar(50) NOT NULL DEFAULT '' COMMENT 'ËΩ¶vinÁ†Å',
   PRIMARY KEY (Id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='◊È÷Ø°¢≥µπÿœµ±Ì';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='ÁªÑÁªá„ÄÅËΩ¶ÂÖ≥Á≥ªË°®';
