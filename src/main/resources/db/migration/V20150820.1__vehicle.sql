@@ -1,5 +1,6 @@
 create table t_vehicle
 (
+  id int(11) NOT NULL AUTO_INCREMENT COMMENT '车辆ID',
   vin varchar(50) NOT NULL COMMENT '车架号',
   vendor varchar(100) COMMENT '厂家',
   model varchar(100) COMMENT '型号',
@@ -7,7 +8,7 @@ create table t_vehicle
   displacement varchar(20) COMMENT '排量',
   license_plate varchar(10) COMMENT '车牌号',
   product_date datetime COMMENT '生产日期',
-  PRIMARY KEY (vin)
+  PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8 COMMENT='车辆表';
 
 create table sysdict

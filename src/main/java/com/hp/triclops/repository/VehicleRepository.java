@@ -10,5 +10,8 @@ import org.springframework.data.repository.CrudRepository;
 
 @EnableJpaRepositories
 public interface VehicleRepository extends CrudRepository<Vehicle, String> {
+
     Vehicle findByVin(String vin);
+
+    Vehicle findById(int id);
 }
