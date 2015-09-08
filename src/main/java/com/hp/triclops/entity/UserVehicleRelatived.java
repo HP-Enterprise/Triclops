@@ -18,8 +18,7 @@ public class UserVehicleRelatived implements Serializable{
     public UserVehicleRelatived() {
     }
 
-    public UserVehicleRelatived(int id, User uid, Vehicle vin, int iflag, User parentuser) {
-        this.id = id;
+    public UserVehicleRelatived(User uid, Vehicle vin, int iflag, User parentuser) {
         this.uid = uid;
         this.vin = vin;
         this.iflag = iflag;
