@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
  */
 
 @EnableJpaRepositories
-    Vehicle findByVin(String vin);
+public interface VehicleRepository extends CrudRepository<Vehicle, String> {
 
     Vehicle findByVin(String vin);
 
