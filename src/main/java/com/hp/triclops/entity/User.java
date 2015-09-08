@@ -18,11 +18,11 @@ public class User implements Serializable {
     private String phone;
     private int isVerified;
     private Set<UserVehicleRelatived> userSet;
-//    private Set<UserVehicleRelatived> parentUserSet;
+    private Set<UserVehicleRelatived> parentUserSet;
 
     public User() {
         this.userSet = new HashSet<UserVehicleRelatived>();
-//        this.parentUserSet = new HashSet<UserVehicleRelatived>();
+        this.parentUserSet = new HashSet<UserVehicleRelatived>();
     }
 
     public User(String name, Integer gender, String nick, String phone,int isVerified) {
@@ -103,12 +103,12 @@ public class User implements Serializable {
         this.userSet = userSet;
     }
 
-//    @OneToMany(mappedBy = "parentuser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    public Set<UserVehicleRelatived> getParentUserSet() {
-//        return parentUserSet;
-//    }
-//
-//    public void setParentUserSet(Set<UserVehicleRelatived> parentUserSet) {
-//        this.parentUserSet = parentUserSet;
-//    }
+    @OneToMany(mappedBy = "parentuser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    public Set<UserVehicleRelatived> getParentUserSet() {
+        return parentUserSet;
+    }
+
+    public void setParentUserSet(Set<UserVehicleRelatived> parentUserSet) {
+        this.parentUserSet = parentUserSet;
+    }
 }
