@@ -29,3 +29,4 @@ create table t_user_vehicle_relatived(
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='车辆绑定关系表';
 
+
