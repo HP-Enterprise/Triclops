@@ -12,6 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "t_vehicle")
 public class Vehicle implements Serializable {
+    private int id;
     private String vin;
     private String vendor;
     private String model;
@@ -27,7 +28,8 @@ public class Vehicle implements Serializable {
         this.organizationSet = new HashSet<Organization>();
     }
 
-    public Vehicle(String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date){
+    public Vehicle(int id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date){
+        this.id = id;
         this.vin = vin;
         this.vendor = vendor;
         this.model = model;
@@ -38,6 +40,17 @@ public class Vehicle implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Basic
     @Column(name = "vin", nullable = false, insertable = true, updatable = true)
     public String getVin() {
         return vin;
