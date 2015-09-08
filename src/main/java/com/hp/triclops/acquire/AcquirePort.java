@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * 数据接收端口.<br>
@@ -45,9 +47,12 @@ public class AcquirePort {
         ByteBuffer buff = ByteBuffer.allocate(1024);
         while (selector.select() > 0) {
             // 依次处理selector上的每个已选择的SelectionKey
-            for (SelectionKey sk : selector.selectedKeys()) {
+            Set<SelectionKey> sks=selector.selectedKeys();
+            Iterator keys = sks.iterator();
+            while (keys.hasNext()){
+                SelectionKey sk=(SelectionKey)keys.next();
                 // 从selector上的已选择Key集中删除正在处理的SelectionKey
-                selector.selectedKeys().remove(sk);
+                keys.remove();
                 // 如果sk对应的通道包含客户端的连接请求
                 if (sk.isAcceptable()) {
                     // 调用accept方法接受连接，产生服务器端对应的SocketChannel
