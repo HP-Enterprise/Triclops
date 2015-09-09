@@ -238,8 +238,8 @@ public class UserRepositiryDAO<T>  {
             for (int j=0;j<filterList.size();j++)
             {
                 UserVehicleRelatived userVehicleRelatived = (UserVehicleRelatived)filterList.get(j);
-                int userid = userVehicleRelatived.getUserid();
-                if(id==userid)
+                User userid = userVehicleRelatived.getUid();
+                if(id==userid.getId())
                 {
                     result.add(userList.get(i));
                     break;
