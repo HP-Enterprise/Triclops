@@ -8,6 +8,7 @@ CREATE TABLE t_user (
   PRIMARY KEY (Id)
 ) DEFAULT CHARSET=utf8 COMMENT='用户表';
 
-alter table t_user add UNIQUE KEY name (name);
+alter table t_user add UNIQUE KEY name_user (name);
+alter table t_user add INDEX nick_user (nick);
 
 INSERT INTO t_user(Id,name,nick) values('1','admin','admin4096');

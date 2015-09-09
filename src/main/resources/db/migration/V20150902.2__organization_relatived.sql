@@ -4,3 +4,7 @@ CREATE TABLE t_organization_relatived (
   par_oid int(11) NOT NULL COMMENT '父组织id',
   PRIMARY KEY (Id)
 ) DEFAULT CHARSET=utf8 COMMENT='组织关系表';
+
+alter table t_organization_relatived add INDEX sub_oid (sub_oid);
+alter table t_organization_relatived add INDEX par_oid (par_oid);
+alter table t_organization_relatived add INDEX sub_par (sub_oid,par_oid);
