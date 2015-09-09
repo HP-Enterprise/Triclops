@@ -20,9 +20,16 @@ public class Vehicle implements Serializable {
     private String displacement;
     private String license_plate;
     private Date product_date;
+
     private Set<UserVehicleRelatived> vinSet;
 
-    public Vehicle() {this.vinSet = new HashSet<UserVehicleRelatived>();}
+    private Set<Organization> organizationSet;
+
+    public Vehicle() {
+        this.vinSet = new HashSet<UserVehicleRelatived>();
+        this.organizationSet = new HashSet<Organization>();
+    }
+
 
     public Vehicle(int id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date){
         this.id = id;
@@ -123,5 +130,18 @@ public class Vehicle implements Serializable {
 
     public void setVinSet(Set<UserVehicleRelatived> vinSet) {
         this.vinSet = vinSet;
+    }
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organization_vehicle",
+            joinColumns ={@JoinColumn(name = "vin", referencedColumnName = "vin") },
+            inverseJoinColumns = { @JoinColumn(name = "oid", referencedColumnName = "id")
+            })
+    public Set<Organization> getOrganizationSet() {
+        return organizationSet;
+    }
+
+    public void setOrganizationSet(Set<Organization> organizationSet) {
+        this.organizationSet = organizationSet;
     }
 }

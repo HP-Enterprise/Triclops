@@ -21,3 +21,4 @@ create table sysdict
 ) DEFAULT CHARSET=utf8 COMMENT='字典表';
 
 
+

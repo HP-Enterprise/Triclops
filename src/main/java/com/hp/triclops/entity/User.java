@@ -19,10 +19,12 @@ public class User implements Serializable {
     private int isVerified;
     private Set<UserVehicleRelatived> userSet;
     private Set<UserVehicleRelatived> parentUserSet;
+    private Set<Organization> organizationSet;
 
     public User() {
         this.userSet = new HashSet<UserVehicleRelatived>();
         this.parentUserSet = new HashSet<UserVehicleRelatived>();
+        this.organizationSet = new HashSet<Organization>();
     }
 
     public User(String name, Integer gender, String nick, String phone,int isVerified) {
@@ -111,4 +113,17 @@ public class User implements Serializable {
     public void setParentUserSet(Set<UserVehicleRelatived> parentUserSet) {
         this.parentUserSet = parentUserSet;
     }
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organization_user",
+            joinColumns ={@JoinColumn(name = "uid", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "oid", referencedColumnName = "id")
+            })
+    public Set<Organization> getOrganizationSet() {
+        return organizationSet;
+    }
+
+    public void setOrganizationSet(Set<Organization> organizationSet) {
+        this.organizationSet = organizationSet;
+    }
+
 }
