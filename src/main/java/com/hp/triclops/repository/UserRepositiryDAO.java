@@ -57,7 +57,9 @@ public class UserRepositiryDAO<T>  {
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
         if(oid != null && oid>=0){
-            jpql = jpql+" join Organization O where O.id=:oid and O";
+            jpql = jpql+" join u.organizationSet O where O.id=:oid";
+        }else{
+            jpql = jpql+ " where 1=1";
         }
         if(id>=0){
             jpql=jpql+" And u.id =:id";
@@ -77,13 +79,16 @@ public class UserRepositiryDAO<T>  {
         if(isVerified==0||isVerified==1){
             jpql=jpql+" And u.isVerified =:isVerified";
         }
-        jpql = jpql+ "where 1=1";
+
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
         System.out.println("jpql:"+jpql);
         TypedQuery query = em.createQuery(jpql, User.class);
         TypedQuery queryCount = em.createQuery(jpql_count, User.class);
-
+        if(oid != null && oid>=0){
+            query.setParameter("oid",oid);
+            queryCount.setParameter("oid",oid);
+        }
         if(id>=0){
             query.setParameter("id",id);
             queryCount.setParameter("id",id);
@@ -108,10 +113,7 @@ public class UserRepositiryDAO<T>  {
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
         }
-        if(oid != null && oid>=0){
-            query.setParameter("oid",oid);
-            queryCount.setParameter("oid",oid);
-        }
+
 
         List<Object> items = query.getResultList();  //获取所有查询结果
 
