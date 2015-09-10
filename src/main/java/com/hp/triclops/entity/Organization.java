@@ -14,7 +14,7 @@ public class Organization implements Serializable {
     private int id;
     private String orgName;
     private String breCode;
-    private int typeKey;
+    private Sysdict typeKey;
     private String descript;
     private int available;
     private Set<Organization> organizationSet;
@@ -28,7 +28,7 @@ public class Organization implements Serializable {
         this.userSet = new HashSet<User>();
     }
 
-    public Organization(String orgName, String breCode, int typeKey, Set<Organization> organizationSet) {
+    public Organization(String orgName, String breCode, Sysdict typeKey, Set<Organization> organizationSet) {
         this.orgName = orgName;
         this.breCode = breCode;
         this.typeKey = typeKey;
@@ -71,11 +71,11 @@ public class Organization implements Serializable {
 
     @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "type_key",referencedColumnName="type_key")
-    public int getTypeKey() {
+    public Sysdict getTypeKey() {
         return typeKey;
     }
 
-    public void setTypeKey(int typeKey) {
+    public void setTypeKey(Sysdict typeKey) {
         this.typeKey = typeKey;
     }
 
