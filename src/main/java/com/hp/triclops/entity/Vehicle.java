@@ -20,6 +20,7 @@ public class Vehicle implements Serializable {
     private String displacement;
     private String license_plate;
     private Date product_date;
+    private String tboxsn;
 
     private Set<UserVehicleRelatived> vinSet;
 
@@ -31,7 +32,7 @@ public class Vehicle implements Serializable {
     }
 
 
-    public Vehicle(int id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date){
+    public Vehicle(int id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date,String tboxsn){
         this.id = id;
         this.vin = vin;
         this.vendor = vendor;
@@ -40,6 +41,7 @@ public class Vehicle implements Serializable {
         this.displacement = displacement;
         this.license_plate = license_plate;
         this.product_date = product_date;
+        this.tboxsn = tboxsn;
     }
 
     @Id
@@ -121,6 +123,16 @@ public class Vehicle implements Serializable {
 
     public void setProduct_date(Date product_date) {
         this.product_date = product_date;
+    }
+
+    @Basic
+    @Column(name = "tboxsn", nullable = true, insertable = true, updatable = true)
+    public String getTboxsn() {
+        return tboxsn;
+    }
+
+    public void setTboxsn(String tboxsn) {
+        this.tboxsn = tboxsn;
     }
 
     @OneToMany(mappedBy = "vin", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
