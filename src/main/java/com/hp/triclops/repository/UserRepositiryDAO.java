@@ -41,8 +41,8 @@ public class UserRepositiryDAO<T>  {
      * @param fuzzy 1:模糊查询
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer fuzzy){
-        String jpql="FROM User u where 1=1";
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer fuzzy,Integer oid){
+        String jpql="FROM User u";
         String jpql_count="";
         id=(id==null)?-1:id;
         name=(name==null)?"":name;
@@ -56,6 +56,9 @@ public class UserRepositiryDAO<T>  {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
+        if(oid != null && oid>=0){
+            jpql = jpql+" join Organization O where O.id=:oid and O";
+        }
         if(id>=0){
             jpql=jpql+" And u.id =:id";
         }
@@ -74,6 +77,7 @@ public class UserRepositiryDAO<T>  {
         if(isVerified==0||isVerified==1){
             jpql=jpql+" And u.isVerified =:isVerified";
         }
+        jpql = jpql+ "where 1=1";
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
         System.out.println("jpql:"+jpql);
@@ -103,6 +107,10 @@ public class UserRepositiryDAO<T>  {
         if(isVerified==0||isVerified==1){
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
+        }
+        if(oid != null && oid>=0){
+            query.setParameter("oid",oid);
+            queryCount.setParameter("oid",oid);
         }
 
         List<Object> items = query.getResultList();  //获取所有查询结果
@@ -137,7 +145,7 @@ public class UserRepositiryDAO<T>  {
      * @param isowner 是否为车主
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner){
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer oid){
         String jpql="FROM User u where 1=1";
         String jpql_count="";
         id=(id==null)?-1:id;
