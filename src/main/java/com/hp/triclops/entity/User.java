@@ -17,9 +17,13 @@ public class User implements Serializable {
     private String nick;
     private String phone;
     private int isVerified;
+    private Set<UserVehicleRelatived> userSet;
+    private Set<UserVehicleRelatived> parentUserSet;
     private Set<Organization> organizationSet;
 
     public User() {
+        this.userSet = new HashSet<UserVehicleRelatived>();
+        this.parentUserSet = new HashSet<UserVehicleRelatived>();
         this.organizationSet = new HashSet<Organization>();
     }
 
@@ -92,6 +96,23 @@ public class User implements Serializable {
         this.isVerified = isVerified;
     }
 
+    @OneToMany(mappedBy = "uid", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    public Set<UserVehicleRelatived> getUserSet() {
+        return userSet;
+    }
+
+    public void setUserSet(Set<UserVehicleRelatived> userSet) {
+        this.userSet = userSet;
+    }
+
+    @OneToMany(mappedBy = "parentuser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    public Set<UserVehicleRelatived> getParentUserSet() {
+        return parentUserSet;
+    }
+
+    public void setParentUserSet(Set<UserVehicleRelatived> parentUserSet) {
+        this.parentUserSet = parentUserSet;
+    }
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "t_organization_user",
             joinColumns ={@JoinColumn(name = "uid", referencedColumnName = "id") },
