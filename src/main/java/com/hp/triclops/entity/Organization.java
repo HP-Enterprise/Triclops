@@ -70,7 +70,7 @@ public class Organization implements Serializable {
     }
 
     @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
-    @JoinColumn(name = "type_key",referencedColumnName="type_key")
+    @JoinColumn(name = "type_key",referencedColumnName="dictid")
     public Sysdict getTypeKey() {
         return typeKey;
     }

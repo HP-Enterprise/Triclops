@@ -58,10 +58,11 @@ public class Sysdict {
         this.remark = remark;
     }
 
+    @OneToMany(mappedBy = "typeKey", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     public Set<Organization> getOrganizationSet() {
         return organizationSet;
     }
-    @OneToMany(mappedBy = "type_key", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+
     public void setOrganizationSet(Set<Organization> organizationSet) {
         this.organizationSet = organizationSet;
     }
