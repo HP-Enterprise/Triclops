@@ -16,13 +16,13 @@ import java.util.List;
 @EnableJpaRepositories
 public interface SlotRepository extends CrudRepository<SlotInfo, Long> {
 
-    Iterable<SlotInfo> findByUid(String uid);
+    Iterable<SlotInfo> findByUid(int uid);
 
-    SlotInfo findByUidAndSlotkey(String uid,String slotkey);
+    SlotInfo findByUidAndSlotkey(int uid,String slotkey);
 
     @Query("select s.slotkey from SlotInfo s where s.uid=?1 And s.slotkey like ?2")
-    List<String> findKeysByUidAndSlotkeyStartingWith(String uid,String slotkey);
+    List<String> findKeysByUidAndSlotkeyStartingWith(int uid,String slotkey);
 
     @Query("select s.slotkey from SlotInfo s where s.uid=?1")
-    List<String> findKeysByUid(String uid);
+    List<String> findKeysByUid(int uid);
 }
