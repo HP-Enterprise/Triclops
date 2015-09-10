@@ -15,6 +15,8 @@ public class Organization implements Serializable {
     private String orgName;
     private String breCode;
     private int typeKey;
+    private String descript;
+    private int available;
     private Set<Organization> organizationSet;
     private Set<Vehicle> vehicleSet;
     private Set<User> userSet;
@@ -67,8 +69,8 @@ public class Organization implements Serializable {
         this.orgName = orgName;
     }
 
-    @Basic
-    @Column(name = "type_key", nullable = true, insertable = true, updatable = true)
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @JoinColumn(name = "type_key",referencedColumnName="type_key")
     public int getTypeKey() {
         return typeKey;
     }
@@ -113,5 +115,23 @@ public class Organization implements Serializable {
         this.userSet = userSet;
     }
 
+    @Basic
+    @Column(name = "available", nullable = false, insertable = true, updatable = true)
+    public int getAvailable() {
+        return available;
+    }
 
+    public void setAvailable(int available) {
+        this.available = available;
+    }
+
+    @Basic
+    @Column(name = "descript", nullable = false, insertable = true, updatable = true, length = 500)
+    public String getDescript() {
+        return descript;
+    }
+
+    public void setDescript(String descript) {
+        this.descript = descript;
+    }
 }
