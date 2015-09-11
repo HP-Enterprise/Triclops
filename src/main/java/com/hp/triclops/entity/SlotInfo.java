@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Table(name = "t_slot")
 public class SlotInfo  implements Serializable {
     private Long id;
-    private String uid;
+    private int uid;
     private String slotkey;
     private byte[] slot;
 
@@ -28,15 +28,13 @@ public class SlotInfo  implements Serializable {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "uid", nullable = false, insertable = true, updatable = true, length = 50)
-    public String getUid() {
-        return uid;
-    }
 
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
+
+    @Basic
+    @Column(name = "uid", nullable = false, insertable = true, updatable = true)
+    public int getUid() {        return uid;    }
+
+    public void setUid(int uid) {        this.uid = uid;    }
 
     @Basic
     @Column(name = "slotkey", nullable = false, insertable = true, updatable = true, length = 50)
