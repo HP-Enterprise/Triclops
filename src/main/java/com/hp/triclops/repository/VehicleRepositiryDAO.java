@@ -1,6 +1,7 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.Vehicle;
+import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
 import org.springframework.stereotype.Component;
 
@@ -39,11 +40,11 @@ public class VehicleRepositiryDAO  {
         String jpql="FROM Vehicle v where 1=1";
         String jpql_count="";
         id=(id==null)?-1:id;
-        vin=(vin==null)?"":vin;
+        vin=(vin==null)?"": EscapeStringUtil.toEscape(vin);
         vendor=(vendor==null)?"":vendor;
         model=(model==null)?"":model;
         displacement=(displacement==null)?"":displacement;
-        license_plate=(license_plate==null)?"":license_plate;
+        license_plate=(license_plate==null)?"":EscapeStringUtil.toEscape(license_plate);
         orderByProperty=(orderByProperty==null)?"vin":orderByProperty;
         ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
         t_flag=(t_flag==null)?-1:t_flag;
@@ -148,11 +149,11 @@ public class VehicleRepositiryDAO  {
         String jpql="FROM Vehicle v where 1=1";
         String jpql_count="";
         id=(id==null)?-1:id;
-        vin=(vin==null)?"":vin;
+        vin=(vin==null)?"":EscapeStringUtil.toEscape(vin);
         vendor=(vendor==null)?"":vendor;
         model=(model==null)?"":model;
         displacement=(displacement==null)?"":displacement;
-        license_plate=(license_plate==null)?"":license_plate;
+        license_plate=(license_plate==null)?"":EscapeStringUtil.toEscape(license_plate);
         orderByProperty=(orderByProperty==null)?"vin":orderByProperty;
         ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
         t_flag=(t_flag==null)?-1:t_flag;

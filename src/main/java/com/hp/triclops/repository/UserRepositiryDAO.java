@@ -2,6 +2,7 @@ package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.User;
 import com.hp.triclops.entity.UserVehicleRelatived;
+import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,9 +46,9 @@ public class UserRepositiryDAO<T>  {
         String jpql="FROM User u where 1=1";
         String jpql_count="";
         id=(id==null)?-1:id;
-        name=(name==null)?"":name;
+        name=(name==null)?"": EscapeStringUtil.toEscape(name);
         gender=(gender==null)?-1:gender;
-        nick=(nick==null)?"":nick;
+        nick=(nick==null)?"": EscapeStringUtil.toEscape(nick);
         phone=(phone==null)?"":phone;
         isVerified=(isVerified==null)?-1:isVerified;
         orderByProperty=(orderByProperty==null)?"id":orderByProperty;
@@ -141,9 +142,9 @@ public class UserRepositiryDAO<T>  {
         String jpql="FROM User u where 1=1";
         String jpql_count="";
         id=(id==null)?-1:id;
-        name=(name==null)?"":name;
+        name=(name==null)?"": EscapeStringUtil.toEscape(name);
         gender=(gender==null)?-1:gender;
-        nick=(nick==null)?"":nick;
+        nick=(nick==null)?"": EscapeStringUtil.toEscape(nick);
         phone=(phone==null)?"":phone;
         isVerified=(isVerified==null)?-1:isVerified;
         orderByProperty=(orderByProperty==null)?"id":orderByProperty;
