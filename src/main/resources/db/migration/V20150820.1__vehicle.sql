@@ -20,5 +20,7 @@ create table sysdict
   PRIMARY KEY (dictid)
 ) DEFAULT CHARSET=utf8 COMMENT='字典表';
 
-
+INSERT INTO sysdict(dictid, type, dictname, remark) VALUES (1,1,'华晨汽车','华晨汽车');
+INSERT INTO sysdict(dictid, type, dictname, remark) VALUES (2,1,'经销商','经销商');
+INSERT INTO sysdict(dictid, type, dictname, remark) VALUES (3,1,'车友群','车友群');
 
