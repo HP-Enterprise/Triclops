@@ -135,7 +135,7 @@ public class Vehicle implements Serializable {
         this.tboxsn = tboxsn;
     }
 
-    @OneToMany(mappedBy = "vin", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "vid", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     public Set<UserVehicleRelatived> getVinSet() {
         return vinSet;
     }
@@ -146,7 +146,7 @@ public class Vehicle implements Serializable {
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "t_organization_vehicle",
-            joinColumns ={@JoinColumn(name = "vin", referencedColumnName = "vin") },
+            joinColumns ={@JoinColumn(name = "vid", referencedColumnName = "id") },
             inverseJoinColumns = { @JoinColumn(name = "oid", referencedColumnName = "id")
             })
     public Set<Organization> getOrganizationSet() {

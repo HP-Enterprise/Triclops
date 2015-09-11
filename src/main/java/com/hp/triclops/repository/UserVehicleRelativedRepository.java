@@ -18,7 +18,7 @@ import java.util.Set;
 @Configurable
 @EnableJpaRepositories
 public interface UserVehicleRelativedRepository extends CrudRepository<UserVehicleRelatived, Integer> {
-    List<UserVehicleRelatived> findByVin(Vehicle vin);
+    List<UserVehicleRelatived> findByVid(Vehicle vid);
 
     UserVehicleRelatived findById(int id);
 
@@ -26,9 +26,9 @@ public interface UserVehicleRelativedRepository extends CrudRepository<UserVehic
 
     List<UserVehicleRelatived> findByParentuser(User user);
 
-    @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.uid = ?1 and Uvr.vin = ?2 and Uvr.iflag = ?3 and Uvr.parentuser = ?4")
-    UserVehicleRelatived findOneReative(User userid,Vehicle vin,int iflag,User parentuserid);
+    @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.uid = ?1 and Uvr.vid = ?2 and Uvr.iflag = ?3 and Uvr.parentuser = ?4")
+    UserVehicleRelatived findOneReative(User userid,Vehicle vid,int iflag,User parentuserid);
 
-    @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.uid = ?1 and Uvr.vin = ?2")
-    UserVehicleRelatived findOneReative(User userid,Vehicle vin);
+    @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.uid = ?1 and Uvr.vid = ?2")
+    UserVehicleRelatived findOneReative(User userid,Vehicle vid);
 }

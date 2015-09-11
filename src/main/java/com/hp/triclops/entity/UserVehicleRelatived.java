@@ -11,16 +11,16 @@ import java.io.Serializable;
 public class UserVehicleRelatived implements Serializable{
     private int id;
     private User uid;
-    private Vehicle vin;
+    private Vehicle vid;
     private int iflag;
     private User parentuser;
 
     public UserVehicleRelatived() {
     }
 
-    public UserVehicleRelatived(User uid, Vehicle vin, int iflag, User parentuser) {
+    public UserVehicleRelatived(User uid, Vehicle vid, int iflag, User parentuser) {
         this.uid = uid;
-        this.vin = vin;
+        this.vid = vid;
         this.iflag = iflag;
         this.parentuser = parentuser;
     }
@@ -57,13 +57,13 @@ public class UserVehicleRelatived implements Serializable{
     }
 
     @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
-    @JoinColumn(name = "vin",referencedColumnName="vin")
-    public Vehicle getVin() {
-        return vin;
+    @JoinColumn(name = "vid",referencedColumnName="id")
+    public Vehicle getVid() {
+        return vid;
     }
 
-    public void setVin(Vehicle vin) {
-        this.vin = vin;
+    public void setVid(Vehicle vid) {
+        this.vid = vid;
     }
 
     @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
