@@ -54,18 +54,5 @@ public class VerifierTest {
         System.out.println(car1);
         System.out.println(car2);
     }
-
-    @Test
-    public void testRelatived(){
-        int uid = 2;
-        String vin = "1";
-        String tboxsn = "1";
-        int vid = 1;
-
-            /*Vehicle vehicle = vehicleRepository.findByVinAndTbox(vin,tboxsn);
-            UserVehicleRelatived userVehicleRelatived = new UserVehicleRelatived(userRepository.findById(uid),vehicle,1,userRepository.findById(uid));*/
-
-            Vehicle vehicle = vehicleRepository.findById(vid);
-            UserVehicleRelatived userVehicleRelatived = new UserVehicleRelatived(userRepository.findById(uid),vehicle,0,userVehicleRelativedRepository.findByVin(vehicle).get(0).getParentuser());
-    }
+    
 }
