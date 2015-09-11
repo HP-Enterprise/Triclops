@@ -11,6 +11,11 @@ create table t_vehicle
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8 COMMENT='车辆表';
 
+alter table t_vehicle add UNIQUE KEY vin_key (vin);
+alter table t_vehicle add INDEX vendor_key (vendor);
+alter table t_vehicle add INDEX model_key (model);
+alter table t_vehicle add INDEX flag_displacement (t_flag,displacement);
+
 create table sysdict
 (
   dictid int(11) NOT NULL AUTO_INCREMENT COMMENT '字典ID',
@@ -20,5 +25,7 @@ create table sysdict
   PRIMARY KEY (dictid)
 ) DEFAULT CHARSET=utf8 COMMENT='字典表';
 
-
+alter table sysdict add INDEX type_sysdict (type);
+alter table sysdict add INDEX dictname_sysdict (dictname);
+alter table sysdict add INDEX dictname_sremark (dictname,remark);
 
