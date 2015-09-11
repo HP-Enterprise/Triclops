@@ -31,7 +31,6 @@ public class OrganizationTest {
     }
 
     @Test
-    @Transactional
     public void testOrganization() {
 
 //        Organization organization = organizationRepository.findById(1); //
