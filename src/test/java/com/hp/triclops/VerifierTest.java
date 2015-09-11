@@ -10,8 +10,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @ComponentScan(basePackages = { "org.springframework.data.redis.core","org.springframework.data.redis.serializer" })
@@ -43,4 +41,5 @@ public class VerifierTest {
         System.out.println(car1);
         System.out.println(car2);
     }
+    
 }
