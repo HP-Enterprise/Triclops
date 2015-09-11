@@ -1,11 +1,6 @@
 package com.hp.triclops;
 
-import com.hp.triclops.entity.UserVehicleRelatived;
-import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.redis.Verifier;
-import com.hp.triclops.repository.UserRepository;
-import com.hp.triclops.repository.UserVehicleRelativedRepository;
-import com.hp.triclops.repository.VehicleRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,20 +10,12 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @ComponentScan(basePackages = { "org.springframework.data.redis.core","org.springframework.data.redis.serializer" })
 public class VerifierTest {
     @Autowired
     private Verifier verifier;
-    @Autowired
-    private VehicleRepository vehicleRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserVehicleRelativedRepository userVehicleRelativedRepository;
 
     @Before
     public void setUp() {
@@ -38,7 +25,7 @@ public class VerifierTest {
     public void tearDown() {
     }
 
-
+    @Test
     public void testRedis() {
         System.out.println(verifier.hashCode());
         String code=verifier.generateCode("aaaaa",60);
