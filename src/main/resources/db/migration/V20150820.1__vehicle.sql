@@ -20,5 +20,6 @@ create table sysdict
   PRIMARY KEY (dictid)
 ) DEFAULT CHARSET=utf8 COMMENT='字典表';
 
-
+ALTER TABLE t_vehicle
+ADD tboxsn varchar(50) NOT NULL  COMMENT 'obd码';
 

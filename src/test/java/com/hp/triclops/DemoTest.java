@@ -9,9 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -28,8 +26,6 @@ public class DemoTest {
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
     public void testSample() {
         userRepository.save(new User("Sam1",1,"张三1","13296630210",0));
         userRepository.save(new User("Sam2",0,"张三2","13296630310",0));

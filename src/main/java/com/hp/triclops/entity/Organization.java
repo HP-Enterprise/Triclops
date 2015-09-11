@@ -90,7 +90,7 @@ public class Organization implements Serializable {
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "t_organization_vehicle",
             joinColumns ={@JoinColumn(name = "oid", referencedColumnName = "id") },
-            inverseJoinColumns = { @JoinColumn(name = "vin", referencedColumnName = "vin")
+            inverseJoinColumns = { @JoinColumn(name = "vid", referencedColumnName = "id")
             })
     public Set<Vehicle> getVehicleSet() {
         return vehicleSet;
