@@ -9,6 +9,7 @@ import java.util.Set;
 
 @EnableJpaRepositories
 public interface OrganizationRepository extends CrudRepository<Organization, Long> {
+    
     Organization findById(int id);
 
     Set<Organization> findByTypeKey(int typekey);

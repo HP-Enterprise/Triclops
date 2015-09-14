@@ -9,7 +9,7 @@ import java.util.Set;
  * Created by Administrator on 2015/9/10.
  */
 @Entity
-@Table(name = "sysdict")
+@Table(name = "t_sysdict")
 public class Sysdict {
     private int dictid;
     private int type;
