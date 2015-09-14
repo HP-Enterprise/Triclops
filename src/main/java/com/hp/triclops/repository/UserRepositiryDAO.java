@@ -40,10 +40,11 @@ public class UserRepositiryDAO<T>  {
      * @param vin vin码
      * @param isowner 是否为车主
      * @param fuzzy 1:模糊查询
+     * @param oid 组织id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer fuzzy){
-        String jpql="FROM User u where 1=1";
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer fuzzy,Integer oid){
+        String jpql="select u from User u";
         String jpql_count="";
         id=(id==null)?-1:id;
         name=(name==null)?"": EscapeStringUtil.toEscape(name);
@@ -57,6 +58,11 @@ public class UserRepositiryDAO<T>  {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
+        if(oid != null && oid>=0){
+            jpql = jpql+" join u.organizationSet O where O.id =:oid";
+        }else{
+            jpql = jpql+ " where 1=1";
+        }
         if(id>=0){
             jpql=jpql+" And u.id =:id";
         }
@@ -75,12 +81,17 @@ public class UserRepositiryDAO<T>  {
         if(isVerified==0||isVerified==1){
             jpql=jpql+" And u.isVerified =:isVerified";
         }
+
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
         System.out.println("jpql:"+jpql);
         TypedQuery query = em.createQuery(jpql, User.class);
         TypedQuery queryCount = em.createQuery(jpql_count, User.class);
 
+        if(oid != null && oid>=0){
+            query.setParameter("oid",oid);
+            queryCount.setParameter("oid",oid);
+        }
         if(id>=0){
             query.setParameter("id",id);
             queryCount.setParameter("id",id);
@@ -106,6 +117,7 @@ public class UserRepositiryDAO<T>  {
             queryCount.setParameter("isVerified",isVerified);
         }
 
+
         List<Object> items = query.getResultList();  //获取所有查询结果
 
         //车主车辆关系过滤
@@ -117,6 +129,7 @@ public class UserRepositiryDAO<T>  {
 
         Long count = (long)items.size();
         items = getPageData(pageSize,currentPage,items);  //数据分页
+
 
         return new Page(currentPage,pageSize,count,items);
     }
@@ -136,10 +149,11 @@ public class UserRepositiryDAO<T>  {
      * @param currentPage 获取指定页码数据 必须大于0
      * @param vin vin码
      * @param isowner 是否为车主
+     * @param oid 组织id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner){
-        String jpql="FROM User u where 1=1";
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer oid){
+        String jpql="select u from User u";
         String jpql_count="";
         id=(id==null)?-1:id;
         name=(name==null)?"": EscapeStringUtil.toEscape(name);
@@ -154,6 +168,11 @@ public class UserRepositiryDAO<T>  {
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
 
+        if(oid != null && oid>=0){
+            jpql = jpql+" join u.organizationSet O where O.id =:oid";
+        }else{
+            jpql = jpql+ " where 1=1";
+        }
         if (id>=0){
             jpql=jpql+" And u.id =:id";
         }
@@ -177,6 +196,11 @@ public class UserRepositiryDAO<T>  {
         jpql_count=jpql;
         TypedQuery query=em.createQuery(jpql,User.class);
         TypedQuery queryCount=em.createQuery(jpql_count,User.class);
+
+        if(oid != null && oid>=0){
+            query.setParameter("oid",oid);
+            queryCount.setParameter("oid",oid);
+        }
         if (id>=0){
             query.setParameter("id",id);
             queryCount.setParameter("id",id);
