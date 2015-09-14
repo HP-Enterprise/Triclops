@@ -13,7 +13,7 @@ import java.util.List;
  * Created by luj on 2015/8/26.
  */
 @Component
-public class VehicleRepositiryDAO  {
+public class VehicleRepositoryDAO {
     @PersistenceContext
     private EntityManager em;
 

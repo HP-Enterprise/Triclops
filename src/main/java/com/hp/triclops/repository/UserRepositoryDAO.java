@@ -16,7 +16,7 @@ import java.util.List;
 
 @Component
 @SuppressWarnings("unchecked")
-public class UserRepositiryDAO<T>  {
+public class UserRepositoryDAO<T>  {
 
     @Autowired
     UserVehicleRelativedRepositoryDAO userVehicleRelativedRepositoryDAO;
