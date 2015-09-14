@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS sysdict
 (
-  dictid int(11) NOT NULL AUTO_INCREMENT COMMENT '×ÖµäID',
-  type int(3) COMMENT '×ÖµäÀàĞÍ',
-  dictname varchar(500) COMMENT '×ÖµäÃû³Æ',
-  remark varchar(500)  COMMENT '±¸×¢',
+  dictid int(11) NOT NULL AUTO_INCREMENT COMMENT ''å­—å…¸ID'',
+  type int(3) COMMENT ''å­—å…¸ç±»å‹'',
+  dictname varchar(500) COMMENT ''å­—å…¸åç§°'',
+  remark varchar(500)  COMMENT ''å¤‡æ³¨'',
   PRIMARY KEY (dictid),
   KEY idex_type (type)
-) DEFAULT CHARSET=utf8 COMMENT='×Öµä±í';
+) DEFAULT CHARSET=utf8 COMMENT=''å­—å…¸è¡¨'';
