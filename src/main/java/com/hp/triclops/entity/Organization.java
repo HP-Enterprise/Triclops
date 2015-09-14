@@ -14,7 +14,9 @@ public class Organization implements Serializable {
     private int id;
     private String orgName;
     private String breCode;
-    private int typeKey;
+    private Sysdict typeKey;
+    private String descript;
+    private int available;
     private Set<Organization> organizationSet;
     private Set<Vehicle> vehicleSet;
     private Set<User> userSet;
@@ -26,7 +28,7 @@ public class Organization implements Serializable {
         this.userSet = new HashSet<User>();
     }
 
-    public Organization(String orgName, String breCode, int typeKey, Set<Organization> organizationSet) {
+    public Organization(String orgName, String breCode, Sysdict typeKey, Set<Organization> organizationSet) {
         this.orgName = orgName;
         this.breCode = breCode;
         this.typeKey = typeKey;
@@ -67,13 +69,13 @@ public class Organization implements Serializable {
         this.orgName = orgName;
     }
 
-    @Basic
-    @Column(name = "type_key", nullable = true, insertable = true, updatable = true)
-    public int getTypeKey() {
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @JoinColumn(name = "type_key",referencedColumnName="dictid")
+    public Sysdict getTypeKey() {
         return typeKey;
     }
 
-    public void setTypeKey(int typeKey) {
+    public void setTypeKey(Sysdict typeKey) {
         this.typeKey = typeKey;
     }
 
@@ -113,5 +115,23 @@ public class Organization implements Serializable {
         this.userSet = userSet;
     }
 
+    @Basic
+    @Column(name = "available", nullable = false, insertable = true, updatable = true)
+    public int getAvailable() {
+        return available;
+    }
 
+    public void setAvailable(int available) {
+        this.available = available;
+    }
+
+    @Basic
+    @Column(name = "descript", nullable = false, insertable = true, updatable = true, length = 500)
+    public String getDescript() {
+        return descript;
+    }
+
+    public void setDescript(String descript) {
+        this.descript = descript;
+    }
 }

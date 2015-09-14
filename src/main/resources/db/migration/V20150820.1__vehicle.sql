@@ -15,7 +15,3 @@ CREATE TABLE IF NOT EXISTS t_vehicle
   UNIQUE KEY idx_license (license_plate)
 ) DEFAULT CHARSET=utf8 COMMENT='车辆表';
 
-
-
-
-
