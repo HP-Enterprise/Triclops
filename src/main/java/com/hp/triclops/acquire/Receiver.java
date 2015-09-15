@@ -51,7 +51,6 @@ public class Receiver extends Thread{
 
 
     public void listen() throws IOException {
-        System.out.println("PORT----:"+_acquirePort);
         this._logger = LoggerFactory.getLogger(AcquirePort.class);
         selector = Selector.open();
         // 通过open方法来打开一个未绑定的ServerSocketChannel实例
@@ -78,7 +77,7 @@ public class Receiver extends Thread{
                     // 调用accept方法接受连接，产生服务器端对应的SocketChannel
                     SocketChannel sc = server.accept();
                     System.out.println("新的连接来自:"+sc.socket().getRemoteSocketAddress());
-                    channels.put("input:"+(String.valueOf(new Date().getTime())), sc);
+                    channels.put("input:12358", sc);
                     //保存连接  校验连接是否合法，合法保留 否则断开
                     // socketRedis.saveSessionOfVal(String.valueOf(new Date().getTime()), sc.toString(), 200);
                     //

@@ -2,14 +2,10 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.redis.SocketRedis;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -37,11 +33,15 @@ public class Sender extends Thread{
 
                 while (true){
                     try{
-                        Thread.sleep(1000);
+                        Thread.sleep(100);
                     }catch (InterruptedException e){
                     }
+                    System.out.println("connection count>>:"+channels.keySet().size());
+                    if(channels.keySet().size()>0){
+                        System.out.println("key>>:"+(String)channels.keySet().iterator().next());
+                    }
                 //读取数据库中所有的命令集合
-                    Set<String> setKey = socketRedis.getKeySet("*output:*");
+                    Set<String> setKey = socketRedis.getKeySet("output:*");
                     if(setKey.size()>0){
                         System.out.println("size:"+setKey.size());
                     }
@@ -49,7 +49,7 @@ public class Sender extends Thread{
                     while (keys.hasNext()){
                         //遍历待发数据,处理
                         String k=(String)keys.next();
-                        String scKey=k.replace("output:","");
+                        String scKey=k.replace("output:","input:");
                         SendMesage(scKey,k);
                     }
                 }
@@ -58,6 +58,7 @@ public class Sender extends Thread{
         try{
             String msg=socketRedis.getString(k);
             System.out.println("send msg:"+msg);
+            System.out.println("sckey>>"+scKey);
             SocketChannel sc=channels.get(scKey);
             if(sc!=null){
                 System.out.println(sc.toString());
