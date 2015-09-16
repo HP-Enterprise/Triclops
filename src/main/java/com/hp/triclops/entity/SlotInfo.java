@@ -13,7 +13,7 @@ public class SlotInfo  implements Serializable {
     private Long id;
     private int uid;
     private String slotkey;
-    private byte[] slot;
+    private String slot;
 
 
 
@@ -49,11 +49,11 @@ public class SlotInfo  implements Serializable {
     @Basic
     @Lob
     @Column(name = "slot", nullable = false, insertable = true, updatable = true)
-    public byte[] getSlot() {
+    public String getSlot() {
         return slot;
     }
 
-    public void setSlot(byte[] slot) {
+    public void setSlot(String slot) {
         this.slot = slot;
     }
 }
