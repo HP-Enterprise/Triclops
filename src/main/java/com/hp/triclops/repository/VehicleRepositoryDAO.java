@@ -36,8 +36,8 @@ public class VehicleRepositoryDAO {
      * @param fuzzy 是否模糊查询
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy){
-        String jpql="FROM Vehicle v where 1=1";
+    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy,Integer oid){
+        String jpql="FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
         vin=(vin==null)?"": EscapeStringUtil.toEscape(vin);
@@ -53,6 +53,11 @@ public class VehicleRepositoryDAO {
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
 
+        if(oid != null && oid>=0){
+            jpql = jpql+" join v.organizationSet O where O.id =:oid";
+        }else{
+            jpql = jpql+ " where 1=1";
+        }
         if(id>=0){
             jpql=jpql+" And v.id =:id";
         }
@@ -85,7 +90,10 @@ public class VehicleRepositoryDAO {
 
         TypedQuery query = em.createQuery(jpql, Vehicle.class);
         TypedQuery queryCount = em.createQuery(jpql_count, Vehicle.class);
-
+        if(oid != null && oid>=0){
+            query.setParameter("oid",oid);
+            queryCount.setParameter("oid",oid);
+        }
         if(id>=0){
             query.setParameter("id",id);
             queryCount.setParameter("id",id);
@@ -145,8 +153,8 @@ public class VehicleRepositoryDAO {
      * @param currentPage 获取指定页码数据 必须大于0
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
-        String jpql="FROM Vehicle v where 1=1";
+    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer oid){
+        String jpql="FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
         vin=(vin==null)?"":EscapeStringUtil.toEscape(vin);
@@ -161,7 +169,11 @@ public class VehicleRepositoryDAO {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
-
+        if(oid != null && oid>=0){
+            jpql = jpql+" join v.organizationSet O where O.id =:oid";
+        }else{
+            jpql = jpql+ " where 1=1";
+        }
         if(id>=0){
             jpql=jpql+" And v.id =:id";
         }
@@ -195,6 +207,10 @@ public class VehicleRepositoryDAO {
         TypedQuery query = em.createQuery(jpql, Vehicle.class);
         TypedQuery queryCount = em.createQuery(jpql_count, Vehicle.class);
 
+        if(oid != null && oid>=0){
+            query.setParameter("oid",oid);
+            queryCount.setParameter("oid",oid);
+        }
         if(id>=0){
             query.setParameter("id",id);
             queryCount.setParameter("id",id);
