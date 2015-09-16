@@ -1,6 +1,6 @@
 package com.hp.triclops.repository;
 
-import com.hp.triclops.entity.Organization;
+import com.hp.triclops.entity.Sysdict;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.CrudRepository;
 
@@ -8,9 +8,8 @@ import java.util.Set;
 
 
 @EnableJpaRepositories
-public interface SysdictRepository extends CrudRepository<Organization, Long> {
-    
-    Organization findById(int id);
+public interface SysdictRepository extends CrudRepository<Sysdict, Long> {
 
-    Set<Organization> findByTypeKey(int typekey);
+    Sysdict findByDictid(int dictid);
+
 }
