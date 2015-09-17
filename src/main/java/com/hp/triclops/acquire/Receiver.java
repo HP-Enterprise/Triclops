@@ -64,6 +64,7 @@ public class Receiver extends Thread{
         server.register(selector, SelectionKey.OP_ACCEPT);
         // 定义准备执行读取数据的ByteBuffer
         ByteBuffer buff = ByteBuffer.allocate(1024);
+
         while (selector.select() > 0) {
             // 依次处理selector上的每个已选择的SelectionKey
             Set<SelectionKey> sks=selector.selectedKeys();
@@ -76,18 +77,16 @@ public class Receiver extends Thread{
                 if (sk.isAcceptable()) {
                     // 调用accept方法接受连接，产生服务器端对应的SocketChannel
                     SocketChannel sc = server.accept();
-                    System.out.println("新的连接来自:" + sc.socket().getRemoteSocketAddress());
-                    String vin=String.valueOf(new Date().getTime());
-                    channels.put(vin, sc);
-                    //保存连接  校验连接是否合法，合法保留 否则断开
-                    // socketRedis.saveSessionOfVal(String.valueOf(new Date().getTime()), sc.toString(), 200);
-                    //
-                    System.out.println("连接"+vin+"成功保存到HashMap");
 
                     // 设置采用非阻塞模式
                     sc.configureBlocking(false);
                     // 将该SocketChannel也注册到selector
                     sc.register(selector, SelectionKey.OP_READ);
+                    System.out.println("新的连接来自:" + sc.socket().getRemoteSocketAddress());
+                    String vin=String.valueOf(new Date().getTime());
+                    channels.put(vin, sc);
+                    //保存连接  校验连接是否合法，合法保留 否则断开
+                    System.out.println("连接" + vin + "成功保存到HashMap");
                 }
                 // 如果sk对应的通道有数据需要读取
                 if (sk.isReadable()) {
@@ -98,18 +97,25 @@ public class Receiver extends Thread{
                     try {
                         while (sc.read(buff) > 0) {
                             buff.flip();
-                            System.out.println("收到来自" + sc.socket().getRemoteSocketAddress() + "的数据包:" + buff);
-                            byte[] data = buff.array();
+                            //将缓冲区的数据读出到byte[]
+                            byte[] result = new byte[buff.remaining()];
+                            if (buff.remaining() > 0) {
+                                buff.get(result, 0, buff.remaining());
+                            }
+                            System.out.println("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" +   new String(result));
                             //保存数据包到redis
                             String key=getKeyByValue(sc);
+                            if(checkByteArray(result)){
                             if(key!=null){
                                 key="input:"+key;//保存数据包到redis里面的key，格式input:{vin}
-                                socketRedis.saveObject(key, data, 300);
-                                System.out.println("数据成功保存到Redis!"+key);
+                                socketRedis.saveObject(key, result, 300);
+                                socketRedis.updateObject(key, result);
+                                System.out.println("Save data to Redis:"+key);
                                 byte[] aaa=(byte[])socketRedis.getObject(key);
-                                System.out.println(key+"Redis数据读取:"+ aaa.length);
+                                System.out.println(key+" Read from Redis:"+ new String(aaa,"GBK"));
                             }else{
                                 System.out.println("未找到key,数据包非法，不保存!");
+                            }
                             }
 
                             if (buff.hasRemaining()) {
@@ -124,6 +130,9 @@ public class Receiver extends Thread{
                     // 对应的Client出现了问题，所以从Selector中取消sk的注册
                     catch (IOException ex) {
                         // 从Selector中删除指定的SelectionKey
+                        String scKey=getKeyByValue(((SocketChannel) sk.channel()));
+                        System.out.println("连接断开:"+scKey);
+                        channels.remove(scKey);
                         sk.cancel();
                         if (sk.channel() != null) {
                             sk.channel().close();
@@ -146,6 +155,32 @@ public class Receiver extends Thread{
         return null;
     }
 
+    public  boolean checkByteArray(byte[] data)
+    {
+        //校验数据包是否合法
+        // 包头 0X23 0X23  2个字节长度
+        //数据包尾 将编码后的报文（ Message Header -- Application Data）进行异或操作，1个字节长度
+        boolean result=false;
+        if(data!=null){
+            if(data.length>2);
+                 if(data[0]==35&&data[1]==35&&checkSum(data)){
+                    result=true;
+            }
+        }
+        System.out.println("checkByteArray:"+result);
+       return result;
+    }
+
+    public boolean checkSum(byte[] bytes){
+        //将字节数组除了最后一位的部分进行异或操作，与最后一位比较
+        //校验数据包尾
+        //将编码后的报文（ Message Header -- Application Data）进行异或操作， 1 个字节长度
+        byte sum=0;
+        for(int i=0;i<bytes.length-1;i++){
+            sum^=bytes[i];
+        }
+        return bytes[bytes.length-1]==sum;
+    }
 }
 
 

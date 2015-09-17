@@ -33,14 +33,11 @@ public class Sender extends Thread{
 
                 while (true){
                     try{
-                        Thread.sleep(100);
+                        Thread.sleep(2000);
                     }catch (InterruptedException e){
                     }
                     System.out.println("connection count>>:"+channels.keySet().size());
-                    if(channels.keySet().size()>0){
-                        System.out.println("key>>:"+(String)channels.keySet().iterator().next());
-                    }
-                //读取数据库中所有的命令集合
+                    //读取数据库中所有的命令集合
                     Set<String> setKey = socketRedis.getKeySet("output:*");
                     if(setKey.size()>0){
                         System.out.println("size:"+setKey.size());
@@ -63,11 +60,10 @@ public class Sender extends Thread{
             if(sc!=null){
                 System.out.println(sc.toString());
                 sc.write(ByteBuffer.wrap(msg.getBytes("GBK")));
+                socketRedis.delString(k);
             }else{
                 System.out.println("Connection is Dead");
             }
-
-            socketRedis.delString(k);
         }catch (IOException e){
             System.out.println(e.toString());
         }
