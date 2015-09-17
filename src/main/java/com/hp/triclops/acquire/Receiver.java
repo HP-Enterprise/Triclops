@@ -83,10 +83,13 @@ public class Receiver extends Thread{
                     // 将该SocketChannel也注册到selector
                     sc.register(selector, SelectionKey.OP_READ);
                     System.out.println("新的连接来自:" + sc.socket().getRemoteSocketAddress());
+
+
                     String vin=String.valueOf(new Date().getTime());
                     channels.put(vin, sc);
                     //保存连接  校验连接是否合法，合法保留 否则断开
                     System.out.println("连接" + vin + "成功保存到HashMap");
+
                 }
                 // 如果sk对应的通道有数据需要读取
                 if (sk.isReadable()) {
@@ -98,26 +101,34 @@ public class Receiver extends Thread{
                         while (sc.read(buff) > 0) {
                             buff.flip();
                             //将缓冲区的数据读出到byte[]
-                            byte[] result = new byte[buff.remaining()];
-                            if (buff.remaining() > 0) {
-                                buff.get(result, 0, buff.remaining());
-                            }
-                            System.out.println("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" +   new String(result));
-                            //保存数据包到redis
-                            String key=getKeyByValue(sc);
-                            if(checkByteArray(result)){
-                            if(key!=null){
-                                key="input:"+key;//保存数据包到redis里面的key，格式input:{vin}
-                                socketRedis.saveObject(key, result, 300);
-                                socketRedis.updateObject(key, result);
-                                System.out.println("Save data to Redis:"+key);
-                                byte[] aaa=(byte[])socketRedis.getObject(key);
-                                System.out.println(key+" Read from Redis:"+ new String(aaa,"GBK"));
-                            }else{
-                                System.out.println("未找到key,数据包非法，不保存!");
-                            }
+                            byte[] receiveData=getBytesFromByteBuffer(buff);
+                            System.out.println("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" + new String(receiveData));
+                            if(!DataTool.checkByteArray(receiveData)) {
+                                System.out.println(">>>>>bytes data is invalid,we will not save them");
+                             }else{
+                                byte dataType=DataTool.getApplicationType(receiveData);
+                                System.out.println("标识位"+Integer.toHexString(dataType));
+                                switch(dataType)
+                                {
+                                    case 0x13:
+                                        System.out.println("注册");
+                                        sc.write(ByteBuffer.wrap("register success!".getBytes()));//回发数据
+                                        //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
+                                        break;
+                                    case 0x11:
+                                        System.out.println("电检");
+                                        sc.write(ByteBuffer.wrap("test passed!".getBytes()));//回发数据直接回消息
+                                        //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
+                                        break;
+                                    default:
+                                        System.out.println(">>其他操作,保存数据至redis");
+                                        saveBytesToRedis(getKeyByValue(sc), receiveData);
+                                        //一般数据，判断是否已注册，注册的数据保存
+                                        break;
+                                }
                             }
 
+                            /////////////////////////////////
                             if (buff.hasRemaining()) {
                                 buff.compact();
                             } else {
@@ -142,6 +153,32 @@ public class Receiver extends Thread{
             }
         }
     }
+
+
+    public byte[] getBytesFromByteBuffer(ByteBuffer buff){
+        byte[] result = new byte[buff.remaining()];
+        if (buff.remaining() > 0) {
+            buff.get(result, 0, buff.remaining());
+        }
+        return result;
+    }
+
+    public void saveBytesToRedis(String scKey,byte[] bytes){
+        if(DataTool.checkByteArray(bytes)){
+        if(scKey!=null){
+            String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
+            socketRedis.saveObject(inputKey, bytes, 300);
+            socketRedis.updateObject(inputKey, bytes);
+            System.out.println("Save data to Redis:"+inputKey);
+            byte[] aaa=(byte[])socketRedis.getObject(inputKey);
+            System.out.println(inputKey+" Read from Redis:"+ new String(aaa));
+        }else{
+            System.out.println("未找到scKey,数据包非法，不保存!");
+        }
+        }
+    }
+
+
     //根据SocketChannel得到对应的sc在HashMap中的key,为{vin}
     public  String getKeyByValue(SocketChannel sc)
     {
@@ -155,32 +192,9 @@ public class Receiver extends Thread{
         return null;
     }
 
-    public  boolean checkByteArray(byte[] data)
-    {
-        //校验数据包是否合法
-        // 包头 0X23 0X23  2个字节长度
-        //数据包尾 将编码后的报文（ Message Header -- Application Data）进行异或操作，1个字节长度
-        boolean result=false;
-        if(data!=null){
-            if(data.length>2);
-                 if(data[0]==35&&data[1]==35&&checkSum(data)){
-                    result=true;
-            }
-        }
-        System.out.println("checkByteArray:"+result);
-       return result;
-    }
 
-    public boolean checkSum(byte[] bytes){
-        //将字节数组除了最后一位的部分进行异或操作，与最后一位比较
-        //校验数据包尾
-        //将编码后的报文（ Message Header -- Application Data）进行异或操作， 1 个字节长度
-        byte sum=0;
-        for(int i=0;i<bytes.length-1;i++){
-            sum^=bytes[i];
-        }
-        return bytes[bytes.length-1]==sum;
-    }
+
+
 }
 
 
