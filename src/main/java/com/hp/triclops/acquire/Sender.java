@@ -49,7 +49,7 @@ public class Sender extends Thread{
                     while (keys.hasNext()){
                         //遍历待发数据,处理
                         String k=(String)keys.next();
-                        String scKey=k.replace("output:","input:");
+                        String scKey=k.replace("output:","");
                         SendMesage(scKey,k);
                     }
                 }

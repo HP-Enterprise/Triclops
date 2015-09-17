@@ -76,12 +76,13 @@ public class Receiver extends Thread{
                 if (sk.isAcceptable()) {
                     // 调用accept方法接受连接，产生服务器端对应的SocketChannel
                     SocketChannel sc = server.accept();
-                    System.out.println("新的连接来自:"+sc.socket().getRemoteSocketAddress());
-                    channels.put("input:12358", sc);
+                    System.out.println("新的连接来自:" + sc.socket().getRemoteSocketAddress());
+                    String vin=String.valueOf(new Date().getTime());
+                    channels.put(vin, sc);
                     //保存连接  校验连接是否合法，合法保留 否则断开
                     // socketRedis.saveSessionOfVal(String.valueOf(new Date().getTime()), sc.toString(), 200);
                     //
-                    System.out.println("连接成功保存到HashMap");
+                    System.out.println("连接"+vin+"成功保存到HashMap");
 
                     // 设置采用非阻塞模式
                     sc.configureBlocking(false);
@@ -102,6 +103,7 @@ public class Receiver extends Thread{
                             //保存数据包到redis
                             String key=getKeyByValue(sc);
                             if(key!=null){
+                                key="input:"+key;//保存数据包到redis里面的key，格式input:{vin}
                                 socketRedis.saveObject(key, data, 300);
                                 System.out.println("数据成功保存到Redis!"+key);
                                 byte[] aaa=(byte[])socketRedis.getObject(key);
@@ -131,6 +133,7 @@ public class Receiver extends Thread{
             }
         }
     }
+    //根据SocketChannel得到对应的sc在HashMap中的key,为{vin}
     public  String getKeyByValue(SocketChannel sc)
     {
         Iterator<String> it= channels.keySet().iterator();
