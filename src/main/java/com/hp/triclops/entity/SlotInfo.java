@@ -1,7 +1,6 @@
 package com.hp.triclops.entity;
 
 import javax.persistence.*;
-import java.io.File;
 import java.io.Serializable;
 
 /**
