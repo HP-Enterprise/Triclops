@@ -13,4 +13,6 @@ public interface OrganizationRepository extends CrudRepository<Organization, Lon
     Organization findById(int id);
 
     Set<Organization> findByTypeKey(int typekey);
+
+    Set<Organization> findByOrgName(String orgName);
 }
