@@ -179,10 +179,16 @@ public class Receiver extends Thread{
         if(scKey!=null){
             String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
             String receiveDataHexString=dataTool.bytes2hex(bytes);
+//            socketRedis.saveString(inputKey, receiveDataHexString, 300);
+//            socketRedis.updateString(inputKey, receiveDataHexString);
+//            System.out.println("Save data to Redis:"+inputKey);
+//            String aaa=socketRedis.getString(inputKey);
+
+
             socketRedis.saveString(inputKey, receiveDataHexString, 300);
-            socketRedis.updateString(inputKey, receiveDataHexString);
+
             System.out.println("Save data to Redis:"+inputKey);
-            String aaa=socketRedis.getString(inputKey);
+            String aaa=socketRedis.getOneString(inputKey);
             System.out.println(inputKey+" Read from Redis:"+ new String(dataTool.decodeHexToBytes(aaa.toCharArray())));
         }else{
             System.out.println("未找到scKey,数据包非法，不保存!");

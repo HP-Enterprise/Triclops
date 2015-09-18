@@ -2,10 +2,12 @@ package com.hp.triclops.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +25,8 @@ public class SocketRedis {
 
     ValueOperations<String,String> valOpts = null;
     ValueOperations<String,Object> valObjOpts = null;
+
+    SetOperations<String,String> setOpts = null;
 
     /**
      *设置对象存储默认序列化对象
@@ -45,10 +49,13 @@ public class SocketRedis {
      * @param sessionValue 值
      * @param expireSeconds 该键值的过期时间，单位秒
      */
+
     public void saveString(String sessionKey,String sessionValue,long ... expireSeconds){
-        this.valOpts = this.stringRedisTemplate.opsForValue();
+        this.setOpts = this.stringRedisTemplate.opsForSet();
         if(!this.stringRedisTemplate.hasKey(sessionKey)){
-            valOpts.set(sessionKey, sessionValue);
+            setOpts.add(sessionKey, sessionValue);
+            setOpts.add(sessionKey, "aaa" + new Date().getTime());
+            setOpts.add(sessionKey, "bbb"+new Date().getTime());
             if(expireSeconds.length != 0) {
                 this.stringRedisTemplate.expire(sessionKey, expireSeconds[0], TimeUnit.SECONDS);
             }
@@ -66,13 +73,13 @@ public class SocketRedis {
      * @param sessionId 键
      * @return 键对应的值
      */
-    public String getString(String sessionId){
-        this.valOpts = this.stringRedisTemplate.opsForValue();
+    public String getOneString(String sessionId){
+        this.setOpts = this.stringRedisTemplate.opsForSet();
         if(!this.stringRedisTemplate.hasKey(sessionId)){
             return "null";
         }
-        valOpts.get("",0,2);
-        return valOpts.get(sessionId);
+
+        return  setOpts.pop(sessionId);
 
     }
 

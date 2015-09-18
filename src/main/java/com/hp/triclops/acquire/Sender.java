@@ -53,7 +53,7 @@ public class Sender extends Thread{
     }
     public void SendMesage(String scKey,String k){
         try{
-            String msg=socketRedis.getString(k);
+            String msg=socketRedis.getOneString(k);
             System.out.println("send msg:"+msg);
             System.out.println("sckey>>"+scKey);
             SocketChannel sc=channels.get(scKey);
