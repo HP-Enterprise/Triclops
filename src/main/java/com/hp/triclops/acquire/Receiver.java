@@ -27,15 +27,18 @@ public class Receiver extends Thread{
 
 
     SocketRedis socketRedis;
+
+    DataTool dataTool;
     // 日志
     private Logger _logger;
 
     private Selector selector = null;
 
     private HashMap<String,SocketChannel> channels;
-    public Receiver(HashMap<String,SocketChannel> cs,SocketRedis s,int port){
+    public Receiver(HashMap<String,SocketChannel> cs,SocketRedis s,DataTool dt,int port){
         this.channels=cs;
         this.socketRedis=s;
+        this.dataTool=dt;
         this._acquirePort=port;
     }
 
@@ -82,13 +85,11 @@ public class Receiver extends Thread{
                     sc.configureBlocking(false);
                     // 将该SocketChannel也注册到selector
                     sc.register(selector, SelectionKey.OP_READ);
-                    System.out.println("新的连接来自:" + sc.socket().getRemoteSocketAddress());
-
-
+                 /*   System.out.println("新的连接来自:" + sc.socket().getRemoteSocketAddress());
                     String vin=String.valueOf(new Date().getTime());
-                    channels.put(vin, sc);
+                    channels.put(vin, sc);*/
                     //保存连接  校验连接是否合法，合法保留 否则断开
-                    System.out.println("连接" + vin + "成功保存到HashMap");
+                   //
 
                 }
                 // 如果sk对应的通道有数据需要读取
@@ -101,22 +102,38 @@ public class Receiver extends Thread{
                         while (sc.read(buff) > 0) {
                             buff.flip();
                             //将缓冲区的数据读出到byte[]
-                            byte[] receiveData=getBytesFromByteBuffer(buff);
-                            System.out.println("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" + new String(receiveData));
-                            if(!DataTool.checkByteArray(receiveData)) {
+                            byte[] receiveData=dataTool.getBytesFromByteBuffer(buff);
+                            String receiveDataHexString=dataTool.bytes2hex(receiveData);
+                            System.out.println("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" + receiveDataHexString);
+
+                            if(!dataTool.checkByteArray(receiveData)) {
                                 System.out.println(">>>>>bytes data is invalid,we will not save them");
                              }else{
-                                byte dataType=DataTool.getApplicationType(receiveData);
-                                System.out.println("标识位"+Integer.toHexString(dataType));
+                                byte dataType=dataTool.getApplicationType(receiveData);
                                 switch(dataType)
                                 {
                                     case 0x13:
-                                        System.out.println("注册");
-                                        sc.write(ByteBuffer.wrap("register success!".getBytes()));//回发数据
+                                        System.out.println("Register start...");
+                                        HashMap<String,String> vinAndSerialNum=dataTool.getVinDataFromRegBytes(receiveData);
+                                        String eventId=vinAndSerialNum.get("eventId");
+                                        String vin=vinAndSerialNum.get("vin");
+                                        String serialNum=vinAndSerialNum.get("serialNum");
+                                        boolean checkVinAndSerNum= dataTool.checkVinAndSerialNum(vin, serialNum);
                                         //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
+                                        ByteBuffer send=dataTool.getRegResultByteBuffer(receiveData, Integer.valueOf(eventId), checkVinAndSerNum);
+                                        //发往客户端的数据，根据验证结果+收到的数据生成
+                                        sc.write(send);
+                                        if(checkVinAndSerNum){
+                                            channels.put(vin, sc);
+                                            System.out.println("resister success,contection" + vin + "Save to HashMap");
+                                        }else{
+                                            System.out.println("resister faild,close contection");
+                                            sc.close();
+                                        }
+
                                         break;
                                     case 0x11:
-                                        System.out.println("电检");
+                                        System.out.println("电检流程");
                                         sc.write(ByteBuffer.wrap("test passed!".getBytes()));//回发数据直接回消息
                                         //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
                                         break;
@@ -155,23 +172,18 @@ public class Receiver extends Thread{
     }
 
 
-    public byte[] getBytesFromByteBuffer(ByteBuffer buff){
-        byte[] result = new byte[buff.remaining()];
-        if (buff.remaining() > 0) {
-            buff.get(result, 0, buff.remaining());
-        }
-        return result;
-    }
+
 
     public void saveBytesToRedis(String scKey,byte[] bytes){
-        if(DataTool.checkByteArray(bytes)){
+        if(dataTool.checkByteArray(bytes)){
         if(scKey!=null){
             String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
-            socketRedis.saveObject(inputKey, bytes, 300);
-            socketRedis.updateObject(inputKey, bytes);
+            String receiveDataHexString=dataTool.bytes2hex(bytes);
+            socketRedis.saveString(inputKey, receiveDataHexString, 300);
+            socketRedis.updateString(inputKey, receiveDataHexString);
             System.out.println("Save data to Redis:"+inputKey);
-            byte[] aaa=(byte[])socketRedis.getObject(inputKey);
-            System.out.println(inputKey+" Read from Redis:"+ new String(aaa));
+            String aaa=socketRedis.getString(inputKey);
+            System.out.println(inputKey+" Read from Redis:"+ new String(dataTool.decodeHexToBytes(aaa.toCharArray())));
         }else{
             System.out.println("未找到scKey,数据包非法，不保存!");
         }

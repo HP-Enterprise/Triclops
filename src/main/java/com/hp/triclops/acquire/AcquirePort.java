@@ -29,6 +29,8 @@ public class AcquirePort {
 
     @Autowired
     SocketRedis socketRedis;
+    @Autowired
+    DataTool dataTool;
     // 日志
     private Logger _logger;
 
@@ -38,8 +40,8 @@ public class AcquirePort {
     //用于保存连接的哈希表
     public   void main(){
         channels=new HashMap<String,SocketChannel>();
-        new Receiver(channels,socketRedis,_acquirePort).start();    //新建收数据线程，并启动
-        //new Sender(channels,socketRedis).start();    //新建发数据线程，并启动
+        new Receiver(channels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
+        new Sender(channels,socketRedis).start();    //新建发数据线程，并启动
     }
 
     public void init() throws IOException {
