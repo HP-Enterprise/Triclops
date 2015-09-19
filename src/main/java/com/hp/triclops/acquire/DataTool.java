@@ -43,7 +43,7 @@ public class DataTool {
          *  signum of the number (-1 for negative, 0 for zero, 1 for positive).
          */
         BigInteger bigInteger = new BigInteger(1, bytes);
-        return bigInteger.toString(16);
+        return getSpaceHex(bigInteger.toString(16));
     }
 
     public  byte[] decodeHexToBytes(char[] data) {
@@ -80,7 +80,15 @@ public class DataTool {
         return checkResult;
     }
 
+    public  String getSpaceHex(String str){
+        //将不带空格的16进制字符串加上空格
+        String re="";
+        String regex = "(.{2})";
+        re = str.replaceAll (regex, "$1 ");
+        return re;
+    }
     public  ByteBuffer getByteBuffer(String str){
+        //根据16进制字符串得到buffer
         ByteBuffer bb= ByteBuffer.allocate(1024);
         String[] command=str.split(" ");
         byte[] abc=new byte[command.length];
@@ -167,7 +175,7 @@ public class DataTool {
                 }
             }
         }
-        System.out.println("checkByteArray:"+result);
+        System.out.println("  >>checkByteArray result:"+result);
         return result;
     }
     public  boolean checkSum(byte[] bytes){
@@ -178,7 +186,7 @@ public class DataTool {
         for(int i=1;i<bytes.length-1;i++){
             sum^=bytes[i];
         }
-        System.out.println(">>checkSum:"+Integer.toHexString(sum)+"<>"+Integer.toHexString(bytes[bytes.length-1]));
+        System.out.print(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
         return bytes[bytes.length-1]==sum;
     }
 

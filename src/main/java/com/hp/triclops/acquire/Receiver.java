@@ -52,7 +52,6 @@ public class Receiver extends Thread{
         }
     }
 
-
     public void listen() throws IOException {
         this._logger = LoggerFactory.getLogger(AcquirePort.class);
         selector = Selector.open();
@@ -85,9 +84,7 @@ public class Receiver extends Thread{
                     sc.configureBlocking(false);
                     // 将该SocketChannel也注册到selector
                     sc.register(selector, SelectionKey.OP_READ);
-                 /*   System.out.println("新的连接来自:" + sc.socket().getRemoteSocketAddress());
-                    String vin=String.valueOf(new Date().getTime());
-                    channels.put(vin, sc);*/
+
                     //保存连接  校验连接是否合法，合法保留 否则断开
                    //
 
@@ -105,7 +102,6 @@ public class Receiver extends Thread{
                             byte[] receiveData=dataTool.getBytesFromByteBuffer(buff);
                             String receiveDataHexString=dataTool.bytes2hex(receiveData);
                             System.out.println("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" + receiveDataHexString);
-
                             if(!dataTool.checkByteArray(receiveData)) {
                                 System.out.println(">>>>>bytes data is invalid,we will not save them");
                              }else{
@@ -130,7 +126,6 @@ public class Receiver extends Thread{
                                             System.out.println("resister faild,close contection");
                                             sc.close();
                                         }
-
                                         break;
                                     case 0x11:
                                         System.out.println("电检流程");
@@ -144,7 +139,6 @@ public class Receiver extends Thread{
                                         break;
                                 }
                             }
-
                             /////////////////////////////////
                             if (buff.hasRemaining()) {
                                 buff.compact();
@@ -172,24 +166,14 @@ public class Receiver extends Thread{
     }
 
 
-
-
     public void saveBytesToRedis(String scKey,byte[] bytes){
+        //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
         if(dataTool.checkByteArray(bytes)){
         if(scKey!=null){
             String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
             String receiveDataHexString=dataTool.bytes2hex(bytes);
-//            socketRedis.saveString(inputKey, receiveDataHexString, 300);
-//            socketRedis.updateString(inputKey, receiveDataHexString);
-//            System.out.println("Save data to Redis:"+inputKey);
-//            String aaa=socketRedis.getString(inputKey);
-
-
-            socketRedis.saveString(inputKey, receiveDataHexString, 300);
-
+            socketRedis.saveString(inputKey, receiveDataHexString);
             System.out.println("Save data to Redis:"+inputKey);
-            String aaa=socketRedis.getOneString(inputKey);
-            System.out.println(inputKey+" Read from Redis:"+ new String(dataTool.decodeHexToBytes(aaa.toCharArray())));
         }else{
             System.out.println("未找到scKey,数据包非法，不保存!");
         }

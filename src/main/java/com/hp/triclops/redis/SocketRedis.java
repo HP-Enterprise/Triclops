@@ -44,7 +44,7 @@ public class SocketRedis {
     }
 
     /**
-     * 存储STRING类型数据
+     * 存储STRING类型数据 SET
      * @param sessionKey 键
      * @param sessionValue 值
      * @param expireSeconds 该键值的过期时间，单位秒
@@ -52,10 +52,7 @@ public class SocketRedis {
 
     public void saveString(String sessionKey,String sessionValue,long ... expireSeconds){
         this.setOpts = this.stringRedisTemplate.opsForSet();
-        if(!this.stringRedisTemplate.hasKey(sessionKey)){
-            setOpts.add(sessionKey, sessionValue);
-            setOpts.add(sessionKey, "aaa" + new Date().getTime());
-            setOpts.add(sessionKey, "bbb"+new Date().getTime());
+             setOpts.add(sessionKey, sessionValue);
             if(expireSeconds.length != 0) {
                 this.stringRedisTemplate.expire(sessionKey, expireSeconds[0], TimeUnit.SECONDS);
             }
@@ -64,8 +61,6 @@ public class SocketRedis {
             }
         }
 
-    }
-
 
 
     /**
@@ -73,28 +68,29 @@ public class SocketRedis {
      * @param sessionId 键
      * @return 键对应的值
      */
-    public String getOneString(String sessionId){
+    public String popOneString(String sessionId){
         this.setOpts = this.stringRedisTemplate.opsForSet();
         if(!this.stringRedisTemplate.hasKey(sessionId)){
             return "null";
         }
-
         return  setOpts.pop(sessionId);
 
     }
 
+
     /**
-     * 更新已存在的键所对应的值
-     * @param sessionKey 键
-     * @param sessionValue 更新的值
+     * 指定key的全部value
+     * @param key 匹配字符
+     * @return key列表
      */
-    public void updateString(String sessionKey,String sessionValue){
-
-        long expireSeconds = this.stringRedisTemplate.getExpire(sessionKey);
-        this.delString(sessionKey);
-        this.saveString(sessionKey,sessionValue,expireSeconds);
-
+    public Set<String> getSmembers(String key){
+        this.setRedisTemplatePro();
+        this.setOpts = this.stringRedisTemplate.opsForSet();
+        Set<String> setKey = setOpts.members(key);
+        return setKey;
     }
+
+
 
     /**
      * 删除指定键值
@@ -117,8 +113,7 @@ public class SocketRedis {
      * @param key 匹配字符
      * @return key列表
      */
-    public Set<String> getKeySet(String key){
-
+    public Set<String> getKeysSet(String key){
         this.setRedisTemplatePro();
         this.valObjOpts = this.objectRedisTemplate.opsForValue();
         Set<String> setKey = this.objectRedisTemplate.keys(key);
