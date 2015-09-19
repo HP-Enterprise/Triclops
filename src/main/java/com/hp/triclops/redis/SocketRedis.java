@@ -97,7 +97,7 @@ public class SocketRedis {
      * @param sessionKey 键
      * @return 是否成功，true，成功；false，失败
      */
-    public boolean delString(String sessionKey){
+    public boolean del1String(String sessionKey){
         boolean ret = true;
         if(this.stringRedisTemplate.hasKey(sessionKey)){
             this.stringRedisTemplate.delete(sessionKey);
@@ -115,7 +115,6 @@ public class SocketRedis {
      */
     public Set<String> getKeysSet(String key){
         this.setRedisTemplatePro();
-        this.valObjOpts = this.objectRedisTemplate.opsForValue();
         Set<String> setKey = this.objectRedisTemplate.keys(key);
         return setKey;
     }

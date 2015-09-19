@@ -132,8 +132,13 @@ public class Receiver extends Thread{
                                         sc.write(ByteBuffer.wrap("test passed!".getBytes()));//回发数据直接回消息
                                         //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
                                         break;
+                                    case 0x26:
+                                        System.out.println("心跳请求");
+                                        sc.write(ByteBuffer.wrap("test passed!".getBytes()));//回发数据直接回消息
+                                        //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
+                                        break;
                                     default:
-                                        System.out.println(">>其他操作,保存数据至redis");
+                                        System.out.println(">>other request dave,data to redis");
                                         saveBytesToRedis(getKeyByValue(sc), receiveData);
                                         //一般数据，判断是否已注册，注册的数据保存
                                         break;

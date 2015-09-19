@@ -36,7 +36,7 @@ public class Sender extends Thread{
 
                 while (true){
                     try{
-                        Thread.sleep(2000);
+                        Thread.sleep(100);
                     }catch (InterruptedException e){e.printStackTrace(); }
                     System.out.println("connection count>>:"+channels.keySet().size());
                     //读取数据库中所有的命令集合
@@ -59,10 +59,10 @@ public class Sender extends Thread{
                 System.out.println("sckey>>"+scKey);
                 SocketChannel sc=channels.get(scKey);
                 if(sc!=null){
+                    System.out.println("before send>>>>>>>>>>"+sc.isConnected());
                     System.out.println(sc.toString());
                     sc.write(dataTool.getByteBuffer(msg));
-                    socketRedis.delString(k);
-                }else{
+                  }else{
                     System.out.println("Connection is Dead");
                     socketRedis.saveString(k, msg);
                 }

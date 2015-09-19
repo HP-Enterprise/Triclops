@@ -42,6 +42,7 @@ public class AcquirePort {
         channels=new HashMap<String,SocketChannel>();
         new Receiver(channels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
         new Sender(channels,socketRedis,dataTool).start();    //新建发数据线程，并启动
+        new Sender(channels,socketRedis,dataTool).start();    //新建发数据线程，并启动
 
     }
     public void init() throws IOException {
