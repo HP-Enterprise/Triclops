@@ -2,6 +2,8 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.redis.SocketRedis;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
@@ -16,19 +18,18 @@ import java.util.Set;
 public class Sender extends Thread{
 
 
-    SocketRedis socketRedis;
+    private SocketRedis socketRedis;
     // 日志
     private Logger _logger;
 
-    private Selector selector = null;
-
-    DataTool dataTool;
+    private DataTool dataTool;
 
     private HashMap<String,SocketChannel> channels;
     public Sender(HashMap<String,SocketChannel> cs,SocketRedis s,DataTool dt){
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
+        this._logger = LoggerFactory.getLogger(Sender.class);
     }
 
     public synchronized void run()
@@ -36,12 +37,12 @@ public class Sender extends Thread{
 
                 while (true){
                     try{
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
                     }catch (InterruptedException e){e.printStackTrace(); }
-                    System.out.println("connection count>>:"+channels.keySet().size());
+                    _logger.info("connection count>>:" + channels.keySet().size());
                     //读取数据库中所有的命令集合
                     Set<String> setKey = socketRedis.getKeysSet("output:*");
-                    if(setKey.size()>0){ System.out.println("size:"+setKey.size()); }
+                    if(setKey.size()>0){   _logger.info("size:" + setKey.size()); }
                     Iterator keys = setKey.iterator();
                     while (keys.hasNext()){
                         //遍历待发数据,处理
@@ -55,26 +56,18 @@ public class Sender extends Thread{
         //将output:{vin}对应的十六进制字符串发送给客户端
         try{
                 String msg =socketRedis.popOneString(k);
-                System.out.println("send msg:"+msg);
-                System.out.println("sckey>>"+scKey);
+                _logger.info("sckey>>" + scKey + "|send msg:" + msg);
                 SocketChannel sc=channels.get(scKey);
                 if(sc!=null){
-                    System.out.println("before send>>>>>>>>>>"+sc.isConnected());
-                    System.out.println(sc.toString());
+                    //此处存在一个逻辑问题，对于已经确定知道客户端当前没有连接的消息如何处理，是依旧取出发送失败还是保留在redis中
                     sc.write(dataTool.getByteBuffer(msg));
                   }else{
-                    System.out.println("Connection is Dead");
+                    _logger.info("Connection is Dead");
                     socketRedis.saveString(k, msg);
                 }
 
           }catch (IOException e){
-            System.out.println(e.toString());
+            _logger.info(e.toString());
         }
     }
 }
-
-
-//Set<String> all=socketRedis.getSmembers("nameAAA");
-//Iterator ir=all.iterator();
-//while (ir.hasNext())
-//        System.out.println(ir.next());

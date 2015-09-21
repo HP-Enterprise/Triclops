@@ -22,7 +22,7 @@ import java.util.Set;
  * Created by luj on 2015/9/15.
  */
 public class Receiver extends Thread{
-
+//本类代码目前已被重新整理为多线程处理，目前废弃，代码暂时保留。将在后续提交中删除
     private int _acquirePort;
 
 
@@ -40,15 +40,16 @@ public class Receiver extends Thread{
         this.socketRedis=s;
         this.dataTool=dt;
         this._acquirePort=port;
+        this._logger = LoggerFactory.getLogger(Receiver.class);
     }
 
     public synchronized void run()
     {
         try{
-            System.out.println("start listen...");
+            _logger.info("start listen...");
             listen();
         }catch (Exception e){
-            System.out.println(e.toString());
+            _logger.info(e.toString());
         }
     }
 
@@ -101,15 +102,15 @@ public class Receiver extends Thread{
                             //将缓冲区的数据读出到byte[]
                             byte[] receiveData=dataTool.getBytesFromByteBuffer(buff);
                             String receiveDataHexString=dataTool.bytes2hex(receiveData);
-                            System.out.println("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" + receiveDataHexString);
+                            _logger.info("Receive date from " + sc.socket().getRemoteSocketAddress() + ">>>:" + receiveDataHexString);
                             if(!dataTool.checkByteArray(receiveData)) {
-                                System.out.println(">>>>>bytes data is invalid,we will not save them");
+                                _logger.info(">>>>>bytes data is invalid,we will not save them");
                              }else{
                                 byte dataType=dataTool.getApplicationType(receiveData);
                                 switch(dataType)
                                 {
                                     case 0x13:
-                                        System.out.println("Register start...");
+                                        _logger.info("Register start...");
                                         HashMap<String,String> vinAndSerialNum=dataTool.getVinDataFromRegBytes(receiveData);
                                         String eventId=vinAndSerialNum.get("eventId");
                                         String vin=vinAndSerialNum.get("vin");
@@ -121,24 +122,24 @@ public class Receiver extends Thread{
                                         sc.write(send);
                                         if(checkVinAndSerNum){
                                             channels.put(vin, sc);
-                                            System.out.println("resister success,contection" + vin + "Save to HashMap");
+                                            _logger.info("resister success,contection" + vin + "Save to HashMap");
                                         }else{
-                                            System.out.println("resister faild,close contection");
+                                            _logger.info("resister faild,close contection");
                                             sc.close();
                                         }
                                         break;
                                     case 0x11:
-                                        System.out.println("电检流程");
+                                        _logger.info("check check");
                                         sc.write(ByteBuffer.wrap("test passed!".getBytes()));//回发数据直接回消息
                                         //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
                                         break;
                                     case 0x26:
-                                        System.out.println("心跳请求");
+                                        _logger.info("心跳请求");
                                         sc.write(ByteBuffer.wrap("test passed!".getBytes()));//回发数据直接回消息
                                         //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
                                         break;
                                     default:
-                                        System.out.println(">>other request dave,data to redis");
+                                        _logger.info(">>other request dave,data to redis");
                                         saveBytesToRedis(getKeyByValue(sc), receiveData);
                                         //一般数据，判断是否已注册，注册的数据保存
                                         break;
@@ -158,7 +159,7 @@ public class Receiver extends Thread{
                     catch (IOException ex) {
                         // 从Selector中删除指定的SelectionKey
                         String scKey=getKeyByValue(((SocketChannel) sk.channel()));
-                        System.out.println("连接断开:"+scKey);
+                        _logger.info("连接断开:" + scKey);
                         channels.remove(scKey);
                         sk.cancel();
                         if (sk.channel() != null) {
@@ -178,9 +179,9 @@ public class Receiver extends Thread{
             String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
             String receiveDataHexString=dataTool.bytes2hex(bytes);
             socketRedis.saveString(inputKey, receiveDataHexString);
-            System.out.println("Save data to Redis:"+inputKey);
+            _logger.info("Save data to Redis:" + inputKey);
         }else{
-            System.out.println("未找到scKey,数据包非法，不保存!");
+            _logger.info("未找到scKey,数据包非法，不保存!");
         }
         }
     }

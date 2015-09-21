@@ -72,12 +72,13 @@ public class DataTool {
     }
     public  boolean checkVinAndSerialNum(String vin,String serialNum){
         //调用平台接口,校验vin和SerialNumber
-        boolean checkResult=false;
+        return true;
+     /*   boolean checkResult=false;
         Vehicle v=vehicleRepository.findByVinAndTbox(vin, serialNum);
         if(v!=null){
             checkResult=true;
         }
-        return checkResult;
+        return checkResult;*/
     }
 
     public  String getSpaceHex(String str){
@@ -156,9 +157,6 @@ public class DataTool {
         re.put("eventId",String.valueOf(eventId));
         re.put("vin",vin);
         re.put("serialNum",serialNum);
-        System.out.println("eventId>>:" + eventId + "|");
-        System.out.println("serialNum>>:" + serialNum + "|");
-        System.out.println("vin>>:"+vin+"|");
         return re;
     }
 
@@ -175,7 +173,6 @@ public class DataTool {
                 }
             }
         }
-        System.out.println("  >>checkByteArray result:"+result);
         return result;
     }
     public  boolean checkSum(byte[] bytes){

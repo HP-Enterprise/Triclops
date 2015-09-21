@@ -32,6 +32,7 @@ public class AcquirePort {
     @Autowired
     DataTool dataTool;
     // 日志
+
     private Logger _logger;
 
     private Selector selector = null;
@@ -40,10 +41,8 @@ public class AcquirePort {
     //用于保存连接的哈希表
     public   void main(){
         channels=new HashMap<String,SocketChannel>();
-        new Receiver(channels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
+        new Server(channels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
         new Sender(channels,socketRedis,dataTool).start();    //新建发数据线程，并启动
-        new Sender(channels,socketRedis,dataTool).start();    //新建发数据线程，并启动
-
     }
     public void init() throws IOException {
         this._logger = LoggerFactory.getLogger(AcquirePort.class);
