@@ -237,5 +237,4 @@ public class VehicleRepositoryDAO {
         Long count= (long) queryCount.getResultList().size();
         return new Page(currentPage,pageSize,count,items);
     }
-
 }
