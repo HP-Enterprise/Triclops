@@ -2,6 +2,7 @@ package com.hp.triclops.acquire;
 
 
 import com.hp.triclops.Application;
+import com.hp.triclops.redis.SocketRedis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
@@ -9,10 +10,10 @@ import org.springframework.stereotype.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 数据接收端口.<br>
@@ -26,11 +27,23 @@ public class AcquirePort {
     @Value("${com.hp.acquire.port}")
     private int _acquirePort;
 
+    @Autowired
+    SocketRedis socketRedis;
+    @Autowired
+    DataTool dataTool;
     // 日志
+
     private Logger _logger;
 
     private Selector selector = null;
 
+    private HashMap<String,SocketChannel> channels;
+    //用于保存连接的哈希表
+    public   void main(){
+        channels=new HashMap<String,SocketChannel>();
+        new Server(channels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
+        new Sender(channels,socketRedis,dataTool).start();    //新建发数据线程，并启动
+    }
     public void init() throws IOException {
         this._logger = LoggerFactory.getLogger(AcquirePort.class);
         selector = Selector.open();
@@ -95,5 +108,6 @@ public class AcquirePort {
             }
         }
     }
+
 
 }
