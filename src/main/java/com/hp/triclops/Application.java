@@ -33,7 +33,7 @@ public class Application implements CommandLineRunner {
         if(_disabled){
             return;
         }else{
-           this._acquirePort.init();
+             this._acquirePort.main();
         }
     }
 }

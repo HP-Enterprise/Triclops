@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS t_sysdict
   KEY idex_type (type)
 ) DEFAULT CHARSET=utf8 COMMENT='字典表';
 
-INSERT INTO  t_sysdict(type, dictname) VALUES (1,"华晨汽车");
-INSERT INTO  t_sysdict(type, dictname) VALUES (1,"经销商");
-INSERT INTO  t_sysdict(type, dictname) VALUES (1,"车友群");
+INSERT INTO t_sysdict(type, dictname) VALUES (1, "华晨汽车");
+INSERT INTO t_sysdict(type, dictname) VALUES (1, "经销商");
+INSERT INTO t_sysdict(type, dictname) VALUES (1, "车友群");
