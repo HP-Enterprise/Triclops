@@ -1,6 +1,7 @@
 package com.hp.triclops.acquire;
 
 import com.hp.triclops.entity.Vehicle;
+import io.netty.buffer.ByteBuf;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigInteger;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.Date;
 import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.stereotype.Component;
-
+import static io.netty.buffer.Unpooled.*;
 /**
  * Created by luj on 2015/9/17.
  */
@@ -36,49 +37,30 @@ public class DataTool {
     }
 
 
-    public  String bytes2hex(byte[] bytes)
-    {
-        /**
-         * 第一个参数的解释，记得一定要设置为1
-         *  signum of the number (-1 for negative, 0 for zero, 1 for positive).
-         */
-        BigInteger bigInteger = new BigInteger(1, bytes);
-        return getSpaceHex(bigInteger.toString(16));
+    public  String bytes2hex(byte[] bArray) {
+        //字节数据转16进制字符串
+        StringBuffer sb = new StringBuffer(bArray.length);
+        String sTemp;
+        for (int i = 0; i < bArray.length; i++) {
+            sTemp = Integer.toHexString(0xFF & bArray[i]);
+            if (sTemp.length() < 2)
+                sb.append(0);
+            sb.append(sTemp.toUpperCase());
+        }
+        return getSpaceHex(sb.toString());
     }
 
-    public  byte[] decodeHexToBytes(char[] data) {
-        int len = data.length;
-        if ((len & 0x01) != 0) {
-            throw new RuntimeException("Odd number of characters.");
-        }
-        byte[] out = new byte[len >> 1];
-        // two characters form the hex value.
-        for (int i = 0, j = 0; j < len; i++) {
-            int f = toDigit(data[j], j) << 4;
-            j++;
-            f = f | toDigit(data[j], j);
-            j++;
-            out[i] = (byte) (f & 0xFF);
-        }
-        return out;
-    }
-    protected  int toDigit(char ch, int index) {
-        int digit = Character.digit(ch, 16);
-        if (digit == -1) {
-            throw new RuntimeException("Illegal hexadecimal character " + ch
-                    + " at index " + index);
-        }
-        return digit;
-    }
+
+
     public  boolean checkVinAndSerialNum(String vin,String serialNum){
-        //调用平台接口,校验vin和SerialNumber
-        return true;
-     /*   boolean checkResult=false;
+        //调用平台db接口,校验vin和SerialNumber 性能测试时改为始终返回true
+       // return true;
+        boolean checkResult=false;
         Vehicle v=vehicleRepository.findByVinAndTbox(vin, serialNum);
         if(v!=null){
             checkResult=true;
         }
-        return checkResult;*/
+        return checkResult;
     }
 
     public  String getSpaceHex(String str){
@@ -99,6 +81,17 @@ public class DataTool {
         bb.put(abc);
         bb.flip();
         return bb;
+    }
+    public  ByteBuf getByteBuf(String str){
+        //根据16进制字符串得到ByteBuf对象(netty)
+          ByteBuf bb=buffer(1024);
+          String[] command=str.split(" ");
+          byte[] abc=new byte[command.length];
+          for(int i=0;i<command.length;i++){
+            abc[i]=Integer.valueOf(command[i],16).byteValue();
+          }
+          bb.writeBytes(abc);
+          return bb;
     }
 
     public  ByteBuffer getRegResultByteBuffer(byte[] data,int eventId,boolean check){
@@ -127,12 +120,44 @@ public class DataTool {
         re.flip();
         return re;
     }
+    public  ByteBuf getRegResultByteBuf(byte[] data,int eventId,boolean check){
+        String byteString="23 23 00 0B 01 ";//包头和size
+        //根据注册校验结果，形成返回数据包
+        ByteBuf bb= buffer(1024);
+        String[] command=byteString.split(" ");
+        byte[] abc=new byte[command.length];
+        for(int i=0;i<command.length;i++){
+            abc[i]=Integer.valueOf(command[i],16).byteValue();
+        }
+        bb.writeBytes(abc);
+        int currentSeconds=Integer.valueOf(String.valueOf(new Date().getTime() / 1000));
+        bb.writeInt(currentSeconds);
+        bb.writeByte(Integer.valueOf("13", 16).byteValue());
+        bb.writeByte(Integer.valueOf("02", 16).byteValue());
+        bb.writeInt(eventId);
+        int checkInt = check ? 1 : 0;
+        bb.writeByte((byte) checkInt);
+        //校验码
+
+        byte[] bodyData=getBytesFromByteBuf(bb);//不包含checkSum的字节数组
+        ByteBuf re = buffer(1024);
+        re.writeBytes(bodyData);
+        re.writeByte(getCheckSum(bodyData));
+        return re;
+    }
 
     public  byte[] getBytesFromByteBuffer(ByteBuffer buff){
         byte[] result = new byte[buff.remaining()];
         if (buff.remaining() > 0) {
             buff.get(result, 0, buff.remaining());
         }
+        return result;
+    }
+
+    public  static byte[] getBytesFromByteBuf(ByteBuf buf){
+        //基于netty
+        byte[] result = new byte[buf.readableBytes()];
+        buf.readBytes(result, 0, buf.readableBytes());
         return result;
     }
     public   HashMap<String,String> getVinDataFromRegBytes(byte[] data)
