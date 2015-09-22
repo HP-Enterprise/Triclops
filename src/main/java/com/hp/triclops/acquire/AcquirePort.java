@@ -1,7 +1,6 @@
 package com.hp.triclops.acquire;
 
 
-import com.hp.triclops.Application;
 import com.hp.triclops.redis.SocketRedis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
@@ -37,12 +35,17 @@ public class AcquirePort {
 
     private Selector selector = null;
 
-    private HashMap<String,SocketChannel> channels;
+    private HashMap<String,SocketChannel> socketChannels;
+    private HashMap<String,io.netty.channel.Channel> channels;
     //用于保存连接的哈希表
     public   void main(){
-        channels=new HashMap<String,SocketChannel>();
-        new Server(channels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
-        new Sender(channels,socketRedis,dataTool).start();    //新建发数据线程，并启动
+        socketChannels=new HashMap<String,SocketChannel>();
+        channels=new HashMap<String,io.netty.channel.Channel>();
+        new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
+        new NettyServer(channels,socketRedis,dataTool,_acquirePort).run();    //netty收数据程序
+        //目前有两套实现 分别基于nio和netty
+        //new Server(socketChannels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
+        //new Sender(socketChannels,socketRedis,dataTool).start();    //新建发数据线程，并启动
     }
     public void init() throws IOException {
         this._logger = LoggerFactory.getLogger(AcquirePort.class);

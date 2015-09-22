@@ -27,7 +27,7 @@ public class Server  extends Thread{
     private int _acquirePort;
     private SocketRedis socketRedis;
     private DataTool dataTool;
-    private HashMap<String,SocketChannel> channels;
+    private HashMap<String,SocketChannel> socketChannels;
     private ExecutorService pool;
     private ServerSocketChannel ssc;
     private Selector selector;
@@ -39,7 +39,7 @@ public class Server  extends Thread{
 
 
     public Server(HashMap<String,SocketChannel> cs,SocketRedis s,DataTool dt,int port){
-        this.channels=cs;
+        this.socketChannels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
         this._acquirePort=port;
@@ -156,7 +156,7 @@ public class Server  extends Thread{
                                 //发往客户端的数据，根据验证结果+收到的数据生成
                                 sc.write(send);
                                 if(checkVinAndSerNum){
-                                    channels.put(vin, sc);
+                                    socketChannels.put(vin, sc);
                                     _logger.info("resister success,contection" + vin + "Save to HashMap");
                                 }else{
                                     _logger.info("resister faild,close contection");
@@ -191,7 +191,7 @@ public class Server  extends Thread{
                 if(len==-1){
                     String scKey=getKeyByValue(sc);
                     _logger.info("client Disconnect..." + scKey);
-                    channels.remove(scKey);
+                    socketChannels.remove(scKey);
                     sc.close();
                 }
                 //没有可用字节,继续监听OP_READ
@@ -224,11 +224,11 @@ public class Server  extends Thread{
     //根据SocketChannel得到对应的sc在HashMap中的key,为{vin}
     public  String getKeyByValue(SocketChannel sc)
     {
-        Iterator<String> it= channels.keySet().iterator();
+        Iterator<String> it= socketChannels.keySet().iterator();
         while(it.hasNext())
         {
             String keyString=it.next();
-            if(channels.get(keyString).equals(sc))
+            if(socketChannels.get(keyString).equals(sc))
                 return keyString;
         }
         return null;

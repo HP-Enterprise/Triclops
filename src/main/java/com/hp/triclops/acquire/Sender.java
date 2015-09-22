@@ -24,9 +24,9 @@ public class Sender extends Thread{
 
     private DataTool dataTool;
 
-    private HashMap<String,SocketChannel> channels;
+    private HashMap<String,SocketChannel> socketChannels;
     public Sender(HashMap<String,SocketChannel> cs,SocketRedis s,DataTool dt){
-        this.channels=cs;
+        this.socketChannels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
         this._logger = LoggerFactory.getLogger(Sender.class);
@@ -39,7 +39,7 @@ public class Sender extends Thread{
                     try{
                         Thread.sleep(1000);
                     }catch (InterruptedException e){e.printStackTrace(); }
-                    _logger.info("connection count>>:" + channels.keySet().size());
+                    _logger.info("connection count>>:" + socketChannels.keySet().size());
                     //读取数据库中所有的命令集合
                     Set<String> setKey = socketRedis.getKeysSet("output:*");
                     if(setKey.size()>0){   _logger.info("size:" + setKey.size()); }
@@ -57,7 +57,7 @@ public class Sender extends Thread{
         try{
                 String msg =socketRedis.popOneString(k);
                 _logger.info("sckey>>" + scKey + "|send msg:" + msg);
-                SocketChannel sc=channels.get(scKey);
+                SocketChannel sc=socketChannels.get(scKey);
                 if(sc!=null){
                     //此处存在一个逻辑问题，对于已经确定知道客户端当前没有连接的消息如何处理，是依旧取出发送失败还是保留在redis中
                     sc.write(dataTool.getByteBuffer(msg));
