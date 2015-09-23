@@ -208,7 +208,7 @@ public class DataTool {
         for(int i=1;i<bytes.length-1;i++){
             sum^=bytes[i];
         }
-        System.out.print(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
+        System.out.println(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
         return bytes[bytes.length-1]==sum;
     }
 

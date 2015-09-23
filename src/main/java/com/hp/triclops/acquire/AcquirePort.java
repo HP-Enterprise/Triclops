@@ -1,6 +1,7 @@
 package com.hp.triclops.acquire;
 
 
+import com.hp.data.core.Conversion;
 import com.hp.triclops.redis.SocketRedis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ public class AcquirePort {
     @Autowired
     DataTool dataTool;
     // 日志
+    @Autowired
+    Saver saver;
 
     private Logger _logger;
 
@@ -41,7 +44,8 @@ public class AcquirePort {
     public   void main(){
         socketChannels=new HashMap<String,SocketChannel>();
         channels=new HashMap<String,io.netty.channel.Channel>();
-       // new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
+        //saver.print();
+        new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
         new NettyServer(channels,socketRedis,dataTool,_acquirePort).run();    //netty收数据程序
         //目前有两套实现 分别基于nio和netty
         //new Server(socketChannels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
