@@ -33,7 +33,7 @@ public class NettyServer {
         this.port = port;
         this._logger = LoggerFactory.getLogger(NettyServer.class);
     }
-
+    static int connectionCount=0;
     public void run()  {
         try{
 
@@ -47,6 +47,9 @@ public class NettyServer {
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool));
+                                connectionCount++;
+                                _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
+
                             }
                         })
                         .option(ChannelOption.SO_BACKLOG, 128)          // (5)
