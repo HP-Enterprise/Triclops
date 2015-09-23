@@ -1,6 +1,9 @@
 package com.hp.triclops;
 
 import com.hp.triclops.redis.Verifier;
+import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +13,8 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Random;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @ComponentScan(basePackages = { "org.springframework.data.redis.core","org.springframework.data.redis.serializer" })
@@ -17,8 +22,11 @@ public class VerifierTest {
     @Autowired
     private Verifier verifier;
 
+    private Logger _logger;
+
     @Before
     public void setUp() {
+        this._logger = LoggerFactory.getLogger(VerifierTest.class);
     }
 
     @After
@@ -27,19 +35,13 @@ public class VerifierTest {
 
     @Test
     public void testRedis() {
-        System.out.println(verifier.hashCode());
-        String code=verifier.generateCode("aaaaa",60);
-        System.out.println("生成验证码"+code);
+        Random rand = new Random();
+        String target = "unitTest-" + String.valueOf(rand.nextInt());
+        String code = verifier.generateCode(target, 60);
+        this._logger.info("生成验证码{} -> {}", target, code);
 
-        System.out.println("校验验证码"+verifier.verifyCode("aaaaa","123456"));
-        System.out.println("校验验证码"+verifier.verifyCode("aaaaa",code));
-
-        int car= verifier.verifyCode("123",code);
-        int car1= verifier.verifyCode("aaaaa","123457");
-        int car2= verifier.verifyCode("aaaaa",code);
-        System.out.println(car);
-        System.out.println(car1);
-        System.out.println(car2);
+        Assert.assertTrue(verifier.verifyCode(target, "123456") == 1);
+        Assert.assertTrue(verifier.verifyCode(target, code) == 0);
     }
     
 }

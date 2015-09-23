@@ -84,7 +84,6 @@ public class UserRepositoryDAO<T>  {
 
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
-        System.out.println("jpql:"+jpql);
         TypedQuery query = em.createQuery(jpql, User.class);
         TypedQuery queryCount = em.createQuery(jpql_count, User.class);
 
