@@ -50,16 +50,13 @@ public class SocketRedis {
      * @param expireSeconds 该键值的过期时间，单位秒
      */
 
-    public void saveString(String sessionKey,String sessionValue,long ... expireSeconds){
-        this.setOpts = this.stringRedisTemplate.opsForSet();
+    public void saveString(String sessionKey,String sessionValue,long expireSeconds){
+            this.setOpts = this.stringRedisTemplate.opsForSet();
              setOpts.add(sessionKey, sessionValue);
-            if(expireSeconds.length != 0) {
-                this.stringRedisTemplate.expire(sessionKey, expireSeconds[0], TimeUnit.SECONDS);
-            }
-            else {
-                this.stringRedisTemplate.expire(sessionKey, this.defaultExpireSeconds(24), TimeUnit.SECONDS);
-            }
+        if(expireSeconds>0) {//不设置即为-1永不过期
+            this.stringRedisTemplate.expire(sessionKey, expireSeconds, TimeUnit.SECONDS);
         }
+    }
 
 
 

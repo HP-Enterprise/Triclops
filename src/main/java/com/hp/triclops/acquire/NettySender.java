@@ -56,7 +56,7 @@ public class NettySender extends Thread{
             ch.writeAndFlush(dataTool.getByteBuf(msg));
         }else{
             _logger.info("Connection is Dead");
-            socketRedis.saveString(k, msg);
+            socketRedis.saveString(k, msg,-1);
         }
     }
 }

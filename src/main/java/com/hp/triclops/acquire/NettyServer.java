@@ -48,8 +48,7 @@ public class NettyServer {
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool));
                                 connectionCount++;
-                                _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
-
+                               // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }
                         })
                         .option(ChannelOption.SO_BACKLOG, 128)          // (5)

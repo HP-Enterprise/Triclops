@@ -85,6 +85,7 @@ public class DataTool {
     public  ByteBuf getByteBuf(String str){
         //根据16进制字符串得到ByteBuf对象(netty)
           ByteBuf bb=buffer(1024);
+
           String[] command=str.split(" ");
           byte[] abc=new byte[command.length];
           for(int i=0;i<command.length;i++){

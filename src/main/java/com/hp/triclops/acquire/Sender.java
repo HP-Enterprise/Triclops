@@ -63,7 +63,7 @@ public class Sender extends Thread{
                     sc.write(dataTool.getByteBuffer(msg));
                   }else{
                     _logger.info("Connection is Dead");
-                    socketRedis.saveString(k, msg);
+                    socketRedis.saveString(k, msg,-1);
                 }
 
           }catch (IOException e){

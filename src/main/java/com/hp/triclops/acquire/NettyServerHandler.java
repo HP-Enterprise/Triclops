@@ -69,13 +69,18 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     break;
                 case 0x11:
                     _logger.info("check check!");
-                    ch.write(ByteBuffer.wrap("test passed!".getBytes()));//回发数据直接回消息
+                    ch.write(dataTool.getByteBuf("test passed!"));//回发数据直接回消息
                     //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
                     break;
                 case 0x26:
                     _logger.info("Heartbeat request");
-                    ch.write(ByteBuffer.wrap("receive your Heartbeat!".getBytes()));//回发数据直接回消息
-                    //不记录连接，只能通过请求-应答方式回消息，无法通过redis主动发消息
+                    String chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("conntection is not registered,no response");
+                    }else{
+                        System.out.println(dataTool.bytes2hex("we receive your Heartbeat!".getBytes()));
+                        ch.writeAndFlush(dataTool.getByteBuf(dataTool.bytes2hex("we receive your Heartbeat!".getBytes())));//回发数据直接回消息
+                    }
                     break;
                 default:
                     _logger.info(">>other request dave,data to redis");
@@ -113,7 +118,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
             if(scKey!=null){
                 String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
-                socketRedis.saveString(inputKey, receiveDataHexString);
+                socketRedis.saveString(inputKey, receiveDataHexString,-1);
                 _logger.info("Save data to Redis:" + inputKey);
             }else{
                 _logger.info("can not find the scKey,data is invalid，do not save!");
