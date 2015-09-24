@@ -51,7 +51,11 @@ public class DataTool {
     }
 
 
-
+    public int getCurrentSeconds(){
+        //返回当前时间的秒数
+        int currentSeconds=Integer.valueOf(String.valueOf(new Date().getTime()/1000));
+        return currentSeconds;
+    }
     public  boolean checkVinAndSerialNum(String vin,String serialNum){
         //调用平台db接口,校验vin和SerialNumber 性能测试时改为始终返回true
        // return true;

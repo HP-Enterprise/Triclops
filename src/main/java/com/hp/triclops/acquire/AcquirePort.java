@@ -30,9 +30,10 @@ public class AcquirePort {
     SocketRedis socketRedis;
     @Autowired
     DataTool dataTool;
-    // 日志
     @Autowired
     Saver saver;
+    @Autowired
+    RequestHandler requestHandler;
 
     private Logger _logger;
 
@@ -44,9 +45,10 @@ public class AcquirePort {
     public   void main(){
         socketChannels=new HashMap<String,SocketChannel>();
         channels=new HashMap<String,io.netty.channel.Channel>();
-        //saver.print();
+        String saatr=saver.buildStr();
+        saver.print(saatr);
         //new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
-        new NettyServer(channels,socketRedis,dataTool,_acquirePort).run();    //netty收数据程序
+        new NettyServer(channels,socketRedis,dataTool,requestHandler,_acquirePort).run();    //netty收数据程序
         //目前有两套实现 分别基于nio和netty
         //new Server(socketChannels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
         //new Sender(socketChannels,socketRedis,dataTool).start();    //新建发数据线程，并启动
