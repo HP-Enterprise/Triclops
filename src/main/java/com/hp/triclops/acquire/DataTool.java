@@ -27,7 +27,6 @@ public class DataTool {
      public  byte getApplicationType(byte[] bytes){
         //返回数据包操作类型对应的byte
         byte data=0;
-        boolean result=false;
         if(bytes!=null){
             if(bytes.length>9) {
                 data=bytes[9];

@@ -58,28 +58,24 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     _logger.info("Diag start...");
                     chKey=getKeyByValue(ch);
                     if(chKey==null){
-                        _logger.info("conntection is not registered,no response");
+                        _logger.info("Connection is not registered,no response");
                         return;
                     }
                     respStr=requestHandler.getDiagResp(receiveDataHexString);
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
-
                     break;
 
                 case 0x12://激活
                     _logger.info("Active start...");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("conntection is not registered,no response");
-                        return;
+                    respStr=requestHandler.getActiveHandle(receiveDataHexString);
+                    if(respStr!=null){
+                        //如果是激活请求，会有messageId=2的响应，如果是激活结果 没有响应
+                        buf=dataTool.getByteBuf(respStr);
+                        ch.writeAndFlush(buf);//回发数据直接回消息
                     }
-                    respStr=requestHandler.getDiagResp(receiveDataHexString);
-                    buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//回发数据直接回消息
 
                     break;
-
                 case 0x13://注册
                     _logger.info("Register start...");
                     HashMap<String,String> vinAndSerialNum=dataTool.getVinDataFromRegBytes(receiveData);
@@ -87,18 +83,16 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     String vin=vinAndSerialNum.get("vin");
                     String serialNum=vinAndSerialNum.get("serialNum");
                     boolean checkVinAndSerNum= dataTool.checkVinAndSerialNum(vin, serialNum);
-                    //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
-                    //ByteBuf send=dataTool.getRegResultByteBuf(receiveData, Integer.valueOf(eventId), checkVinAndSerNum);
-                    //发往客户端的数据，根据验证结果+收到的数据生成
-                    //ch.writeAndFlush(send);
+                    //发往客户端的注册结果数据，根据验证结果+收到的数据生成
                      respStr=requestHandler.getRegisterResp(receiveDataHexString, checkVinAndSerNum);
                      buf=dataTool.getByteBuf(respStr);
                      ch.writeAndFlush(buf);//回发数据直接回消息
+                    //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
                     if(checkVinAndSerNum){
                         channels.put(vin, ch);
-                        _logger.info("resister success,contection" + vin + "Save to HashMap");
+                        _logger.info("resister success,Connection" + vin + "Save to HashMap");
                     }else{
-                        _logger.info("resister faild,close contection");
+                        _logger.info("resister failed,close Connection");
                         ch.close();//关闭连接
                     }
                     break;
@@ -107,7 +101,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     _logger.info("RemoteWakeUp start...");
                     chKey=getKeyByValue(ch);
                     if(chKey==null){
-                        _logger.info("conntection is not registered,no response");
+                        _logger.info("Connection is not registered,no response");
                         return;
                     }
                     respStr=requestHandler.getRemoteWakeUpResp(receiveDataHexString);
@@ -115,18 +109,55 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     ch.writeAndFlush(buf);//回发数据直接回消息
 
                     break;
+                case 0x21://固定数据上报
+                    _logger.info("Regular Data Report Message");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+                case 0x22://实时数据上报
+                    _logger.info("Real Time Report Message");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+                case 0x23://补发数据上报
+                    _logger.info("Data ReSend Message");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+                case 0x24://补发数据上报
+                    _logger.info("Warning Message");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+
                 case 0x26://心跳
                     _logger.info("Heartbeat request");
                     chKey=getKeyByValue(ch);
                     if(chKey==null){
-                        _logger.info("conntection is not registered,no response");
+                        _logger.info("Connection is not registered,no response");
                         return;
                     }
                     respStr=requestHandler.getHeartbeatResp(receiveDataHexString);
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
-
                     break;
+
                 default:
                     _logger.info(">>other request dave,data to redis");
                     saveBytesToRedis(getKeyByValue(ch), receiveData);

@@ -21,38 +21,52 @@ public class RequestHandler {
     DataTool dataTool;
 
 
+    /**
+     * 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
+     * @param reqString
+     * @return messageId=1返回处理后的resp,messageId=1返回null
+     */
 
-
-
-    public String getActiveResp(String reqString){
+    public String getActiveHandle(String reqString){
         //根据激活请求的16进制字符串，生成响应的16进制字符串
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
-        DataPackage dp=conversionTBox.generate(bb);
-        RemoteWakeUpReq bean=dp.loadBean(RemoteWakeUpReq.class);
-        //请求解析到bean
-        //远程唤醒响应
-        RemoteWakeUpResp resp=new RemoteWakeUpResp();
-        resp.setHead(bean.getHead());
-        resp.setTestFlag(bean.getTestFlag());
-        resp.setSendingTime((long) dataTool.getCurrentSeconds());
-        resp.setApplicationID(bean.getApplicationID());
-        resp.setMessageID((short) 2);
-        resp.setEventID(bean.getEventID());
-        resp.setRegisterResult((short)1);
+        byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId=0;
+        if(bytes!=null){
+            if(bytes.length>10) {
+                messageId=bytes[10];
+            }
+        }
+        if(messageId==0x01){
+            //Active Request
+            System.out.println("Active Request>>>>>");
+            ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp=conversionTBox.generate(bb);
+            ActiveReq bean=dp.loadBean(ActiveReq.class);
+            //请求解析到bean
+            //远程唤醒响应
+            System.out.println(bean.getVin()+"|"+bean.getSerialNumber());
+            short tBoxStatus=1;
+            ActiveResp resp=new ActiveResp();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 2);
+            resp.setEventID(bean.getEventID());
+            resp.settBoxStatus(tBoxStatus);
+            resp.setVin(bean.getVin());
 
-        DataPackage dpw=new DataPackage("8995_20_2");
-        dpw.fillBean(resp);
-        ByteBuffer bbw=conversionTBox.generate(dpw);
-        String byteStr=PackageEntityManager.getByteString(bbw);
-        return byteStr;
+            DataPackage dpw=new DataPackage("8995_18_2");
+            dpw.fillBean(resp);
+            ByteBuffer bbw=conversionTBox.generate(dpw);
+            String byteStr=PackageEntityManager.getByteString(bbw);
+            return byteStr;
+        }else if(messageId==0x03){
+            //Active Result
+            System.out.println("Active Result>>>>> no response");
+                  }
+        return null;
     }
-
-
-
-
-
-
-
 
 
 
@@ -78,12 +92,6 @@ public class RequestHandler {
         String byteStr=PackageEntityManager.getByteString(bbw);
         return byteStr;
     }
-
-
-
-
-
-
 
     /**
      *

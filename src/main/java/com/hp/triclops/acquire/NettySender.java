@@ -33,7 +33,7 @@ public class NettySender extends Thread{
             try{
                 Thread.sleep(3000);
             }catch (InterruptedException e){e.printStackTrace(); }
-            _logger.info("connection count>>:" + channels.keySet().size());
+            _logger.info("Connection count>>:" + channels.keySet().size());
             //读取数据库中所有的命令集合
             Set<String> setKey = socketRedis.getKeysSet("output:*");
             if(setKey.size()>0){   _logger.info("size:" + setKey.size()); }
@@ -42,11 +42,11 @@ public class NettySender extends Thread{
                 //遍历待发数据,处理
                 String k=(String)keys.next();
                 String scKey=k.replace("output:", "");
-                SendMesage(scKey,k);
+                SendMessage(scKey,k);
             }
         }
     }
-    public void SendMesage(String scKey,String k){
+    public void SendMessage(String scKey,String k){
         //将output:{vin}对应的十六进制字符串发送给客户端
         String msg =socketRedis.popOneString(k);
         _logger.info("sckey>>" + scKey + "|send msg:" + msg);
