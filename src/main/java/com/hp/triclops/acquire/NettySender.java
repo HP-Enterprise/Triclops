@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,7 +34,8 @@ public class NettySender extends Thread{
             try{
                 Thread.sleep(3000);
             }catch (InterruptedException e){e.printStackTrace(); }
-            _logger.info("Connection count>>:" + channels.keySet().size());
+            Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
+            _logger.info("Connection count>>:" + channels.keySet().size()+"|Thread count>>:" + maps.size());
             //读取数据库中所有的命令集合
             Set<String> setKey = socketRedis.getKeysSet("output:*");
             if(setKey.size()>0){   _logger.info("size:" + setKey.size()); }
@@ -53,7 +55,8 @@ public class NettySender extends Thread{
         Channel ch=channels.get(scKey);
         if(ch!=null){
             //此处存在一个逻辑问题，对于已经确定知道客户端当前没有连接的消息如何处理，是依旧取出发送失败还是保留在redis中
-            ch.writeAndFlush(dataTool.getByteBuf(msg));
+            //ch.writeAndFlush(dataTool.getByteBuf(msg));
+            new CommandHander(ch,dataTool,msg).start();
         }else{
             _logger.info("Connection is Dead");
             socketRedis.saveString(k, msg,-1);
