@@ -38,7 +38,7 @@ public class VehicleRepositoryDAO {
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy,Integer oid){
-        String jpql="FROM Vehicle v";
+        String jpql="select v FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
         vin=(vin==null)?"": EscapeStringUtil.toEscape(vin);
@@ -156,7 +156,7 @@ public class VehicleRepositoryDAO {
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer oid){
-        String jpql="FROM Vehicle v";
+        String jpql="select v FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
         vin=(vin==null)?"":EscapeStringUtil.toEscape(vin);
