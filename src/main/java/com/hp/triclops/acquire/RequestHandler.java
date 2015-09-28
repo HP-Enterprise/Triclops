@@ -4,6 +4,7 @@ import com.hp.data.bean.tbox.*;
 import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
+import com.hp.triclops.redis.SocketRedis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,9 @@ public class RequestHandler {
     Conversion conversionTBox;
     @Autowired
     DataTool dataTool;
+    @Autowired
+    SocketRedis socketRedis;
+
 
 
     /**
@@ -114,7 +118,7 @@ public class RequestHandler {
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
-        resp.setDiaReportResp(result>0?(short)1:(short)0);
+        resp.setDiaReportResp(result > 0 ? (short) 1 : (short) 0);
 
         DataPackage dpw=new DataPackage("8995_17_2");
         dpw.fillBean(resp);
@@ -166,7 +170,7 @@ public class RequestHandler {
         HeartbeatResp resp=new HeartbeatResp();
         resp.setHead(bean.getHead());
         resp.setTestFlag(bean.getTestFlag());
-        resp.setSendingTime((long)dataTool.getCurrentSeconds());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
@@ -176,6 +180,28 @@ public class RequestHandler {
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr=PackageEntityManager.getByteString(bbw);
         return byteStr;
+    }
+
+    /**
+     *
+     * @param reqString 远程控制响应hex
+     * @return 无需返回
+     */
+    public void getRemoteControlAck(String reqString,String vin){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        RemoteControlAck bean=dp.loadBean(RemoteControlAck.class);
+        //请求解析到bean
+        System.out.println("EventID>>>>>>>>>>>>>>>>>>>>"+bean.getEventID());
+        System.out.println("RemoteControlAck>>>>>>>>>>>" + bean.getRemoteControlAck());//0：成功 1：失败
+        String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
+        //变更消息状态
+        String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
+        String statusValue=String.valueOf(bean.getMessageID());
+        socketRedis.saveValueString(statusKey, statusValue,-1);
+        socketRedis.saveSetString(key,String.valueOf(bean.getRemoteControlAck()),-1);
+        //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
     }
 
 

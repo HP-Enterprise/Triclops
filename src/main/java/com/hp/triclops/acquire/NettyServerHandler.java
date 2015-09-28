@@ -48,7 +48,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         _logger.info("Receive date from " + ch.remoteAddress() + ">>>:" + receiveDataHexString);
 
         if(!dataTool.checkByteArray(receiveData)) {
-            _logger.info(">>>>>bytes data is invalid,we will not save them");
+            _logger.info(">>>>>bytes data is invalid,we will not handle them");
         }else{
 
             byte dataType=dataTool.getApplicationType(receiveData);
@@ -156,6 +156,18 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     respStr=requestHandler.getHeartbeatResp(receiveDataHexString);
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
+                    break;
+
+                case 0x31://远程控制响应(上行)
+                    _logger.info("RemoteControl Ack");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    String _vin=chKey;
+                    requestHandler.getRemoteControlAck(receiveDataHexString,_vin);
+                   //只需要记录远程控制结果，无数据下行
                     break;
 
                 default:

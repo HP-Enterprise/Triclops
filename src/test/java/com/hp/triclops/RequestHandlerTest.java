@@ -100,4 +100,12 @@ public class RequestHandlerTest {
 
     }
     */
+
+    @Test
+    public void test_getRemoteControlAck() {
+        //测试
+        String byteString="23 23 00 20 01 56 05 13 02 31 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 55 BE E2 58 00 30 ";
+        requestHandler.getRemoteControlAck(byteString,"12345678919991234");
+
+    }
 }

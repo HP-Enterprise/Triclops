@@ -17,6 +17,10 @@ import static io.netty.buffer.Unpooled.*;
 @Component
 public class DataTool {
 
+
+    public static final String msgSendCount_preStr="msgSendCount:";
+    public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
+
     @Autowired
     VehicleRepository vehicleRepository;
     public  boolean checkReg(byte[] bytes){
@@ -184,7 +188,7 @@ public class DataTool {
             }
         }
         re.put("eventId",String.valueOf(eventId));
-        re.put("vin",vin);
+        re.put("vin", vin);
         re.put("serialNum", serialNum);
         return re;
     }
@@ -261,12 +265,39 @@ public class DataTool {
 
     public int getMaxSendCount(String applicationId,String messageId){
         //某一消息的下发最大发送次数 参考文档
+        //为什么写这么多的if elseif ?开发阶段 为了更清晰，完成后会简化。
         int re=0;
+        if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+            re=3;
+        }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
+            re=3;
+        }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
+            re=3;
+        }else if(applicationId.equals("81")&&messageId.equals("1")){//上报数据设置
+            re=3;
+        }else if(applicationId.equals("82")&&messageId.equals("1")){//参数设置
+            re=3;
+        }
+        //参数升级比较复杂
+        //...
         return re;
     }
     public int getTimeOutSeconds(String applicationId,String messageId){
         //某一消息的下发超时时间（秒） 参考文档
         int re=0;
+        if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+            re=60;
+        }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
+            re=60;
+        }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
+            re=60;
+        }else if(applicationId.equals("81")&&messageId.equals("1")){//上报数据设置
+            re=60;
+        }else if(applicationId.equals("82")&&messageId.equals("1")){//参数设置
+            re=60;
+        }
+        //参数升级比较复杂
+        //...
         return re;
     }
 }

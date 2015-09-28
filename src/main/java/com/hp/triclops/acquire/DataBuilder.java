@@ -20,40 +20,48 @@ public class DataBuilder {
     DataTool dataTool;
     public String  buildStr(){
         //生成数据
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        RemoteControlAck hr=new RemoteControlAck();
+      /*  System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        PramStatusAck hr=new PramStatusAck();
         hr.setTestFlag((short) 1);
         hr.setSendingTime((long) dataTool.getCurrentSeconds());
         hr.setMessageID((short) 2);//>>>
         hr.setEventID(1438573144l);
-        //hr.setVin("12345678919991234");
-        hr.setApplicationID((short) 49);//>>>
+        hr.setApplicationID((short) 65);//>>>
+
+        hr.setFrequencySaveLocalMedia(60);
+        hr.setFrequencyForRealTimeReport(60);
+        hr.setFrequencyForWarningReport(10);
+        hr.setHardwareVersion("11111");
+        hr.setSoftwareVersion("22222");
+        hr.setFrequencyHeartbeat((short) 10);
+        hr.setTimeOutForTerminalSearch(60);
+        hr.setTimeOutForServerSearch(60);
+        hr.setEnterpriseBroadcastAddress(dataTool.getBytesFromByteBuffer(dataTool.getByteBuffer("00 00 C0 A8 01 01 ")));
+        hr.setEnterpriseBroadcastPort(9000);
+
         hr.setProtocolVersionNumber((short) 1);
         hr.setTripID((short) 1);
-
         hr.setVehicleID(1);
         hr.setImei("123456789012345");
-        hr.setLength(32);
         hr.setReserved(0);
-        hr.setHead(8995);
-        hr.setRemoteControlAck((short) 0);
         hr.setReserved(0);
+        //hr.setPramCmdDataSize();
 
-
-
-        DataPackage dpw=new DataPackage("8995_49_2");//>>>
+        DataPackage dpw=new DataPackage("8995_65_2");//>>>
         dpw.fillBean(hr);
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr=PackageEntityManager.getByteString(bbw);
         System.out.println(byteStr);
         return byteStr;
+        */
+        return "";
     }
     public void print(String str){
-        String byteString=str;
+       /* String byteString=str;
         ByteBuffer bb=PackageEntityManager.getByteBuffer(byteString);
         DataPackage dp=conversionTBox.generate(bb);
-        RemoteControlAck bean=dp.loadBean(RemoteControlAck.class);
-        PackageEntityManager.printEntity(bean);
+        PramStatusAck bean=dp.loadBean(PramStatusAck.class);
+        PackageEntityManager.printEntity(bean);*/
 
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }

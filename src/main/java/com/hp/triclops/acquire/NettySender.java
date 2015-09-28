@@ -32,7 +32,7 @@ public class NettySender extends Thread{
 
         while (true){
             try{
-                Thread.sleep(3000);
+                Thread.sleep(10);//开发调试用
             }catch (InterruptedException e){e.printStackTrace(); }
             Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
             //_logger.info("Connection count>>:" + channels.keySet().size()+"|Thread count>>:" + maps.size());
@@ -56,7 +56,7 @@ public class NettySender extends Thread{
         if(ch!=null){
             //此处存在一个逻辑问题，对于已经确定知道客户端当前没有连接的消息如何处理，是依旧取出发送失败还是保留在redis中
             //ch.writeAndFlush(dataTool.getByteBuf(msg));
-            new CommandHander(ch,scKey,socketRedis,dataTool,msg).start();
+            new CommandHandler(ch,scKey,socketRedis,dataTool,msg).start();
         }else{
             _logger.info("Connection is Dead");
             socketRedis.saveSetString(k, msg,-1);

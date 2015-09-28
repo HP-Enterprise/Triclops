@@ -11,7 +11,7 @@ import java.util.HashMap;
 /**
  * Created by luj on 2015/9/25.
  */
-public class CommandHander extends Thread{
+public class CommandHandler extends Thread{
     //处理每一条下行指令
     private SocketRedis socketRedis;
     // 日志
@@ -25,10 +25,9 @@ public class CommandHander extends Thread{
     private String applicationId;
     private HashMap<String,Object> datas;
 
-    private String msgSendCount_preStr="msgSendCount:";
-    private String msgCurrentStatusValue="msgCurrentStatusValue:";
 
-    public CommandHander(Channel ch,String vin,SocketRedis socketRedis,DataTool dt,String msg){
+
+    public CommandHandler(Channel ch, String vin, SocketRedis socketRedis, DataTool dt, String msg){
         this.channel=ch;
         this.vin=vin;
         this.socketRedis=socketRedis;
@@ -40,7 +39,7 @@ public class CommandHander extends Thread{
     public  void run()
     {
 
-        _logger.info("Send message from CommandHander>>:" + message);
+        _logger.info("Send message from CommandHandler>>:" + message);
         _logger.info("vin:>>>>" + vin);
 
         //发出一条命令可以知道当前的vin、eventID、messageID、applicationId等信息
@@ -51,7 +50,7 @@ public class CommandHander extends Thread{
         channel.writeAndFlush(dataTool.getByteBuf(message));
         //发出消息，redis记录已发次数
         setSendCountPlusOne(vin,eventId,messageId);
-        String statusKey=msgCurrentStatusValue+vin+"-"+applicationId+"-"+eventId;
+        String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+applicationId+"-"+eventId;
         String statusValue=messageId;
         //已经取到可以标识 跟踪一条指令的信息
 
@@ -60,7 +59,7 @@ public class CommandHander extends Thread{
         socketRedis.saveValueString(statusKey, statusValue,-1);//此处可以考虑设置一个合适的TTL
         // 记录下这些信息，应答超时时间过后内后如果redis对应的messageID变化了表明已经处理完毕了 本线程自行了断，否则把记录放到redis里面
 
-        int timeOutSeconds=60;//通过applicatinoId取到应答超时时间
+        int timeOutSeconds=dataTool.getTimeOutSeconds(applicationId,messageId);//通过applicatinoId取到应答超时时间
         try{
             Thread.sleep(timeOutSeconds*1000);
         }catch (InterruptedException e){e.printStackTrace(); }
@@ -74,7 +73,7 @@ public class CommandHander extends Thread{
             _logger.info("maybe I need Resend the Command!");
             //将数据放入redis，作为另外一条命令处理，本次处理结束
             //在此之前需要判断重发次数是否已经达到
-            int maxSendCount=3;//基于applicationId-messageId和参考文档得出同一event最多发送的次数
+            int maxSendCount=dataTool.getMaxSendCount(applicationId,messageId);//基于applicationId-messageId和参考文档得出同一event最多发送的次数
             int sendCount=getCurrentSendCount(vin, eventId, messageId);//从redis取出，这一event已经发了的次数
             if(sendCount<maxSendCount){
                 _logger.info("sendCount"+sendCount+"<maxSendCount"+maxSendCount+",ReTry>>");
@@ -89,7 +88,8 @@ public class CommandHander extends Thread{
     }
 
     private int getCurrentSendCount(String vin,String eventId,String messageId){
-        String  redisKey=msgSendCount_preStr+vin+"-"+eventId+"-"+messageId;
+        //取已发送次数
+        String  redisKey=DataTool.msgSendCount_preStr+vin+"-"+applicationId+"-"+eventId+"-"+messageId;
         int re=0;
         String currentValue=socketRedis.getValueString(redisKey);
         if(!currentValue.equals("null")){
@@ -98,7 +98,8 @@ public class CommandHander extends Thread{
         return re;
     }
     private void setSendCountPlusOne(String vin,String eventId,String messageId){
-        String  redisKey=msgSendCount_preStr+vin+"-"+eventId+"-"+messageId;
+        //发送次数加1
+        String  redisKey=DataTool.msgSendCount_preStr+vin+"-"+applicationId+"-"+eventId+"-"+messageId;
         int currentResendCount=getCurrentSendCount(vin, eventId, messageId);
         String newCountValue=String.valueOf(currentResendCount+1);
         socketRedis.saveValueString(redisKey,newCountValue,-1);
