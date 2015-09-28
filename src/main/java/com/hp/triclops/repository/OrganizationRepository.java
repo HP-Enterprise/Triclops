@@ -16,4 +16,6 @@ public interface OrganizationRepository extends CrudRepository<Organization, Lon
     Set<Organization> findByTypeKey(Sysdict typeKey);
 
     Set<Organization> findByOrgName(String orgName);
+
+    Set<Organization> findByBreCode(String breCode);
 }
