@@ -212,7 +212,7 @@ public class Server  extends Thread{
             if(scKey!=null){
                 String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
-                socketRedis.saveString(inputKey, receiveDataHexString,-1);
+                socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
                 _logger.info("Save data to Redis:" + inputKey);
             }else{
                 _logger.info("can not find the scKey,data is invalid，do not save!");

@@ -24,7 +24,7 @@ public class DataTool {
         return true;
     }
 
-     public  byte getApplicationType(byte[] bytes){
+    public  byte getApplicationType(byte[] bytes){
         //返回数据包操作类型对应的byte
         byte data=0;
         if(bytes!=null){
@@ -57,7 +57,7 @@ public class DataTool {
     }
     public  boolean checkVinAndSerialNum(String vin,String serialNum){
         //调用平台db接口,校验vin和SerialNumber 性能测试时改为始终返回true
-       // return true;
+        // return true;
         boolean checkResult=false;
         Vehicle v=vehicleRepository.findByVinAndTbox(vin, serialNum);
         if(v!=null){
@@ -87,15 +87,15 @@ public class DataTool {
     }
     public  ByteBuf getByteBuf(String str){
         //根据16进制字符串得到ByteBuf对象(netty)
-          ByteBuf bb=buffer(1024);
+        ByteBuf bb=buffer(1024);
 
-          String[] command=str.split(" ");
-          byte[] abc=new byte[command.length];
-          for(int i=0;i<command.length;i++){
+        String[] command=str.split(" ");
+        byte[] abc=new byte[command.length];
+        for(int i=0;i<command.length;i++){
             abc[i]=Integer.valueOf(command[i],16).byteValue();
-          }
-          bb.writeBytes(abc);
-          return bb;
+        }
+        bb.writeBytes(abc);
+        return bb;
     }
 
     public  ByteBuffer getRegResultByteBuffer(byte[] data,int eventId,boolean check){
@@ -185,9 +185,42 @@ public class DataTool {
         }
         re.put("eventId",String.valueOf(eventId));
         re.put("vin",vin);
-        re.put("serialNum",serialNum);
+        re.put("serialNum", serialNum);
         return re;
     }
+
+    public   HashMap<String,Object> getApplicationIdAndMessageIdFromDownBytes(String msg)
+    {
+        //解析注册数据包,提取ApplicationId和MessageId
+        //eventId      :32
+        //ApplicationId:36,14
+        //MessageId    :50,17
+
+        //String ApplicationId="";
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        byte applicationId=0;
+        byte messageId=0;
+        int eventId=0;
+        HashMap<String,Object> re=new HashMap<String ,Object>();
+        if(data!=null){
+            if(data.length>18) {
+                ByteBuffer bb= ByteBuffer.allocate(1024);
+                bb.put(data);
+                bb.flip();
+                applicationId=bb.get(9);
+                messageId=bb.get(10);
+                eventId= bb.getInt(11);
+            }
+        }
+        re.put("applicationId",applicationId);
+        re.put("messageId",messageId);
+        re.put("eventId",eventId);
+        return re;
+    }
+
+
+
+
 
     public   boolean checkByteArray(byte[] data)
     {
@@ -223,5 +256,17 @@ public class DataTool {
             sum^=bytes[i];
         }
         return sum;
+    }
+
+
+    public int getMaxSendCount(String applicationId,String messageId){
+        //某一消息的下发最大发送次数 参考文档
+        int re=0;
+        return re;
+    }
+    public int getTimeOutSeconds(String applicationId,String messageId){
+        //某一消息的下发超时时间（秒） 参考文档
+        int re=0;
+        return re;
     }
 }

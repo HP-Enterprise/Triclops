@@ -84,9 +84,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     String serialNum=vinAndSerialNum.get("serialNum");
                     boolean checkVinAndSerNum= dataTool.checkVinAndSerialNum(vin, serialNum);
                     //发往客户端的注册结果数据，根据验证结果+收到的数据生成
-                     respStr=requestHandler.getRegisterResp(receiveDataHexString, checkVinAndSerNum);
-                     buf=dataTool.getByteBuf(respStr);
-                     ch.writeAndFlush(buf);//回发数据直接回消息
+                    respStr=requestHandler.getRegisterResp(receiveDataHexString, checkVinAndSerNum);
+                    buf=dataTool.getByteBuf(respStr);
+                    ch.writeAndFlush(buf);//回发数据直接回消息
                     //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
                     if(checkVinAndSerNum){
                         channels.put(vin, ch);
@@ -165,7 +165,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     break;
             }
         }
-     }
+    }
     @Override
     public void channelRegistered(ChannelHandlerContext ctx){
         Channel ch=ctx.channel();
@@ -193,7 +193,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
             if(scKey!=null){
                 String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
-                socketRedis.saveString(inputKey, receiveDataHexString,-1);
+                socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
                 _logger.info("Save data to Redis:" + inputKey);
             }else{
                 _logger.info("can not find the scKey,data is invalid，do not save!");

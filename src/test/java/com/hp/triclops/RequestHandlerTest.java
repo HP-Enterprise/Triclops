@@ -1,5 +1,6 @@
 package com.hp.triclops;
 
+import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.acquire.RequestHandler;
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +24,8 @@ public class RequestHandlerTest {
 
     @Autowired
     RequestHandler requestHandler;
+    @Autowired
+    DataTool dataTool;
 
 
     Logger _logger = LoggerFactory.getLogger(RequestHandlerTest.class);
@@ -32,7 +35,17 @@ public class RequestHandlerTest {
     @After
     public void tearDown() {}
 
+
+
     @Test
+    public void buildTestStr(){
+
+    }
+
+
+
+
+  /*  @Test
     public void test_getActiveHandle() {
         //测试激活请求 激活结果
         String byteString="23 23 00 3E 01 56 04 B7 1E 12 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 39 31 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 83 ";
@@ -78,4 +91,13 @@ public class RequestHandlerTest {
 
     }
 
+    @Test
+    public void test_getApplicationIdAndMessageIdFromDownBytes() {
+        //测试
+        String byteString="23 23 00 0D 01 56 05 10 02 31 01 55 BE E2 58 00 01 01 2C ";
+        System.out.println("request.:"+byteString);
+        System.out.println("response:"+dataTool.getApplicationIdAndMessageIdFromDownBytes(byteString));
+
+    }
+    */
 }
