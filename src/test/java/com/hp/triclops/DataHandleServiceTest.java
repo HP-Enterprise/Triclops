@@ -26,8 +26,8 @@ public class DataHandleServiceTest {
     public void tearDown() {
     }
     @Test
-    public void test_saveMessage(){
-        //测试实事数据保存
+    public void test_saveRealTimeMessage(){
+        //娴嬭瘯瀹炰簨鏁版嵁淇濆瓨
         String byteString="";
         dataHandleService.saveMessage(byteString);
     }

@@ -20,7 +20,8 @@ public class DataHandleService {
     @Autowired
     DataTool dataTool;
     public void saveMessage(String msg){
-       //数据保存
+       //数据保存，传入原始消息数据hex
+       //分析消息类型，然后调用具体的保存方法
        saveRealTimeReportMes();
     }
 
