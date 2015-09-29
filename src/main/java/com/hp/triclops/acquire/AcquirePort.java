@@ -2,6 +2,7 @@ package com.hp.triclops.acquire;
 
 
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.service.DataHandleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
@@ -33,6 +34,9 @@ public class AcquirePort {
     DataBuilder dataBuilder;
     @Autowired
     RequestHandler requestHandler;
+    @Autowired
+    DataHandleService dataHandleService;
+
 
     private Logger _logger;
 
@@ -47,7 +51,7 @@ public class AcquirePort {
         String str=dataBuilder.buildStr();
         dataBuilder.print(str);
         new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
-        new DataHandler(socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
+        new DataHandler(socketRedis,dataHandleService,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
         new NettyServer(channels,socketRedis,dataTool,requestHandler,_acquirePort).run();    //netty收数据程序
         //目前有两套实现 分别基于nio和netty
         //new Server(socketChannels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
