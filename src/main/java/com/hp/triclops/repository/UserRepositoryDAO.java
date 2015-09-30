@@ -116,8 +116,10 @@ public class UserRepositoryDAO<T>  {
             queryCount.setParameter("isVerified",isVerified);
         }
 
-
-        List<Object> items = query.getResultList();  //获取所有查询结果
+        query.setFirstResult((currentPage - 1)* pageSize);
+        query.setMaxResults(pageSize);
+        List items=query.getResultList();
+        Long count= (long) queryCount.getResultList().size();
 
         //车主车辆关系过滤
         if(vin!=null || isowner!=null)
@@ -125,11 +127,6 @@ public class UserRepositoryDAO<T>  {
             List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getList(vin,isowner);
             items = userFilter(items,userVehicleRelativedList);
         }
-
-        Long count = (long)items.size();
-        items = getPageData(pageSize,currentPage,items);  //数据分页
-
-
         return new Page(currentPage,pageSize,count,items);
     }
 
@@ -224,23 +221,15 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
         }
-
-        List<Object> items = query.getResultList();
-
+        query.setFirstResult((currentPage - 1)* pageSize);
+        query.setMaxResults(pageSize);
+        List items=query.getResultList();
+        Long count= (long) queryCount.getResultList().size();
         if(vin!=null || isowner!=null)
         {
             List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getListAccurate(vin, isowner);
             items = userFilter(items,userVehicleRelativedList);
         }
-
-        Long count = (long)items.size();
-        items = getPageData(pageSize,currentPage,items);
-
-//        query.setFirstResult((currentPage - 1)* pageSize);
-//        query.setMaxResults(pageSize);
-//        List items=query.getResultList();
-//        Long count= (long) queryCount.getResultList().size();
-
         return new Page(currentPage,pageSize,count,items);
     }
 
@@ -270,41 +259,8 @@ public class UserRepositoryDAO<T>  {
                 }
             }
         }
-
         return result;
     }
 
-    /**
-     * 获取当前页面数据集
-     * @param pageSize  页面数据显示条数
-     * @param currentPage  当前页号
-     * @param items  查询结果集
-     * @return  当前页面数据集
-     */
-    public List<Object> getPageData(int pageSize,int currentPage,List items)
-    {
-        List<Object> result = new ArrayList<Object>();
-
-        if(items.size()<=pageSize*(currentPage-1))
-        {
-            return result;
-        }
-        else if(items.size()< pageSize*currentPage)
-        {
-            for (int i=pageSize*(currentPage-1);i<items.size();i++)
-            {
-                result.add(items.get(i));
-            }
-        }
-        else
-        {
-            for (int i=pageSize*(currentPage-1);i<pageSize*currentPage;i++)
-            {
-                result.add(items.get(i));
-            }
-        }
-
-        return result;
-    }
 
 }
