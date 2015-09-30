@@ -2,7 +2,9 @@ package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.User;
 import com.hp.triclops.entity.UserVehicleRelatived;
+import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.utils.EscapeStringUtil;
+import com.hp.triclops.utils.FilterString;
 import com.hp.triclops.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -125,7 +127,7 @@ public class UserRepositoryDAO<T>  {
         //车主车辆关系过滤
         if(vin!=null || isowner!=null)
         {
-            List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getList(vin,isowner);
+            List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getList(vin, isowner);
             items = userFilter(items,userVehicleRelativedList);
         }
         return new Page(currentPage,pageSize,count,items);
@@ -294,45 +296,47 @@ public class UserRepositoryDAO<T>  {
         isowner = (isowner == null) ? 0 : isowner;
         String sql = "";
           if(vid > 0){
-              sql += " u left join t_user_vehicle_relatived uvr on u.id = uvr.userid where vid = "+ vid;
+              sql += " u LEFT JOIN t_user_vehicle_relatived uvr ON u.id = uvr.userid WHERE vid = "+vid;
               if(isowner > 0 ){ //一辆车的车主
-                  sql +=" and uvr.iflag = 1";
+                  sql +=" AND uvr.iflag = 1";
               }
           }else{
               if(isowner > 0){ //车主
-                  sql +=" u left join t_user_vehicle_relatived uvr on u.id = uvr.userid where uvr.iflag = 1";
+                  sql +=" u LEFT JOIN t_user_vehicle_relatived uvr ON u.id = uvr.userid WHERE uvr.iflag = 1";
               }else{
-                  sql += " u where 1 = 1 ";
+                  sql += " u WHERE 1 = 1 ";
               }
           }
         if (gender == 0 || gender == 1){
-            sql += " and u.gender ="+ gender;
+            sql += " AND u.gender ="+ gender;
         }
         if (isVerified==0||isVerified==1){
-            sql += " and u.is_verified ="+ isVerified;
+            sql += " AND u.is_verified ="+ isVerified;
         }
         if(fuzzy==1) { //模糊查询
             if (!nick.equals("")){
-                sql += " and u.nick like %"+ nick + "%";
+                FilterString.TransactSQLInjection(nick);
+                sql += " AND u.nick like %"+ nick + "%";
             }
         }else{
             if (!nick.equals("")) {
-                sql += " and u.nick =" + nick;
+                FilterString.TransactSQLInjection(nick);
+                sql += " AND u.nick =" + nick;
             }
         }
+
         Query queryCount = em.createNativeQuery("{call pro_findusers(?,?)}", User.class);
         queryCount.setParameter(1, uid);
         queryCount.setParameter(2, sql);
-        System.out.println(sql);
         Long count = (long)queryCount.getResultList().size();
         Query query = em.createNativeQuery("{call pro_findusers(?,?)}", User.class);
         Integer firstRcord = (currentPage - 1) * pageSize;
-        Integer lastRecord = currentPage * pageSize;
-        sql += " limit "+firstRcord+","+lastRecord;
-        System.out.println(sql);
+        sql += " limit "+firstRcord+","+pageSize;
         query.setParameter(1, uid);
         query.setParameter(2, sql);
         List items=query.getResultList();
         return new Page(currentPage,pageSize,count,items);
     }
+
+
     }
