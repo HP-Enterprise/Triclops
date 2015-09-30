@@ -1,0 +1,22 @@
+DROP PROCEDURE IF EXISTS pro_findusers;
+CREATE PROCEDURE pro_findusers(uid int, innersql VARCHAR(100))
+BEGIN
+		CREATE TEMPORARY table IF NOT EXISTS the_users
+		(
+			id INT PRIMARY KEY,
+			name VARCHAR(50),
+			gender INT(3),
+			nick VARCHAR(50),
+			phone VARCHAR(11),
+			is_verified INT(1)
+		) ENGINE = MEMORY;
+		TRUNCATE TABLE the_users;
+			INSERT INTO the_users SELECT DISTINCT U.* FROM t_user U LEFT JOIN t_organization_user OU ON u.id =  OU.uid WHERE OU.oid in
+             (SELECT O.id FROM t_organization O 
+                 LEFT JOIN t_authoritygroup AG ON O.id = AG.oid 
+                 LEFT JOIN t_authoritygroup_relatived AGR ON AG.id = AGR.ag_id 
+                 LEFT JOIN t_authoritygroup_user AGU ON AGR.ag_id = AGU.ag_id WHERE AGR.a_id = 0 AND AGU.u_id = uid);                 
+            set @sqls = CONCAT('SELECT * FROM the_users ',innersql);           
+            PREPARE sqlstr from @sqls;
+            Execute sqlstr;
+END;

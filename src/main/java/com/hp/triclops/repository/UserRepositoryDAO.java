@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
@@ -307,4 +308,75 @@ public class UserRepositoryDAO<T>  {
         return result;
     }
 
-}
+
+    /** 调用存储过程查询多个组织用户
+     *
+     * 用户查询  支持条件模糊，条件缺省，分页显示
+     * @param gender 传入参数为null或""时不作为查询条件
+     * @param nick 传入参数为null或""时不作为查询条件
+     * @param isVerified 0表示未验证 1表示已验证 其它数值不作为查询条件
+     * @param orderByProperty 排序条件 User类的某一个属性,默认id
+     * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
+     * @param pageSize 每页数据条数 必须大于0
+     * @param currentPage 获取指定页码数据 必须大于0
+     * @param vid 车辆id
+     * @param isowner 是否为车主
+     * @param oid 组织id
+     * @return  封装了数据和页码信息的Page对象
+     */
+    public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer oid,Integer fuzzy){
+        gender=(gender==null)?-1:gender;
+        nick=(nick==null)?"": EscapeStringUtil.toEscape(nick);
+        isVerified=(isVerified==null)?-1:isVerified;
+        orderByProperty=(orderByProperty==null)?"id":orderByProperty;
+        ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
+        pageSize=(pageSize==null)?10:pageSize;
+        pageSize=(pageSize<=0)?10:pageSize;
+        currentPage=(currentPage==null)?1:currentPage;
+        currentPage=(currentPage<=0)?1:currentPage;
+        vid = (vid == null) ? 0 : vid;
+        isowner = (isowner == null) ? 0 : isowner;
+        String sql = "";
+          if(vid > 0){
+              sql += " u left join t_user_vehicle_relatived uvr on u.id = uvr.userid where vid = "+ vid;
+              if(isowner > 0 ){ //一辆车的车主
+                  sql +=" and uvr.iflag = 1";
+              }
+          }else{
+              if(isowner > 0){ //车主
+                  sql +=" u left join t_user_vehicle_relatived uvr on u.id = uvr.userid where uvr.iflag = 1";
+              }else{
+                  sql += " u where 1 = 1 ";
+              }
+          }
+        if (gender == 0 || gender == 1){
+            sql += " and u.gender ="+ gender;
+        }
+        if (isVerified==0||isVerified==1){
+            sql += " and u.is_verified ="+ isVerified;
+        }
+        if(fuzzy==1) { //模糊查询
+            if (!nick.equals("")){
+                sql += " and u.nick like %"+ nick + "%";
+            }
+        }else{
+            if (!nick.equals("")) {
+                sql += " and u.nick =" + nick;
+            }
+        }
+        Query queryCount = em.createNativeQuery("{call pro_findusers(?,?)}", User.class);
+        queryCount.setParameter(1, uid);
+        queryCount.setParameter(2, sql);
+        System.out.println(sql);
+        Long count = (long)queryCount.getResultList().size();
+        Query query = em.createNativeQuery("{call pro_findusers(?,?)}", User.class);
+        Integer firstRcord = (currentPage - 1) * pageSize;
+        Integer lastRecord = currentPage * pageSize;
+        sql += " limit "+firstRcord+","+lastRecord;
+        System.out.println(sql);
+        query.setParameter(1, uid);
+        query.setParameter(2, sql);
+        List items=query.getResultList();
+        return new Page(currentPage,pageSize,count,items);
+    }
+    }
