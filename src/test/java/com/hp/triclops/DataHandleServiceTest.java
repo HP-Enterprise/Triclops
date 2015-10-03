@@ -27,7 +27,7 @@ public class DataHandleServiceTest {
     }
     @Test
     public void test_saveRealTimeMessage(){
-        //测试实事数据保存
+        //测试实时数据保存
         String byteString="";
         dataHandleService.saveMessage(byteString);
     }
