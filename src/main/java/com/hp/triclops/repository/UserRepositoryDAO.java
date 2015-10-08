@@ -1,7 +1,6 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.User;
-import com.hp.triclops.entity.UserVehicleRelatived;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -58,10 +56,17 @@ public class UserRepositoryDAO<T>  {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
-        if(oid != null && oid>=0){
-            jpql = jpql+" join u.organizationSet O where O.id =:oid";
+        isowner=(isowner==null)?-1:isowner;
+        oid=(oid==null)?-1:oid;
+        if(oid>=0||isowner>=0) {
+            if (oid != null && oid >= 0) {
+                jpql = jpql + " join u.organizationSet O where O.id =:oid";
+            }
+            if (isowner == 0 || isowner == 1) {
+                jpql = jpql + " join u.userSet u1 where u1.iflag=:isowner";
+            }
         }else{
-            jpql = jpql+ " where 1=1";
+            jpql=jpql+" where 1=1";
         }
         if(id>=0){
             jpql=jpql+" And u.id =:id";
@@ -84,6 +89,7 @@ public class UserRepositoryDAO<T>  {
 
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
+        System.out.println("111"+jpql_count);
         TypedQuery query = em.createQuery(jpql, User.class);
         TypedQuery queryCount = em.createQuery(jpql_count, User.class);
 
@@ -115,18 +121,14 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
         }
-
+        if (isowner==0||isowner==1){
+            query.setParameter("isowner",isowner);
+            queryCount.setParameter("isowner",isowner);
+        }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
         List items=query.getResultList();
         Long count= (long) queryCount.getResultList().size();
-
-        //车主车辆关系过滤
-        if(vin!=null || isowner!=null)
-        {
-            List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getList(vin,isowner);
-            items = userFilter(items,userVehicleRelativedList);
-        }
         return new Page(currentPage,pageSize,count,items);
     }
 
@@ -163,12 +165,18 @@ public class UserRepositoryDAO<T>  {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
-
-        if(oid != null && oid>=0){
-            jpql = jpql+" join u.organizationSet O where O.id =:oid";
-        }else{
-            jpql = jpql+ " where 1=1";
-        }
+        isowner=(isowner==null)?-1:isowner;
+        oid=(oid==null)?-1:oid;
+        if (oid>0||isowner>=0){
+            if (oid != null && oid >= 0) {
+                jpql = jpql + " join u.organizationSet O where O.id =:oid";
+            }
+            if (isowner == 0 || isowner == 1) {
+                jpql = jpql + " join u.userSet u1 where u1.iflag =:isowner";
+            }
+        }else {
+                jpql = jpql+ " where 1=1";
+            }
         if (id>=0){
             jpql=jpql+" And u.id =:id";
         }
@@ -221,46 +229,15 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
         }
+        if (isowner==0||isowner==1){
+            query.setParameter("isowner",isowner);
+            queryCount.setParameter("isowner",isowner);
+        }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
         List items=query.getResultList();
         Long count= (long) queryCount.getResultList().size();
-        if(vin!=null || isowner!=null)
-        {
-            List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getListAccurate(vin, isowner);
-            items = userFilter(items,userVehicleRelativedList);
-        }
+
         return new Page(currentPage,pageSize,count,items);
     }
-
-    /**
-     * 过滤查询结果
-     * @param userList   用户列表
-     * @param filterList 用户车辆关系列表
-     * @return 过滤后的用户列表
-     */
-    public List userFilter(List userList,List filterList)
-    {
-        List<Object> result = new ArrayList<Object>();
-
-        for (int i=0;i<userList.size();i++)
-        {
-            User user = (User)userList.get(i);
-            int id = user.getId();
-
-            for (int j=0;j<filterList.size();j++)
-            {
-                UserVehicleRelatived userVehicleRelatived = (UserVehicleRelatived)filterList.get(j);
-                User userid = userVehicleRelatived.getUid();
-                if(id==userid.getId())
-                {
-                    result.add(userList.get(i));
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-
 }
