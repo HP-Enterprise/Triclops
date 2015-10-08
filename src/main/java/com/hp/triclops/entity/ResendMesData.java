@@ -3,12 +3,12 @@ package com.hp.triclops.entity;
 import javax.persistence.*;
 
 /**
- * Created by luj on 2015/9/28.
+ * Created by luj on 2015/10/8.
  */
 
 @Entity
-@Table(name = "t_data_realtime_report")
-public class RealTimeReportData {
+@Table(name = "t_data_resend_mes")
+public class ResendMesData {
 
     private Long id;
     private String vin;
@@ -18,10 +18,15 @@ public class RealTimeReportData {
     private int messageId;
     private int sendingTime;
 
+    private Short isLocation;
+    private Long latitude;
+    private Long longitude;
+    private int speed;
+    private int heading;
     private Short fuelOil;
     private int avgOil;
     private Short oilLife;
-    private int driveRange;
+    private String driveRange;
     private int leftFrontTirePressure;
     private int leftRearTirePressure;
     private int rightFrontTirePressure;
@@ -40,6 +45,14 @@ public class RealTimeReportData {
     private int rapidDeceleration;
     private int speeding;
     private Short signalStrength;
+    private String bcm1;
+    private String ems;
+    private String tcu;
+    private String ic;
+    private String abs;
+    private String pdc;
+    private String bcm2;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,6 +125,54 @@ public class RealTimeReportData {
         this.sendingTime = sendingTime;
     }
 
+    @Basic
+    @Column(name = "is_location", nullable = false, insertable = true, updatable = true)
+    public Short getIsLocation() {
+        return isLocation;
+    }
+
+    public void setIsLocation(Short isLocation) {
+        this.isLocation = isLocation;
+    }
+    @Basic
+    @Column(name = "latitude", nullable = false, insertable = true, updatable = true)
+    public Long getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Long latitude) {
+        this.latitude = latitude;
+    }
+
+    @Basic
+    @Column(name = "longitude", nullable = false, insertable = true, updatable = true)
+    public Long getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Long longitude) {
+        this.longitude = longitude;
+    }
+
+    @Basic
+    @Column(name = "speed", nullable = false, insertable = true, updatable = true)
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    @Basic
+    @Column(name = "heading", nullable = false, insertable = true, updatable = true)
+    public int getHeading() {
+        return heading;
+    }
+
+    public void setHeading(int heading) {
+        this.heading = heading;
+    }
 
     @Basic
     @Column(name = "fuel_oil", nullable = false, insertable = true, updatable = true)
@@ -144,12 +205,12 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "drive_range", nullable = false, insertable = true, updatable = true)
-    public int getDriveRange() {
+    @Column(name = "drive_range", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getDriveRange() {
         return driveRange;
     }
 
-    public void setDriveRange(int driveRange) {
+    public void setDriveRange(String driveRange) {
         this.driveRange = driveRange;
     }
 
@@ -244,7 +305,7 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "maximum_voltage_power_pattery_pack", nullable = false, insertable = true, updatable = true)
+    @Column(name = "maximum_voltage_power_battery_pack", nullable = false, insertable = true, updatable = true)
     public Short getMaximumVoltagePowerBatteryPack() {
         return maximumVoltagePowerBatteryPack;
     }
@@ -333,6 +394,75 @@ public class RealTimeReportData {
         this.signalStrength = signalStrength;
     }
 
+    @Basic
+    @Column(name = "bcm1", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getBcm1() {
+        return bcm1;
+    }
+
+    public void setBcm1(String bcm1) {
+        this.bcm1 = bcm1;
+    }
+
+    @Basic
+    @Column(name = "ems", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getEms() {
+        return ems;
+    }
+
+    public void setEms(String ems) {
+        this.ems = ems;
+    }
+
+    @Basic
+    @Column(name = "tcu", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getTcu() {
+        return tcu;
+    }
+
+    public void setTcu(String tcu) {
+        this.tcu = tcu;
+    }
+
+    @Basic
+    @Column(name = "ic", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getIc() {
+        return ic;
+    }
+
+    public void setIc(String ic) {
+        this.ic = ic;
+    }
+
+    @Basic
+    @Column(name = "abs", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getAbs() {
+        return abs;
+    }
+
+    public void setAbs(String abs) {
+        this.abs = abs;
+    }
+
+    @Basic
+    @Column(name = "pdc", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getPdc() {
+        return pdc;
+    }
+
+    public void setPdc(String pdc) {
+        this.pdc = pdc;
+    }
+
+    @Basic
+    @Column(name = "bcm2", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getBcm2() {
+        return bcm2;
+    }
+
+    public void setBcm2(String bcm2) {
+        this.bcm2 = bcm2;
+    }
 
 
 }
