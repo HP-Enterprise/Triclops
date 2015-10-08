@@ -29,7 +29,7 @@ public class DataTool {
     }
 
     public  String getIp(byte[] bytes){
-        //IP地址转换 00 00 C0 A8 01 01
+        //IP地址转换 00 00 C0 A8 01 01 读出192.168.1.1
         String re="";
         StringBuilder sb=new StringBuilder();
         if (bytes.length==6){
@@ -48,6 +48,26 @@ public class DataTool {
            re=sb.toString();
         }
         return re;
+    }
+
+    public  String getBinaryStrFromByte(byte b)
+    {
+        //将byte转换层二进制字符串 (byte)170  ->> 10101010
+        String result ="";
+        byte a = b;
+        for (int i = 0; i < 8; i++)
+        {
+            byte c=a;
+            a=(byte)(a>>1);
+            a=(byte)(a<<1);
+            if(a==c){
+                result="0"+result;
+            }else{
+                result="1"+result;
+            }
+            a=(byte)(a>>1);
+        }
+        return result;
     }
 
     public  byte getApplicationType(byte[] bytes){

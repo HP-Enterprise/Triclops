@@ -1,13 +1,17 @@
 package com.hp.triclops.service;
 
+import com.hp.data.bean.tbox.RealTimeReportMes;
 import com.hp.data.bean.tbox.RegularReportMes;
 import com.hp.data.bean.tbox.RemoteControlAck;
+import com.hp.data.bean.tbox.WarningMessage;
 import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.GpsData;
+import com.hp.triclops.entity.RealTimeReportData;
 import com.hp.triclops.entity.RegularReportData;
+import com.hp.triclops.entity.WarningMessageData;
 import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +61,6 @@ public class DataHandleService {
             case 0x24://报警数据
                 saveWarningMessage(vin,msg);
                 break;
-
             default:
                 _logger.info(">>data is invalid,we will not save them");
                 break;
@@ -69,7 +72,6 @@ public class DataHandleService {
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         RegularReportMes bean=dp.loadBean(RegularReportMes.class);
-        System.out.println("EventID>>>>>>>>>>>>>>>>>>>>" + bean.getMessageID());
         RegularReportData rd=new RegularReportData();
         rd.setVin(vin);
         rd.setImei(bean.getImei());
@@ -94,7 +96,52 @@ public class DataHandleService {
     }
     public void saveRealTimeReportMes(String vin,String msg){
         _logger.info(">>save RealTimeReportMes:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        RealTimeReportMes bean=dp.loadBean(RealTimeReportMes.class);
+        RealTimeReportData rd=new RealTimeReportData();
+        rd.setVin(vin);
+        rd.setImei(bean.getImei());
+        rd.setApplicationId(bean.getApplicationID());
+        rd.setMessageId(bean.getMessageID());
+        rd.setSendingTime(bean.getSendingTime());
+        rd.setFuelOil(bean.getFuelOil());
+        rd.setAvgOil(bean.getAvgOil());
+        rd.setOilLife(bean.getOilLife());
+        rd.setDriveRange(bean.getDriveRange().toString());//此处要处理3个byte为一个int
 
+        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure());
+        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure());
+        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure());
+        rd.setRightRearTirePressure(bean.getRightRearTirePressure());
+        rd.setWindowInformation(dataTool.getBinaryStrFromByte((byte) (short) bean.getWindowInformation()));
+        rd.setVehicleTemperature(bean.getVehicleTemperature());
+        rd.setVehicleOuterTemperature(bean.getVehicleOuterTemperature());
+        rd.setDoorInformation(dataTool.getBinaryStrFromByte((byte) (short) bean.getDoorInformation()));
+        rd.setSingleBatteryVoltage(bean.getSingleBatteryVoltage());
+        rd.setMaximumVoltagePowerBatteryPack(bean.getMaximumVoltagePowerBatteryPack());
+        rd.setMaximumBatteryVoltage(bean.getMaximumBatteryVoltage());
+        rd.setBatteryMonomerMinimumVoltage(bean.getBatteryMonomerMinimumVoltage());
+        rd.setEngineCondition(bean.getEngineCondition());
+        rd.setEngineSpeed(bean.getEngineSpeed());
+        rd.setRapidAcceleration(bean.getRapidAcceleration());
+        rd.setRapidDeceleration(bean.getRapidDeceleration());
+        rd.setSpeeding(bean.getSpeeding());
+        rd.setSignalStrength(bean.getSignalStrength());
+        realTimeReportDataRespository.save(rd);
+        //普通实时数据和位置数据分表存储
+        GpsData gd=new GpsData();
+        gd.setVin(vin);
+        gd.setImei(bean.getImei());
+        gd.setApplicationId(bean.getApplicationID());
+        gd.setMessageId(bean.getMessageID());
+        gd.setSendingTime(bean.getSendingTime());
+        gd.setIsLocation(bean.getIsLocation());
+        gd.setLatitude(bean.getLatitude());
+        gd.setLongitude(bean.getLongitude());
+        gd.setSpeed(bean.getSpeed());
+        gd.setHeading(bean.getHeading());
+        gpsDataRepository.save(gd);
     }
 
     public void saveDataResendMes(String vin,String msg){
@@ -105,23 +152,29 @@ public class DataHandleService {
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
         _logger.info(">>save WarningMessage:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        WarningMessage bean=dp.loadBean(WarningMessage.class);
+        WarningMessageData wd=new WarningMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(bean.getSendingTime());
+        wd.setIsLocation(bean.getIsLocation());
+        wd.setLatitude(bean.getLatitude());
+        wd.setLongitude(bean.getLongitude());
+        wd.setSpeed(bean.getSpeed());
+        wd.setHeading(bean.getHeading());
+        wd.setBcm1(dataTool.getBinaryStrFromByte(bean.getBcm1()));
+        wd.setEms(dataTool.getBinaryStrFromByte(bean.getEms()));
+        wd.setTcu(dataTool.getBinaryStrFromByte(bean.getTcu()));
+        wd.setIc(dataTool.getBinaryStrFromByte(bean.getIc()));
+        wd.setAbs(dataTool.getBinaryStrFromByte(bean.getAbs()));
+        wd.setPdc(dataTool.getBinaryStrFromByte(bean.getPdc()));
+        wd.setBcm2(dataTool.getBinaryStrFromByte(bean.getBcm2()));
+        warningMessageDataRespository.save(wd);
     }
 
 
-   /* //GPS数据保存测试
-    _logger.info(">>save RegularReportMes");
-    GpsData gd=new GpsData();
-    gd.setImei("123456789012345");
-    gd.setVin("12345678912345678");
-    gd.setSerialNumber("12345678919991");
-    gd.setApplicationId(11);
-    gd.setMessageId(1);
-    gd.setHeading(230);
-    gd.setIsLocation((short) 1);
-    gd.setLatitude(114256398l);
-    gd.setLongitude(111l);
-    gd.setSpeed(123);
-    gd.setSendingTime(dataTool.getCurrentSeconds());
-    gpsDataRepository.save(gd);*/
-    //
 }

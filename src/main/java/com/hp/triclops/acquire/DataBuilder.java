@@ -20,48 +20,68 @@ public class DataBuilder {
     DataTool dataTool;
     public String  buildStr(){
         //生成数据
-      /*  System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        PramStatusAck hr=new PramStatusAck();
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        DataResendMes hr=new DataResendMes();
         hr.setTestFlag((short) 1);
         hr.setSendingTime((long) dataTool.getCurrentSeconds());
-        hr.setMessageID((short) 2);//>>>
-        hr.setEventID(1438573144l);
-        hr.setApplicationID((short) 65);//>>>
-
-        hr.setFrequencySaveLocalMedia(60);
-        hr.setFrequencyForRealTimeReport(60);
-        hr.setFrequencyForWarningReport(10);
-        hr.setHardwareVersion("11111");
-        hr.setSoftwareVersion("22222");
-        hr.setFrequencyHeartbeat((short) 10);
-        hr.setTimeOutForTerminalSearch(60);
-        hr.setTimeOutForServerSearch(60);
-        hr.setEnterpriseBroadcastAddress(dataTool.getBytesFromByteBuffer(dataTool.getByteBuffer("00 00 C0 A8 01 01 ")));
-        hr.setEnterpriseBroadcastPort(9000);
-
-        hr.setProtocolVersionNumber((short) 1);
-        hr.setTripID((short) 1);
-        hr.setVehicleID(1);
+        hr.setApplicationID((short) 35);//>>>
+        hr.setMessageID((short) 1);//>>>
         hr.setImei("123456789012345");
+        hr.setProtocolVersionNumber((short) 1);
+        hr.setVehicleID(1);
+        hr.setTripID((short) 1);
         hr.setReserved(0);
-        hr.setReserved(0);
-        //hr.setPramCmdDataSize();
 
-        DataPackage dpw=new DataPackage("8995_65_2");//>>>
+        hr.setIsLocation((short) 1);
+        hr.setLatitude(114256398l);
+        hr.setLongitude(111l);
+        hr.setSpeed(123);
+        hr.setHeading(230);
+        hr.setFuelOil((short) 10);
+        hr.setAvgOil(11);
+        hr.setOilLife((short) 15);
+        hr.setDriveRange(new byte[]{(byte) 99, (byte) 99, (byte) 90});
+        hr.setLeftFrontTirePressure(251);
+        hr.setLeftRearTirePressure(252);
+        hr.setRightFrontTirePressure(253);
+        hr.setRightRearTirePressure(254);
+        hr.setWindowInformation((short) 170);
+        hr.setVehicleTemperature((short) 65);
+        hr.setVehicleOuterTemperature((short) 67);
+        hr.setDoorInformation((short) 170);
+        hr.setSingleBatteryVoltage(14000);
+        hr.setMaximumVoltagePowerBatteryPack((short) 200);
+        hr.setMaximumBatteryVoltage(15000);
+        hr.setBatteryMonomerMinimumVoltage(14000);
+        hr.setEngineCondition((short) 170);
+        hr.setEngineSpeed(4000);
+        hr.setRapidAcceleration(200);
+        hr.setRapidDeceleration(300);
+        hr.setSpeeding(30);
+        hr.setSignalStrength((short) 10);
+
+        hr.setBcm1(new byte[]{(byte) 100});
+      hr.setEms(new byte[]{(byte) 100});
+        hr.setTcu(new byte[]{(byte) 100});
+        hr.setIc(new byte[]{(byte) 100});
+        hr.setAbs(new byte[]{(byte) 100});
+        hr.setPdc(new byte[]{(byte) 100});
+   hr.setBcm2(new byte[]{(byte) 100});
+
+        DataPackage dpw=new DataPackage("8995_35_1");//>>>
         dpw.fillBean(hr);
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr=PackageEntityManager.getByteString(bbw);
         System.out.println(byteStr);
         return byteStr;
-        */
-        return "";
+
     }
     public void print(String str){
-       /* String byteString=str;
+        String byteString=str;
         ByteBuffer bb=PackageEntityManager.getByteBuffer(byteString);
         DataPackage dp=conversionTBox.generate(bb);
-        PramStatusAck bean=dp.loadBean(PramStatusAck.class);
-        PackageEntityManager.printEntity(bean);*/
+        DataResendMes bean=dp.loadBean(DataResendMes.class);
+        PackageEntityManager.printEntity(bean);
 
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }

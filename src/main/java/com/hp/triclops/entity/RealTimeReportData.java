@@ -20,15 +20,15 @@ public class RealTimeReportData {
     private Short fuelOil;
     private int avgOil;
     private Short oilLife;
-    private int driveRange;
+    private String driveRange;
     private int leftFrontTirePressure;
     private int leftRearTirePressure;
     private int rightFrontTirePressure;
     private int rightRearTirePressure;
-    private Short windowInformation;
+    private String windowInformation;
     private Short vehicleTemperature;
     private Short vehicleOuterTemperature;
-    private Short doorInformation;
+    private String doorInformation;
     private int singleBatteryVoltage;
     private Short maximumVoltagePowerBatteryPack;
     private int maximumBatteryVoltage;
@@ -133,12 +133,12 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "drive_range", nullable = false, insertable = true, updatable = true)
-    public int getDriveRange() {
+    @Column(name = "drive_range", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getDriveRange() {
         return driveRange;
     }
 
-    public void setDriveRange(int driveRange) {
+    public void setDriveRange(String driveRange) {
         this.driveRange = driveRange;
     }
 
@@ -183,12 +183,12 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "window_information", nullable = false, insertable = true, updatable = true)
-    public Short getWindowInformation() {
+    @Column(name = "window_information", nullable = false, insertable = true, updatable = true, length = 8)
+    public String getWindowInformation() {
         return windowInformation;
     }
 
-    public void setWindowInformation(Short windowInformation) {
+    public void setWindowInformation(String windowInformation) {
         this.windowInformation = windowInformation;
     }
 
@@ -213,12 +213,12 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "door_information", nullable = false, insertable = true, updatable = true)
-    public Short getDoorInformation() {
+    @Column(name = "door_information", nullable = false, insertable = true, updatable = true, length = 8)
+    public String getDoorInformation() {
         return doorInformation;
     }
 
-    public void setDoorInformation(Short doorInformation) {
+    public void setDoorInformation(String doorInformation) {
         this.doorInformation = doorInformation;
     }
 
