@@ -1,5 +1,6 @@
 package com.hp.triclops;
 
+import com.hp.data.core.Conversion;
 import com.hp.triclops.service.DataHandleService;
 import org.junit.After;
 import org.junit.Before;
@@ -14,10 +15,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = Application.class,locations = "classpath:spring-config.xml")
 public class DataHandleServiceTest {
     @Autowired
     DataHandleService dataHandleService;
+    @Autowired
+    Conversion conversionTBox;
     @Before
     public void setUp() {
     }
@@ -26,11 +29,32 @@ public class DataHandleServiceTest {
     public void tearDown() {
     }
     @Test
+      public void test_saveRegularReportMes(){
+        //测试固定数据保存
+        String byteString="23 23 00 3C 01 56 04 F6 8E 21 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 00 00 00 00 00 00 00 0A 00 0A 0A 00 3C 00 3C 01 00 0C 96 31 2E 30 00 00 31 2E 30 00 00 00 3C 00 00 C0 A8 01 01 23 28 C9";
+        dataHandleService.saveMessage("12345678919991234",byteString);
+    }
+    @Test
     public void test_saveRealTimeMessage(){
         //测试实时数据保存
         String byteString="";
-        dataHandleService.saveMessage(byteString);
+        //dataHandleService.saveMessage(byteString);
     }
+    @Test
+    public void test_saveDataResendMes(){
+        //测试补发数据保存
+        String byteString="";
+        //dataHandleService.saveMessage(byteString);
+    }
+    @Test
+    public void test_saveWarningMessage(){
+        //测试报警数据保存
+        String byteString="";
+        //dataHandleService.saveMessage(byteString);
+    }
+
+
+
 
 
 }

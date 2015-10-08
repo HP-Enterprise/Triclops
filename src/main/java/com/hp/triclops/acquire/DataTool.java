@@ -28,6 +28,28 @@ public class DataTool {
         return true;
     }
 
+    public  String getIp(byte[] bytes){
+        //IP地址转换 00 00 C0 A8 01 01
+        String re="";
+        StringBuilder sb=new StringBuilder();
+        if (bytes.length==6){
+           if(bytes[0]==0x00&&bytes[1]==0x00){
+            //ipv4
+            sb.append(bytes[2]&0xFF);
+            sb.append(".");
+            sb.append(bytes[3]&0xFF);
+            sb.append(".");
+            sb.append(bytes[4]&0xFF);
+            sb.append(".");
+            sb.append(bytes[5]&0xFF);
+        }else{//ipv6存储为6个byte并还原的方法暂无相关资料，暂未实现
+            sb.append("ipv6");
+           }
+           re=sb.toString();
+        }
+        return re;
+    }
+
     public  byte getApplicationType(byte[] bytes){
         //返回数据包操作类型对应的byte
         byte data=0;

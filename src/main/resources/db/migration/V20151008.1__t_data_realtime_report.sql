@@ -1,11 +1,10 @@
 CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   id bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   vin varchar(50) NOT NULL COMMENT 'vin',
-  serial_number varchar(50) NOT NULL COMMENT '序列号',
   imei varchar(50) NOT NULL COMMENT 'imei',
   application_id int(11) NOT NULL COMMENT 'application id',
   message_id int(11) NOT NULL COMMENT 'message id',
-  sending_time int(11) NOT NULL COMMENT '发送时间',
+  sending_time bigint(20) NOT NULL COMMENT '发送时间',
   fuel_oil smallint(6) NOT NULL COMMENT '燃油量',
   avg_oil int(11) NOT NULL COMMENT '平均油耗',
   oil_life smallint(6) NOT NULL COMMENT '机油寿命',

@@ -33,6 +33,6 @@ public class DataHandlerThread  extends Thread{
         //将input:{vin}对应的十六进制字符串处理入库
         String msg =socketRedis.popSetOneString(k);
         _logger.info("handle msg>>>>>"+k+":"+msg);
-        dataHandleService.saveMessage(msg);
+        dataHandleService.saveMessage(vin,msg);
     }
 }

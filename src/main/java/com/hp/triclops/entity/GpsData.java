@@ -12,11 +12,10 @@ public class GpsData {
 
     private Long id;
     private String vin;
-    private String serialNumber;
     private String imei;
     private int applicationId;
     private int messageId;
-    private int sendingTime;
+    private Long sendingTime;
     private Short isLocation;
     private Long latitude;
     private Long longitude;
@@ -44,16 +43,6 @@ public class GpsData {
 
     public void setVin(String vin) {
         this.vin = vin;
-    }
-
-    @Basic
-    @Column(name = "serial_number", nullable = false, insertable = true, updatable = true, length = 50)
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
     }
 
     @Basic
@@ -88,11 +77,11 @@ public class GpsData {
 
     @Basic
     @Column(name = "sending_time", nullable = false, insertable = true, updatable = true)
-    public int getSendingTime() {
+    public Long getSendingTime() {
         return sendingTime;
     }
 
-    public void setSendingTime(int sendingTime) {
+    public void setSendingTime(Long sendingTime) {
         this.sendingTime = sendingTime;
     }
 

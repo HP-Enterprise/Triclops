@@ -136,7 +136,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
-                case 0x24://补发数据上报
+                case 0x24://报警数据上报
                     _logger.info("Warning Message");
                     chKey=getKeyByValue(ch);
                     if(chKey==null){

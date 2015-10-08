@@ -1,15 +1,14 @@
 CREATE TABLE IF NOT EXISTS t_data_gps (
   id bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  vin varchar(17) NOT NULL COMMENT '³µ¼ÜºÅ',
-  serial_number varchar(14) NOT NULL COMMENT 'TBOXĞòÁĞºÅ',
+  vin varchar(17) NOT NULL COMMENT 'è½¦æ¶å·',
   imei varchar(15) NOT NULL COMMENT 'imei',
-  application_id int(2) NOT NULL COMMENT 'Ó¦ÓÃÀàĞÍid',
-  message_id int(1) NOT NULL COMMENT 'ÏûÏ¢id',
-  sending_time int(10) NOT NULL COMMENT '·¢ËÍÊ±¼ä',
-  is_location smallint(1) NOT NULL COMMENT 'ÊÇ·ñ¶¨Î»',
-  latitude bigint(9) NOT NULL COMMENT 'Î³¶È',
-  longitude bigint(9) NOT NULL COMMENT '¾­¶È',
-  speed int(4) NOT NULL COMMENT 'ËÙ¶È',
-  heading int(3) NOT NULL COMMENT '·½Ïò',
+  application_id int(2) NOT NULL COMMENT 'åº”ç”¨ç±»å‹id',
+  message_id int(1) NOT NULL COMMENT 'æ¶ˆæ¯id',
+  sending_time bigint(20) NOT NULL COMMENT 'å‘é€æ—¶é—´',
+  is_location smallint(1) NOT NULL COMMENT 'æ˜¯å¦å®šä½',
+  latitude bigint(9) NOT NULL COMMENT 'çº¬åº¦',
+  longitude bigint(9) NOT NULL COMMENT 'ç»åº¦',
+  speed int(4) NOT NULL COMMENT 'é€Ÿåº¦',
+  heading int(3) NOT NULL COMMENT 'æ–¹å‘',
   PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8 COMMENT='GPSÊı¾İ±í';
+) DEFAULT CHARSET=utf8 COMMENT='GPSæ•°æ®è¡¨';

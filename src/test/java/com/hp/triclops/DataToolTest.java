@@ -35,4 +35,10 @@ public class DataToolTest {
     public void test_getTimeOutSeconds(){
         System.out.println(dataTool.getTimeOutSeconds("49", "1"));
     }
+
+    @Test
+    public void test_getIp(){
+        String hexStr="00 00 C0 A8 01 01";
+        System.out.println(dataTool.getIp(dataTool.getBytesFromByteBuffer(dataTool.getByteBuffer(hexStr))));
+    }
 }
