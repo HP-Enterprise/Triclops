@@ -58,12 +58,16 @@ public class UserRepositoryDAO<T>  {
         currentPage=(currentPage<=0)?1:currentPage;
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
-        if(oid>=0||isowner>=0) {
+        vin=(vin==null)?"":vin;
+        if(!vin.equals("")||oid>=0||isowner>=0) {
             if (oid != null && oid >= 0) {
                 jpql = jpql + " join u.organizationSet O where O.id =:oid";
             }
             if (isowner == 0 || isowner == 1) {
                 jpql = jpql + " join u.userSet u1 where u1.iflag=:isowner";
+            }
+            if (!vin.equals("")){
+                jpql=jpql+" join u.userSet u1 join u.vehicleSet v where v.vin like :vin";
             }
         }else{
             jpql=jpql+" where 1=1";
@@ -125,6 +129,10 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("isowner",isowner);
             queryCount.setParameter("isowner",isowner);
         }
+        if (!vin.equals("")){
+            query.setParameter("vin","%"+vin+"%");
+            queryCount.setParameter("vin","%"+vin+"%");
+        }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
         List items=query.getResultList();
@@ -167,12 +175,16 @@ public class UserRepositoryDAO<T>  {
         currentPage=(currentPage<=0)?1:currentPage;
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
-        if (oid>0||isowner>=0){
+        vin=(vin==null)?"":vin;
+        if (!vin.equals("") ||oid>0||isowner>=0){
             if (oid != null && oid >= 0) {
                 jpql = jpql + " join u.organizationSet O where O.id =:oid";
             }
             if (isowner == 0 || isowner == 1) {
                 jpql = jpql + " join u.userSet u1 where u1.iflag =:isowner";
+            }
+            if (!vin.equals("")){
+                jpql=jpql+" join u.userSet u1 join u.vehicleSet v where v.vin =:vin";
             }
         }else {
                 jpql = jpql+ " where 1=1";
@@ -232,6 +244,10 @@ public class UserRepositoryDAO<T>  {
         if (isowner==0||isowner==1){
             query.setParameter("isowner",isowner);
             queryCount.setParameter("isowner",isowner);
+        }
+        if (!vin.equals("")){
+            query.setParameter("vin",vin);
+            queryCount.setParameter("vin",vin);
         }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
