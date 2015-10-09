@@ -33,14 +33,14 @@ public class DataBuilder {
         hr.setReserved(0);
 
         hr.setIsLocation((short) 1);
-        hr.setLatitude(114256398l);
-        hr.setLongitude(111l);
+        hr.setLatitude(30123456l);
+        hr.setLongitude(114123456l);
         hr.setSpeed(123);
         hr.setHeading(230);
         hr.setFuelOil((short) 10);
         hr.setAvgOil(11);
         hr.setOilLife((short) 15);
-        hr.setDriveRange(new byte[]{(byte) 99, (byte) 99, (byte) 90});
+        hr.setDriveRange(new byte[]{(byte) 13, (byte) 144, (byte) 56});
         hr.setLeftFrontTirePressure(251);
         hr.setLeftRearTirePressure(252);
         hr.setRightFrontTirePressure(253);
@@ -60,13 +60,13 @@ public class DataBuilder {
         hr.setSpeeding(30);
         hr.setSignalStrength((short) 10);
 
-        hr.setBcm1(new byte[]{(byte) 100});
-      hr.setEms(new byte[]{(byte) 100});
-        hr.setTcu(new byte[]{(byte) 100});
-        hr.setIc(new byte[]{(byte) 100});
-        hr.setAbs(new byte[]{(byte) 100});
-        hr.setPdc(new byte[]{(byte) 100});
-   hr.setBcm2(new byte[]{(byte) 100});
+        hr.setBcm1((byte)170);
+        hr.setEms((byte)170);
+        hr.setTcu((byte)170);
+        hr.setIc((byte)170);
+        hr.setAbs((byte)170);
+        hr.setPdc((byte)170);
+        hr.setBcm2((byte)170);
 
         DataPackage dpw=new DataPackage("8995_35_1");//>>>
         dpw.fillBean(hr);

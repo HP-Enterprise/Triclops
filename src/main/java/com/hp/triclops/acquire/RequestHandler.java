@@ -5,6 +5,7 @@ import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.service.TboxService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,8 @@ public class RequestHandler {
     DataTool dataTool;
     @Autowired
     SocketRedis socketRedis;
+    @Autowired
+    TboxService tboxService;
 
 
 
@@ -49,7 +52,11 @@ public class RequestHandler {
             //请求解析到bean
             //远程唤醒响应
             System.out.println(bean.getVin()+"|"+bean.getSerialNumber());
-            short tBoxStatus=1;
+            boolean activeResult=tboxService.activationTBox(bean.getVin(),bean.getSerialNumber());//true成功 false失败
+            short tBoxStatus=1; //0激活成功 1激活失败
+            if(activeResult){
+                tBoxStatus=0;
+            }
             ActiveResp resp=new ActiveResp();
             resp.setHead(bean.getHead());
             resp.setTestFlag(bean.getTestFlag());

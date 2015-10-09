@@ -1,6 +1,7 @@
 package com.hp.triclops.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by luj on 2015/9/29.
@@ -15,7 +16,7 @@ public class RegularReportData {
     private String imei;
     private int applicationId;
     private int messageId;
-    private Long sendingTime;
+    private Date sendingTime;
     //参见文档额定数据表
     private int frequencyForRealTimeReport;
     private int frequencyForWarningReport;
@@ -84,11 +85,11 @@ public class RegularReportData {
 
     @Basic
     @Column(name = "sending_time", nullable = false, insertable = true, updatable = true)
-    public Long getSendingTime() {
+    public Date getSendingTime() {
         return sendingTime;
     }
 
-    public void setSendingTime(Long sendingTime) {
+    public void setSendingTime(Date sendingTime) {
         this.sendingTime = sendingTime;
     }
 

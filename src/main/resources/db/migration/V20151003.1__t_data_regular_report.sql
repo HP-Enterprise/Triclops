@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS  t_data_regular_report (
  imei varchar(50) NOT NULL COMMENT 'imei',
  application_id int(11) NOT NULL COMMENT 'application id',
  message_id int(11) NOT NULL COMMENT 'message id',
- sending_time bigint(20) NOT NULL COMMENT '发送时间',
+ sending_time DATETIME NOT NULL COMMENT '发送时间',
  frequency_for_realtime_report int(11) NOT NULL COMMENT '实时数据上报周期',
  frequency_for_warning_report int(11) NOT NULL COMMENT '报警数据上报周期',
  frequency_heartbeat int(11) NOT NULL COMMENT '心跳周期',

@@ -1,6 +1,7 @@
 package com.hp.triclops.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by luj on 2015/9/28.
@@ -15,25 +16,35 @@ public class RealTimeReportData {
     private String imei;
     private int applicationId;
     private int messageId;
-    private Long sendingTime;
+    private Date sendingTime;
 
     private Short fuelOil;
-    private int avgOil;
-    private Short oilLife;
-    private String driveRange;
+    private String avgOil;
+    private String oilLife;
+    private int driveRange;
     private int leftFrontTirePressure;
     private int leftRearTirePressure;
     private int rightFrontTirePressure;
     private int rightRearTirePressure;
-    private String windowInformation;
+    private String leftFrontWindowInformation;
+    private String leftRearWindowInformation;
+    private String rightFrontWindowInformation;
+    private String rightRearWindowInformation;
     private Short vehicleTemperature;
     private Short vehicleOuterTemperature;
-    private String doorInformation;
-    private int singleBatteryVoltage;
+    private String leftFrontDoorInformation;
+    private String leftRearDoorInformation;
+    private String rightFrontDoorInformation;
+    private String rightRearDoorInformation;
+    private String engineDoorInformation;
+
+    private String trunkDoorInformation;
+    private String singleBatteryVoltage;
     private Short maximumVoltagePowerBatteryPack;
-    private int maximumBatteryVoltage;
-    private int batteryMonomerMinimumVoltage;
-    private Short engineCondition;
+    private String maximumBatteryVoltage;
+    private String batteryMonomerMinimumVoltage;
+    private String engineCondition;
+    //  0:engine stop 1:engine start 2:idle speed 3:part load  4:trailling throttle  5:full load  6:Fuel Cut Off  7:undefined
     private int engineSpeed;
     private int rapidAcceleration;
     private int rapidDeceleration;
@@ -93,11 +104,11 @@ public class RealTimeReportData {
 
     @Basic
     @Column(name = "sending_time", nullable = false, insertable = true, updatable = true)
-    public Long getSendingTime() {
+    public Date getSendingTime() {
         return sendingTime;
     }
 
-    public void setSendingTime(Long sendingTime) {
+    public void setSendingTime(Date sendingTime) {
         this.sendingTime = sendingTime;
     }
 
@@ -113,32 +124,32 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "avg_oil", nullable = false, insertable = true, updatable = true)
-    public int getAvgOil() {
+    @Column(name = "avg_oil", nullable = false, insertable = true, updatable = true, length = 10)
+    public String getAvgOil() {
         return avgOil;
     }
 
-    public void setAvgOil(int avgOil) {
+    public void setAvgOil(String avgOil) {
         this.avgOil = avgOil;
     }
 
     @Basic
-    @Column(name = "oil_life", nullable = false, insertable = true, updatable = true)
-    public Short getOilLife() {
+    @Column(name = "oil_life", nullable = false, insertable = true, updatable = true, length = 10)
+    public String getOilLife() {
         return oilLife;
     }
 
-    public void setOilLife(Short oilLife) {
+    public void setOilLife(String oilLife) {
         this.oilLife = oilLife;
     }
 
     @Basic
-    @Column(name = "drive_range", nullable = false, insertable = true, updatable = true, length = 100)
-    public String getDriveRange() {
+    @Column(name = "drive_range", nullable = false, insertable = true, updatable = true)
+    public int getDriveRange() {
         return driveRange;
     }
 
-    public void setDriveRange(String driveRange) {
+    public void setDriveRange(int driveRange) {
         this.driveRange = driveRange;
     }
 
@@ -182,15 +193,7 @@ public class RealTimeReportData {
         this.rightRearTirePressure = rightRearTirePressure;
     }
 
-    @Basic
-    @Column(name = "window_information", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getWindowInformation() {
-        return windowInformation;
-    }
 
-    public void setWindowInformation(String windowInformation) {
-        this.windowInformation = windowInformation;
-    }
 
     @Basic
     @Column(name = "vehicle_temperature", nullable = false, insertable = true, updatable = true)
@@ -213,22 +216,113 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "door_information", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getDoorInformation() {
-        return doorInformation;
+    @Column(name = "left_front_window_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getLeftFrontWindowInformation() {
+        return leftFrontWindowInformation;
     }
 
-    public void setDoorInformation(String doorInformation) {
-        this.doorInformation = doorInformation;
+    public void setLeftFrontWindowInformation(String leftFrontWindowInformation) {
+        this.leftFrontWindowInformation = leftFrontWindowInformation;
     }
 
     @Basic
-    @Column(name = "single_battery_voltage", nullable = false, insertable = true, updatable = true)
-    public int getSingleBatteryVoltage() {
+    @Column(name = "left_rear_window_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getLeftRearWindowInformation() {
+        return leftRearWindowInformation;
+    }
+
+    public void setLeftRearWindowInformation(String leftRearWindowInformation) {
+        this.leftRearWindowInformation = leftRearWindowInformation;
+    }
+
+    @Basic
+    @Column(name = "right_front_window_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getRightFrontWindowInformation() {
+        return rightFrontWindowInformation;
+    }
+
+    public void setRightFrontWindowInformation(String rightFrontWindowInformation) {
+        this.rightFrontWindowInformation = rightFrontWindowInformation;
+    }
+
+    @Basic
+    @Column(name = "right_rear_window_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getRightRearWindowInformation() {
+        return rightRearWindowInformation;
+    }
+
+    public void setRightRearWindowInformation(String rightRearWindowInformation) {
+        this.rightRearWindowInformation = rightRearWindowInformation;
+    }
+
+    @Basic
+    @Column(name = "left_front_door_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getLeftFrontDoorInformation() {
+        return leftFrontDoorInformation;
+    }
+
+    public void setLeftFrontDoorInformation(String leftFrontDoorInformation) {
+        this.leftFrontDoorInformation = leftFrontDoorInformation;
+    }
+
+    @Basic
+    @Column(name = "left_rear_door_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getLeftRearDoorInformation() {
+        return leftRearDoorInformation;
+    }
+
+    public void setLeftRearDoorInformation(String leftRearDoorInformation) {
+        this.leftRearDoorInformation = leftRearDoorInformation;
+    }
+
+    @Basic
+    @Column(name = "right_front_door_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getRightFrontDoorInformation() {
+        return rightFrontDoorInformation;
+    }
+
+    public void setRightFrontDoorInformation(String rightFrontDoorInformation) {
+        this.rightFrontDoorInformation = rightFrontDoorInformation;
+    }
+
+    @Basic
+    @Column(name = "right_rear_door_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getRightRearDoorInformation() {
+        return rightRearDoorInformation;
+    }
+
+    public void setRightRearDoorInformation(String rightRearDoorInformation) {
+        this.rightRearDoorInformation = rightRearDoorInformation;
+    }
+
+    @Basic
+    @Column(name = "engine_door_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getEngineDoorInformation() {
+        return engineDoorInformation;
+    }
+
+    public void setEngineDoorInformation(String engineDoorInformation) {
+        this.engineDoorInformation = engineDoorInformation;
+    }
+
+    @Basic
+    @Column(name = "trunk_door_information", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getTrunkDoorInformation() {
+        return trunkDoorInformation;
+    }
+
+    public void setTrunkDoorInformation(String trunkDoorInformation) {
+        this.trunkDoorInformation = trunkDoorInformation;
+    }
+
+
+    @Basic
+    @Column(name = "single_battery_voltage",nullable = false, insertable = true, updatable = true, length = 10)
+    public String getSingleBatteryVoltage() {
         return singleBatteryVoltage;
     }
 
-    public void setSingleBatteryVoltage(int singleBatteryVoltage) {
+    public void setSingleBatteryVoltage(String singleBatteryVoltage) {
         this.singleBatteryVoltage = singleBatteryVoltage;
     }
 
@@ -243,32 +337,32 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "maximum_battery_voltage", nullable = false, insertable = true, updatable = true)
-    public int getMaximumBatteryVoltage() {
+    @Column(name = "maximum_battery_voltage",nullable = false, insertable = true, updatable = true, length = 10)
+    public String getMaximumBatteryVoltage() {
         return maximumBatteryVoltage;
     }
 
-    public void setMaximumBatteryVoltage(int maximumBatteryVoltage) {
+    public void setMaximumBatteryVoltage(String maximumBatteryVoltage) {
         this.maximumBatteryVoltage = maximumBatteryVoltage;
     }
 
     @Basic
-    @Column(name = "battery_monomer_minimum_voltage", nullable = false, insertable = true, updatable = true)
-    public int getBatteryMonomerMinimumVoltage() {
+    @Column(name = "battery_monomer_minimum_voltage", nullable = false, insertable = true, updatable = true, length = 10)
+    public String getBatteryMonomerMinimumVoltage() {
         return batteryMonomerMinimumVoltage;
     }
 
-    public void setBatteryMonomerMinimumVoltage(int batteryMonomerMinimumVoltage) {
+    public void setBatteryMonomerMinimumVoltage(String batteryMonomerMinimumVoltage) {
         this.batteryMonomerMinimumVoltage = batteryMonomerMinimumVoltage;
     }
 
     @Basic
-    @Column(name = "engine_condition", nullable = false, insertable = true, updatable = true)
-    public Short getEngineCondition() {
+    @Column(name = "engine_condition", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getEngineCondition() {
         return engineCondition;
     }
 
-    public void setEngineCondition(Short engineCondition) {
+    public void setEngineCondition(String engineCondition) {
         this.engineCondition = engineCondition;
     }
 

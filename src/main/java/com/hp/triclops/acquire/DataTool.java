@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Date;
 import com.hp.triclops.repository.VehicleRepository;
@@ -101,6 +102,98 @@ public class DataTool {
         int currentSeconds=Integer.valueOf(String.valueOf(new Date().getTime()/1000));
         return currentSeconds;
     }
+
+    public Date seconds2Date(long seconds){
+        //时间的秒数转换成Date
+        Date d=new Date(seconds*1000L);
+        return d;
+    }
+
+    public String getTrueLatAndLon(long a){
+        //经纬度除以1000000得到真实值
+        String  num = a/1000000+"."+a%1000000;
+        return num;
+    }
+    public float getTrueSpeed(int a){
+        //得到真实速度值
+        float  speed =Float.parseFloat( a/10+"."+a%10);
+        return speed;
+    }
+    public String getTrueAvgOil(int a){
+        //得到真实油耗值
+        String  avgOil=a/10+"."+a%10;
+        return avgOil;
+    }
+    public Short getTrueTmp(short a){
+        //得到真实温度
+        return (short)(a-(short)40);
+    }
+    public String  getEngineConditionInfo(short s){
+         /*
+        得到发动机状态信息
+        0:engine stop
+        1:engine start
+        2:idle speed
+        3:part load
+        4:trailling throttle
+        5:full load
+        6:Fuel Cut Off
+        7:undefined
+        数据超出范围时按7(undefined)处理
+         */
+        byte b=(byte)s;
+        String re="";
+        switch(b)
+        {
+            case 0x00://
+               re="0";
+                break;
+            case 0x01://
+                re="1";
+                break;
+            case 0x02://
+                re="2";
+                break;
+            case 0x03://
+                re="3";
+                break;
+            case 0x04://
+                re="4";
+                break;
+            case 0x05://
+                re="5";
+                break;
+            case 0x06://
+                re="6";
+                break;
+            case 0x07://
+                re="7";
+                break;
+            default:
+                re="7";
+                break;
+        }
+      return re;
+    }
+    public String getTrueBatteryVoltage(int a){
+        //得到真实蓄电池电压
+        String  v=a/1000+"."+a%1000;
+        return v;
+    }
+    public String getTrueOilLife(int a){
+        //得到真实油耗值
+        String  re=a+"";
+         if(a>0){
+          re=a/10+"."+a%10+"%";
+         }
+        return re;
+    }
+    public char[] getBitsFromShort(short a){
+        //取包含8个数字的数组
+        String binStr=getBinaryStrFromByte((byte)a);
+        return binStr.toCharArray();
+    }
+
     public  boolean checkVinAndSerialNum(String vin,String serialNum){
         //调用平台db接口,校验vin和SerialNumber 性能测试时改为始终返回true
         // return true;

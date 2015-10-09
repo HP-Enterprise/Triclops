@@ -4,11 +4,13 @@ CREATE TABLE IF NOT EXISTS t_data_gps (
   imei varchar(15) NOT NULL COMMENT 'imei',
   application_id int(2) NOT NULL COMMENT '应用类型id',
   message_id int(1) NOT NULL COMMENT '消息id',
-  sending_time bigint(20) NOT NULL COMMENT '发送时间',
-  is_location smallint(1) NOT NULL COMMENT '是否定位',
-  latitude bigint(9) NOT NULL COMMENT '纬度',
-  longitude bigint(9) NOT NULL COMMENT '经度',
-  speed int(4) NOT NULL COMMENT '速度',
+  sending_time DATETIME NOT NULL COMMENT '发送时间',
+  is_location smallint(1) NOT NULL COMMENT '是否定位 0有效 1无效',
+  north_south varchar(1) NOT NULL COMMENT '南北纬',
+  east_west varchar(1) NOT NULL COMMENT '东西经',
+  latitude varchar(11) NOT NULL COMMENT '纬度',
+  longitude varchar(11) NOT NULL COMMENT '经度',
+  speed float NOT NULL COMMENT '速度',
   heading int(3) NOT NULL COMMENT '方向',
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8 COMMENT='GPS数据表';

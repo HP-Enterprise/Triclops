@@ -1,6 +1,7 @@
 package com.hp.triclops.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by luj on 2015/9/28.
@@ -15,11 +16,13 @@ public class GpsData {
     private String imei;
     private int applicationId;
     private int messageId;
-    private Long sendingTime;
+    private Date sendingTime;
     private Short isLocation;
-    private Long latitude;
-    private Long longitude;
-    private int speed;
+    private String northSouth;
+    private String eastWest;
+    private String latitude;
+    private String longitude;
+    private float speed;
     private int heading;
 
 
@@ -77,11 +80,11 @@ public class GpsData {
 
     @Basic
     @Column(name = "sending_time", nullable = false, insertable = true, updatable = true)
-    public Long getSendingTime() {
+    public Date getSendingTime() {
         return sendingTime;
     }
 
-    public void setSendingTime(Long sendingTime) {
+    public void setSendingTime(Date sendingTime) {
         this.sendingTime = sendingTime;
     }
 
@@ -96,32 +99,52 @@ public class GpsData {
     }
 
     @Basic
-    @Column(name = "latitude", nullable = false, insertable = true, updatable = true)
-    public Long getLatitude() {
+    @Column(name = "north_south", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getNorthSouth() {
+        return northSouth;
+    }
+
+    public void setNorthSouth(String northSouth) {
+        this.northSouth = northSouth;
+    }
+    @Basic
+    @Column(name = "east_west", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getEastWest() {
+        return eastWest;
+    }
+
+    public void setEastWest(String eastWest) {
+        this.eastWest = eastWest;
+    }
+
+
+    @Basic
+    @Column(name = "latitude", nullable = false, insertable = true, updatable = true, length = 11)
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Long latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
     @Basic
-    @Column(name = "longitude", nullable = false, insertable = true, updatable = true)
-    public Long getLongitude() {
+    @Column(name = "longitude", nullable = false, insertable = true, updatable = true, length = 11)
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Long longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
     @Basic
     @Column(name = "speed", nullable = false, insertable = true, updatable = true)
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
