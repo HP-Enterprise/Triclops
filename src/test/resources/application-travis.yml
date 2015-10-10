@@ -1,13 +1,5 @@
 # Acquire port
-com.hp.acquire:
-    disabled: true
-    port: 9000
-
-# Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
-logging:
-    level:
-        org.hibernate: WARN
-        org.springframework: WARN
+com.hp.acquire.disabled: true
 
 # Spring settings
 spring:
@@ -15,13 +7,5 @@ spring:
         url: jdbc:mysql://127.0.0.1:3306/briair?characterEncoding=utf8
         username: travis
         password:
-    jpa:
-        show-sql: true
-        hibernate:
-            # Hibernate DDL auto (create, create-drop, update, validate)
-            ddl-auto: validate
-            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-        properties:
-            hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
     redis:
         host: 127.0.0.1

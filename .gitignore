@@ -5,7 +5,5 @@
 build/
 /*.properties
 
-/src/*/resources/application.properties
-/src/*/resources/application.yml
 /src/*/resources/application-*.properties
 /src/*/resources/application-*.yml
