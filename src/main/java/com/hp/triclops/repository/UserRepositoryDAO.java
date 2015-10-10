@@ -159,13 +159,6 @@ public class UserRepositoryDAO<T>  {
         query.setMaxResults(pageSize);
         List items=query.getResultList();
         Long count= (long) queryCount.getResultList().size();
-
-        //车主车辆关系过滤
-        if(vin!=null || isowner!=null)
-        {
-            List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getList(vin, isowner);
-            items = userFilter(items,userVehicleRelativedList);
-        }
         return new Page(currentPage,pageSize,count,items);
     }
 
@@ -300,35 +293,6 @@ public class UserRepositoryDAO<T>  {
         Long count= (long) queryCount.getResultList().size();
 
         return new Page(currentPage,pageSize,count,items);
-    }
-
-    /**
-     * 过滤查询结果
-     * @param userList   用户列表
-     * @param filterList 用户车辆关系列表
-     * @return 过滤后的用户列表
-     */
-    public List userFilter(List userList,List filterList)
-    {
-        List<Object> result = new ArrayList<Object>();
-
-        for (int i=0;i<userList.size();i++)
-        {
-            User user = (User)userList.get(i);
-            int id = user.getId();
-
-            for (int j=0;j<filterList.size();j++)
-            {
-                UserVehicleRelatived userVehicleRelatived = (UserVehicleRelatived)filterList.get(j);
-                User userid = userVehicleRelatived.getUid();
-                if(id==userid.getId())
-                {
-                    result.add(userList.get(i));
-                    break;
-                }
-            }
-        }
-        return result;
     }
 
 
