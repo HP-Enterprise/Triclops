@@ -1,22 +1,56 @@
 DROP PROCEDURE IF EXISTS pro_findusers;
-CREATE PROCEDURE pro_findusers(uid int, innersql VARCHAR(100))
+CREATE PROCEDURE pro_findusers(vid int, isowner int, uid int,gender int, isVerified int, fuzzy int, nickname VARCHAR(50),firstRcord int, pageSize int,orderByProperty VARCHAR(15),ascOrDesc VARCHAR(5))
 BEGIN
-		CREATE TEMPORARY table IF NOT EXISTS the_users
+    DROP TABLE IF EXISTS the_users;
+		CREATE TEMPORARY table  the_users
 		(
 			id INT PRIMARY KEY,
 			name VARCHAR(50),
 			gender INT(3),
 			nick VARCHAR(50),
 			phone VARCHAR(11),
-			is_verified INT(1)
+			is_verified INT(1),
+            UNIQUE KEY unique_name (name),
+            KEY idx_phone (phone)
 		) ENGINE = MEMORY;
-		TRUNCATE TABLE the_users;
 			INSERT INTO the_users SELECT DISTINCT U.* FROM t_user U LEFT JOIN t_organization_user OU ON u.id =  OU.uid WHERE OU.oid in
              (SELECT O.id FROM t_organization O 
                  LEFT JOIN t_authoritygroup AG ON O.id = AG.oid 
                  LEFT JOIN t_authoritygroup_relatived AGR ON AG.id = AGR.ag_id 
-                 LEFT JOIN t_authoritygroup_user AGU ON AGR.ag_id = AGU.ag_id WHERE AGR.a_id = 0 AND AGU.u_id = uid);                 
-            set @sqls = CONCAT('SELECT * FROM the_users ',innersql);           
-            PREPARE sqlstr from @sqls;
-            Execute sqlstr;
+                 LEFT JOIN t_authoritygroup_user AGU ON AGR.ag_id = AGU.ag_id WHERE AGR.a_id = 0 AND AGU.u_id = uid);                      
+            SET @sql = "SELECT * FROM the_users u";
+            IF vid > 0 THEN
+              SET @sql = CONCAT(@sql, " LEFT JOIN t_user_vehicle_relatived uvr ON u.id = uvr.userid WHERE vid = ",vid);   
+              IF isowner > 0 THEN
+                SET @sql = CONCAT(@sql, " AND uvr.iflag = 1");
+              END IF; 
+            ELSE 
+               IF isowner  > 0 THEN
+                   SET @sql= CONCAT(@sql, " LEFT JOIN t_user_vehicle_relatived uvr ON u.id = uvr.userid WHERE uvr.iflag = 1");
+               ELSE
+                   SET @sql = CONCAT(@sql, " WHERE 1 = 1");                   
+               END IF;
+            END IF;          
+            IF gender > 0 THEN            
+                   SET @sql = CONCAT(@sql, " AND u.gender = ", gender);    
+            END IF;  
+            IF isVerified > 0 THEN            
+                   SET @sql = CONCAT(@sql, " AND u.is_verified = ", isVerified);    
+            END IF;         
+            IF FUZZY = 1 THEN     
+                IF nickname != '' THEN 
+                   SET @sql = CONCAT(@sql, " AND u.nick like ", nickname);               
+                END IF;            
+            ELSE             
+                IF nickname != '' THEN 
+                   SET @sql = CONCAT(@sql, " AND u.nick = ", nickname);               
+                END IF;                
+            END IF;   
+            IF firstRcord != '' AND pageSize != '' THEN         
+                SET @sql = CONCAT(@sql, " limit ", firstRcord, "," ,pageSize);                
+            END IF;
+            SET @sql = CONCAT(@sql, " ORDER BY u.", orderByProperty," ",ascOrDesc);
+            PREPARE sqlstr from @sql;
+            EXECUTE sqlstr;            
+   		    DROP TABLE the_users;
 END;

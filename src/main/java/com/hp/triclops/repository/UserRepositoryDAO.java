@@ -279,10 +279,10 @@ public class UserRepositoryDAO<T>  {
      * @param currentPage 获取指定页码数据 必须大于0
      * @param vid 车辆id
      * @param isowner 是否为车主
-     * @param oid 组织id
+     * @param fuzzy 是否模糊查询 1模糊查询 0精确查询
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer oid,Integer fuzzy){
+    public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer fuzzy){
         gender=(gender==null)?-1:gender;
         nick=(nick==null)?"": EscapeStringUtil.toEscape(nick);
         isVerified=(isVerified==null)?-1:isVerified;
@@ -294,49 +294,28 @@ public class UserRepositoryDAO<T>  {
         currentPage=(currentPage<=0)?1:currentPage;
         vid = (vid == null) ? 0 : vid;
         isowner = (isowner == null) ? 0 : isowner;
-        String sql = "";
-          if(vid > 0){
-              sql += " u LEFT JOIN t_user_vehicle_relatived uvr ON u.id = uvr.userid WHERE vid = "+vid;
-              if(isowner > 0 ){ //一辆车的车主
-                  sql +=" AND uvr.iflag = 1";
-              }
-          }else{
-              if(isowner > 0){ //车主
-                  sql +=" u LEFT JOIN t_user_vehicle_relatived uvr ON u.id = uvr.userid WHERE uvr.iflag = 1";
-              }else{
-                  sql += " u WHERE 1 = 1 ";
-              }
-          }
-        if (gender == 0 || gender == 1){
-            sql += " AND u.gender ="+ gender;
-        }
-        if (isVerified==0||isVerified==1){
-            sql += " AND u.is_verified ="+ isVerified;
-        }
-        if(fuzzy==1) { //模糊查询
-            if (!nick.equals("")){
-                FilterString.TransactSQLInjection(nick);
-                sql += " AND u.nick like %"+ nick + "%";
-            }
+        fuzzy = (fuzzy == null) ? 0 : fuzzy;
+        Query queryCount = em.createNativeQuery("{call pro_findusers(?,?,?,?,?,?,?,?,?,?,?)}", User.class);
+        queryCount.setParameter(1,vid);
+        queryCount.setParameter(2,isowner);
+        queryCount.setParameter(3,uid);
+        queryCount.setParameter(4,gender);
+        queryCount.setParameter(5,isVerified);
+        queryCount.setParameter(6,fuzzy);
+        if(fuzzy == 1){
+          queryCount.setParameter(7, "'%"+nick+"%'");
         }else{
-            if (!nick.equals("")) {
-                FilterString.TransactSQLInjection(nick);
-                sql += " AND u.nick =" + nick;
-            }
+          queryCount.setParameter(7, "'"+nick+"'");
         }
-
-        Query queryCount = em.createNativeQuery("{call pro_findusers(?,?)}", User.class);
-        queryCount.setParameter(1, uid);
-        queryCount.setParameter(2, sql);
+        queryCount.setParameter(8,null);
+        queryCount.setParameter(9,null);
+        queryCount.setParameter(10,orderByProperty);
+        queryCount.setParameter(11,ascOrDesc);
         Long count = (long)queryCount.getResultList().size();
-        Query query = em.createNativeQuery("{call pro_findusers(?,?)}", User.class);
         Integer firstRcord = (currentPage - 1) * pageSize;
-        sql += " limit "+firstRcord+","+pageSize;
-        query.setParameter(1, uid);
-        query.setParameter(2, sql);
-        List items=query.getResultList();
+        queryCount.setParameter(8,firstRcord);
+        queryCount.setParameter(9,pageSize);
+        List items=queryCount.getResultList();
         return new Page(currentPage,pageSize,count,items);
     }
-
-
     }
