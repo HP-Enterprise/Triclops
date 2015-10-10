@@ -29,6 +29,8 @@ public class RequestHandler {
     TboxService tboxService;
 
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
+
+
     /**
      * 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
      * @param reqString
@@ -52,7 +54,7 @@ public class RequestHandler {
             ActiveReq bean=dp.loadBean(ActiveReq.class);
             //请求解析到bean
             //远程唤醒响应
-           _logger.info(bean.getVin()+"|"+bean.getSerialNumber());
+           _logger.info(bean.getVin() + "|" + bean.getSerialNumber());
             boolean activeResult=tboxService.activationTBox(bean.getVin(),bean.getSerialNumber());//true成功 false失败
             short tBoxStatus=1; //0激活成功 1激活失败
             if(activeResult){
@@ -81,7 +83,11 @@ public class RequestHandler {
     }
 
 
-
+    /**
+     *
+     * @param reqString 远程唤醒请求hex
+     * @return 远程唤醒响应hex
+     */
     public String getRemoteWakeUpResp(String reqString){
         //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
         ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
@@ -193,7 +199,7 @@ public class RequestHandler {
     /**
      *
      * @param reqString 远程控制响应hex
-     * @return 无需返回
+     * @param vin vin码
      */
     public void getRemoteControlAck(String reqString,String vin){
         //根据心跳请求的16进制字符串，生成响应的16进制字符串
