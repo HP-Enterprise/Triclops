@@ -129,9 +129,8 @@ public class DataHandleService {
         rd.setMaximumVoltagePowerBatteryPack(bean.getMaximumVoltagePowerBatteryPack());
         rd.setMaximumBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getMaximumBatteryVoltage()));
         rd.setBatteryMonomerMinimumVoltage(dataTool.getTrueBatteryVoltage(bean.getBatteryMonomerMinimumVoltage()));
-
         rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
-        rd.setEngineSpeed(bean.getEngineSpeed());
+        rd.setEngineSpeed(dataTool.getTrueEngineSpeed(bean.getEngineSpeed()));
         rd.setRapidAcceleration(bean.getRapidAcceleration());
         rd.setRapidDeceleration(bean.getRapidDeceleration());
         rd.setSpeeding(bean.getSpeeding());
@@ -197,9 +196,8 @@ public class DataHandleService {
         rd.setMaximumVoltagePowerBatteryPack(bean.getMaximumVoltagePowerBatteryPack());
         rd.setMaximumBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getMaximumBatteryVoltage()));
         rd.setBatteryMonomerMinimumVoltage(dataTool.getTrueBatteryVoltage(bean.getBatteryMonomerMinimumVoltage()));
-
         rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
-        rd.setEngineSpeed(bean.getEngineSpeed());
+        rd.setEngineSpeed(dataTool.getTrueEngineSpeed(bean.getEngineSpeed()));
         rd.setRapidAcceleration(bean.getRapidAcceleration());
         rd.setRapidDeceleration(bean.getRapidDeceleration());
         rd.setSpeeding(bean.getSpeeding());
@@ -222,7 +220,8 @@ public class DataHandleService {
         gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         gd.setHeading(bean.getHeading());
         gpsDataRepository.save(gd);
-        //报警数据存储
+
+        //报警数据保存
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
@@ -231,21 +230,36 @@ public class DataHandleService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1]=='0'?"N":"S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2]=='0'?"E":"W");//bit2 0东经 1西经
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-        wd.setBcm1(dataTool.getBinaryStrFromByte(bean.getBcm1()));
-        wd.setEms(dataTool.getBinaryStrFromByte(bean.getEms()));
-        wd.setTcu(dataTool.getBinaryStrFromByte(bean.getTcu()));
-        wd.setIc(dataTool.getBinaryStrFromByte(bean.getIc()));
-        wd.setAbs(dataTool.getBinaryStrFromByte(bean.getAbs()));
-        wd.setPdc(dataTool.getBinaryStrFromByte(bean.getPdc()));
-        wd.setBcm2(dataTool.getBinaryStrFromByte(bean.getBcm2()));
+        char[] bcm1=dataTool.getBitsFromByte(bean.getBcm1());
+        wd.setBatteryVoltageTooHigh(bcm1[0] == '0' ? "0" : "1");
+        wd.setBatteryVoltageTooLow(bcm1[1] == '0' ? "0" : "1");
+        wd.setMediaAbnormal(bcm1[2] == '0' ? "0" : "1");
+        wd.setFrozenLiquidShortage(bcm1[3] == '0' ? "0" : "1");
+        wd.setLampFailure(bcm1[4] == '0' ? "0" : "1");
+        char[] ems=dataTool.getBitsFromByte(bean.getEms());
+        wd.setEngineAbnormal(ems[0] == '0' ? "0" : "1");
+        wd.setWaterTemperatureTooHigh(ems[1] == '0' ? "0" : "1");
+        char[] tcu=dataTool.getBitsFromByte(bean.getTcu());
+        wd.setDangerousDrivingSystemFault(tcu[0] == '0' ? "0" : "1");
+        wd.setWarningDrivingSystemFault(tcu[1] == '0' ? "0" : "1");
+        wd.setDrivingSystemOverheated(tcu[2] == '0' ? "0" : "1");
+        char[] ic=dataTool.getBitsFromByte(bean.getIc());
+        wd.setAirbagAbnormal(ic[0] == '0' ? "0" : "1");
+        wd.setAbsFault(ic[1] == '0' ? "0" : "1");
+        wd.setOilPressureLow(ic[2] == '0' ? "0" : "1");
+        char[] abs=dataTool.getBitsFromByte(bean.getAbs());
+        wd.setBrakeFluidLevelLow(abs[0] == '0' ? "0" : "1");
+        char[] pdc=dataTool.getBitsFromByte(bean.getPdc());
+        wd.setPdcSystemFault(pdc[0] == '0' ? "0" : "1");
+        char[] bcm2=dataTool.getBitsFromByte(bean.getBcm2());
+        wd.setAirbagTriggered(bcm2[0] == '0' ? "0" : "1");
         warningMessageDataRespository.save(wd);
-
     }
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
@@ -262,19 +276,35 @@ public class DataHandleService {
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
         wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1]=='0'?"N":"S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2]=='0'?"E":"W");//bit2 0东经 1西经
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-        wd.setBcm1(dataTool.getBinaryStrFromByte(bean.getBcm1()));
-        wd.setEms(dataTool.getBinaryStrFromByte(bean.getEms()));
-        wd.setTcu(dataTool.getBinaryStrFromByte(bean.getTcu()));
-        wd.setIc(dataTool.getBinaryStrFromByte(bean.getIc()));
-        wd.setAbs(dataTool.getBinaryStrFromByte(bean.getAbs()));
-        wd.setPdc(dataTool.getBinaryStrFromByte(bean.getPdc()));
-        wd.setBcm2(dataTool.getBinaryStrFromByte(bean.getBcm2()));
+        char[] bcm1=dataTool.getBitsFromByte(bean.getBcm1());
+        wd.setBatteryVoltageTooHigh(bcm1[0] == '0' ? "0" : "1");
+        wd.setBatteryVoltageTooLow(bcm1[1] == '0' ? "0" : "1");
+        wd.setMediaAbnormal(bcm1[2] == '0' ? "0" : "1");
+        wd.setFrozenLiquidShortage(bcm1[3] == '0' ? "0" : "1");
+        wd.setLampFailure(bcm1[4] == '0' ? "0" : "1");
+        char[] ems=dataTool.getBitsFromByte(bean.getEms());
+        wd.setEngineAbnormal(ems[0] == '0' ? "0" : "1");
+        wd.setWaterTemperatureTooHigh(ems[1] == '0' ? "0" : "1");
+        char[] tcu=dataTool.getBitsFromByte(bean.getTcu());
+        wd.setDangerousDrivingSystemFault(tcu[0] == '0' ? "0" : "1");
+        wd.setWarningDrivingSystemFault(tcu[1] == '0' ? "0" : "1");
+        wd.setDrivingSystemOverheated(tcu[2] == '0' ? "0" : "1");
+        char[] ic=dataTool.getBitsFromByte(bean.getIc());
+        wd.setAirbagAbnormal(ic[0] == '0' ? "0" : "1");
+        wd.setAbsFault(ic[1] == '0' ? "0" : "1");
+        wd.setOilPressureLow(ic[2] == '0' ? "0" : "1");
+        char[] abs=dataTool.getBitsFromByte(bean.getAbs());
+        wd.setBrakeFluidLevelLow(abs[0] == '0' ? "0" : "1");
+        char[] pdc=dataTool.getBitsFromByte(bean.getPdc());
+        wd.setPdcSystemFault(pdc[0] == '0' ? "0" : "1");
+        char[] bcm2=dataTool.getBitsFromByte(bean.getBcm2());
+        wd.setAirbagTriggered(bcm2[0] == '0' ? "0" : "1");
         warningMessageDataRespository.save(wd);
     }
 

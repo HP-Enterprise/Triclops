@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   maximum_battery_voltage varchar(10) NOT NULL COMMENT '电池单体最高电压值',
   battery_monomer_minimum_voltage varchar(10) NOT NULL COMMENT '电池单体最低电压值',
   engine_condition varchar(1) NOT NULL COMMENT '发动机状态   0:engine stop 1:engine start 2:idle speed 3:part load  4:trailling throttle  5:full load  6:Fuel Cut Off  7:undefined',
-  engine_speed int(11) NOT NULL COMMENT '发动机转速',
+  engine_speed varchar(10) NOT NULL COMMENT '发动机转速',
   rapid_acceleration int(11) NOT NULL COMMENT '急加速',
   rapid_deceleration int(11) NOT NULL COMMENT '急减速',
   speeding int(11) NOT NULL COMMENT '超速',

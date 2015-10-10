@@ -88,4 +88,10 @@ public class DataToolTest {
 
         }
     }
+
+    @Test
+    public void test_getTrueEngineSpeed(){
+        int a=65535;
+        System.out.println(dataTool.getTrueEngineSpeed(a));
+    }
 }

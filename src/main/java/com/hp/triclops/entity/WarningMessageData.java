@@ -23,13 +23,88 @@ public class WarningMessageData {
     private String longitude;
     private float speed;
     private int heading;
-    private String bcm1;
-    private String ems;
-    private String tcu;
-    private String ic;
-    private String abs;
-    private String pdc;
-    private String bcm2;
+
+    /*
+    bcm1按bit
+    BIT0：车辆电瓶过压
+    0:故障发生 1:故障消除
+    BIT1：车辆电瓶欠压
+    0:故障发生 1:故障消除
+    BIT2：多媒体异常
+    0:故障发生 1:故障消除
+    BIT3：冷冻液不足
+    0:故障发生 1:故障消除
+    BIT4：车灯系统故障
+    0:故障发生 1:故障消除
+    BIT5~BIT7：预留
+     */
+    private String batteryVoltageTooHigh;
+    private String batteryVoltageTooLow;
+    private String mediaAbnormal;
+    private String frozenLiquidShortage;
+    private String lampFailure;
+
+    /*
+    ems按bit
+    BIT0：发动机异常
+    0:故障发生 1:故障消除
+    BIT1：水温过高
+    0:故障发生 1:故障消除
+    BIT2~BIT7：预留
+     */
+    private String engineAbnormal;
+    private String waterTemperatureTooHigh;
+
+    /*
+    tcu按bit
+    BIT0：危险传动系统故障
+    0:故障发生 1:故障消除
+    BIT1：警告传动系统故障
+    0:故障发生 1:故障消除
+    BIT2：传动系统过热
+    0:故障发生 1:故障消除
+    BIT3~BIT7：预留
+     */
+    private String dangerousDrivingSystemFault;
+    private String warningDrivingSystemFault;
+    private String drivingSystemOverheated;
+
+    /*
+    ic按bit
+    BIT0：安全气囊异常
+    0:故障发生 1:故障消除
+    BIT1： ABS故障
+    0:故障发生 1:故障消除
+    BIT2：油压低
+    0:故障发生 1:故障消除
+    BIT3~BIT7：预留
+     */
+    private String airbagAbnormal;
+    private String absFault;
+    private String oilPressureLow;
+
+    /*
+    abs按bit
+    BIT0： 刹车液位低。
+    0:故障发生 1:故障消除
+    BIT1~BIT7：预留
+     */
+    private String brakeFluidLevelLow;
+
+    /*
+    pdc按bit
+    BIT0： PDC系统故障。
+    0:故障发生 1:故障消除
+    BIT1~BIT7：预留
+    */
+    private String pdcSystemFault;
+    /*
+    bcm2按bit
+    BIT0： 安全气囊触发。
+    0: 触发 1:未触发
+    BIT1~BIT7：预留
+     */
+    private String airbagTriggered;
 
 
     @Id
@@ -163,72 +238,162 @@ public class WarningMessageData {
     }
 
     @Basic
-    @Column(name = "bcm1", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getBcm1() {
-        return bcm1;
+    @Column(name = "battery_voltage_too_high", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getBatteryVoltageTooHigh() {
+        return batteryVoltageTooHigh;
     }
 
-    public void setBcm1(String bcm1) {
-        this.bcm1 = bcm1;
-    }
-
-    @Basic
-    @Column(name = "ems", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getEms() {
-        return ems;
-    }
-
-    public void setEms(String ems) {
-        this.ems = ems;
+    public void setBatteryVoltageTooHigh(String batteryVoltageTooHigh) {
+        this.batteryVoltageTooHigh = batteryVoltageTooHigh;
     }
 
     @Basic
-    @Column(name = "tcu", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getTcu() {
-        return tcu;
+    @Column(name = "battery_voltage_too_low", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getBatteryVoltageTooLow() {
+        return batteryVoltageTooLow;
     }
 
-    public void setTcu(String tcu) {
-        this.tcu = tcu;
-    }
-
-    @Basic
-    @Column(name = "ic", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getIc() {
-        return ic;
-    }
-
-    public void setIc(String ic) {
-        this.ic = ic;
+    public void setBatteryVoltageTooLow(String batteryVoltageTooLow) {
+        this.batteryVoltageTooLow = batteryVoltageTooLow;
     }
 
     @Basic
-    @Column(name = "abs", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getAbs() {
-        return abs;
+    @Column(name = "media_abnormal", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getMediaAbnormal() {
+        return mediaAbnormal;
     }
 
-    public void setAbs(String abs) {
-        this.abs = abs;
-    }
-
-    @Basic
-    @Column(name = "pdc", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getPdc() {
-        return pdc;
-    }
-
-    public void setPdc(String pdc) {
-        this.pdc = pdc;
+    public void setMediaAbnormal(String mediaAbnormal) {
+        this.mediaAbnormal = mediaAbnormal;
     }
 
     @Basic
-    @Column(name = "bcm2", nullable = false, insertable = true, updatable = true, length = 8)
-    public String getBcm2() {
-        return bcm2;
+    @Column(name = "frozen_liquid_shortage", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getFrozenLiquidShortage() {
+        return frozenLiquidShortage;
     }
 
-    public void setBcm2(String bcm2) {
-        this.bcm2 = bcm2;
+    public void setFrozenLiquidShortage(String frozenLiquidShortage) {
+        this.frozenLiquidShortage = frozenLiquidShortage;
+    }
+
+    @Basic
+    @Column(name = "lamp_failure", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getLampFailure() {
+        return lampFailure;
+    }
+
+    public void setLampFailure(String lampFailure) {
+        this.lampFailure = lampFailure;
+    }
+
+    @Basic
+    @Column(name = "engine_abnormal", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getEngineAbnormal() {
+        return engineAbnormal;
+    }
+
+    public void setEngineAbnormal(String engineAbnormal) {
+        this.engineAbnormal = engineAbnormal;
+    }
+
+    @Basic
+    @Column(name = "water_temperature_too_high", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getWaterTemperatureTooHigh() {
+        return waterTemperatureTooHigh;
+    }
+
+    public void setWaterTemperatureTooHigh(String waterTemperatureTooHigh) {
+        this.waterTemperatureTooHigh = waterTemperatureTooHigh;
+    }
+
+    @Basic
+    @Column(name = "dangerous_driving_system_fault", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getDangerousDrivingSystemFault() {
+        return dangerousDrivingSystemFault;
+    }
+
+    public void setDangerousDrivingSystemFault(String dangerousDrivingSystemFault) {
+        this.dangerousDrivingSystemFault = dangerousDrivingSystemFault;
+    }
+
+    @Basic
+    @Column(name = "warning_driving_system_fault", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getWarningDrivingSystemFault() {
+        return warningDrivingSystemFault;
+    }
+
+    public void setWarningDrivingSystemFault(String warningDrivingSystemFault) {
+        this.warningDrivingSystemFault = warningDrivingSystemFault;
+    }
+
+    @Basic
+    @Column(name = "driving_system_overheated", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getDrivingSystemOverheated() {
+        return drivingSystemOverheated;
+    }
+
+    public void setDrivingSystemOverheated(String drivingSystemOverheated) {
+        this.drivingSystemOverheated = drivingSystemOverheated;
+    }
+
+    @Basic
+    @Column(name = "airbag_abnormal", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getAirbagAbnormal() {
+        return airbagAbnormal;
+    }
+
+    public void setAirbagAbnormal(String airbagAbnormal) {
+        this.airbagAbnormal = airbagAbnormal;
+    }
+
+    @Basic
+    @Column(name = "abs_fault", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getAbsFault() {
+        return absFault;
+    }
+
+    public void setAbsFault(String absFault) {
+        this.absFault = absFault;
+    }
+
+    @Basic
+    @Column(name = "oil_pressure_low", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getOilPressureLow() {
+        return oilPressureLow;
+    }
+
+    public void setOilPressureLow(String oilPressureLow) {
+        this.oilPressureLow = oilPressureLow;
+    }
+
+    @Basic
+    @Column(name = "brake_fluid_level_low", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getBrakeFluidLevelLow() {
+        return brakeFluidLevelLow;
+    }
+
+    public void setBrakeFluidLevelLow(String brakeFluidLevelLow) {
+        this.brakeFluidLevelLow = brakeFluidLevelLow;
+    }
+
+    @Basic
+    @Column(name = "pdc_system_fault", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getPdcSystemFault() {
+        return pdcSystemFault;
+    }
+
+    public void setPdcSystemFault(String pdcSystemFault) {
+        this.pdcSystemFault = pdcSystemFault;
+    }
+
+    @Basic
+    @Column(name = "airbag_triggered", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getAirbagTriggered() {
+        return airbagTriggered;
+    }
+
+    public void setAirbagTriggered(String airbagTriggered) {
+        this.airbagTriggered = airbagTriggered;
     }
 }

@@ -45,7 +45,7 @@ public class RealTimeReportData {
     private String batteryMonomerMinimumVoltage;
     private String engineCondition;
     //  0:engine stop 1:engine start 2:idle speed 3:part load  4:trailling throttle  5:full load  6:Fuel Cut Off  7:undefined
-    private int engineSpeed;
+    private String engineSpeed;
     private int rapidAcceleration;
     private int rapidDeceleration;
     private int speeding;
@@ -367,12 +367,12 @@ public class RealTimeReportData {
     }
 
     @Basic
-    @Column(name = "engine_speed", nullable = false, insertable = true, updatable = true)
-    public int getEngineSpeed() {
+    @Column(name = "engine_speed", nullable = false, insertable = true, updatable = true, length = 10)
+    public String getEngineSpeed() {
         return engineSpeed;
     }
 
-    public void setEngineSpeed(int engineSpeed) {
+    public void setEngineSpeed(String engineSpeed) {
         this.engineSpeed = engineSpeed;
     }
 

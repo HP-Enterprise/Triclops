@@ -175,6 +175,12 @@ public class DataTool {
         }
       return re;
     }
+    public String getTrueEngineSpeed(int a){
+        //得到真实油耗值
+        String  avgOil=a/8f+"";
+        return avgOil;
+    }
+
     public String getTrueBatteryVoltage(int a){
         //得到真实蓄电池电压
         String  v=a/1000+"."+a%1000;
@@ -191,6 +197,11 @@ public class DataTool {
     public char[] getBitsFromShort(short a){
         //取包含8个数字的数组
         String binStr=getBinaryStrFromByte((byte)a);
+        return binStr.toCharArray();
+    }
+    public char[] getBitsFromByte(Byte a){
+        //取包含8个数字的数组
+        String binStr=getBinaryStrFromByte(a);
         return binStr.toCharArray();
     }
 
