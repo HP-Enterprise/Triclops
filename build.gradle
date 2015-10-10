@@ -54,4 +54,8 @@ run {
     systemProperties System.getProperties()
 }
 
+test {
+    systemProperties System.getProperties()
+}
+
 defaultTasks "build"
