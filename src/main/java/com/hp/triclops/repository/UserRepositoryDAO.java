@@ -1,16 +1,16 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.User;
-import com.hp.triclops.entity.UserVehicleRelatived;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -58,10 +58,17 @@ public class UserRepositoryDAO<T>  {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
-        if(oid != null && oid>=0){
-            jpql = jpql+" join u.organizationSet O where O.id =:oid";
+        isowner=(isowner==null)?-1:isowner;
+        oid=(oid==null)?-1:oid;
+        if(oid>=0||isowner>=0) {
+            if (oid != null && oid >= 0) {
+                jpql = jpql + " join u.organizationSet O where O.id =:oid";
+            }
+            if (isowner == 0 || isowner == 1) {
+                jpql = jpql + " join u.userSet u1 where u1.iflag=:isowner";
+            }
         }else{
-            jpql = jpql+ " where 1=1";
+            jpql=jpql+" where 1=1";
         }
         if(id>=0){
             jpql=jpql+" And u.id =:id";
@@ -84,7 +91,7 @@ public class UserRepositoryDAO<T>  {
 
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
-        System.out.println("jpql:"+jpql);
+        System.out.println("111"+jpql_count);
         TypedQuery query = em.createQuery(jpql, User.class);
         TypedQuery queryCount = em.createQuery(jpql_count, User.class);
 
@@ -116,21 +123,14 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
         }
-
-
-        List<Object> items = query.getResultList();  //获取所有查询结果
-
-        //车主车辆关系过滤
-        if(vin!=null || isowner!=null)
-        {
-            List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getList(vin,isowner);
-            items = userFilter(items,userVehicleRelativedList);
+        if (isowner==0||isowner==1){
+            query.setParameter("isowner",isowner);
+            queryCount.setParameter("isowner",isowner);
         }
-
-        Long count = (long)items.size();
-        items = getPageData(pageSize,currentPage,items);  //数据分页
-
-
+        query.setFirstResult((currentPage - 1)* pageSize);
+        query.setMaxResults(pageSize);
+        List items=query.getResultList();
+        Long count= (long) queryCount.getResultList().size();
         return new Page(currentPage,pageSize,count,items);
     }
 
@@ -167,12 +167,18 @@ public class UserRepositoryDAO<T>  {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
-
-        if(oid != null && oid>=0){
-            jpql = jpql+" join u.organizationSet O where O.id =:oid";
-        }else{
-            jpql = jpql+ " where 1=1";
-        }
+        isowner=(isowner==null)?-1:isowner;
+        oid=(oid==null)?-1:oid;
+        if (oid>0||isowner>=0){
+            if (oid != null && oid >= 0) {
+                jpql = jpql + " join u.organizationSet O where O.id =:oid";
+            }
+            if (isowner == 0 || isowner == 1) {
+                jpql = jpql + " join u.userSet u1 where u1.iflag =:isowner";
+            }
+        }else {
+                jpql = jpql+ " where 1=1";
+            }
         if (id>=0){
             jpql=jpql+" And u.id =:id";
         }
@@ -225,87 +231,35 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
         }
-
-        List<Object> items = query.getResultList();
-
-        if(vin!=null || isowner!=null)
-        {
-            List<Object> userVehicleRelativedList = userVehicleRelativedRepositoryDAO.getListAccurate(vin, isowner);
-            items = userFilter(items,userVehicleRelativedList);
+        if (isowner==0||isowner==1){
+            query.setParameter("isowner",isowner);
+            queryCount.setParameter("isowner",isowner);
         }
-
-        Long count = (long)items.size();
-        items = getPageData(pageSize,currentPage,items);
-
-//        query.setFirstResult((currentPage - 1)* pageSize);
-//        query.setMaxResults(pageSize);
-//        List items=query.getResultList();
-//        Long count= (long) queryCount.getResultList().size();
+        query.setFirstResult((currentPage - 1)* pageSize);
+        query.setMaxResults(pageSize);
+        List items=query.getResultList();
+        Long count= (long) queryCount.getResultList().size();
 
         return new Page(currentPage,pageSize,count,items);
     }
 
-    /**
-     * 过滤查询结果
-     * @param userList   用户列表
-     * @param filterList 用户车辆关系列表
-     * @return 过滤后的用户列表
+    /** 调用存储过程查询多个组织用户
+     *
+     * 用户查询  支持条件模糊，条件缺省，分页显示
+     * @param gender 传入参数为null或""时不作为查询条件
+     * @param nick 传入参数为null或""时不作为查询条件
+     * @param isVerified 0表示未验证 1表示已验证 其它数值不作为查询条件
+     * @param orderByProperty 排序条件 User类的某一个属性,默认id
+     * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
+     * @param pageSize 每页数据条数 必须大于0
+     * @param currentPage 获取指定页码数据 必须大于0
+     * @param vid 车辆id
+     * @param isowner 是否为车主
+     * @param oid 组织id
+     * @return  封装了数据和页码信息的Page对象
      */
-    public List userFilter(List userList,List filterList)
-    {
-        List<Object> result = new ArrayList<Object>();
-
-        for (int i=0;i<userList.size();i++)
-        {
-            User user = (User)userList.get(i);
-            int id = user.getId();
-
-            for (int j=0;j<filterList.size();j++)
-            {
-                UserVehicleRelatived userVehicleRelatived = (UserVehicleRelatived)filterList.get(j);
-                User userid = userVehicleRelatived.getUid();
-                if(id==userid.getId())
-                {
-                    result.add(userList.get(i));
-                    break;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * 获取当前页面数据集
-     * @param pageSize  页面数据显示条数
-     * @param currentPage  当前页号
-     * @param items  查询结果集
-     * @return  当前页面数据集
-     */
-    public List<Object> getPageData(int pageSize,int currentPage,List items)
-    {
-        List<Object> result = new ArrayList<Object>();
-
-        if(items.size()<=pageSize*(currentPage-1))
-        {
-            return result;
-        }
-        else if(items.size()< pageSize*currentPage)
-        {
-            for (int i=pageSize*(currentPage-1);i<items.size();i++)
-            {
-                result.add(items.get(i));
-            }
-        }
-        else
-        {
-            for (int i=pageSize*(currentPage-1);i<pageSize*currentPage;i++)
-            {
-                result.add(items.get(i));
-            }
-        }
-
-        return result;
+    public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer oid,Integer fuzzy){
+        throw new NotYetImplementedException("There is a SQL INJECT problem in e3f02c885d8548e99c669fffcbd7462e3aaa0fe4");
     }
 
 }

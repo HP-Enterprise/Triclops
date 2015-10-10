@@ -34,10 +34,11 @@ public class VehicleRepositoryDAO {
      * @param pageSize 每页数据条数 必须大于0
      * @param currentPage 获取指定页码数据 必须大于0
      * @param fuzzy 是否模糊查询
+     * @param oid 组织机构id
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy,Integer oid){
-        String jpql="FROM Vehicle v";
+        String jpql="select v FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
         vin=(vin==null)?"": EscapeStringUtil.toEscape(vin);
@@ -151,10 +152,11 @@ public class VehicleRepositoryDAO {
      * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param pageSize 每页数据条数 必须大于0
      * @param currentPage 获取指定页码数据 必须大于0
+     * @param oid 组织机构id
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer oid){
-        String jpql="FROM Vehicle v";
+        String jpql="select v FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
         vin=(vin==null)?"":EscapeStringUtil.toEscape(vin);
