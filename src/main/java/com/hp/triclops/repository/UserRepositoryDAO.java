@@ -3,11 +3,13 @@ package com.hp.triclops.repository;
 import com.hp.triclops.entity.User;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -240,4 +242,24 @@ public class UserRepositoryDAO<T>  {
 
         return new Page(currentPage,pageSize,count,items);
     }
+
+    /** 调用存储过程查询多个组织用户
+     *
+     * 用户查询  支持条件模糊，条件缺省，分页显示
+     * @param gender 传入参数为null或""时不作为查询条件
+     * @param nick 传入参数为null或""时不作为查询条件
+     * @param isVerified 0表示未验证 1表示已验证 其它数值不作为查询条件
+     * @param orderByProperty 排序条件 User类的某一个属性,默认id
+     * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
+     * @param pageSize 每页数据条数 必须大于0
+     * @param currentPage 获取指定页码数据 必须大于0
+     * @param vid 车辆id
+     * @param isowner 是否为车主
+     * @param oid 组织id
+     * @return  封装了数据和页码信息的Page对象
+     */
+    public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer oid,Integer fuzzy){
+        throw new NotYetImplementedException("There is a SQL INJECT problem in e3f02c885d8548e99c669fffcbd7462e3aaa0fe4");
+    }
+
 }
