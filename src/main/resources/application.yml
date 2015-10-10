@@ -11,10 +11,11 @@ logging:
 
 # Spring settings
 spring:
+    profiles.active: dev
     datasource:
-        url: jdbc:mysql://127.0.0.1:3306/{yourDB}?characterEncoding=utf8
-        username: {username}
-        password: {password}
+        url: jdbc:mysql://127.0.0.1:3306/briair?characterEncoding=utf8
+        username: javapp
+        password:
     jpa:
         show-sql: true
         hibernate:
@@ -24,7 +25,7 @@ spring:
             properties:
                 hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
     redis:
-        host: {127.0.0.1}
+        host: 127.0.0.1
         port: 6379
         password:
         database: 0
