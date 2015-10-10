@@ -61,36 +61,34 @@ public class UserRepositoryDAO<T>  {
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
         vin=(vin==null)?"":vin;
-        if(!vin.equals("") || oid >= 0 || isowner >=0 ) {
-            if (oid >= 0) {
-                jpql = jpql + " join u.organizationSet O";
-            }
-            if(isowner == 0 || isowner == 1)
-            {
-                if(!vin.equals(""))
-                {
-                    jpql=jpql+" join u.userSet u1 join u.vehicleSet v";
-                }
-                else
-                {
-                    jpql = jpql + " join u.userSet u1";
-                }
-            }
-            jpql=jpql+" where 1=1";
 
-            if (oid >= 0) {
-                jpql = jpql + " And O.id =:oid";
+        if (oid >= 0) {
+            jpql = jpql + " join u.organizationSet O";
+        }
+        if(!vin.equals("")) {
+            jpql = jpql + " join u.userSet u1 join u.vehicleSet v";
+        }
+        else {
+            if (isowner == 0 || isowner == 1) {
+                jpql = jpql + " join u.userSet u1";
             }
-            if(isowner == 0 || isowner == 1)
-            {
-                jpql = jpql + " And u1.iflag=:isowner";
-            }
-            if(!vin.equals(""))
-            {
-                jpql = jpql + " And v.vin like :vin";
-            }
-        }else{
-            jpql=jpql+" where 1=1";
+        }
+
+        jpql=jpql+" where 1=1";
+
+
+        if (oid >= 0) {
+            jpql = jpql + " And O.id =:oid";
+        }
+
+        if(isowner == 0 || isowner == 1)
+        {
+            jpql = jpql + " And u1.iflag=:isowner";
+        }
+
+        if(!vin.equals(""))
+        {
+            jpql = jpql + " And v.vin like :vin";
         }
 
         if(id>=0){
@@ -197,37 +195,35 @@ public class UserRepositoryDAO<T>  {
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
         vin=(vin==null)?"":vin;
-        if (!vin.equals("") || oid >= 0 || isowner >= 0){
-            if (oid >= 0) {
-                jpql = jpql + " join u.organizationSet O";
-            }
-            if(isowner == 0 || isowner == 1)
-            {
-                if(!vin.equals(""))
-                {
-                    jpql=jpql+" join u.userSet u1 join u.vehicleSet v";
-                }
-                else
-                {
-                    jpql = jpql + " join u.userSet u1";
-                }
-            }
-            jpql=jpql+" where 1=1";
 
-            if (oid >= 0) {
-                jpql = jpql + " And O.id =:oid";
-            }
+        if (oid >= 0) {
+            jpql = jpql + " join u.organizationSet O";
+        }
+        if(!vin.equals("")){
+            jpql=jpql+" join u.userSet u1 join u.vehicleSet v";
+        }
+        else
+        {
             if(isowner == 0 || isowner == 1)
             {
-                jpql = jpql + " And u1.iflag=:isowner";
+                jpql = jpql + " join u.userSet u1";
             }
-            if(!vin.equals(""))
-            {
-                jpql = jpql + " And v.vin =:vin";
-            }
-        }else {
-                jpql = jpql+ " where 1=1";
-              }
+        }
+
+        jpql=jpql+" where 1=1";
+
+        if (oid >= 0) {
+            jpql = jpql + " And O.id =:oid";
+        }
+        if(isowner == 0 || isowner == 1)
+        {
+            jpql = jpql + " And u1.iflag=:isowner";
+        }
+        if(!vin.equals(""))
+        {
+            jpql = jpql + " And v.vin =:vin";
+        }
+
         if (id>=0){
             jpql=jpql+" And u.id =:id";
         }
