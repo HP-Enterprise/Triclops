@@ -7,14 +7,19 @@
 - JDK 1.8+
 - Gradle 2.5+
 
-## 数据源配置项
-下面3个文件是数据源配置文件,请拷贝一份(去掉**-sample**)放置到相同目录中,并修改连接配置以适合你自己的数据库
+## 配置文件
+本项目使用的配置文件位于
+- [$/src/main/resources/application.yml](https://github.com/HP-Enterprise/Triclops/blob/dev/src/main/resources/application.yml)
+- [$/src/test/resources/application.yml](https://github.com/HP-Enterprise/Triclops/blob/dev/src/test/resources/application.yml)
+- 默认激活dev配置,因此,可以在相同位置创建一个名为`application-dev.yml`的配置文件,按自己的需要重载配置项
+- 也可以通过定义一个名为spring.profiles.active的系统属性来指定激活的配置,例如:
+```SHELL
+gradle -Dspring.profiles.active=product run
 ```
-$/src/main/resources/application-sample.yml
-$/src/test/resources/application-sample.yml
-$/gradle-sample.properties
-```
+那么 $/src/main/resources/application-product.yml 将被激活.
+
 ## 数据库初始化命令
+数据库初始化需要在`$/gradle.properties`中配置数据库连接,请参考示例文件`$/gradle-sample.properties`
 ```SHELL
     gradle flywayMigrate #迁移数据库并且自动创建数据库的表
     gradle flywayInfo #打印所有迁移的表的详细信息和状态信息
@@ -22,7 +27,7 @@ $/gradle-sample.properties
 ```
 可在 http://flywaydb.org/documentation/gradle/ 链接查看更多具体用法
 
-### flyway创建表的命令规则
+### flyway创建SQL脚本的文件命名规则
 ```
 V<VERSION>__<NAME>.sql，<VERSION>可以写成1 或者 2_1或者3.1
 <VERSION>规定写成日期.序号,例如:20150804.1
@@ -30,5 +35,5 @@ V<VERSION>__<NAME>.sql，<VERSION>可以写成1 或者 2_1或者3.1
 
 ## 运行
 ```SHELL
-gradle
+gradle run
 ```
