@@ -14,6 +14,9 @@ public class Page {
     private Long recordCount;
     private List items;
 
+    public Page() {
+    }
+
     public Page(Integer currentPage, Integer pageSize, Long recordCount, List items) {
         this.currentPage = currentPage;
         this.pageSize = pageSize;
