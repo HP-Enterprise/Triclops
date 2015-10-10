@@ -2,6 +2,8 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.entity.Vehicle;
 import io.netty.buffer.ByteBuf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigInteger;
@@ -22,6 +24,7 @@ public class DataTool {
     public static final String msgSendCount_preStr="msgSendCount:";
     public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
 
+    private Logger _logger = LoggerFactory.getLogger(DataTool.class);
     @Autowired
     VehicleRepository vehicleRepository;
     public  boolean checkReg(byte[] bytes){
@@ -384,7 +387,7 @@ public class DataTool {
         for(int i=1;i<bytes.length-1;i++){
             sum^=bytes[i];
         }
-        System.out.println(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
+        _logger.info(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
         return bytes[bytes.length-1]==sum;
     }
 

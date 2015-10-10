@@ -52,7 +52,7 @@ public class RequestHandler {
             ActiveReq bean=dp.loadBean(ActiveReq.class);
             //请求解析到bean
             //远程唤醒响应
-            System.out.println(bean.getVin()+"|"+bean.getSerialNumber());
+           _logger.info(bean.getVin()+"|"+bean.getSerialNumber());
             boolean activeResult=tboxService.activationTBox(bean.getVin(),bean.getSerialNumber());//true成功 false失败
             short tBoxStatus=1; //0激活成功 1激活失败
             if(activeResult){
