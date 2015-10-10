@@ -60,16 +60,37 @@ public class UserRepositoryDAO<T>  {
         currentPage=(currentPage<=0)?1:currentPage;
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
-        if(oid>=0||isowner>=0) {
-            if (oid != null && oid >= 0) {
-                jpql = jpql + " join u.organizationSet O where O.id =:oid";
-            }
-            if (isowner == 0 || isowner == 1) {
-                jpql = jpql + " join u.userSet u1 where u1.iflag=:isowner";
-            }
-        }else{
-            jpql=jpql+" where 1=1";
+        vin=(vin==null)?"":vin;
+
+        if (oid >= 0) {
+            jpql = jpql + " join u.organizationSet O";
         }
+        if(!vin.equals("")) {
+            jpql = jpql + " join u.userSet u1 join u.vehicleSet v";
+        }
+        else {
+            if (isowner == 0 || isowner == 1) {
+                jpql = jpql + " join u.userSet u1";
+            }
+        }
+
+        jpql=jpql+" where 1=1";
+
+
+        if (oid >= 0) {
+            jpql = jpql + " And O.id =:oid";
+        }
+
+        if(isowner == 0 || isowner == 1)
+        {
+            jpql = jpql + " And u1.iflag=:isowner";
+        }
+
+        if(!vin.equals(""))
+        {
+            jpql = jpql + " And v.vin like :vin";
+        }
+
         if(id>=0){
             jpql=jpql+" And u.id =:id";
         }
@@ -91,7 +112,7 @@ public class UserRepositoryDAO<T>  {
 
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
-        System.out.println("111"+jpql_count);
+        System.out.println("111                 "+jpql_count);
         TypedQuery query = em.createQuery(jpql, User.class);
         TypedQuery queryCount = em.createQuery(jpql_count, User.class);
 
@@ -126,6 +147,10 @@ public class UserRepositoryDAO<T>  {
         if (isowner==0||isowner==1){
             query.setParameter("isowner",isowner);
             queryCount.setParameter("isowner",isowner);
+        }
+        if (!vin.equals("")){
+            query.setParameter("vin","%"+vin+"%");
+            queryCount.setParameter("vin","%"+vin+"%");
         }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
@@ -169,16 +194,36 @@ public class UserRepositoryDAO<T>  {
         currentPage=(currentPage<=0)?1:currentPage;
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
-        if (oid>0||isowner>=0){
-            if (oid != null && oid >= 0) {
-                jpql = jpql + " join u.organizationSet O where O.id =:oid";
+        vin=(vin==null)?"":vin;
+
+        if (oid >= 0) {
+            jpql = jpql + " join u.organizationSet O";
+        }
+        if(!vin.equals("")){
+            jpql=jpql+" join u.userSet u1 join u.vehicleSet v";
+        }
+        else
+        {
+            if(isowner == 0 || isowner == 1)
+            {
+                jpql = jpql + " join u.userSet u1";
             }
-            if (isowner == 0 || isowner == 1) {
-                jpql = jpql + " join u.userSet u1 where u1.iflag =:isowner";
-            }
-        }else {
-                jpql = jpql+ " where 1=1";
-            }
+        }
+
+        jpql=jpql+" where 1=1";
+
+        if (oid >= 0) {
+            jpql = jpql + " And O.id =:oid";
+        }
+        if(isowner == 0 || isowner == 1)
+        {
+            jpql = jpql + " And u1.iflag=:isowner";
+        }
+        if(!vin.equals(""))
+        {
+            jpql = jpql + " And v.vin =:vin";
+        }
+
         if (id>=0){
             jpql=jpql+" And u.id =:id";
         }
@@ -234,6 +279,10 @@ public class UserRepositoryDAO<T>  {
         if (isowner==0||isowner==1){
             query.setParameter("isowner",isowner);
             queryCount.setParameter("isowner",isowner);
+        }
+        if (!vin.equals("")){
+            query.setParameter("vin",vin);
+            queryCount.setParameter("vin",vin);
         }
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
