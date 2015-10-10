@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by xiongqing on 2015/8/13.
- */
 @Component
 public class SocketRedis {
 
@@ -24,7 +21,6 @@ public class SocketRedis {
     RedisTemplate<String, Object> objectRedisTemplate;
 
     ValueOperations<String,String> valOpts = null;
-    ValueOperations<String,Object> valObjOpts = null;
 
     SetOperations<String,String> setOpts = null;
 
@@ -37,11 +33,7 @@ public class SocketRedis {
         this.objectRedisTemplate.afterPropertiesSet();
     }
 
-    private long defaultExpireSeconds(int hours){
-        long expire = 0;
-        expire = hours * 3600;
-        return expire;
-    }
+
 
     /**
      * 存储STRING类型数据 SET
@@ -50,25 +42,22 @@ public class SocketRedis {
      * @param expireSeconds 该键值的过期时间，单位秒
      */
 
-    public void saveString(String sessionKey,String sessionValue,long ... expireSeconds){
+    public void saveSetString(String sessionKey,String sessionValue,long expireSeconds){
         this.setOpts = this.stringRedisTemplate.opsForSet();
-             setOpts.add(sessionKey, sessionValue);
-            if(expireSeconds.length != 0) {
-                this.stringRedisTemplate.expire(sessionKey, expireSeconds[0], TimeUnit.SECONDS);
-            }
-            else {
-                this.stringRedisTemplate.expire(sessionKey, this.defaultExpireSeconds(24), TimeUnit.SECONDS);
-            }
+        setOpts.add(sessionKey, sessionValue);
+        if(expireSeconds>0) {//不设置即为-1永不过期
+            this.stringRedisTemplate.expire(sessionKey, expireSeconds, TimeUnit.SECONDS);
         }
+    }
 
 
 
     /**
-     * 获取键对应的值
+     * 获取键对应的值，取出后值会删除
      * @param sessionId 键
      * @return 键对应的值
      */
-    public String popOneString(String sessionId){
+    public String popSetOneString(String sessionId){
         this.setOpts = this.stringRedisTemplate.opsForSet();
         if(!this.stringRedisTemplate.hasKey(sessionId)){
             return "null";
@@ -76,6 +65,55 @@ public class SocketRedis {
         return  setOpts.pop(sessionId);
 
     }
+
+
+
+    /**
+     * 获取键对应的值
+     * @param key 键
+     * @return 键对应的值
+     */
+    public String getValueString(String key){
+        this.valOpts = this.stringRedisTemplate.opsForValue();
+        if(!this.stringRedisTemplate.hasKey(key)){
+            return "null";
+        }
+        String value=valOpts.get(key);
+        return  value;
+    }
+
+    /**
+     * 存储Value数据
+     * @param key 键
+     * @param value 值
+     * @param expireSeconds 该键值的过期时间，单位秒
+     */
+
+    public void saveValueString(String key,String value,long expireSeconds){
+        this.valOpts = this.stringRedisTemplate.opsForValue();
+        valOpts.set(key, value);
+        if(expireSeconds>0) {//不设置即为-1永不过期
+            this.stringRedisTemplate.expire(key, expireSeconds, TimeUnit.SECONDS);
+        }
+    }
+
+
+    /**
+     * 删除指定键值
+     * @param key 键
+     * @return 是否成功，true，成功；false，失败
+     */
+    public boolean delValueString(String key){
+        boolean ret = true;
+        if(this.stringRedisTemplate.hasKey(key)){
+            this.stringRedisTemplate.delete(key);
+        }
+        else {
+            return false;
+        }
+        return ret;
+    }
+
 
 
     /**
@@ -92,21 +130,6 @@ public class SocketRedis {
 
 
 
-    /**
-     * 删除指定键值
-     * @param sessionKey 键
-     * @return 是否成功，true，成功；false，失败
-     */
-    public boolean del1String(String sessionKey){
-        boolean ret = true;
-        if(this.stringRedisTemplate.hasKey(sessionKey)){
-            this.stringRedisTemplate.delete(sessionKey);
-        }
-        else {
-            return false;
-        }
-        return ret;
-    }
 
     /**
      * 获取符合条件的全部keys

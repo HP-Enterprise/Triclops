@@ -2,10 +2,13 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.entity.Vehicle;
 import io.netty.buffer.ByteBuf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Date;
 import com.hp.triclops.repository.VehicleRepository;
@@ -17,6 +20,11 @@ import static io.netty.buffer.Unpooled.*;
 @Component
 public class DataTool {
 
+
+    public static final String msgSendCount_preStr="msgSendCount:";
+    public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
+
+    private Logger _logger = LoggerFactory.getLogger(DataTool.class);
     @Autowired
     VehicleRepository vehicleRepository;
     public  boolean checkReg(byte[] bytes){
@@ -24,10 +32,51 @@ public class DataTool {
         return true;
     }
 
-     public  byte getApplicationType(byte[] bytes){
+    public  String getIp(byte[] bytes){
+        //IP地址转换 00 00 C0 A8 01 01 读出192.168.1.1
+        String re="";
+        StringBuilder sb=new StringBuilder();
+        if (bytes.length==6){
+           if(bytes[0]==0x00&&bytes[1]==0x00){
+            //ipv4
+            sb.append(bytes[2]&0xFF);
+            sb.append(".");
+            sb.append(bytes[3]&0xFF);
+            sb.append(".");
+            sb.append(bytes[4]&0xFF);
+            sb.append(".");
+            sb.append(bytes[5]&0xFF);
+        }else{//ipv6存储为6个byte并还原的方法暂无相关资料，暂未实现
+            sb.append("ipv6");
+           }
+           re=sb.toString();
+        }
+        return re;
+    }
+
+    public  String getBinaryStrFromByte(byte b)
+    {
+        //将byte转换层二进制字符串 (byte)170  ->> 10101010
+        String result ="";
+        byte a = b;
+        for (int i = 0; i < 8; i++)
+        {
+            byte c=a;
+            a=(byte)(a>>1);
+            a=(byte)(a<<1);
+            if(a==c){
+                result="0"+result;
+            }else{
+                result="1"+result;
+            }
+            a=(byte)(a>>1);
+        }
+        return result;
+    }
+
+    public  byte getApplicationType(byte[] bytes){
         //返回数据包操作类型对应的byte
         byte data=0;
-        boolean result=false;
         if(bytes!=null){
             if(bytes.length>9) {
                 data=bytes[9];
@@ -51,10 +100,106 @@ public class DataTool {
     }
 
 
+    public int getCurrentSeconds(){
+        //返回当前时间的秒数
+        int currentSeconds=Integer.valueOf(String.valueOf(new Date().getTime()/1000));
+        return currentSeconds;
+    }
+
+    public Date seconds2Date(long seconds){
+        //时间的秒数转换成Date
+        Date d=new Date(seconds*1000L);
+        return d;
+    }
+
+    public double getTrueLatAndLon(long a){
+        //经纬度除以1000000得到真实值
+        String  num = a/1000000+"."+a%1000000;
+        return Double.valueOf(num);
+    }
+    public float getTrueSpeed(int a){
+        //得到真实速度值
+        float  speed =Float.parseFloat( a/10+"."+a%10);
+        return speed;
+    }
+    public float getTrueAvgOil(int a){
+        //得到真实油耗值
+        String  avgOil=a/10+"."+a%10;
+        return Float.valueOf(avgOil);
+    }
+    public Short getTrueTmp(short a){
+        //得到真实温度
+        return (short)(a-(short)40);
+    }
+    public String  getEngineConditionInfo(short s){
+         /*
+        得到发动机状态信息
+        0:engine stop
+        1:engine start
+        2:idle speed
+        3:part load
+        4:trailling throttle
+        5:full load
+        6:Fuel Cut Off
+        7:undefined
+        数据超出范围时按7(undefined)处理
+         */
+        byte b=(byte)s;
+        String re="";
+        switch(b)
+        {
+            case 0x00://
+               re="0";
+                break;
+            case 0x01://
+                re="1";
+                break;
+            case 0x02://
+                re="2";
+                break;
+            case 0x03://
+                re="3";
+                break;
+            case 0x04://
+                re="4";
+                break;
+            case 0x05://
+                re="5";
+                break;
+            case 0x06://
+                re="6";
+                break;
+            case 0x07://
+                re="7";
+                break;
+            default:
+                re="7";
+                break;
+        }
+      return re;
+    }
+
+
+    public double getTrueBatteryVoltage(int a){
+        //得到真实蓄电池电压
+        String  v=a/1000+"."+a%1000;
+        return Double.valueOf(v);
+    }
+
+    public char[] getBitsFromShort(short a){
+        //取包含8个数字的数组
+        String binStr=getBinaryStrFromByte((byte)a);
+        return binStr.toCharArray();
+    }
+    public char[] getBitsFromByte(Byte a){
+        //取包含8个数字的数组
+        String binStr=getBinaryStrFromByte(a);
+        return binStr.toCharArray();
+    }
 
     public  boolean checkVinAndSerialNum(String vin,String serialNum){
         //调用平台db接口,校验vin和SerialNumber 性能测试时改为始终返回true
-       // return true;
+        // return true;
         boolean checkResult=false;
         Vehicle v=vehicleRepository.findByVinAndTbox(vin, serialNum);
         if(v!=null){
@@ -84,14 +229,15 @@ public class DataTool {
     }
     public  ByteBuf getByteBuf(String str){
         //根据16进制字符串得到ByteBuf对象(netty)
-          ByteBuf bb=buffer(1024);
-          String[] command=str.split(" ");
-          byte[] abc=new byte[command.length];
-          for(int i=0;i<command.length;i++){
+        ByteBuf bb=buffer(1024);
+
+        String[] command=str.split(" ");
+        byte[] abc=new byte[command.length];
+        for(int i=0;i<command.length;i++){
             abc[i]=Integer.valueOf(command[i],16).byteValue();
-          }
-          bb.writeBytes(abc);
-          return bb;
+        }
+        bb.writeBytes(abc);
+        return bb;
     }
 
     public  ByteBuffer getRegResultByteBuffer(byte[] data,int eventId,boolean check){
@@ -180,10 +326,43 @@ public class DataTool {
             }
         }
         re.put("eventId",String.valueOf(eventId));
-        re.put("vin",vin);
-        re.put("serialNum",serialNum);
+        re.put("vin", vin);
+        re.put("serialNum", serialNum);
         return re;
     }
+
+    public   HashMap<String,Object> getApplicationIdAndMessageIdFromDownBytes(String msg)
+    {
+        //解析注册数据包,提取ApplicationId和MessageId
+        //eventId      :32
+        //ApplicationId:36,14
+        //MessageId    :50,17
+
+        //String ApplicationId="";
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        byte applicationId=0;
+        byte messageId=0;
+        int eventId=0;
+        HashMap<String,Object> re=new HashMap<String ,Object>();
+        if(data!=null){
+            if(data.length>18) {
+                ByteBuffer bb= ByteBuffer.allocate(1024);
+                bb.put(data);
+                bb.flip();
+                applicationId=bb.get(9);
+                messageId=bb.get(10);
+                eventId= bb.getInt(11);
+            }
+        }
+        re.put("applicationId",applicationId);
+        re.put("messageId",messageId);
+        re.put("eventId",eventId);
+        return re;
+    }
+
+
+
+
 
     public   boolean checkByteArray(byte[] data)
     {
@@ -208,7 +387,7 @@ public class DataTool {
         for(int i=1;i<bytes.length-1;i++){
             sum^=bytes[i];
         }
-        System.out.print(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
+        _logger.info(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
         return bytes[bytes.length-1]==sum;
     }
 
@@ -219,5 +398,44 @@ public class DataTool {
             sum^=bytes[i];
         }
         return sum;
+    }
+
+
+    public int getMaxSendCount(String applicationId,String messageId){
+        //某一消息的下发最大发送次数 参考文档
+        //为什么写这么多的if elseif ?开发阶段 为了更清晰，完成后会简化。
+        int re=0;
+        if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+            re=3;
+        }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
+            re=3;
+        }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
+            re=3;
+        }else if(applicationId.equals("81")&&messageId.equals("1")){//上报数据设置
+            re=3;
+        }else if(applicationId.equals("82")&&messageId.equals("1")){//参数设置
+            re=3;
+        }
+        //参数升级比较复杂
+        //...
+        return re;
+    }
+    public int getTimeOutSeconds(String applicationId,String messageId){
+        //某一消息的下发超时时间（秒） 参考文档
+        int re=0;
+        if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+            re=60;
+        }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
+            re=60;
+        }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
+            re=60;
+        }else if(applicationId.equals("81")&&messageId.equals("1")){//上报数据设置
+            re=60;
+        }else if(applicationId.equals("82")&&messageId.equals("1")){//参数设置
+            re=60;
+        }
+        //参数升级比较复杂
+        //...
+        return re;
     }
 }

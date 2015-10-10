@@ -24,16 +24,18 @@ public class NettyServer {
     private SocketRedis socketRedis;
     private DataTool dataTool;
     private HashMap<String,Channel> channels;
+    private RequestHandler requestHandler;
     private Logger _logger;
 
-    public NettyServer(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,int port) {
+    public NettyServer(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,int port) {
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
+        this.requestHandler=rh;
         this.port = port;
         this._logger = LoggerFactory.getLogger(NettyServer.class);
     }
-
+    static int connectionCount=0;
     public void run()  {
         try{
 
@@ -46,7 +48,9 @@ public class NettyServer {
                         .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
-                                ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool));
+                                ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool,requestHandler));
+                                connectionCount++;
+                               // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }
                         })
                         .option(ChannelOption.SO_BACKLOG, 128)          // (5)
