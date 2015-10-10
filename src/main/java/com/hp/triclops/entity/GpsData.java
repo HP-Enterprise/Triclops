@@ -20,8 +20,8 @@ public class GpsData {
     private Short isLocation;
     private String northSouth;
     private String eastWest;
-    private String latitude;
-    private String longitude;
+    private double latitude;
+    private double longitude;
     private float speed;
     private int heading;
 
@@ -119,22 +119,22 @@ public class GpsData {
 
 
     @Basic
-    @Column(name = "latitude", nullable = false, insertable = true, updatable = true, length = 11)
-    public String getLatitude() {
+    @Column(name = "latitude", nullable = false, insertable = true, updatable = true)
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
     @Basic
-    @Column(name = "longitude", nullable = false, insertable = true, updatable = true, length = 11)
-    public String getLongitude() {
+    @Column(name = "longitude", nullable = false, insertable = true, updatable = true)
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

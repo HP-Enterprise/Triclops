@@ -31,7 +31,7 @@ public class DataToolTest {
     }
     @Test
     public void test_getMaxSendCount(){
-        System.out.println(dataTool.getMaxSendCount("49","1"));
+        System.out.println(dataTool.getMaxSendCount("49", "1"));
     }
 
     @Test
@@ -69,15 +69,24 @@ public class DataToolTest {
         a=3;
         System.out.println(dataTool.getEngineConditionInfo(a));
     }
-
     @Test
-    public void test_getTrueOilLife(){
+    public void test_getTrueBatteryVoltage(){
+        int a=14123;
+        System.out.println(dataTool.getTrueBatteryVoltage(a));
+    }
+    @Test
+    public void test_getTrueTmp(){
+        short a=110;
+        System.out.println(dataTool.getTrueTmp(a));
+    }
+    @Test
+    public void test_getTrueAvgOil(){
         int a=8;
-        System.out.println(dataTool.getTrueOilLife(a));
+        System.out.println(dataTool.getTrueAvgOil(a));
         a=80;
-        System.out.println(dataTool.getTrueOilLife(a));
+        System.out.println(dataTool.getTrueAvgOil(a));
         a=235;
-        System.out.println(dataTool.getTrueOilLife(a));
+        System.out.println(dataTool.getTrueAvgOil(a));
     }
 
     @Test
@@ -89,9 +98,5 @@ public class DataToolTest {
         }
     }
 
-    @Test
-    public void test_getTrueEngineSpeed(){
-        int a=65535;
-        System.out.println(dataTool.getTrueEngineSpeed(a));
-    }
+
 }

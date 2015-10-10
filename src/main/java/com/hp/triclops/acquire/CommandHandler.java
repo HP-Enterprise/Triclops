@@ -33,7 +33,7 @@ public class CommandHandler extends Thread{
         this.socketRedis=socketRedis;
         this.dataTool=dt;
         this.message=msg;
-        this._logger = LoggerFactory.getLogger(Sender.class);
+        this._logger = LoggerFactory.getLogger(CommandHandler.class);
     }
 
     public  void run()

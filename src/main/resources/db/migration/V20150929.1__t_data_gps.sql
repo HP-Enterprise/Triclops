@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS t_data_gps (
   is_location smallint(1) NOT NULL COMMENT '是否定位 0有效 1无效',
   north_south varchar(1) NOT NULL COMMENT '南北纬',
   east_west varchar(1) NOT NULL COMMENT '东西经',
-  latitude varchar(11) NOT NULL COMMENT '纬度',
-  longitude varchar(11) NOT NULL COMMENT '经度',
+  latitude double NOT NULL COMMENT '纬度',
+  longitude double NOT NULL COMMENT '经度',
   speed float NOT NULL COMMENT '速度',
   heading int(3) NOT NULL COMMENT '方向',
   PRIMARY KEY (id)

@@ -51,11 +51,9 @@ public class AcquirePort {
         String str=dataBuilder.buildStr();
         dataBuilder.print(str);
         new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
-        new DataHandler(socketRedis,dataHandleService,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
+        new DataHandler(socketRedis,dataHandleService,dataTool).start();    //netty数据处理入库线程，根据需要 可以新建多个
         new NettyServer(channels,socketRedis,dataTool,requestHandler,_acquirePort).run();    //netty收数据程序
-        //目前有两套实现 分别基于nio和netty
-        //new Server(socketChannels,socketRedis,dataTool,_acquirePort).start();    //新建收数据线程，并启动
-        //new Sender(socketChannels,socketRedis,dataTool).start();    //新建发数据线程，并启动
+
     }
     public void init() throws IOException {
         this._logger = LoggerFactory.getLogger(AcquirePort.class);

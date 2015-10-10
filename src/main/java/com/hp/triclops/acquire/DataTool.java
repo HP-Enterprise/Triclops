@@ -109,20 +109,20 @@ public class DataTool {
         return d;
     }
 
-    public String getTrueLatAndLon(long a){
+    public double getTrueLatAndLon(long a){
         //经纬度除以1000000得到真实值
         String  num = a/1000000+"."+a%1000000;
-        return num;
+        return Double.valueOf(num);
     }
     public float getTrueSpeed(int a){
         //得到真实速度值
         float  speed =Float.parseFloat( a/10+"."+a%10);
         return speed;
     }
-    public String getTrueAvgOil(int a){
+    public float getTrueAvgOil(int a){
         //得到真实油耗值
         String  avgOil=a/10+"."+a%10;
-        return avgOil;
+        return Float.valueOf(avgOil);
     }
     public Short getTrueTmp(short a){
         //得到真实温度
@@ -175,25 +175,14 @@ public class DataTool {
         }
       return re;
     }
-    public String getTrueEngineSpeed(int a){
-        //得到真实油耗值
-        String  avgOil=a/8f+"";
-        return avgOil;
-    }
 
-    public String getTrueBatteryVoltage(int a){
+
+    public double getTrueBatteryVoltage(int a){
         //得到真实蓄电池电压
         String  v=a/1000+"."+a%1000;
-        return v;
+        return Double.valueOf(v);
     }
-    public String getTrueOilLife(int a){
-        //得到真实油耗值
-        String  re=a+"";
-         if(a>0){
-          re=a/10+"."+a%10+"%";
-         }
-        return re;
-    }
+
     public char[] getBitsFromShort(short a){
         //取包含8个数字的数组
         String binStr=getBinaryStrFromByte((byte)a);

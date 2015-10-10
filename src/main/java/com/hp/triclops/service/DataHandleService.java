@@ -103,7 +103,7 @@ public class DataHandleService {
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         rd.setFuelOil(bean.getFuelOil());
         rd.setAvgOil(dataTool.getTrueAvgOil(bean.getAvgOil()));
-        rd.setOilLife(dataTool.getTrueOilLife(bean.getOilLife()));
+        rd.setOilLife(bean.getOilLife());
         String driveRangeHexStr=dataTool.bytes2hex(bean.getDriveRange());
         rd.setDriveRange(Integer.valueOf(driveRangeHexStr.replace(" ", ""), 16));//此处要处理3个byte为一个int
         rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure());
@@ -130,7 +130,7 @@ public class DataHandleService {
         rd.setMaximumBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getMaximumBatteryVoltage()));
         rd.setBatteryMonomerMinimumVoltage(dataTool.getTrueBatteryVoltage(bean.getBatteryMonomerMinimumVoltage()));
         rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
-        rd.setEngineSpeed(dataTool.getTrueEngineSpeed(bean.getEngineSpeed()));
+        rd.setEngineSpeed(bean.getEngineSpeed());
         rd.setRapidAcceleration(bean.getRapidAcceleration());
         rd.setRapidDeceleration(bean.getRapidDeceleration());
         rd.setSpeeding(bean.getSpeeding());
@@ -170,7 +170,7 @@ public class DataHandleService {
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         rd.setFuelOil(bean.getFuelOil());
         rd.setAvgOil(dataTool.getTrueAvgOil(bean.getAvgOil()));
-        rd.setOilLife(dataTool.getTrueOilLife(bean.getOilLife()));
+        rd.setOilLife(bean.getOilLife());
         String driveRangeHexStr=dataTool.bytes2hex(bean.getDriveRange());
         rd.setDriveRange(Integer.valueOf(driveRangeHexStr.replace(" ", ""), 16));//此处要处理3个byte为一个int
         rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure());
@@ -197,7 +197,7 @@ public class DataHandleService {
         rd.setMaximumBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getMaximumBatteryVoltage()));
         rd.setBatteryMonomerMinimumVoltage(dataTool.getTrueBatteryVoltage(bean.getBatteryMonomerMinimumVoltage()));
         rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
-        rd.setEngineSpeed(dataTool.getTrueEngineSpeed(bean.getEngineSpeed()));
+        rd.setEngineSpeed(bean.getEngineSpeed());
         rd.setRapidAcceleration(bean.getRapidAcceleration());
         rd.setRapidDeceleration(bean.getRapidDeceleration());
         rd.setSpeeding(bean.getSpeeding());

@@ -166,14 +166,29 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     String _vin=chKey;
-                    requestHandler.getRemoteControlAck(receiveDataHexString,_vin);
+                    requestHandler.getRemoteControlAck(receiveDataHexString, _vin);
                    //只需要记录远程控制结果，无数据下行
                     break;
-
-                default:
-                    _logger.info(">>other request dave,data to redis");
+                case 0x41://参数查询响应(上行)
+                    _logger.info("ParamStatus Ack");
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+                case 0x42://远程车辆诊断响应(上行)
+                    _logger.info("DiagnosticComman Ack");
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+                case 0x51://上报数据设置响应(上行)
+                    _logger.info("SignalSetting Ack");
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+                case 0x52://参数设置响应(上行)
+                    _logger.info("PramSetupAck Ack");
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    break;
+                default:
+                    _logger.info(">>other request dave,log to file" + receiveDataHexString);
                     //一般数据，判断是否已注册，注册的数据保存
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
             }
         }

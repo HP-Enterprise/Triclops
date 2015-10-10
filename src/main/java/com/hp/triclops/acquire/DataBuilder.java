@@ -38,7 +38,7 @@ public class DataBuilder {
         hr.setSpeed(123);
         hr.setHeading(230);
         hr.setFuelOil((short) 10);
-        hr.setAvgOil(11);
+        hr.setAvgOil(123);
         hr.setOilLife((short) 15);
         hr.setDriveRange(new byte[]{(byte) 13, (byte) 144, (byte) 56});
         hr.setLeftFrontTirePressure(251);

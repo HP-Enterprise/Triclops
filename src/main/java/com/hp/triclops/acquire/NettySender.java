@@ -25,7 +25,7 @@ public class NettySender extends Thread{
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
-        this._logger = LoggerFactory.getLogger(Sender.class);
+        this._logger = LoggerFactory.getLogger(NettySender.class);
     }
     public  void run()
     {

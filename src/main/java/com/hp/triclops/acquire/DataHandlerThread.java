@@ -22,7 +22,7 @@ public class DataHandlerThread  extends Thread{
         this.dataHandleService=dataHandleService;
         this.dataTool=dt;
         this.key=k;
-        this._logger = LoggerFactory.getLogger(DataHandler.class);
+        this._logger = LoggerFactory.getLogger(DataHandlerThread.class);
     }
     public  void run()
     {

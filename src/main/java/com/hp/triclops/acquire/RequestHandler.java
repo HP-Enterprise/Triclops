@@ -6,6 +6,8 @@ import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.service.TboxService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +28,7 @@ public class RequestHandler {
     @Autowired
     TboxService tboxService;
 
-
-
+    private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
     /**
      * 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
      * @param reqString
@@ -45,7 +46,7 @@ public class RequestHandler {
         }
         if(messageId==0x01){
             //Active Request
-            System.out.println("Active Request>>>>>");
+            _logger.info("Active Request>>>>>");
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp=conversionTBox.generate(bb);
             ActiveReq bean=dp.loadBean(ActiveReq.class);
@@ -74,7 +75,7 @@ public class RequestHandler {
             return byteStr;
         }else if(messageId==0x03){
             //Active Result
-            System.out.println("Active Result>>>>> no response");
+            _logger.info("Active Result>>>>> no response");
                   }
         return null;
     }
@@ -200,8 +201,7 @@ public class RequestHandler {
         DataPackage dp=conversionTBox.generate(bb);
         RemoteControlAck bean=dp.loadBean(RemoteControlAck.class);
         //请求解析到bean
-        System.out.println("EventID>>>>>>>>>>>>>>>>>>>>"+bean.getEventID());
-        System.out.println("RemoteControlAck>>>>>>>>>>>" + bean.getRemoteControlAck());//0：成功 1：失败
+        _logger.info("RemoteControlAck>>>>>>>>>>>" + bean.getRemoteControlAck());//0：成功 1：失败
         String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
         //变更消息状态
         String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
@@ -210,7 +210,6 @@ public class RequestHandler {
         socketRedis.saveSetString(key,String.valueOf(bean.getRemoteControlAck()),-1);
         //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
     }
-
 
 
 }

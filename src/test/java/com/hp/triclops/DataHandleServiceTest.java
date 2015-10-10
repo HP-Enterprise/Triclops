@@ -47,7 +47,7 @@ public class DataHandleServiceTest {
     @Test
     public void test_saveDataResendMes(){
         //测试补发数据保存
-        String byteString="23 23 00 53 01 56 17 5B 00 23 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 01 01 CB A5 C0 06 CD 62 C0 00 7B 00 E6 0A 00 0B 0F 0D 90 38 00 FB 00 FC 00 FD 00 FE AA 41 43 AA 36 B0 C8 3A 98 36 B0 AA 0F A0 00 C8 01 2C 00 1E 0A AA AA AA AA AA AA AA 98";
+        String byteString="23 23 00 53 01 56 18 B2 D2 23 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 01 01 CB A5 C0 06 CD 62 C0 00 7B 00 E6 0A 00 7B 0F 0D 90 38 00 FB 00 FC 00 FD 00 FE AA 41 43 AA 36 B0 C8 3A 98 36 B0 AA 0F A0 00 C8 01 2C 00 1E 0A AA AA AA AA AA AA AA DC";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
     @Test
