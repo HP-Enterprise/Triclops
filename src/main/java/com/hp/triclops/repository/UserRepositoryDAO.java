@@ -1,12 +1,8 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.User;
-import com.hp.triclops.entity.UserVehicleRelatived;
-import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.utils.EscapeStringUtil;
-import com.hp.triclops.utils.FilterString;
 import com.hp.triclops.utils.Page;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
 
 
