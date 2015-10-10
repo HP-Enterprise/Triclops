@@ -29,6 +29,7 @@ repositories {
 }
 
 dependencies {
+    compile project("DataCenter")
     compile("org.springframework.boot:spring-boot-starter-data-jpa:1.2.+")
     compile("org.springframework.data:spring-data-redis:1.5.+")
     compile("io.netty:netty-all:4.0.31.Final")
@@ -50,9 +51,13 @@ gradle.projectsEvaluated {
     }
 }
 
-test{
-    // show standard out and standard error of the test JVM(s) on the console
-    testLogging.showStandardStreams = true
+run {
+    systemProperties System.getProperties()
 }
+
+test {
+    systemProperties System.getProperties()
+}
+
 
 defaultTasks "build"
