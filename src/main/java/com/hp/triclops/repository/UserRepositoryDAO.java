@@ -309,7 +309,7 @@ public class UserRepositoryDAO<T>  {
      */
     public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer fuzzy){
         gender=(gender==null)?-1:gender;
-        nick=(nick==null)?"": EscapeStringUtil.toEscape(nick);
+        nick=(nick==null)?null: EscapeStringUtil.toEscape(nick);
         isVerified=(isVerified==null)?-1:isVerified;
         orderByProperty=(orderByProperty==null)?"id":orderByProperty;
         ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
@@ -318,7 +318,7 @@ public class UserRepositoryDAO<T>  {
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
         vid = (vid == null) ? 0 : vid;
-        isowner = (isowner == null) ? 0 : isowner;
+        isowner = (isowner == null) ? -1 : isowner;
         fuzzy = (fuzzy == null) ? 0 : fuzzy;
         Query queryCount = em.createNativeQuery("{call pro_findusers(?,?,?,?,?,?,?,?,?,?,?)}", User.class);
         queryCount.setParameter(1,vid);
