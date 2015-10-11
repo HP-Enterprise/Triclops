@@ -328,12 +328,12 @@ public class UserRepositoryDAO<T>  {
         queryCount.setParameter(5,isVerified);
         queryCount.setParameter(6,fuzzy);
         if(fuzzy == 1){
-          queryCount.setParameter(7, "'%"+nick+"%'");
+          queryCount.setParameter(7, "%"+nick+"%");
         }else{
-          queryCount.setParameter(7, "'"+nick+"'");
+          queryCount.setParameter(7, nick);
         }
-        queryCount.setParameter(8,null);
-        queryCount.setParameter(9,null);
+        queryCount.setParameter(8,-1);
+        queryCount.setParameter(9,-1);
         queryCount.setParameter(10,orderByProperty);
         queryCount.setParameter(11,ascOrDesc);
         Long count = (long)queryCount.getResultList().size();
