@@ -3,7 +3,6 @@ package com.hp.triclops.repository;
 import com.hp.triclops.entity.User;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -112,7 +111,6 @@ public class UserRepositoryDAO<T>  {
 
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
-        System.out.println("111                 "+jpql_count);
         TypedQuery query = em.createQuery(jpql, User.class);
         TypedQuery queryCount = em.createQuery(jpql_count, User.class);
 
@@ -292,6 +290,8 @@ public class UserRepositoryDAO<T>  {
         return new Page(currentPage,pageSize,count,items);
     }
 
+
+
     /** 调用存储过程查询多个组织用户
      *
      * 用户查询  支持条件模糊，条件缺省，分页显示
@@ -304,11 +304,44 @@ public class UserRepositoryDAO<T>  {
      * @param currentPage 获取指定页码数据 必须大于0
      * @param vid 车辆id
      * @param isowner 是否为车主
-     * @param oid 组织id
+     * @param fuzzy 是否模糊查询 1模糊查询 0精确查询
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer oid,Integer fuzzy){
-        throw new NotYetImplementedException("There is a SQL INJECT problem in e3f02c885d8548e99c669fffcbd7462e3aaa0fe4");
+    public Page findUserList(Integer uid,Integer gender,String nick,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer vid,Integer isowner,Integer fuzzy){
+        gender=(gender==null)?-1:gender;
+        nick=(nick==null)?null: EscapeStringUtil.toEscape(nick);
+        isVerified=(isVerified==null)?-1:isVerified;
+        orderByProperty=(orderByProperty==null)?"id":orderByProperty;
+        ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
+        pageSize=(pageSize==null)?10:pageSize;
+        pageSize=(pageSize<=0)?10:pageSize;
+        currentPage=(currentPage==null)?1:currentPage;
+        currentPage=(currentPage<=0)?1:currentPage;
+        vid = (vid == null) ? 0 : vid;
+        isowner = (isowner == null) ? -1 : isowner;
+        fuzzy = (fuzzy == null) ? 0 : fuzzy;
+        Query queryCount = em.createNativeQuery("{call pro_findusers(?,?,?,?,?,?,?,?,?,?,?)}", User.class);
+        queryCount.setParameter(1,vid);
+        queryCount.setParameter(2,isowner);
+        queryCount.setParameter(3,uid);
+        queryCount.setParameter(4,gender);
+        queryCount.setParameter(5,isVerified);
+        queryCount.setParameter(6,fuzzy);
+        if(fuzzy == 1){
+          queryCount.setParameter(7, "%"+nick+"%");
+        }else{
+          queryCount.setParameter(7, nick);
+        }
+        queryCount.setParameter(8,-1);
+        queryCount.setParameter(9,-1);
+        queryCount.setParameter(10,orderByProperty);
+        queryCount.setParameter(11,ascOrDesc);
+        Long count = (long)queryCount.getResultList().size();
+        Integer firstRcord = (currentPage - 1) * pageSize;
+        queryCount.setParameter(8,firstRcord);
+        queryCount.setParameter(9,pageSize);
+        List items=queryCount.getResultList();
+        return new Page(currentPage,pageSize,count,items);
     }
-
 }
+
