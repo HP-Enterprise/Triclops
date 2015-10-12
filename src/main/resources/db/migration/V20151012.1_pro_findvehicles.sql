@@ -1,4 +1,6 @@
-DROP PROCEDURE IF EXISTS pro_findvehicles;
+delimiter //
+
+DROP PROCEDURE IF EXISTS pro_findvehicles//
 CREATE PROCEDURE pro_findvehicles(uid int,tboxsn VARCHAR(50), vendor VARCHAR(100), fuzzy int, model VARCHAR(100),
 t_flag int,displacement VARCHAR(20),license_plate VARCHAR(10),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5))
 BEGIN
@@ -18,7 +20,7 @@ BEGIN
   UNIQUE key (vin),
   UNIQUE key (tboxsn),
   UNIQUE KEY idx_license (license_plate)
-) ENGINE = MEMORY;
+) ;
 			INSERT INTO the_vehicles SELECT DISTINCT V.* FROM t_vehicle V LEFT JOIN t_organization_vehicle OV ON v.id = ov.vid WHERE ov.oid in
              (SELECT O.id FROM t_organization O 
                  LEFT JOIN t_authoritygroup AG ON O.id = AG.oid 
@@ -57,4 +59,7 @@ BEGIN
             PREPARE sqlstr from @sql;            
             EXECUTE sqlstr using @t_flag,@tboxsn,@vendor,@model,@displacement,@license_plate;
    		    DROP TABLE the_vehicles;
-END
+END//
+
+
+delimiter ;
