@@ -35,7 +35,7 @@ BEGIN
             SET @orderByProperty = orderByProperty;
             SET @ascOrDesc = ascOrDesc;              
             SET @sql = "SELECT * FROM the_vehicles u Where 1=1";
-            SET @sql = CONCAT(@sql, " AND (@t_flag = -1 OR u.t_flag = ?)");
+            SET @sql = CONCAT(@sql, " AND (@t_flag = 0 OR u.t_flag = ?)");
             IF FUZZY = 1 THEN     
                  SET @sql = CONCAT(@sql, " AND (@tboxsn is null OR v.tboxsn like ?)");    
                  SET @sql = CONCAT(@sql, " AND (@vendor is null OR v.vendor like ?)"); 
