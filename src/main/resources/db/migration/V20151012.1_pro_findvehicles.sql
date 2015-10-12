@@ -33,7 +33,7 @@ BEGIN
             SET @firstRcord = firstRcord;
             SET @pageSize = pageSize;
             SET @orderByProperty = orderByProperty;
-            SET @ascOrDesc = ascOrDesc;              
+            SET @ascOrDesc = ascOrDesc;
             SET @sql = "SELECT * FROM the_vehicles v ";
             SET @sql = CONCAT(@sql, " WHERE (@t_flag = 0 OR v.t_flag = ?) ");
             IF FUZZY = 1 THEN     
@@ -49,12 +49,12 @@ BEGIN
                  SET @sql = CONCAT(@sql, " AND (@displacement is null OR v.displacement = ?)");   
                  SET @sql = CONCAT(@sql, " AND (@license_plate is null OR v.license_plate = ?)");                           
             END IF; 
-                 
+
             SET @sql = CONCAT(@sql, " ORDER BY v.",@orderByProperty," ",@ascOrDesc);
              IF @firstRcord != -1 AND @pageSize != -1 THEN            
                 SET @sql = CONCAT(@sql, " limit ", @firstRcord, "," ,@pageSize);           
             END IF; 
             PREPARE sqlstr from @sql;            
-            EXECUTE sqlstr using @tboxsn,@vendor,@model,@t_flag,@displacement,@license_plate;            
+            EXECUTE sqlstr using @t_flag,@tboxsn,@vendor,@model,@displacement,@license_plate;
    		    DROP TABLE the_vehicles;
 END
