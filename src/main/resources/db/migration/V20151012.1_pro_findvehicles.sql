@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS pro_findvehicles;
-CREATE PROCEDURE pro_findvehicles(tboxsn VARCHAR(50), vendor VARCHAR(100), fuzzy int, model VARCHAR(100),
+CREATE PROCEDURE pro_findvehicles(uid int,tboxsn VARCHAR(50), vendor VARCHAR(100), fuzzy int, model VARCHAR(100),
 t_flag int,displacement VARCHAR(20),license_plate VARCHAR(10),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5))
 BEGIN
         DROP TABLE IF EXISTS the_vehicles;
@@ -34,8 +34,8 @@ BEGIN
             SET @pageSize = pageSize;
             SET @orderByProperty = orderByProperty;
             SET @ascOrDesc = ascOrDesc;              
-            SET @sql = "SELECT * FROM the_vehicles u Where 1=1";
-            SET @sql = CONCAT(@sql, " AND (@t_flag = 0 OR u.t_flag = ?)");
+            SET @sql = "SELECT * FROM the_vehicles v ";
+            SET @sql = CONCAT(@sql, " WHERE (@t_flag = 0 OR v.t_flag = ?) ");
             IF FUZZY = 1 THEN     
                  SET @sql = CONCAT(@sql, " AND (@tboxsn is null OR v.tboxsn like ?)");    
                  SET @sql = CONCAT(@sql, " AND (@vendor is null OR v.vendor like ?)"); 
@@ -50,7 +50,7 @@ BEGIN
                  SET @sql = CONCAT(@sql, " AND (@license_plate is null OR v.license_plate = ?)");                           
             END IF; 
                  
-            SET @sql = CONCAT(@sql, " ORDER BY u.",@orderByProperty," ",@ascOrDesc);   
+            SET @sql = CONCAT(@sql, " ORDER BY v.",@orderByProperty," ",@ascOrDesc);
              IF @firstRcord != -1 AND @pageSize != -1 THEN            
                 SET @sql = CONCAT(@sql, " limit ", @firstRcord, "," ,@pageSize);           
             END IF; 
