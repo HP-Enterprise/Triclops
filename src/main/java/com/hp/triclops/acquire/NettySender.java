@@ -27,7 +27,7 @@ public class NettySender extends Thread{
         this.dataTool=dt;
         this._logger = LoggerFactory.getLogger(NettySender.class);
     }
-    public  void run()
+    public  synchronized void run()
     {
 
         while (true){

@@ -42,12 +42,10 @@ public class AcquirePort {
 
     private Selector selector = null;
 
-    private HashMap<String,SocketChannel> socketChannels;
-    private HashMap<String,io.netty.channel.Channel> channels;
+    public static HashMap<String,io.netty.channel.Channel> channels=new HashMap<String,io.netty.channel.Channel>();
     //用于保存连接的哈希表
     public   void main(){
-        socketChannels=new HashMap<String,SocketChannel>();
-        channels=new HashMap<String,io.netty.channel.Channel>();
+        //channels=new HashMap<String,io.netty.channel.Channel>();
         //生成数据
         //dataBuilder.print(dataBuilder.buildStr());
         new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个

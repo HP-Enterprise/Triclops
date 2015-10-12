@@ -7,6 +7,6 @@ control_type smallint(1) COMMENT '操作类别  0：远程启动发动机 1：�
 ac_temperature smallint(6) COMMENT '空调温度(配合type15)',
 status smallint(1)  COMMENT '状态 0正在执行 1成功 2失败',
 remark varchar(200) COMMENT '备注',
-PRIMARY KEY (id)
+PRIMARY KEY (id),
  FOREIGN KEY (uid) REFERENCES t_user(Id)
 ) DEFAULT CHARSET=utf8 COMMENT='远程控制指令表';
