@@ -256,4 +256,54 @@ public class VehicleRepositoryDAO {
         return new Page(currentPage,pageSize,count,items);
     }
 
+    /** 调用存储过程查询多个组织车辆
+     *
+     * 用户查询  支持条件模糊，条件缺省，分页显示
+     * @param tboxsn 传入参数为null或""时不作为查询条件
+     * @param vendor 传入参数为null或""时不作为查询条件
+     * @param t_flag 0表示未验证 1表示已验证 其它数值不作为查询条件
+     * @param orderByProperty 排序条件 User类的某一个属性,默认id
+     * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
+     * @param pageSize 每页数据条数 必须大于0
+     * @param currentPage 获取指定页码数据 必须大于0
+     * @param fuzzy 是否模糊查询 1模糊查询 0精确查询
+     * @return  封装了数据和页码信息的Page对象
+     */
+    public Page findVehicleList(String tboxsn,String vendor,Integer fuzzy,String model,Integer t_flag,String displacement,String license_plate,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+        tboxsn=(tboxsn==null)?null: EscapeStringUtil.toEscape(tboxsn);
+        vendor=(vendor==null)?null: EscapeStringUtil.toEscape(vendor);
+        fuzzy = (fuzzy == null) ? 0 : fuzzy;
+        model=(model==null)?null: EscapeStringUtil.toEscape(model);
+        t_flag = (t_flag == null) ? 0 : t_flag;
+        displacement=(displacement==null)?null: EscapeStringUtil.toEscape(displacement);
+        license_plate=(license_plate==null)?null: EscapeStringUtil.toEscape(license_plate);
+        orderByProperty=(orderByProperty==null)?"id":orderByProperty;
+        ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
+        pageSize=(pageSize==null)?10:pageSize;
+        pageSize=(pageSize<=0)?10:pageSize;
+        currentPage=(currentPage==null)?1:currentPage;
+        currentPage=(currentPage<=0)?1:currentPage;
+        Query queryCount = em.createNativeQuery("{call pro_findusers(?,?,?,?,?,?,?,?,?,?,?)}", Vehicle.class);
+        queryCount.setParameter(1,tboxsn);
+        queryCount.setParameter(2,vendor);
+        queryCount.setParameter(3,fuzzy);
+        queryCount.setParameter(4,model);
+        queryCount.setParameter(5,t_flag);
+        queryCount.setParameter(6,displacement);
+        queryCount.setParameter(7,license_plate);
+        queryCount.setParameter(8,-1);
+        queryCount.setParameter(9,-1);
+        queryCount.setParameter(10,orderByProperty);
+        queryCount.setParameter(11,ascOrDesc);
+        Long count = (long)queryCount.getResultList().size();
+        Integer firstRcord = (currentPage - 1) * pageSize;
+        queryCount.setParameter(8,firstRcord);
+        queryCount.setParameter(9,pageSize);
+        List items=queryCount.getResultList();
+        return new Page(currentPage,pageSize,count,items);
+    }
+
+
+
+
 }
