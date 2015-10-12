@@ -293,8 +293,9 @@ public class VehicleRepositoryDAO {
         queryCount.setParameter(7,displacement);
         queryCount.setParameter(8,license_plate);
         if(fuzzy == 1){
-            queryCount.setParameter(3,"%"+vendor+"%");
-            queryCount.setParameter(5,"%"+model+"%");
+            if(vendor!=null) queryCount.setParameter(3,"%"+vendor+"%");
+            if(model!=null)queryCount.setParameter(5,"%"+model+"%");
+            if(license_plate!=null)queryCount.setParameter(8,"%"+license_plate+"%");
         }
         queryCount.setParameter(9,-1);
         queryCount.setParameter(10,-1);
