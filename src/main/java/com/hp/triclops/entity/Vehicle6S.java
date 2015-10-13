@@ -15,9 +15,11 @@ public class Vehicle6S{
 
     private Vehicle vehicle;
 
+    public Vehicle6S() {
+    }
 
     /**
-     * 构造函数
+     * 构造有参函数
      * @param vid
      */
 

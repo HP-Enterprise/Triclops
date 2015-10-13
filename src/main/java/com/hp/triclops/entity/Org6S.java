@@ -17,8 +17,11 @@ public class Org6S {
 
     private Organization organization;
 
+    public Org6S() {
+    }
+
     /**
-     * 构造函数
+     * 构造有参函数
      * @param oid
      */
     public Org6S(int oid){
