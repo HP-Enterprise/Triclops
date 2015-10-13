@@ -37,10 +37,24 @@ public class Org6S {
      * 组织里面添加一辆车
      * @param v 被添加车辆
      */
-    public void addVehicle(Vehicle6S v){
+    public Vehicle6S addVehicle(Vehicle6S v){
         Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
-        vehicleSet.add(v.getVehicle());
-        this.organizationRepository.save(this.organization);
+        if(!isBinding(v)) {
+            vehicleSet.add(v.getVehicle());
+            this.organizationRepository.save(this.organization);
+        }
+        return v;
+    }
+
+    /**
+     * 判断车辆是否已经绑定
+     * @param  v 添加车辆
+     */
+
+    public boolean isBinding(Vehicle6S v){
+        Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
+        if(vehicleSet.contains(v.getVehicle())) return true;
+        return false;
     }
 
     /**
@@ -68,19 +82,5 @@ public class Org6S {
         this.organization = organization;
     }
 
-    /**
-     * 绑定车辆
-     * 返回JSONResult
-     */
 
-    public boolean addVehicle(Vehicle6S v){
-        Vehicle vehicle= v.getVehicle();
-        Set<Organization> oset = vehicle.getOrganizationSet();
-        if(!oset.contains(this.getOrganization())){
-            oset.add(this.getOrganization());
-            this.vehicleRepository.save(vehicle);
-            return true;
-        }
-        return false;
-    }
 }
