@@ -2,7 +2,7 @@ delimiter //
 
 DROP PROCEDURE IF EXISTS pro_findvehicles//
 CREATE PROCEDURE pro_findvehicles(uid int,tboxsn VARCHAR(50), vendor VARCHAR(100), fuzzy int, model VARCHAR(100),
-t_flag int,displacement VARCHAR(20),license_plate VARCHAR(10),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5))
+t_flag int,displacement VARCHAR(20),license_plate VARCHAR(10),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5),start_date datetime,end_date datetime)
 BEGIN
         DROP TABLE IF EXISTS the_vehicles;
 	CREATE TABLE IF NOT EXISTS the_vehicles
@@ -36,6 +36,8 @@ BEGIN
             SET @pageSize = pageSize;
             SET @orderByProperty = orderByProperty;
             SET @ascOrDesc = ascOrDesc;
+            SET @start_date = start_date;
+            SET @end_date = end_date;
             SET @sql = "SELECT * FROM the_vehicles v ";
             SET @sql = CONCAT(@sql, " WHERE (@t_flag = 0 OR v.t_flag = ?) ");
             IF FUZZY = 1 THEN     
@@ -50,14 +52,18 @@ BEGIN
                  SET @sql = CONCAT(@sql, " AND (@model is null OR v.model = ?)");   
                  SET @sql = CONCAT(@sql, " AND (@displacement is null OR v.displacement = ?)");   
                  SET @sql = CONCAT(@sql, " AND (@license_plate is null OR v.license_plate = ?)");                           
-            END IF; 
+            END IF;
+
+            SET @sql = CONCAT(@sql, " AND (@start_date is null OR v.product_date >= ?)");
+            SET @sql = CONCAT(@sql, " AND (@end_date is null OR v.product_date <= ?)");
+
 
             SET @sql = CONCAT(@sql, " ORDER BY v.",@orderByProperty," ",@ascOrDesc);
              IF @firstRcord != -1 AND @pageSize != -1 THEN            
                 SET @sql = CONCAT(@sql, " limit ", @firstRcord, "," ,@pageSize);           
             END IF; 
             PREPARE sqlstr from @sql;            
-            EXECUTE sqlstr using @t_flag,@tboxsn,@vendor,@model,@displacement,@license_plate;
+            EXECUTE sqlstr using @t_flag,@tboxsn,@vendor,@model,@displacement,@license_plate,@start_date,@end_date;
    		    DROP TABLE the_vehicles;
 END//
 
