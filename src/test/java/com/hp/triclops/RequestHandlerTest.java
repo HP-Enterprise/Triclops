@@ -80,14 +80,12 @@ public class RequestHandlerTest {
     @Test
       public void test_getRegisterResp() {
         //注册测试
-        //String byteString="23 23 00 4D 01 55 D2 0F E7 13 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 39 31 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 ";
-       String byteString="23 23 00 4D 01 56 0A 45 E4 13 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 30 30 39 31 32 33 34 35 36 37 38 39 30 30 39 38 37 36 35 34 30 33 41 42 43 44 45 45 44 43 42 41 41 42 43 44 45 88 ";
-
+        String byteString="23 23 00 4D 01 55 D2 0F E7 13 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 39 31 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 ";
         System.out.println("request.:"+byteString);
         System.out.println("response:"+requestHandler.getRegisterResp(byteString, true));
 
     }
-/*
+
     @Test
     public void test_getApplicationIdAndMessageIdFromDownBytes() {
         //测试
@@ -96,7 +94,7 @@ public class RequestHandlerTest {
         System.out.println("response:"+dataTool.getApplicationIdAndMessageIdFromDownBytes(byteString));
 
     }
-  */
+
 
     @Test
     public void test_getRemoteControlAck() {
