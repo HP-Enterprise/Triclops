@@ -20,7 +20,7 @@ public class Vehicle6S{
 
     /**
      * 构造有参函数
-     * @param vid
+     * @param vid 车辆ID
      */
 
     public Vehicle6S(int vid){
@@ -29,7 +29,7 @@ public class Vehicle6S{
 
     /**
      * 根据车辆ID查找车辆信息
-     * @param vid
+     * @param vid 车辆ID
      * @return
      */
     public Vehicle findVehicleById(int vid){

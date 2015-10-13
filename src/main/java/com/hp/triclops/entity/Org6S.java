@@ -3,6 +3,7 @@ package com.hp.triclops.entity;
 import com.hp.triclops.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Set;
 
@@ -22,25 +23,33 @@ public class Org6S {
 
     /**
      * 构造有参函数
-     * @param oid
+     * @param oid 组织ID
      */
     public Org6S(int oid){
        this.setOrganization(this.findOrgById(oid));
     }
 
     /**
-     * 向组织里面添加一台车
-     * @param v
+     * 组织里面添加一辆车
+     * @param v 被添加车辆
      */
-    public void Add(Vehicle6S v){
+    public void addVehicle(Vehicle6S v){
         Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
         vehicleSet.add(v.getVehicle());
         this.organizationRepository.save(this.organization);
     }
 
     /**
+     * 组织里面删除一辆车
+     * @param v 被删除车辆
+     */
+    public void deleteVehicle(Vehicle6S v) throws Exception{
+        throw new NotImplementedException();
+    }
+
+    /**
      * 根据组织ID查找组织
-     * @param oid
+     * @param oid 组织ID
      * @return
      */
     public Organization findOrgById(int oid){
