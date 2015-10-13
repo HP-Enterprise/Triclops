@@ -23,6 +23,7 @@ public class DataTool {
 
     public static final String msgSendCount_preStr="msgSendCount:";
     public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
+    public static final String out_cmd_preStr="output:";
 
     private Logger _logger = LoggerFactory.getLogger(DataTool.class);
     @Autowired

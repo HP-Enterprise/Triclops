@@ -214,6 +214,7 @@ public class RequestHandler {
         socketRedis.saveValueString(statusKey, statusValue,-1);
         socketRedis.saveSetString(key,String.valueOf(bean.getRemoteControlAck()),-1);
         //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
+        _logger.info("Remote Control finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
     }
 
 

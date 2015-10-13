@@ -27,7 +27,7 @@ public class NettySender extends Thread{
         this.dataTool=dt;
         this._logger = LoggerFactory.getLogger(NettySender.class);
     }
-    public  void run()
+    public  synchronized void run()
     {
 
         while (true){
@@ -59,7 +59,7 @@ public class NettySender extends Thread{
             new CommandHandler(ch,scKey,socketRedis,dataTool,msg).start();
         }else{
             _logger.info("Connection is Dead");
-            socketRedis.saveSetString(k, msg,-1);
+            //socketRedis.saveSetString(k, msg,-1);发送时异常不返回redis，执行结果依靠响应数据来判断
         }
     }
 }

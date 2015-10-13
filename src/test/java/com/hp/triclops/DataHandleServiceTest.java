@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class,locations = "classpath:spring-config.xml")
+@SpringApplicationConfiguration(classes = Application.class)
 public class DataHandleServiceTest {
     @Autowired
     DataHandleService dataHandleService;
