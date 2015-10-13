@@ -1,6 +1,7 @@
 package com.hp.triclops.entity;
 
 import com.hp.triclops.repository.OrganizationRepository;
+import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,9 @@ public class Org6S {
     private OrganizationRepository organizationRepository;
 
     private Organization organization;
+
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     public Org6S() {
     }
@@ -53,5 +57,23 @@ public class Org6S {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+    /**
+     * 绑定车辆
+     * 返回JSONResult
+     */
+
+    public String addVehicle(Vehicle6S v){
+        //判断车辆是否存在
+        Vehicle vehicle = v.getVehicle();
+        if(vehicleRepository.findById(vehicle.getId())!=null){
+            //组织已经存在车辆
+
+            
+        }else{
+
+        }
+        return null;
     }
 }
