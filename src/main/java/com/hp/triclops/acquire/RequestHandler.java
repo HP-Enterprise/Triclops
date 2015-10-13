@@ -32,8 +32,7 @@ public class RequestHandler {
 
 
     /**
-     * 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
-     * @param reqString
+     * @param reqString 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
      * @return messageId=1返回处理后的resp,messageId=1返回null
      */
 

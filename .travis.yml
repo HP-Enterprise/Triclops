@@ -22,4 +22,4 @@ before_script:
 
 script:
     - gradle javadoc
-    - gradle check -i -Dspring.profiles.active=travis
+    - gradle check -Dspring.profiles.active=travis
