@@ -28,14 +28,14 @@ public class OutputHexService {
     @Autowired
     SocketRedis socketRedis;
 
-    public String getRemoteControlHex(RemoteControl remoteControl){
+    public String getRemoteControlHex(RemoteControl remoteControl,int eventId){
         //产生远程控制指令hex
         RemoteControlCmd  remoteControlCmd=new RemoteControlCmd();
         remoteControlCmd.setRemoteControlType(remoteControl.getControlType().intValue());
         remoteControlCmd.setAcTemperature(remoteControl.getAcTemperature());
         remoteControlCmd.setApplicationID((short) 49);
         remoteControlCmd.setMessageID((short) 1);
-        remoteControlCmd.setEventID((long) dataTool.getCurrentSeconds());
+        remoteControlCmd.setEventID((long) eventId);
         remoteControlCmd.setSendingTime((long)dataTool.getCurrentSeconds());
         remoteControlCmd.setTestFlag((short) 0);
 
@@ -49,7 +49,7 @@ public class OutputHexService {
     }
 
     private void saveCmdToRedis(String vin,String hexStr){
-        socketRedis.saveSetString(dataTool.out_cmd_preStr+vin,hexStr,-1);
+        socketRedis.saveSetString(dataTool.out_cmd_preStr + vin, hexStr, -1);
         //保存到redis
 
 

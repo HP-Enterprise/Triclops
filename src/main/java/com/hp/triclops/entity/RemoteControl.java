@@ -11,8 +11,11 @@ import java.util.Date;
 public class RemoteControl {
     private Long id;
     private int uid;
+    private String sessionId;
     private String vin;
     private Date sendingTime;
+
+
     private Short controlType;
     /*
             0：远程启动发动机
@@ -58,7 +61,15 @@ public class RemoteControl {
     }
 
     @Basic
-    @Column(name = "vin", nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "session_id", nullable = false, insertable = true, updatable = true, length = 15)
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
     public String getVin() {
         return vin;
     }

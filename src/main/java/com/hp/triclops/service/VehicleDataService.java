@@ -5,6 +5,7 @@ package com.hp.triclops.service;
  */
 
 import com.hp.triclops.acquire.AcquirePort;
+import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.repository.RemoteControlRepository;
 import io.netty.channel.Channel;
@@ -24,20 +25,25 @@ public class VehicleDataService {
     RemoteControlRepository remoteControlRepository;
     @Autowired
     OutputHexService outputHexService;
+    @Autowired
+    DataTool dataTool;
 
     private Logger _logger = LoggerFactory.getLogger(VehicleDataService.class);
 
-    public boolean handleRemoteControl(int uid,String vin,short cType,short acTmp){
-        _logger.info(">>>>>>>连接数:" + AcquirePort.channels.size());
 
-        Channel ch=AcquirePort.channels.get(vin);
-        if(ch!=null){
-            //检测对应vin是否存在长连接，存在下发数据，不存在执行唤醒
+    public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp){
+         //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
+        if(!hasConnection(vin)){
             _logger.info("vin:"+vin+" have not connection,do wake up...");
-        }else{
+            remoteWakeUp(vin);
+        }
+        //唤醒可能成功也可能失败，只有连接建立才可以发送指令
+        if(hasConnection(vin)){
             _logger.info("vin:"+vin+" have connection,sending command...");
+            int eventId=dataTool.getCurrentSeconds();
             RemoteControl rc=new RemoteControl();
             rc.setUid(uid);
+            rc.setSessionId(49+"-"+eventId);//根据application和eventid生成的session_id
             rc.setVin(vin);
             rc.setSendingTime(new Date());
             rc.setControlType(cType);
@@ -48,17 +54,45 @@ public class VehicleDataService {
             _logger.info("save RemoteControl to db");
             //保存到数据库
             //产生数据包hex并入redis
-            String byteStr=outputHexService.getRemoteControlHex(rc);
+            String byteStr=outputHexService.getRemoteControlHex(rc,eventId);
             _logger.info("command hex:"+byteStr);
+            return rc;
         }
-        return true;
+        return null;
+        //命令下发成功，返回保存后的rc  否则返回null
     }
 
-    public void remoteWakeUp(){
+    public void remoteWakeUp(String vin){
+        //远程唤醒动作
+        _logger.info("doing wake up......");
+        int count=0;
+        while (count<3){
+            //最多执行唤醒三次
+            wakeup(vin);
+            count++;
+            try{
+                Thread.sleep(1*1000);//唤醒后
+            }catch (InterruptedException e){e.printStackTrace(); }
+            //检测连接是否已经建立
+            if(hasConnection(vin)){
+                return;
+            }
+        }
+      }
 
-
-
+    private void wakeup(String vin){
+        //本部分代码为调用外部唤醒接口
+        _logger.info(" wake up tbox"+vin);
     }
 
+    private boolean hasConnection(String vin){
+        //检测对应vin是否有连接可用
+        boolean re=false;
+        Channel ch=AcquirePort.channels.get(vin);
+        if(ch!=null){
+            re=true;
+        }
+        return re;
+    }
 
 }

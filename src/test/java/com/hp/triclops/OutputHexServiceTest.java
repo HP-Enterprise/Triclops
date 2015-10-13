@@ -1,6 +1,7 @@
 package com.hp.triclops;
 
 import com.hp.data.core.Conversion;
+import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.service.OutputHexService;
 import org.junit.After;
@@ -17,11 +18,12 @@ import java.util.Date;
  * Created by luj on 2015/10/12.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class,locations = "classpath:spring-config.xml")
+@SpringApplicationConfiguration(classes = Application.class)
 public class OutputHexServiceTest {
     @Autowired
     OutputHexService outputHexService;
-
+    @Autowired
+    DataTool dataTool;
 
     @Before
     public void setUp() {
@@ -39,7 +41,8 @@ public class OutputHexServiceTest {
         remoteControl.setAcTemperature((short) 23);
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
+        int eventId=dataTool.getCurrentSeconds();
 
-        System.out.println(">>>>>>>"+outputHexService.getRemoteControlHex(remoteControl));
+        System.out.println(">>>>>>>"+outputHexService.getRemoteControlHex(remoteControl,eventId));
     }
 }
