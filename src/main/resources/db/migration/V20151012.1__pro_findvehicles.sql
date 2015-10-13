@@ -20,7 +20,7 @@ BEGIN
   UNIQUE key (vin),
   UNIQUE key (tboxsn),
   UNIQUE KEY idx_license (license_plate)
-) ;
+) ENGINE = MEMORY;
 			INSERT INTO the_vehicles SELECT DISTINCT V.* FROM t_vehicle V LEFT JOIN t_organization_vehicle OV ON v.id = ov.vid WHERE ov.oid in
              (SELECT O.id FROM t_organization O 
                  LEFT JOIN t_authoritygroup AG ON O.id = AG.oid 
@@ -62,7 +62,7 @@ BEGIN
              IF @firstRcord != -1 AND @pageSize != -1 THEN            
                 SET @sql = CONCAT(@sql, " limit ", @firstRcord, "," ,@pageSize);           
             END IF; 
-            PREPARE sqlstr from @sql;            
+            PREPARE sqlstr from @sql;
             EXECUTE sqlstr using @t_flag,@tboxsn,@vendor,@model,@displacement,@license_plate,@start_date,@end_date;
    		    DROP TABLE the_vehicles;
 END//
