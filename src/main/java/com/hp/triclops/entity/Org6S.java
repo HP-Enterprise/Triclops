@@ -64,16 +64,14 @@ public class Org6S {
      * 返回JSONResult
      */
 
-    public String addVehicle(Vehicle6S v){
-        //判断车辆是否存在
-        Vehicle vehicle = v.getVehicle();
-        if(vehicleRepository.findById(vehicle.getId())!=null){
-            //组织已经存在车辆
-
-            
-        }else{
-
+    public boolean addVehicle(Vehicle6S v){
+        Vehicle vehicle= v.getVehicle();
+        Set<Organization> oset = vehicle.getOrganizationSet();
+        if(!oset.contains(this.getOrganization())){
+            oset.add(this.getOrganization());
+            this.vehicleRepository.save(vehicle);
+            return true;
         }
-        return null;
+        return false;
     }
 }
