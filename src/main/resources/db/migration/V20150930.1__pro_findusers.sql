@@ -1,6 +1,5 @@
 delimiter //
 
-DROP PROCEDURE IF EXISTS pro_findusers//
 CREATE PROCEDURE pro_findusers(vid int, isowner int, uid int,gender int, isVerified int, fuzzy int, nickname VARCHAR(50),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5))
 BEGIN
     DROP table IF EXISTS the_users;
@@ -12,8 +11,9 @@ BEGIN
 			nick VARCHAR(50),
 			phone VARCHAR(11),
 			is_verified INT(1),
-      UNIQUE KEY unique_name (name)
-		);
+      UNIQUE KEY unique_name (name),
+      KEY(phone)
+		)ENGINE = MEMORY DEFAULT CHARSET=utf8;
 			INSERT INTO the_users SELECT DISTINCT U.* FROM t_user U LEFT JOIN t_organization_user OU ON u.Id =  OU.uid WHERE OU.oid in
              (SELECT O.Id FROM t_organization O
                  LEFT JOIN t_authoritygroup AG ON O.Id = AG.oid
