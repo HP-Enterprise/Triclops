@@ -1,6 +1,8 @@
 package com.hp.triclops.entity;
 
+import com.hp.briair.utils.HttpException;
 import com.hp.triclops.repository.OrganizationRepository;
+import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -15,6 +17,8 @@ public class Org6S {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     private Organization organization;
 
@@ -43,8 +47,12 @@ public class Org6S {
      * 组织里面删除一辆车
      * @param v 被删除车辆
      */
-    public void deleteVehicle(Vehicle6S v) throws Exception{
-        throw new NotImplementedException();
+    public Vehicle6S deleteVehicle(Vehicle6S v) throws Exception{
+        if(organization.getVehicleSet().contains(v.getVehicle())){
+            organization.getVehicleSet().remove(v.getVehicle());
+            return v;
+        }
+        return v;
     }
 
     /**
