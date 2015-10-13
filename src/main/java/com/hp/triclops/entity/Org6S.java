@@ -3,6 +3,7 @@ package com.hp.triclops.entity;
 import com.hp.triclops.repository.OrganizationRepository;
 import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -11,16 +12,16 @@ import java.util.Set;
 /**
  * Created by liz on 2015/10/13.
  */
-@Component
 public class Org6S {
 
-    @Autowired
     private OrganizationRepository organizationRepository;
 
     private Organization organization;
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private int oid;
+
+
+    private ApplicationContext appContext;
 
     public Org6S() {
     }
@@ -30,16 +31,27 @@ public class Org6S {
      * @param oid 组织ID
      */
     public Org6S(int oid){
-       this.setOrganization(this.findOrgById(oid));
+        this.setOid(oid);
     }
+
+    /**
+     * 手动注入Repository
+     * @param appContext ApplicationContext
+     */
+    public void setAppCtxAndInit(ApplicationContext appContext){
+        this.appContext = appContext;
+        this.organizationRepository = this.appContext.getBean(OrganizationRepository.class);
+        this.setOrganization(this.findOrgById(this.getOid()));
+    }
+
 
     /**
      * 组织里面添加一辆车
      * @param v 被添加车辆
      */
     public Vehicle6S addVehicle(Vehicle6S v){
-        Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
         if(!isBinding(v)) {
+            Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
             vehicleSet.add(v.getVehicle());
             this.organizationRepository.save(this.organization);
         }
@@ -80,6 +92,14 @@ public class Org6S {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+    public int getOid() {
+        return oid;
+    }
+
+    public void setOid(int oid) {
+        this.oid = oid;
     }
 
 
