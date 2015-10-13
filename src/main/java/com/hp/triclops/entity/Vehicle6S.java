@@ -31,7 +31,7 @@ public class Vehicle6S{
      * @return
      */
     public Vehicle findVehicleById(int vid){
-        return vehicleRepository.findById(vid);
+        return this.vehicleRepository.findById(vid);
     }
 
 

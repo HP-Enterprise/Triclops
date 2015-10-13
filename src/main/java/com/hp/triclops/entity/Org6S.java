@@ -32,7 +32,7 @@ public class Org6S {
     public void Add(Vehicle6S v){
         Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
         vehicleSet.add(v.getVehicle());
-        organizationRepository.save(this.organization);
+        this.organizationRepository.save(this.organization);
     }
 
     /**
@@ -41,7 +41,7 @@ public class Org6S {
      * @return
      */
     public Organization findOrgById(int oid){
-        return organizationRepository.findById(oid);
+        return this.organizationRepository.findById(oid);
     }
 
     public Organization getOrganization() {
