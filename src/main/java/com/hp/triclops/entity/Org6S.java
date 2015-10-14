@@ -72,6 +72,7 @@ public class Org6S {
     /**
      * 组织里面删除一辆车
      * @param v 被删除车辆
+     * @return 执行完后的Vehicle6S
      */
     public Vehicle6S deleteVehicle(Vehicle6S v) throws Exception{
         if(isBinding(v)){
@@ -84,7 +85,7 @@ public class Org6S {
     /**
      * 根据组织ID查找组织
      * @param oid 组织ID
-     * @return
+     * @return  查找到的组织
      */
     public Organization findOrgById(int oid){
         return this.organizationRepository.findById(oid);
