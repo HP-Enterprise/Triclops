@@ -3,6 +3,7 @@ package com.hp.triclops;
 import com.hp.data.core.Conversion;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.RemoteControl;
+import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.OutputHexService;
 import org.junit.After;
 import org.junit.Before;
@@ -44,5 +45,24 @@ public class OutputHexServiceTest {
         int eventId=dataTool.getCurrentSeconds();
 
         System.out.println(">>>>>>>"+outputHexService.getRemoteControlHex(remoteControl,eventId));
+    }
+
+    @Test
+    public void test_getParmSetCmdHex(){
+        //测试固定数据保存
+        TBoxParmSet tBoxParmSet=new TBoxParmSet();
+        tBoxParmSet.setSendingTime(new Date());
+
+        tBoxParmSet.setVin("12345678919991234");
+        int eventId=dataTool.getCurrentSeconds();
+        tBoxParmSet.setEventId((long)eventId);
+        tBoxParmSet.setEnterpriseBroadcastAddress1("192.168.1.1");
+        tBoxParmSet.setEnterpriseBroadcastPort1(9000);
+        tBoxParmSet.setEnterpriseBroadcastAddress2("192.168.1.2");
+        tBoxParmSet.setEnterpriseBroadcastPort2(9000);
+        tBoxParmSet.setEnterpriseDomainName("www.baidu.com");
+        tBoxParmSet.setEnterpriseDomainNameSize((short)13);
+
+        System.out.println(">>>>>>>"+outputHexService.getParmSetCmdHex(tBoxParmSet));
     }
 }

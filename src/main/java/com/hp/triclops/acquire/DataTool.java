@@ -55,6 +55,13 @@ public class DataTool {
         return re;
     }
 
+    public byte[] getIpBytes(String ip){
+        //IP地址转换  192.168.1.1读出 00 00 C0 A8 01 01
+        String[] ips=ip.split("\\.");
+        byte[] bytes = new byte[]{(byte)0,(byte)0,(byte)Integer.parseInt(ips[0]),(byte)Integer.parseInt(ips[1]),(byte)Integer.parseInt(ips[2]),(byte)Integer.parseInt(ips[3])};
+        return bytes;
+    }
+
     public  String getBinaryStrFromByte(byte b)
     {
         //将byte转换层二进制字符串 (byte)170  ->> 10101010

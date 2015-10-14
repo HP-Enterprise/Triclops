@@ -4,7 +4,9 @@ import com.hp.data.bean.tbox.*;
 import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
+import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.repository.TBoxParmSetRepository;
 import com.hp.triclops.service.TboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,8 @@ public class RequestHandler {
     SocketRedis socketRedis;
     @Autowired
     TboxService tboxService;
+    @Autowired
+    TBoxParmSetRepository tBoxParmSetRepository;
 
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -201,7 +205,7 @@ public class RequestHandler {
      * @param vin vin码
      */
     public void getRemoteControlAck(String reqString,String vin){
-        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        //处理远程控制响应的16进制字符串
         ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
         DataPackage dp=conversionTBox.generate(bb);
         RemoteControlAck bean=dp.loadBean(RemoteControlAck.class);
@@ -212,9 +216,46 @@ public class RequestHandler {
         String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
         String statusValue=String.valueOf(bean.getMessageID());
         socketRedis.saveValueString(statusKey, statusValue,-1);
-        socketRedis.saveSetString(key,String.valueOf(bean.getRemoteControlAck()),-1);
+        socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
         //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
         _logger.info("Remote Control finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
+    }
+
+    /**
+     *
+     * @param reqString 参数设置响应hex
+     * @param vin vin码
+     */
+    public void handleParmSetAck(String reqString,String vin){
+        //处理参数设置响应hex
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        PramSetupAck bean=dp.loadBean(PramSetupAck.class);
+        byte[] pramValue=bean.getPramValue();
+        //请求解析到bean
+        String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
+        //变更消息状态
+        TBoxParmSet tps=tBoxParmSetRepository.findByVinAndEventId(vin,bean.getEventID());
+        if(tps!=null){
+            tps.setStatus((short)1);//标识命令已经响应
+            tps.setFrequencySaveLocalMediaResult(pramValue[0]==0x00?(short)0:(short)1);//标识单条参数结果
+            tps.setFrequencyForReportResult(pramValue[1]==0x00?(short)0:(short)1);
+            tps.setFrequencyForWarningReportResult(pramValue[2]==0x00?(short)0:(short)1);
+            tps.setFrequencyHeartbeatResult(pramValue[3]==0x00?(short)0:(short)1);
+            tps.setTimeOutForTerminalSearchResult(pramValue[4]==0x00?(short)0:(short)1);
+            tps.setTimeOutForServerSearchResult(pramValue[5]==0x00?(short)0:(short)1);
+            tps.setUploadTypeResult(pramValue[6]==0x00?(short)0:(short)1);
+            tps.setEnterpriseBroadcastAddress1Result(pramValue[7]==0x00?(short)0:(short)1);
+            tps.setEnterpriseBroadcastPort1Result(pramValue[8]==0x00?(short)0:(short)1);
+            tps.setEnterpriseBroadcastAddress2Result(pramValue[9]==0x00?(short)0:(short)1);
+            tps.setEnterpriseBroadcastPort2Result(pramValue[10]==0x00?(short)0:(short)1);
+            tps.setEnterpriseDomainNameSizeResult(pramValue[11]==0x00?(short)0:(short)1);
+            tps.setEnterpriseDomainNameResult(pramValue[12]==0x00?(short)0:(short)1);
+            tBoxParmSetRepository.save(tps);
+        }
+
+        //参数设置命令执行结束，此处进一步持久化或者通知到外部接口
+        _logger.info("ParmSet Ack finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >");
     }
 
 

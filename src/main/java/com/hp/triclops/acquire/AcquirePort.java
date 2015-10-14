@@ -47,7 +47,7 @@ public class AcquirePort {
     public   void main(){
         //channels=new HashMap<String,io.netty.channel.Channel>();
         //生成数据
-        //dataBuilder.print(dataBuilder.buildStr());
+        dataBuilder.print(dataBuilder.buildStr());
         new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
         new DataHandler(socketRedis,dataHandleService,dataTool).start();    //netty数据处理入库线程，根据需要 可以新建多个
         new NettyServer(channels,socketRedis,dataTool,requestHandler,_acquirePort).run();    //netty收数据程序

@@ -7,7 +7,9 @@ package com.hp.triclops.service;
 import com.hp.triclops.acquire.AcquirePort;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.RemoteControl;
+import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.repository.RemoteControlRepository;
+import com.hp.triclops.repository.TBoxParmSetRepository;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,8 @@ public class VehicleDataService {
     RemoteControlRepository remoteControlRepository;
     @Autowired
     OutputHexService outputHexService;
+    @Autowired
+    TBoxParmSetRepository tBoxParmSetRepository;
     @Autowired
     DataTool dataTool;
 
@@ -60,6 +64,28 @@ public class VehicleDataService {
         }
         return null;
         //命令下发成功，返回保存后的rc  否则返回null
+    }
+
+    public TBoxParmSet handleParmSet(TBoxParmSet tBoxParmSet){
+        tBoxParmSet.setStatus((short)0);
+        tBoxParmSet.setFrequencySaveLocalMediaResult((short)1);//标识单条参数结果默认值 默认为未成功 等待响应数据来标识
+        tBoxParmSet.setFrequencyForReportResult((short)1);
+        tBoxParmSet.setFrequencyForWarningReportResult((short)1);
+        tBoxParmSet.setFrequencyHeartbeatResult((short)1);
+        tBoxParmSet.setTimeOutForTerminalSearchResult((short)1);
+        tBoxParmSet.setTimeOutForServerSearchResult((short)1);
+        tBoxParmSet.setUploadTypeResult((short)1);
+        tBoxParmSet.setEnterpriseBroadcastAddress1Result((short)1);
+        tBoxParmSet.setEnterpriseBroadcastPort1Result((short)1);
+        tBoxParmSet.setEnterpriseBroadcastAddress2Result((short)1);
+        tBoxParmSet.setEnterpriseBroadcastPort2Result((short)1);
+        tBoxParmSet.setEnterpriseDomainNameSizeResult((short)1);
+        tBoxParmSet.setEnterpriseDomainNameResult((short)1);
+        tBoxParmSetRepository.save(tBoxParmSet);
+        //数据保存到数据库表
+        outputHexService.getParmSetCmdHex(tBoxParmSet);
+        //生成output数据包并进入redis
+        return tBoxParmSet;
     }
 
     public void remoteWakeUp(String vin){

@@ -21,54 +21,25 @@ public class DataBuilder {
     public String  buildStr(){
         //生成数据
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        DataResendMes hr=new DataResendMes();
+        PramSetupAck hr=new PramSetupAck();
+        hr.setTestFlag((short) 1);
         hr.setTestFlag((short) 1);
         hr.setSendingTime((long) dataTool.getCurrentSeconds());
-        hr.setApplicationID((short) 35);//>>>
-        hr.setMessageID((short) 1);//>>>
+        hr.setApplicationID((short) 82);//>>>
+        hr.setMessageID((short) 2);//>>>
         hr.setImei("123456789012345");
         hr.setProtocolVersionNumber((short) 1);
         hr.setVehicleID(1);
         hr.setTripID((short) 1);
         hr.setReserved(0);
 
-        hr.setIsLocation((short) 1);
-        hr.setLatitude(30123456l);
-        hr.setLongitude(114123456l);
-        hr.setSpeed(123);
-        hr.setHeading(230);
-        hr.setFuelOil((short) 10);
-        hr.setAvgOil(123);
-        hr.setOilLife((short) 15);
-        hr.setDriveRange(new byte[]{(byte) 13, (byte) 144, (byte) 56});
-        hr.setLeftFrontTirePressure(251);
-        hr.setLeftRearTirePressure(252);
-        hr.setRightFrontTirePressure(253);
-        hr.setRightRearTirePressure(254);
-        hr.setWindowInformation((short) 170);
-        hr.setVehicleTemperature((short) 65);
-        hr.setVehicleOuterTemperature((short) 67);
-        hr.setDoorInformation((short) 170);
-        hr.setSingleBatteryVoltage(14000);
-        hr.setMaximumVoltagePowerBatteryPack((short) 200);
-        hr.setMaximumBatteryVoltage(15000);
-        hr.setBatteryMonomerMinimumVoltage(14000);
-        hr.setEngineCondition((short) 170);
-        hr.setEngineSpeed(4000);
-        hr.setRapidAcceleration(200);
-        hr.setRapidDeceleration(300);
-        hr.setSpeeding(30);
-        hr.setSignalStrength((short) 10);
+        hr.setEventID((long) 1444812349);
+        hr.setPramSetAck((short) 13);
+        hr.setPramSetID(new byte[]{(byte) 1, (byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7, (byte) 8, (byte) 9, (byte) 10, (byte) 11, (byte) 12, (byte) 13});
+        hr.setPramValue(new byte[]{(byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0});
 
-        hr.setBcm1((byte)170);
-        hr.setEms((byte)170);
-        hr.setTcu((byte)170);
-        hr.setIc((byte)170);
-        hr.setAbs((byte)170);
-        hr.setPdc((byte)170);
-        hr.setBcm2((byte)170);
 
-        DataPackage dpw=new DataPackage("8995_35_1");//>>>
+        DataPackage dpw=new DataPackage("8995_82_2");//>>>
         dpw.fillBean(hr);
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr=PackageEntityManager.getByteString(bbw);
@@ -80,9 +51,8 @@ public class DataBuilder {
         String byteString=str;
         ByteBuffer bb=PackageEntityManager.getByteBuffer(byteString);
         DataPackage dp=conversionTBox.generate(bb);
-        DataResendMes bean=dp.loadBean(DataResendMes.class);
+        PramSetupAck bean=dp.loadBean(PramSetupAck.class);
         PackageEntityManager.printEntity(bean);
-
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
 }

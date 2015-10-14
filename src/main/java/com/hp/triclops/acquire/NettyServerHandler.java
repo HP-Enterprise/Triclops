@@ -183,7 +183,13 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     break;
                 case 0x52://参数设置响应(上行)
                     _logger.info("PramSetupAck Ack");
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    _vin=chKey;
+                    requestHandler.handleParmSetAck(receiveDataHexString, _vin);
                     break;
                 default:
                     _logger.info(">>other request dave,log to file" + receiveDataHexString);

@@ -70,6 +70,8 @@ public class RemoteControl {
         this.sessionId = sessionId;
     }
 
+    @Basic
+    @Column(name = "vin", nullable = false, insertable = true, updatable = true, length = 50)
     public String getVin() {
         return vin;
     }
