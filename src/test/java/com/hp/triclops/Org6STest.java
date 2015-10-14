@@ -41,9 +41,12 @@ public class Org6STest {
         org6S.setAppCtxAndInit(appContext);
         //新建车辆
         Vehicle vehicle=new Vehicle();
-        vehicle.setVin("123321");
-        vehicle.setTboxsn("123321123");
-        vehicle.setLicense_plate("ABC123");
+        vehicle.setVendor("BMW");
+        vehicle.setModel("M3");
+        vehicle.setDisplacement("6.0");
+        vehicle.setVin("1G1BL52P7TR115520");
+        vehicle.setTboxsn("TB11032DS31");
+        vehicle.setLicense_plate("A12123");
         vehicle.setProduct_date(new Date());
         //保存车辆
         Vehicle testVehicle=vehicleRepository.save(vehicle);
