@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * Created by luj on 2015/9/25.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class,locations = "classpath:spring-config.xml")
+@SpringApplicationConfiguration(classes = Application.class)
 @ComponentScan(basePackages = { "com.hp.triclops.acquire","com.hp.data.core","com.hp.data.util" })
 public class RequestHandlerTest {
 
@@ -51,7 +51,6 @@ public class RequestHandlerTest {
         System.out.println("request.:"+resultString);
         System.out.println("response:"+requestHandler.getActiveHandle(resultString));
     }
-/*
     @Test
     public void test_getRemoteWakeUpResp() {
         //远程唤醒测试
@@ -77,6 +76,7 @@ public class RequestHandlerTest {
         System.out.println("response:"+requestHandler.getHeartbeatResp(byteString));
 
     }
+
     @Test
       public void test_getRegisterResp() {
         //注册测试
@@ -94,7 +94,7 @@ public class RequestHandlerTest {
         System.out.println("response:"+dataTool.getApplicationIdAndMessageIdFromDownBytes(byteString));
 
     }
-    */
+
 
     @Test
     public void test_getRemoteControlAck() {
