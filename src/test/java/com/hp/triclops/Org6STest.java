@@ -28,9 +28,9 @@ public class Org6STest {
 
     @Test
     public void testAddVehivle() {
-        Org6S org6S=new Org6S(1);
-        org6S.setAppCtxAndInit(appContext);
-//        Vehicle6S vehicle6S=new Vehicle6S(3);
-//        org6S.addVehicle(vehicle6S);
+      //  Org6S org6S=new Org6S(1);
+   //     org6S.setAppCtxAndInit(appContext);
+        Vehicle6S vehicle6S=new Vehicle6S(3);
+        vehicle6S.setAppCtxAndInit(appContext);
     }
 }
