@@ -36,7 +36,7 @@ public class NettyServer {
         this._logger = LoggerFactory.getLogger(NettyServer.class);
     }
     static int connectionCount=0;
-    public void run()  {
+    public  void run()  {
         try{
 
             EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
