@@ -33,7 +33,7 @@ public class Org6STest {
     public void tearDown() {
     }
 
-    @Test
+    @Test//组织绑定车辆
     @Transactional
     public void testAddVehivle() {
 

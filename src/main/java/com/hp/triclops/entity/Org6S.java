@@ -67,7 +67,7 @@ public class Org6S {
 
     public boolean isBinding(Vehicle6S v){
         Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
-        if(vehicleSet.contains(v.getVehicle())) return true;
+        if(vehicleSet.contains(v.getVehicle())) return true;//true为已经绑定，fasle为没有绑定
         return false;
     }
 
