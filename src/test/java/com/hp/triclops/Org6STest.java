@@ -36,6 +36,10 @@ public class Org6STest {
         vehicle6S.setAppCtxAndInit(appContext);
     }
 
+    /**
+     * 车辆从组织解除绑定
+     * @throws Exception
+     */
     @Test
     @Transactional
     public void testUnbindVehicle() throws Exception{
