@@ -76,7 +76,7 @@ public class Org6S {
      * @param v 被删除车辆
      * @return 执行完后的Vehicle6S
      */
-    public Vehicle6S deleteVehicle(Vehicle6S v) throws Exception{
+    public Vehicle6S deleteVehicle(Vehicle6S v){
         if(isBinding(v)){
             organization.getVehicleSet().remove(v.getVehicle());
             organizationRepository.save(organization);
