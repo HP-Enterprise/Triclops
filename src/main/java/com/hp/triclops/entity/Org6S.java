@@ -1,6 +1,5 @@
 package com.hp.triclops.entity;
 
-import com.hp.briair.utils.HttpException;
 import com.hp.triclops.repository.OrganizationRepository;
 import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ public class Org6S {
 
     @Autowired
     private OrganizationRepository organizationRepository;
-    @Autowired
-    private VehicleRepository vehicleRepository;
 
     private Organization organization;
 
@@ -65,9 +62,9 @@ public class Org6S {
      * @param v 被删除车辆
      */
     public Vehicle6S deleteVehicle(Vehicle6S v) throws Exception{
-        if(organization.getVehicleSet().contains(v.getVehicle())){
+        if(isBinding(v)){
             organization.getVehicleSet().remove(v.getVehicle());
-            return v;
+            organizationRepository.save(organization);
         }
         return v;
     }
