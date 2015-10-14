@@ -237,7 +237,7 @@ public class RequestHandler {
         //变更消息状态
         TBoxParmSet tps=tBoxParmSetRepository.findByVinAndEventId(vin,bean.getEventID());
         if(tps!=null){
-            tps.setStatus((short)1);//标识命令已经响应
+            tps.setStatus((short)2);//标识命令已经响应
             tps.setFrequencySaveLocalMediaResult(pramValue[0]==0x00?(short)0:(short)1);//标识单条参数结果
             tps.setFrequencyForReportResult(pramValue[1]==0x00?(short)0:(short)1);
             tps.setFrequencyForWarningReportResult(pramValue[2]==0x00?(short)0:(short)1);

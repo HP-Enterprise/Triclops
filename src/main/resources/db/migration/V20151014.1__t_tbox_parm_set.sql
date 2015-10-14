@@ -29,7 +29,7 @@ enterprise_domain_name_size smallint(6) NOT NULL COMMENT '域名长度',
 enterprise_domain_name_size_result smallint(1) NOT NULL COMMENT '结果 0:成功 1:失败',
 enterprise_domain_name varchar(70) NOT NULL COMMENT '域名',
 enterprise_domain_name_result smallint(1) NOT NULL COMMENT '结果 0:成功 1:失败',
-status smallint(1) NOT NULL COMMENT '设置状态标识 0:已发出 1:TBOX已响应',
+status smallint(1) NOT NULL COMMENT '设置状态标识 0:TBox离线尚未发出 1:已向TBox发出 2:TBOX已响应',
 version varchar(20) NOT NULL COMMENT '',
 PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8 COMMENT='TBOX参数设置表';

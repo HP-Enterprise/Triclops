@@ -59,6 +59,7 @@ public class VehicleDataService {
             //保存到数据库
             //产生数据包hex并入redis
             String byteStr=outputHexService.getRemoteControlHex(rc,eventId);
+            outputHexService.saveCmdToRedis(vin,byteStr);
             _logger.info("command hex:"+byteStr);
             return rc;
         }
@@ -82,10 +83,16 @@ public class VehicleDataService {
         tBoxParmSet.setEnterpriseDomainNameSizeResult((short)1);
         tBoxParmSet.setEnterpriseDomainNameResult((short)1);
         tBoxParmSetRepository.save(tBoxParmSet);
-        //数据保存到数据库表
-        outputHexService.getParmSetCmdHex(tBoxParmSet);
-        //生成output数据包并进入redis
-        return tBoxParmSet;
+        //参数数据保存到数据库表 如果TBox在线，通过连接下发；如果不在线，保存到数据库，等待注册后进行下发。
+        if(hasConnection(tBoxParmSet.getVin())){
+            String byteStr=outputHexService.getParmSetCmdHex(tBoxParmSet);
+            //生成output数据包并进入redis
+            outputHexService.saveCmdToRedis(tBoxParmSet.getVin(),byteStr);
+            tBoxParmSet.setStatus((short)1);//参数设置指令向tbox发出 消息状态由0->1
+            tBoxParmSetRepository.save(tBoxParmSet);
+            return tBoxParmSet;
+        }
+        return null;//TBox不在线 Controller通知出去
     }
 
     public void remoteWakeUp(String vin){

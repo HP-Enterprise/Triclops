@@ -46,7 +46,6 @@ public class OutputHexService {
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr= PackageEntityManager.getByteString(bbw);
 
-        saveCmdToRedis(remoteControl.getVin(),byteStr);
         return byteStr;
     }
 
@@ -78,11 +77,10 @@ public class OutputHexService {
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr= PackageEntityManager.getByteString(bbw);
 
-        saveCmdToRedis(tps.getVin(), byteStr);
         return byteStr;
     }
 
-    private void saveCmdToRedis(String vin,String hexStr){
+    public  void saveCmdToRedis(String vin,String hexStr){
         socketRedis.saveSetString(dataTool.out_cmd_preStr + vin, hexStr, -1);
         //保存到redis
 
