@@ -1,35 +1,36 @@
 package com.hp.triclops;
 
-
-import com.hp.triclops.entity.*;
-import com.hp.triclops.repository.OrganizationRepository;
-import com.hp.triclops.repository.SysdictRepository;
+import com.hp.triclops.entity.Org6S;
+import com.hp.triclops.entity.Vehicle6S;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-/**
- * Created by wang on 2015/10/13.
- */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
 public class Org6STest {
-
     @Autowired
-    Org6S org6S;
-    @Autowired
-    SysdictRepository sysdictRepository;
-    @Autowired
-    OrganizationRepository organizationRepository;
+    private ApplicationContext appContext;
 
-    public void testOrg6S(){
 
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void tearDown() {
     }
 
     @Test
-    public void unbindTest() throws Exception{
-        Org6S org6S = new Org6S();
-        org6S.setOrganization(organizationRepository.findById(1));
-        Vehicle6S vehicle6S = new Vehicle6S();
-        org6S.addVehicle(vehicle6S);
-        org6S.deleteVehicle(vehicle6S);
+    public void testAddVehivle() {
+      //  Org6S org6S=new Org6S(1);
+   //     org6S.setAppCtxAndInit(appContext);
+        Vehicle6S vehicle6S=new Vehicle6S(3);
+        vehicle6S.setAppCtxAndInit(appContext);
     }
-
 }
