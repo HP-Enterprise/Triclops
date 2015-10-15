@@ -43,10 +43,10 @@ public class VehicleDataService {
 
     /**
      * 下发参数设置命令
-     * @param uid
-     * @param vin
-     * @param cType
-     * @param acTmp
+     * @param uid user id
+     * @param vin vin
+     * @param cType 控制类别
+     * @param acTmp 空调温度
      * @return 持久化后的RemoteControl对象
      */
     public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp){
@@ -83,37 +83,11 @@ public class VehicleDataService {
 
     /**
      * 批量参数设置下发
-     * @param tBoxParmSet
-     * @return
+     * @param tBoxParmSet 参数设置
+     * @return 记录数
      */
     public int handleParmSetToAllVehicle(TBoxParmSet tBoxParmSet){
         int count=0;
-        Iterator<Vehicle> vehicleList=vehicleRepository.findAll().iterator();
-        if(vehicleList.hasNext()){
-        while (vehicleList.hasNext()){
-            count++;
-            //从tBoxParmSet取出设置数据 封入遍历的vin 分别处理到每个TBox的设置 但是此法性能存在疑问
-            TBoxParmSet tps=new TBoxParmSet();
-            tps.setVin(vehicleList.next().getVin());
-            tps.setSendingTime(new Date());
-            int eventId=dataTool.getCurrentSeconds();
-            tps.setEventId((long)eventId);
-            tps.setFrequencySaveLocalMedia(tBoxParmSet.getFrequencySaveLocalMedia());
-            tps.setFrequencyForReport(tBoxParmSet.getFrequencyForReport());
-            tps.setFrequencyForWarningReport(tBoxParmSet.getFrequencyForWarningReport());
-            tps.setFrequencyHeartbeat(tBoxParmSet.getFrequencyHeartbeat());
-            tps.setTimeOutForTerminalSearch(tBoxParmSet.getTimeOutForTerminalSearch());
-            tps.setTimeOutForServerSearch(tBoxParmSet.getTimeOutForServerSearch());
-            tps.setUploadType(tBoxParmSet.getUploadType());
-            tps.setEnterpriseBroadcastAddress1(tBoxParmSet.getEnterpriseBroadcastAddress2());
-            tps.setEnterpriseBroadcastPort1(tBoxParmSet.getEnterpriseBroadcastPort1());
-            tps.setEnterpriseBroadcastAddress2(tBoxParmSet.getEnterpriseBroadcastAddress2());
-            tps.setEnterpriseBroadcastPort2(tBoxParmSet.getEnterpriseBroadcastPort2());
-            tps.setEnterpriseDomainName(tBoxParmSet.getEnterpriseDomainName());
-            tps.setEnterpriseDomainNameSize(tBoxParmSet.getEnterpriseDomainNameSize());
-            handleParmSet(tps);
-        }
-        }
         return count;
     }
     public TBoxParmSet handleParmSet(TBoxParmSet tBoxParmSet){
@@ -146,7 +120,7 @@ public class VehicleDataService {
 
     /**
      * 远程唤醒流程 最多三次 每次唤醒后等待10s检测结果
-     * @param vin
+     * @param vin vin
      */
     public void remoteWakeUp(String vin){
         //远程唤醒动作
@@ -168,7 +142,7 @@ public class VehicleDataService {
 
     /**
      * 调用具体实现的唤醒接口 可能是Ring或者SMS To Tbox
-     * @param vin
+     * @param vin vin
      */
     private void wakeup(String vin){
         //本部分代码为调用外部唤醒接口
@@ -177,8 +151,8 @@ public class VehicleDataService {
 
     /**
      * 检测对应TBox是否有连接可用
-     * @param vin
-     * @return
+     * @param vin vin
+     * @return 是否有连接
      */
     private boolean hasConnection(String vin){
         //检测对应vin是否有连接可用

@@ -11,8 +11,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 
 /**
@@ -34,6 +36,8 @@ public class OutputHexServiceTest {
     public void tearDown() {
     }
     @Test
+    @Transactional
+    @Rollback
     public void test_getRemoteControlHex(){
         //测试固定数据保存
         RemoteControl remoteControl=new RemoteControl();
@@ -48,6 +52,8 @@ public class OutputHexServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     public void test_getParmSetCmdHex(){
         //测试
         TBoxParmSet tBoxParmSet=new TBoxParmSet();
@@ -74,6 +80,8 @@ public class OutputHexServiceTest {
         System.out.println(">>>>>>>"+outputHexService.getParmSetCmdHex(tBoxParmSet));
     }
     @Test
+    @Transactional
+    @Rollback
     public void test_sendParmSetAfterRegister(){
         String vin="12345678919991234";
         outputHexService.sendParmSetAfterRegister(vin);

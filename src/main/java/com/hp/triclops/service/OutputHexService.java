@@ -58,7 +58,7 @@ public class OutputHexService {
 
     /**
      * TBox注册成功后 检查是否有参数设置未下发 如果有则下发处理
-     * @param vin
+     * @param vin vin
      */
     public void  sendParmSetAfterRegister(String vin){
         //注册通过后下发参数设置
