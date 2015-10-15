@@ -4,6 +4,7 @@ package com.hp.triclops.acquire;
  * Created by luj on 2015/9/21.
  */
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.service.OutputHexService;
 import io.netty.bootstrap.ServerBootstrap;
 
 import io.netty.channel.*;
@@ -25,13 +26,15 @@ public class NettyServer {
     private DataTool dataTool;
     private HashMap<String,Channel> channels;
     private RequestHandler requestHandler;
+    private OutputHexService outputHexService;
     private Logger _logger;
 
-    public NettyServer(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,int port) {
+    public NettyServer(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port) {
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
         this.requestHandler=rh;
+        this.outputHexService=ohs;
         this.port = port;
         this._logger = LoggerFactory.getLogger(NettyServer.class);
     }
@@ -48,7 +51,7 @@ public class NettyServer {
                         .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
-                                ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool,requestHandler));
+                                ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool,requestHandler,outputHexService));
                                 connectionCount++;
                                // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }

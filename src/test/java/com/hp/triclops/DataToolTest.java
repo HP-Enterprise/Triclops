@@ -98,5 +98,12 @@ public class DataToolTest {
         }
     }
 
+    @Test
+    public void test_getIpBytes(){
+        String ip="192.168.1.1";
+        byte[] bytes=dataTool.getIpBytes(ip);
+
+    }
+
 
 }
