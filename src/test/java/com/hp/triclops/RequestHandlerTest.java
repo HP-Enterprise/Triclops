@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by luj on 2015/9/25.
@@ -105,6 +107,8 @@ public class RequestHandlerTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     public void test_handleParmSetAck(){
         String byteString="23 23 00 3A 01 56 1E 17 F5 52 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 56 1E 16 3D 0D 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 00 00 00 00 00 00 00 00 00 00 00 00 00 9F ";
         String vin="12345678919991234";

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * Created by luj on 2015/9/24.
@@ -235,26 +236,28 @@ public class RequestHandler {
         //请求解析到bean
         String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
         //变更消息状态
-        TBoxParmSet tps=tBoxParmSetRepository.findByVinAndEventId(vin,bean.getEventID());
-        if(tps!=null){
-            tps.setStatus((short)2);//标识命令已经响应
-            tps.setFrequencySaveLocalMediaResult(pramValue[0]==0x00?(short)0:(short)1);//标识单条参数结果
-            tps.setFrequencyForReportResult(pramValue[1]==0x00?(short)0:(short)1);
-            tps.setFrequencyForWarningReportResult(pramValue[2]==0x00?(short)0:(short)1);
-            tps.setFrequencyHeartbeatResult(pramValue[3]==0x00?(short)0:(short)1);
-            tps.setTimeOutForTerminalSearchResult(pramValue[4]==0x00?(short)0:(short)1);
-            tps.setTimeOutForServerSearchResult(pramValue[5]==0x00?(short)0:(short)1);
-            tps.setUploadTypeResult(pramValue[6]==0x00?(short)0:(short)1);
-            tps.setEnterpriseBroadcastAddress1Result(pramValue[7]==0x00?(short)0:(short)1);
-            tps.setEnterpriseBroadcastPort1Result(pramValue[8]==0x00?(short)0:(short)1);
-            tps.setEnterpriseBroadcastAddress2Result(pramValue[9]==0x00?(short)0:(short)1);
-            tps.setEnterpriseBroadcastPort2Result(pramValue[10]==0x00?(short)0:(short)1);
-            tps.setEnterpriseDomainNameSizeResult(pramValue[11]==0x00?(short)0:(short)1);
-            tps.setEnterpriseDomainNameResult(pramValue[12]==0x00?(short)0:(short)1);
-            tBoxParmSetRepository.save(tps);
+        List<TBoxParmSet> tpss=tBoxParmSetRepository.findByVinAndEventId(vin, bean.getEventID());
+        if(tpss.size()>0){
+            TBoxParmSet tps=tpss.get(0);
+            if (tps != null) {
+                tps.setStatus((short) 2);//标识命令已经响应
+                tps.setFrequencySaveLocalMediaResult(pramValue[0] == 0x00 ? (short) 0 : (short) 1);//标识单条参数结果
+                tps.setFrequencyForReportResult(pramValue[1] == 0x00 ? (short) 0 : (short) 1);
+                tps.setFrequencyForWarningReportResult(pramValue[2] == 0x00 ? (short) 0 : (short) 1);
+                tps.setFrequencyHeartbeatResult(pramValue[3] == 0x00 ? (short) 0 : (short) 1);
+                tps.setTimeOutForTerminalSearchResult(pramValue[4] == 0x00 ? (short) 0 : (short) 1);
+                tps.setTimeOutForServerSearchResult(pramValue[5] == 0x00 ? (short) 0 : (short) 1);
+                tps.setUploadTypeResult(pramValue[6] == 0x00 ? (short) 0 : (short) 1);
+                tps.setEnterpriseBroadcastAddress1Result(pramValue[7] == 0x00 ? (short) 0 : (short) 1);
+                tps.setEnterpriseBroadcastPort1Result(pramValue[8] == 0x00 ? (short) 0 : (short) 1);
+                tps.setEnterpriseBroadcastAddress2Result(pramValue[9] == 0x00 ? (short) 0 : (short) 1);
+                tps.setEnterpriseBroadcastPort2Result(pramValue[10] == 0x00 ? (short) 0 : (short) 1);
+                tps.setEnterpriseDomainNameSizeResult(pramValue[11] == 0x00 ? (short) 0 : (short) 1);
+                tps.setEnterpriseDomainNameResult(pramValue[12] == 0x00 ? (short) 0 : (short) 1);
+                tBoxParmSetRepository.save(tps);
+            }
         }
-
-        //参数设置命令执行结束，此处进一步持久化或者通知到外部接口
+       //参数设置命令执行结束，此处进一步持久化或者通知到外部接口
         _logger.info("ParmSet Ack finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >");
     }
 

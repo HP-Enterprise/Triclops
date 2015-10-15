@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -39,6 +41,7 @@ public class VehicleDataServiceTest {
     public void test_remoteWakeUp() {
        vehicleDataService.remoteWakeUp("123456");
     }
+
     @Test
     public void test_handleParmSet() {
         TBoxParmSet tBoxParmSet=new TBoxParmSet();

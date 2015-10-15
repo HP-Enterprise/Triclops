@@ -61,8 +61,14 @@ public class OutputHexServiceTest {
         tBoxParmSet.setEnterpriseBroadcastAddress2("192.168.1.2");
         tBoxParmSet.setEnterpriseBroadcastPort2(9000);
         tBoxParmSet.setEnterpriseDomainName("www.baidu.com");
-        tBoxParmSet.setEnterpriseDomainNameSize((short)13);
+        tBoxParmSet.setEnterpriseDomainNameSize((short) 13);
 
         System.out.println(">>>>>>>"+outputHexService.getParmSetCmdHex(tBoxParmSet));
+    }
+    @Test
+    public void test_sendParmSetAfterRegister(){
+        String vin="12345678919991234";
+        outputHexService.sendParmSetAfterRegister(vin);
+
     }
 }

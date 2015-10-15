@@ -1,5 +1,6 @@
 package com.hp.triclops.acquire;
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.service.OutputHexService;
 import io.netty.buffer.ByteBuf;
 
 import io.netty.buffer.ByteBufUtil;
@@ -23,13 +24,15 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     private RequestHandler requestHandler;
     private DataTool dataTool;
     private HashMap<String,Channel> channels;
+    private OutputHexService outputHexService;
     private Logger _logger;
 
-    public NettyServerHandler(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh){
+    public NettyServerHandler(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs){
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
         this.requestHandler=rh;
+        this.outputHexService=ohs;
         this._logger = LoggerFactory.getLogger(NettyServerHandler.class);
     }
 
@@ -91,6 +94,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     if(checkVinAndSerNum){
                         channels.put(vin, ch);
                         _logger.info("resister success,Connection" + vin + "Save to HashMap");
+                        afterRegisterSuccess(vin);
                     }else{
                         _logger.info("resister failed,close Connection");
                         ch.close();//关闭连接
@@ -208,7 +212,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         Channel ch=ctx.channel();
         _logger.info("UnRegister" + ch.remoteAddress());
         //连接断开 从map移除连接
-        String chKey=getKeyByValue(ch);
+        String chKey = getKeyByValue(ch);
         channels.remove(chKey);
     }
     @Override
@@ -245,5 +249,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 return keyString;
         }
         return null;
+    }
+    private void afterRegisterSuccess(String vin){
+        //注册成功并返回数据包后的流程
+        outputHexService.sendParmSetAfterRegister(vin);
     }
 }

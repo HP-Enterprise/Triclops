@@ -39,7 +39,7 @@ public class TBoxParmSet {
     private Short enterpriseDomainNameSizeResult;
     private String enterpriseDomainName;
     private Short enterpriseDomainNameResult;
-    private Short status;//0已发出 1TBOX已响应
+    private Short status;//0:TBox离线尚未发出 1:已向TBox发出 2:TBOX已响应
     private String version;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

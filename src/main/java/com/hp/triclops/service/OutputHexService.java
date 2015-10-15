@@ -13,10 +13,14 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.repository.TBoxParmSetRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * 生成下行数据包hex 并写入redis
@@ -29,7 +33,10 @@ public class OutputHexService {
     DataTool dataTool;
     @Autowired
     SocketRedis socketRedis;
+    @Autowired
+    TBoxParmSetRepository tBoxParmSetRepository;
 
+    private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
     public String getRemoteControlHex(RemoteControl remoteControl,int eventId){
         //产生远程控制指令hex
         RemoteControlCmd  remoteControlCmd=new RemoteControlCmd();
@@ -49,6 +56,25 @@ public class OutputHexService {
         return byteStr;
     }
 
+    /**
+     * TBox注册成功后 检查是否有参数设置未下发 如果有则下发处理
+     * @param vin
+     */
+    public void  sendParmSetAfterRegister(String vin){
+        //注册通过后下发参数设置
+        List<TBoxParmSet> tpss=tBoxParmSetRepository.getLatestOneByVin(vin);
+        if(tpss.size()>0){
+            TBoxParmSet tps=tpss.get(0);
+            String byteString=getParmSetCmdHex(tps);
+            _logger.info("ParmSet for TBox:"+vin+" will be send>"+byteString);
+            saveCmdToRedis(vin,byteString);
+            tps.setStatus((short)1);//参数设置指令向tbox发出 消息状态由0->1
+            tBoxParmSetRepository.save(tps);
+        }else{
+            _logger.info("No ParmSet for TBox:"+vin+" will be send>");
+        }
+
+    }
     public String getParmSetCmdHex(TBoxParmSet tps){
         PramSetCmd pramSetCmd=new PramSetCmd();
         pramSetCmd.setApplicationID((short) 82);//>>>

@@ -68,7 +68,7 @@ public class VehicleDataService {
     }
 
     public TBoxParmSet handleParmSet(TBoxParmSet tBoxParmSet){
-        tBoxParmSet.setStatus((short)0);
+        tBoxParmSet.setStatus((short)0);//初始标识
         tBoxParmSet.setFrequencySaveLocalMediaResult((short)1);//标识单条参数结果默认值 默认为未成功 等待响应数据来标识
         tBoxParmSet.setFrequencyForReportResult((short)1);
         tBoxParmSet.setFrequencyForWarningReportResult((short)1);
@@ -95,6 +95,7 @@ public class VehicleDataService {
         return null;//TBox不在线 Controller通知出去
     }
 
+    
     public void remoteWakeUp(String vin){
         //远程唤醒动作
         _logger.info("doing wake up......");
