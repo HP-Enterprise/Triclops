@@ -8,8 +8,10 @@ import com.hp.triclops.acquire.AcquirePort;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.entity.TBoxParmSet;
+import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.repository.RemoteControlRepository;
 import com.hp.triclops.repository.TBoxParmSetRepository;
+import com.hp.triclops.repository.VehicleRepository;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 车辆控制相关业务代码
@@ -30,11 +34,21 @@ public class VehicleDataService {
     @Autowired
     TBoxParmSetRepository tBoxParmSetRepository;
     @Autowired
+    VehicleRepository vehicleRepository;
+    @Autowired
     DataTool dataTool;
 
     private Logger _logger = LoggerFactory.getLogger(VehicleDataService.class);
 
 
+    /**
+     * 下发参数设置命令
+     * @param uid
+     * @param vin
+     * @param cType
+     * @param acTmp
+     * @return 持久化后的RemoteControl对象
+     */
     public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp){
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         if(!hasConnection(vin)){
@@ -67,6 +81,41 @@ public class VehicleDataService {
         //命令下发成功，返回保存后的rc  否则返回null
     }
 
+    /**
+     * 批量参数设置下发
+     * @param tBoxParmSet
+     * @return
+     */
+    public int handleParmSetToAllVehicle(TBoxParmSet tBoxParmSet){
+        int count=0;
+        Iterator<Vehicle> vehicleList=vehicleRepository.findAll().iterator();
+        if(vehicleList.hasNext()){
+        while (vehicleList.hasNext()){
+            count++;
+            //从tBoxParmSet取出设置数据 封入遍历的vin 分别处理到每个TBox的设置 但是此法性能存在疑问
+            TBoxParmSet tps=new TBoxParmSet();
+            tps.setVin(vehicleList.next().getVin());
+            tps.setSendingTime(new Date());
+            int eventId=dataTool.getCurrentSeconds();
+            tps.setEventId((long)eventId);
+            tps.setFrequencySaveLocalMedia(tBoxParmSet.getFrequencySaveLocalMedia());
+            tps.setFrequencyForReport(tBoxParmSet.getFrequencyForReport());
+            tps.setFrequencyForWarningReport(tBoxParmSet.getFrequencyForWarningReport());
+            tps.setFrequencyHeartbeat(tBoxParmSet.getFrequencyHeartbeat());
+            tps.setTimeOutForTerminalSearch(tBoxParmSet.getTimeOutForTerminalSearch());
+            tps.setTimeOutForServerSearch(tBoxParmSet.getTimeOutForServerSearch());
+            tps.setUploadType(tBoxParmSet.getUploadType());
+            tps.setEnterpriseBroadcastAddress1(tBoxParmSet.getEnterpriseBroadcastAddress2());
+            tps.setEnterpriseBroadcastPort1(tBoxParmSet.getEnterpriseBroadcastPort1());
+            tps.setEnterpriseBroadcastAddress2(tBoxParmSet.getEnterpriseBroadcastAddress2());
+            tps.setEnterpriseBroadcastPort2(tBoxParmSet.getEnterpriseBroadcastPort2());
+            tps.setEnterpriseDomainName(tBoxParmSet.getEnterpriseDomainName());
+            tps.setEnterpriseDomainNameSize(tBoxParmSet.getEnterpriseDomainNameSize());
+            handleParmSet(tps);
+        }
+        }
+        return count;
+    }
     public TBoxParmSet handleParmSet(TBoxParmSet tBoxParmSet){
         tBoxParmSet.setStatus((short)0);//初始标识
         tBoxParmSet.setFrequencySaveLocalMediaResult((short)1);//标识单条参数结果默认值 默认为未成功 等待响应数据来标识
@@ -95,7 +144,10 @@ public class VehicleDataService {
         return null;//TBox不在线 Controller通知出去
     }
 
-    
+    /**
+     * 远程唤醒流程 最多三次 每次唤醒后等待10s检测结果
+     * @param vin
+     */
     public void remoteWakeUp(String vin){
         //远程唤醒动作
         _logger.info("doing wake up......");
@@ -114,11 +166,20 @@ public class VehicleDataService {
         }
       }
 
+    /**
+     * 调用具体实现的唤醒接口 可能是Ring或者SMS To Tbox
+     * @param vin
+     */
     private void wakeup(String vin){
         //本部分代码为调用外部唤醒接口
         _logger.info(" wake up tbox"+vin);
     }
 
+    /**
+     * 检测对应TBox是否有连接可用
+     * @param vin
+     * @return
+     */
     private boolean hasConnection(String vin){
         //检测对应vin是否有连接可用
         boolean re=false;

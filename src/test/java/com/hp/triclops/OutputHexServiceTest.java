@@ -49,13 +49,21 @@ public class OutputHexServiceTest {
 
     @Test
     public void test_getParmSetCmdHex(){
-        //测试固定数据保存
+        //测试
         TBoxParmSet tBoxParmSet=new TBoxParmSet();
         tBoxParmSet.setSendingTime(new Date());
 
         tBoxParmSet.setVin("12345678919991234");
         int eventId=dataTool.getCurrentSeconds();
         tBoxParmSet.setEventId((long)eventId);
+
+        tBoxParmSet.setFrequencySaveLocalMedia(1000);
+        tBoxParmSet.setFrequencyForReport(1000);
+        tBoxParmSet.setFrequencyForWarningReport(1000);
+        tBoxParmSet.setFrequencyHeartbeat((short) 10);
+        tBoxParmSet.setTimeOutForTerminalSearch(10);
+        tBoxParmSet.setTimeOutForServerSearch(10);
+        tBoxParmSet.setUploadType((short) 1);
         tBoxParmSet.setEnterpriseBroadcastAddress1("192.168.1.1");
         tBoxParmSet.setEnterpriseBroadcastPort1(9000);
         tBoxParmSet.setEnterpriseBroadcastAddress2("192.168.1.2");
