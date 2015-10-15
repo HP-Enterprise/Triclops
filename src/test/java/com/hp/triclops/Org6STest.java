@@ -1,8 +1,8 @@
 package com.hp.triclops;
 
-import com.hp.triclops.entity.Org6S;
+import com.hp.triclops.Entity6S.Org6S;
 import com.hp.triclops.entity.Vehicle;
-import com.hp.triclops.entity.Vehicle6S;
+import com.hp.triclops.Entity6S.Vehicle6S;
 import com.hp.triclops.repository.VehicleRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -14,8 +14,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.transaction.Transactional;
 import java.util.Date;
-
-import javax.transaction.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

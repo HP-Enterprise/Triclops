@@ -1,5 +1,6 @@
-package com.hp.triclops.entity;
+package com.hp.triclops.Entity6S;
 
+import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
