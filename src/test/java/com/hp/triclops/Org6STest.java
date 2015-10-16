@@ -1,8 +1,8 @@
 package com.hp.triclops;
 
-import com.hp.triclops.Entity6S.Org6S;
+import com.hp.triclops.manager.Org6S;
 import com.hp.triclops.entity.Vehicle;
-import com.hp.triclops.Entity6S.Vehicle6S;
+import com.hp.triclops.manager.Vehicle6S;
 import com.hp.triclops.repository.VehicleRepository;
 import org.junit.After;
 import org.junit.Before;
