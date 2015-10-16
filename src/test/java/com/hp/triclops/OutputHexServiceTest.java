@@ -7,6 +7,7 @@ import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.OutputHexService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,15 @@ public class OutputHexServiceTest {
     public void test_sendParmSetAfterRegister(){
         String vin="12345678919991234";
         outputHexService.sendParmSetAfterRegister(vin);
+
+    }
+
+    @Ignore("Not suitable for travis-ci")
+    @Test
+    public void test_getWarningMessageAndPush() {
+        String vin="12345678919991234";
+        String byteString="23 23 00 2F 01 56 16 14 A9 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 01 01 CB A5 C0 06 CD 62 C0 00 7B 00 E6 AA AA AA AA AA AA AA 37";
+       outputHexService.getWarningMessageAndPush(vin, byteString);
 
     }
 }
