@@ -285,7 +285,7 @@ public class VehicleRepositoryDAO {
      * @param fuzzy 是否模糊查询 1模糊查询 0精确查询
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findVehicleList(Integer uid,String tboxsn,String vendor,Integer fuzzy,String model,Integer t_flag,String displacement,String license_plate,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Date start_date,Date end_date){
+    public Page findVehicleList(Integer uid,String vin,String tboxsn,String vendor,Integer fuzzy,String model,Integer t_flag,String displacement,String license_plate,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Date start_date,Date end_date){
         tboxsn=(tboxsn==null)?null: EscapeStringUtil.toEscape(tboxsn);
         vendor=(vendor==null)?null: EscapeStringUtil.toEscape(vendor);
             fuzzy = (fuzzy == null) ? 0 : fuzzy;
@@ -299,30 +299,33 @@ public class VehicleRepositoryDAO {
         pageSize=(pageSize<=0)?10:pageSize;
         currentPage=(currentPage==null)?1:currentPage;
         currentPage=(currentPage<=0)?1:currentPage;
-        Query queryCount = em.createNativeQuery("{call pro_findvehicles(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}", Vehicle.class);
+        Query queryCount = em.createNativeQuery("{call pro_findvehicles(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}", Vehicle.class);
         queryCount.setParameter(1,uid);
-        queryCount.setParameter(2,tboxsn);
-        queryCount.setParameter(3,vendor);
-        queryCount.setParameter(4,fuzzy);
-        queryCount.setParameter(5,model);
-        queryCount.setParameter(6,t_flag);
-        queryCount.setParameter(7,displacement);
-        queryCount.setParameter(8,license_plate);
+        queryCount.setParameter(2,vin);
+        queryCount.setParameter(3,tboxsn);
+        queryCount.setParameter(4,vendor);
+        queryCount.setParameter(5,fuzzy);
+        queryCount.setParameter(6,model);
+        queryCount.setParameter(7,t_flag);
+        queryCount.setParameter(8,displacement);
+        queryCount.setParameter(9,license_plate);
         if(fuzzy == 1){
-            if(vendor!=null) queryCount.setParameter(3,"%"+vendor+"%");
-            if(model!=null)queryCount.setParameter(5,"%"+model+"%");
-            if(license_plate!=null)queryCount.setParameter(8,"%"+license_plate+"%");
+            if(vin!=null) queryCount.setParameter(2,"%"+vin+"%");
+            if(tboxsn!=null) queryCount.setParameter(3,"%"+tboxsn+"%");
+            if(vendor!=null) queryCount.setParameter(4,"%"+vendor+"%");
+            if(model!=null)queryCount.setParameter(6,"%"+model+"%");
+            if(license_plate!=null)queryCount.setParameter(9,"%"+license_plate+"%");
         }
-        queryCount.setParameter(9,-1);
         queryCount.setParameter(10,-1);
-        queryCount.setParameter(11,orderByProperty);
-        queryCount.setParameter(12,ascOrDesc);
-        queryCount.setParameter(13,start_date);
-        queryCount.setParameter(14,end_date);
+        queryCount.setParameter(11,-1);
+        queryCount.setParameter(12,orderByProperty);
+        queryCount.setParameter(13,ascOrDesc);
+        queryCount.setParameter(14,start_date);
+        queryCount.setParameter(15,end_date);
         Long count = (long)queryCount.getResultList().size();
         Integer firstRcord = (currentPage - 1) * pageSize;
-        queryCount.setParameter(9,firstRcord);
-        queryCount.setParameter(10,pageSize);
+        queryCount.setParameter(10,firstRcord);
+        queryCount.setParameter(11,pageSize);
         List items=queryCount.getResultList();
         return new Page(currentPage,pageSize,count,items);
     }

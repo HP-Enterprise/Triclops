@@ -1,7 +1,7 @@
 delimiter //
 
 DROP PROCEDURE IF EXISTS pro_findvehicles//
-CREATE PROCEDURE pro_findvehicles(uid int,tboxsn VARCHAR(50), vendor VARCHAR(100), fuzzy int, model VARCHAR(100),
+CREATE PROCEDURE pro_findvehicles(uid int,vin VARCHAR(50), tboxsn VARCHAR(50), vendor VARCHAR(100), fuzzy int, model VARCHAR(100),
 t_flag int,displacement VARCHAR(20),license_plate VARCHAR(10),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5),start_date datetime,end_date datetime)
 BEGIN
         DROP TABLE IF EXISTS the_vehicles;
@@ -26,6 +26,7 @@ BEGIN
                  LEFT JOIN t_authoritygroup AG ON O.id = AG.oid 
                  LEFT JOIN t_authoritygroup_relatived AGR ON AG.id = AGR.ag_id 
                  LEFT JOIN t_authoritygroup_user AGU ON AGR.ag_id = AGU.ag_id WHERE AGR.a_id = 0 AND AGU.u_id = uid);    
+            SET @vin = vin;
             SET @tboxsn = tboxsn;
             SET @vendor = vendor;            
             SET @model = model;
@@ -40,14 +41,14 @@ BEGIN
             SET @end_date = end_date;
             SET @sql = "SELECT * FROM the_vehicles v ";
             SET @sql = CONCAT(@sql, " WHERE (@t_flag = 0 OR v.t_flag = ?) ");
-            IF FUZZY = 1 THEN     
-                 SET @sql = CONCAT(@sql, " AND (@tboxsn is null OR v.tboxsn like ?)");    
+            SET @sql = CONCAT(@sql, " AND (@vin is null OR v.vin like ?)");
+            SET @sql = CONCAT(@sql, " AND (@tboxsn is null OR v.tboxsn like ?)");
+            IF FUZZY = 1 THEN
                  SET @sql = CONCAT(@sql, " AND (@vendor is null OR v.vendor like ?)"); 
                  SET @sql = CONCAT(@sql, " AND (@model is null OR v.model like ?)"); 
                  SET @sql = CONCAT(@sql, " AND (@displacement is null OR v.displacement like ?)"); 
                  SET @sql = CONCAT(@sql, " AND (@license_plate is null OR v.license_plate like ?)");            
-            ELSE             
-                 SET @sql = CONCAT(@sql, " AND (@tboxsn is null OR v.tboxsn = ?)");      
+            ELSE
                  SET @sql = CONCAT(@sql, " AND (@vendor is null OR v.vendor = ?)");   
                  SET @sql = CONCAT(@sql, " AND (@model is null OR v.model = ?)");   
                  SET @sql = CONCAT(@sql, " AND (@displacement is null OR v.displacement = ?)");   
@@ -63,7 +64,7 @@ BEGIN
                 SET @sql = CONCAT(@sql, " limit ", @firstRcord, "," ,@pageSize);           
             END IF; 
             PREPARE sqlstr from @sql;
-            EXECUTE sqlstr using @t_flag,@tboxsn,@vendor,@model,@displacement,@license_plate,@start_date,@end_date;
+            EXECUTE sqlstr using @t_flag,@vin,@tboxsn,@vendor,@model,@displacement,@license_plate,@start_date,@end_date;
    		    DROP TABLE the_vehicles;
 END//
 
