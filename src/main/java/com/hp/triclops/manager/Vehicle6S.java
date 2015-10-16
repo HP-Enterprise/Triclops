@@ -1,10 +1,8 @@
-package com.hp.triclops.Entity6S;
+package com.hp.triclops.manager;
 
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.repository.VehicleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by liz on 2015/10/13.

@@ -1,4 +1,4 @@
-package com.hp.triclops.Entity6S;
+package com.hp.triclops.manager;
 
 import com.hp.triclops.entity.Organization;
 import com.hp.triclops.entity.Vehicle;
