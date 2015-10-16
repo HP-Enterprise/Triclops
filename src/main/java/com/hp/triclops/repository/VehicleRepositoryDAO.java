@@ -168,6 +168,7 @@ public class VehicleRepositoryDAO {
         String jpql_count="";
         id=(id==null)?-1:id;
         vin=(vin==null)?"":EscapeStringUtil.toEscape(vin);
+        tboxsn=(tboxsn==null)?"": EscapeStringUtil.toEscape(tboxsn);
         vendor=(vendor==null)?"":vendor;
         model=(model==null)?"":model;
         displacement=(displacement==null)?"":displacement;
