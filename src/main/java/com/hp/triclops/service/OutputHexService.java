@@ -42,6 +42,8 @@ public class OutputHexService {
     UserVehicleRelativedRepository userVehicleRelativedRepository;
     @Autowired
     VehicleRepository vehicleRepository;
+    @Autowired
+    MQService mqService;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
     public String getRemoteControlHex(RemoteControl remoteControl,int eventId){
@@ -127,7 +129,9 @@ public class OutputHexService {
         if(uvr.size()>0){
             Iterator<UserVehicleRelatived> iterator=uvr.iterator();
             while (iterator.hasNext()){
-                _logger.info("push"+iterator.next().getUid()+":"+pushMsg);
+                int uid=iterator.next().getUid().getId();
+                _logger.info("push to:"+uid+":"+pushMsg);
+                this.mqService.pushToUser(uid, pushMsg);
             }
         }else{
             _logger.info("can not push warning message,because no user found for vin:"+vin);
@@ -138,7 +142,7 @@ public class OutputHexService {
      * 根据报警hex信息生成文本性质的报警提示
      * @param vin vin
      * @param msg 16进制报警信息
-     * @return
+     * @return 根据报警hex信息生成文本性质的报警提示
      */
     public String getWarningMessageForPush(String vin,String msg){
         //报警数据保存
