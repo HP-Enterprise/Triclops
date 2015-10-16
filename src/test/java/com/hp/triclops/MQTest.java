@@ -1,10 +1,11 @@
 package com.hp.triclops;
 
-import com.hp.briair.entity.UserDevice;
-import com.hp.briair.mq.DeviceType;
-import com.hp.briair.service.MQService;
+
 import com.hp.triclops.entity.User;
+import com.hp.triclops.entity.UserDevice;
+import com.hp.triclops.mq.DeviceType;
 import com.hp.triclops.repository.UserRepository;
+import com.hp.triclops.service.MQService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

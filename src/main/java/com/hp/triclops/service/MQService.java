@@ -1,8 +1,9 @@
 package com.hp.triclops.service;
 
-import com.hp.briair.entity.Message;
-import com.hp.briair.entity.UserDevice;
-import com.hp.briair.mq.DeviceType;
+
+import com.hp.triclops.entity.Message;
+import com.hp.triclops.entity.UserDevice;
+import com.hp.triclops.mq.DeviceType;
 import org.springframework.stereotype.Service;
 
 /**

@@ -1,6 +1,8 @@
 package com.hp.triclops.entity;
 
-import com.hp.briair.mq.DeviceType;
+
+
+import com.hp.triclops.mq.DeviceType;
 
 import javax.persistence.*;
 

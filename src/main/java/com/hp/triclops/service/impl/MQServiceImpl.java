@@ -1,12 +1,13 @@
 package com.hp.triclops.service.impl;
 
-import com.hp.briair.entity.Message;
-import com.hp.briair.entity.UserDevice;
-import com.hp.briair.mq.DeviceType;
-import com.hp.briair.repository.DeviceRepository;
-import com.hp.briair.service.MQService;
+
+import com.hp.triclops.entity.Message;
 import com.hp.triclops.entity.User;
+import com.hp.triclops.entity.UserDevice;
+import com.hp.triclops.mq.DeviceType;
+import com.hp.triclops.repository.DeviceRepository;
 import com.hp.triclops.repository.UserRepository;
+import com.hp.triclops.service.MQService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,7 @@
 package com.hp.triclops.repository;
 
-import com.hp.briair.entity.UserDevice;
+
+import com.hp.triclops.entity.UserDevice;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

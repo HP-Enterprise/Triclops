@@ -1,6 +1,7 @@
 package com.hp.triclops.repository;
 
-import com.hp.briair.entity.Message;
+
+import com.hp.triclops.entity.Message;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
