@@ -3,6 +3,13 @@ com.hp.acquire:
     disabled: true
     port: 9000
 
+com.hp.mqtt:
+        queueName: queue
+        host: 121.40.157.200
+        port: 5672
+        userName: briair
+        password: briair
+
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:
     level:

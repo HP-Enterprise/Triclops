@@ -17,11 +17,11 @@ import java.util.concurrent.TimeoutException;
  */
 @Service
 public class MQTTHome {
-    private String queueName="";
-    private  String host="";
-    private int port=1000;
-    private String userName="";
-    private String password="";
+    private @Value("${com.hp.mqtt.queueName}") String queueName;
+    private @Value("${com.hp.mqtt.host}") String host;
+    private @Value("${com.hp.mqtt.port}") int port;
+    private @Value("${com.hp.mqtt.userName}") String userName;
+    private @Value("${com.hp.mqtt.password}") String password;
     private Channel channel=null;
 
 
