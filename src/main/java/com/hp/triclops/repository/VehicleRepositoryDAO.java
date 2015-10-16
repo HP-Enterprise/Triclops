@@ -37,7 +37,7 @@ public class VehicleRepositoryDAO {
      * @param oid 组织机构id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy,Integer oid){
+    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy,Integer oid,String tboxsn){
         String jpql="select v FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
@@ -64,6 +64,9 @@ public class VehicleRepositoryDAO {
         }
         if(!vin.equals("")){
          jpql=jpql+" And v.vin like :vin";
+        }
+        if(!tboxsn.equals("")){
+            jpql=jpql+" And v.tboxsn like :tboxsn";
         }
         if(!vendor.equals("")){
             jpql=jpql+" And v.vendor like :vendor";
@@ -102,6 +105,10 @@ public class VehicleRepositoryDAO {
         if(!vin.equals("")){
             query.setParameter("vin","%"+vin+"%");
             queryCount.setParameter("vin","%"+vin+"%");
+        }
+        if(!tboxsn.equals("")){
+            query.setParameter("tboxsn","%"+tboxsn+"%");
+            queryCount.setParameter("tboxsn","%"+tboxsn+"%");
         }
         if(!vendor.equals("")){
             query.setParameter("vendor","%"+vendor+"%");
@@ -155,7 +162,7 @@ public class VehicleRepositoryDAO {
      * @param oid 组织机构id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer oid){
+    public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer oid,String tboxsn){
         String jpql="select v FROM Vehicle v";
         String jpql_count="";
         id=(id==null)?-1:id;
@@ -181,6 +188,9 @@ public class VehicleRepositoryDAO {
         }
         if(!vin.equals("")){
             jpql=jpql+" And v.vin = :vin";
+        }
+        if(!tboxsn.equals("")){
+            jpql=jpql+" And v.tboxsn = :tboxsn";
         }
         if(!vendor.equals("")){
             jpql=jpql+" And v.vendor = :vendor";
@@ -220,6 +230,10 @@ public class VehicleRepositoryDAO {
         if(!vin.equals("")){
             query.setParameter("vin",vin);
             queryCount.setParameter("vin",vin);
+        }
+        if(!tboxsn.equals("")){
+            query.setParameter("tboxsn",tboxsn);
+            queryCount.setParameter("tboxsn",tboxsn);
         }
         if(!vendor.equals("")){
             query.setParameter("vendor",vendor);
