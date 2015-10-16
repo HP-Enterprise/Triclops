@@ -275,6 +275,7 @@ public class VehicleRepositoryDAO {
     /** 调用存储过程查询多个组织车辆
      *
      * 用户查询  支持条件模糊，条件缺省，分页显示
+     * @param vin 车辆vin码
      * @param tboxsn 传入参数为null或""时不作为查询条件
      * @param vendor 传入参数为null或""时不作为查询条件
      * @param t_flag 0表示未验证 1表示已验证 其它数值不作为查询条件
@@ -286,6 +287,7 @@ public class VehicleRepositoryDAO {
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findVehicleList(Integer uid,String vin,String tboxsn,String vendor,Integer fuzzy,String model,Integer t_flag,String displacement,String license_plate,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Date start_date,Date end_date){
+        vin=(vin==null)?null: EscapeStringUtil.toEscape(vin);
         tboxsn=(tboxsn==null)?null: EscapeStringUtil.toEscape(tboxsn);
         vendor=(vendor==null)?null: EscapeStringUtil.toEscape(vendor);
             fuzzy = (fuzzy == null) ? 0 : fuzzy;
