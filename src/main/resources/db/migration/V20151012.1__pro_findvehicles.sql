@@ -1,10 +1,9 @@
 delimiter //
 
-DROP PROCEDURE IF EXISTS pro_findvehicles//
 CREATE PROCEDURE pro_findvehicles(uid int,vin VARCHAR(50), tboxsn VARCHAR(50), vendor VARCHAR(100), fuzzy int, model VARCHAR(100),
-t_flag int,displacement VARCHAR(20),license_plate VARCHAR(10),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5),start_date datetime,end_date datetime)
+t_flag int,displacement VARCHAR(20),license_plate VARCHAR(10),firstRcord int, pageSize int, orderByProperty VARCHAR(15), ascOrDesc VARCHAR(5),start_date datetime ,end_date datetime)
 BEGIN
-        DROP TABLE IF EXISTS the_vehicles;
+  DROP TABLE IF EXISTS the_vehicles;
 	CREATE TABLE IF NOT EXISTS the_vehicles
 (
   id int(11) ,
@@ -67,6 +66,5 @@ BEGIN
             EXECUTE sqlstr using @t_flag,@vin,@tboxsn,@vendor,@model,@displacement,@license_plate,@start_date,@end_date;
    		    DROP TABLE the_vehicles;
 END//
-
 
 delimiter ;
