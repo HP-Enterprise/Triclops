@@ -56,7 +56,7 @@ public class RequestHandlerTest {
     @Test
     public void test_getRemoteWakeUpResp() {
         //远程唤醒测试
-        String byteString="23 23 00 4D 01 56 04 AD 8C 14 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 39 31 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 4E ";
+        String byteString="23 23 00 4C 01 56 04 AD 8C 14 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 00 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 47 ";
         System.out.println("request.:"+byteString);
         System.out.println("response:"+requestHandler.getRemoteWakeUpResp(byteString));
 
@@ -73,7 +73,7 @@ public class RequestHandlerTest {
     @Test
     public void test_getHeartbeatResp() {
         //心跳测试
-        String byteString="23 23 00 4D 01 55 D2 0F E7 26 01 00 00 00 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 00 00 00 55 BE E2 58 44 ";
+        String byteString="23 23 00 20 01 55 D2 0F E7 26 01 00 00 00 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 00 00 00 00 55 BE E2 58 29 ";
         System.out.println("request.:"+byteString);
         System.out.println("response:"+requestHandler.getHeartbeatResp(byteString));
 
@@ -101,7 +101,7 @@ public class RequestHandlerTest {
     @Test
     public void test_getRemoteControlAck() {
         //测试
-        String byteString="23 23 00 20 01 56 05 13 02 31 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 55 BE E2 58 00 30 ";
+        String byteString="23 23 00 21 01 56 05 13 02 31 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 00 55 BE E2 58 00 31 ";
         requestHandler.getRemoteControlAck(byteString, "12345678919991234");
 
     }
@@ -110,7 +110,7 @@ public class RequestHandlerTest {
     @Transactional
     @Rollback
     public void test_handleParmSetAck(){
-        String byteString="23 23 00 3A 01 56 1E 17 F5 52 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 01 01 00 00 56 1E 16 3D 0D 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 00 00 00 00 00 00 00 00 00 00 00 00 00 9F ";
+        String byteString="23 23 00 3B 01 56 24 99 71 52 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 56 1E 16 3D 0D 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 00 00 00 00 00 00 00 00 00 00 00 00 00 AF ";
         String vin="12345678919991234";
         requestHandler.handleParmSetAck(byteString,vin);
 

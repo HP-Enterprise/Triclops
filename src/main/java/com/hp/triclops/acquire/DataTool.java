@@ -248,57 +248,6 @@ public class DataTool {
         return bb;
     }
 
-    public  ByteBuffer getRegResultByteBuffer(byte[] data,int eventId,boolean check){
-        String byteString="23 23 00 0B 01 ";//包头和size
-        //根据注册校验结果，形成返回数据包
-        ByteBuffer bb= ByteBuffer.allocate(1024);
-        String[] command=byteString.split(" ");
-        byte[] abc=new byte[command.length];
-        for(int i=0;i<command.length;i++){
-            abc[i]=Integer.valueOf(command[i],16).byteValue();
-        }
-        bb.put(abc);
-        int currentSeconds=Integer.valueOf(String.valueOf(new Date().getTime()/1000));
-        bb.putInt(currentSeconds);
-        bb.put(Integer.valueOf("13", 16).byteValue());
-        bb.put(Integer.valueOf("02", 16).byteValue());
-        bb.putInt(eventId);
-        int checkInt=check?1:0;
-        bb.put((byte) checkInt);
-        //校验码
-        bb.flip();
-        byte[] bodyData=getBytesFromByteBuffer(bb);//不包含checkSum的字节数组
-        ByteBuffer re= ByteBuffer.allocate(1024);
-        re.put(bodyData);
-        re.put(getCheckSum(bodyData));
-        re.flip();
-        return re;
-    }
-    public  ByteBuf getRegResultByteBuf(byte[] data,int eventId,boolean check){
-        String byteString="23 23 00 0B 01 ";//包头和size
-        //根据注册校验结果，形成返回数据包
-        ByteBuf bb= buffer(1024);
-        String[] command=byteString.split(" ");
-        byte[] abc=new byte[command.length];
-        for(int i=0;i<command.length;i++){
-            abc[i]=Integer.valueOf(command[i],16).byteValue();
-        }
-        bb.writeBytes(abc);
-        int currentSeconds=Integer.valueOf(String.valueOf(new Date().getTime() / 1000));
-        bb.writeInt(currentSeconds);
-        bb.writeByte(Integer.valueOf("13", 16).byteValue());
-        bb.writeByte(Integer.valueOf("02", 16).byteValue());
-        bb.writeInt(eventId);
-        int checkInt = check ? 1 : 0;
-        bb.writeByte((byte) checkInt);
-        //校验码
-
-        byte[] bodyData=getBytesFromByteBuf(bb);//不包含checkSum的字节数组
-        ByteBuf re = buffer(1024);
-        re.writeBytes(bodyData);
-        re.writeByte(getCheckSum(bodyData));
-        return re;
-    }
 
     public  byte[] getBytesFromByteBuffer(ByteBuffer buff){
         byte[] result = new byte[buff.remaining()];
@@ -317,20 +266,20 @@ public class DataTool {
     public   HashMap<String,String> getVinDataFromRegBytes(byte[] data)
     {
         //解析注册数据包,提取vin和SerialNumber
-        //serialNumber:36,14
-        //vin         :50,17
+        //serialNumber:37,12
+        //vin         :51,17
         String serialNum="";
         String vin="";
         int eventId=0;
         HashMap<String,String> re=new HashMap<String ,String>();
         if(data!=null){
-            if(data.length>66) {
-                serialNum=new String(data, 36, 14);//serialNum在字节数组中的位置
-                vin=new String(data, 50, 17);//vin在字节数组中的位置
+            if(data.length>67) {
+                serialNum=new String(data, 37, 12);//serialNum在字节数组中的位置
+                vin=new String(data, 49, 17);//vin在字节数组中的位置
                 ByteBuffer bb= ByteBuffer.allocate(1024);
                 bb.put(data);
                 bb.flip();
-                eventId=  bb.getInt(32);
+                eventId=  bb.getInt(33);
             }
         }
         re.put("eventId",String.valueOf(eventId));
@@ -341,10 +290,10 @@ public class DataTool {
 
     public   HashMap<String,Object> getApplicationIdAndMessageIdFromDownBytes(String msg)
     {
-        //解析注册数据包,提取ApplicationId和MessageId
-        //eventId      :32
-        //ApplicationId:36,14
-        //MessageId    :50,17
+        //解析下行数据包,提取ApplicationId和MessageId
+        //eventId      :33
+        //ApplicationId:9
+        //MessageId    :10
 
         //String ApplicationId="";
         byte[] data=getBytesFromByteBuf(getByteBuf(msg));
