@@ -33,7 +33,7 @@ public class Org6STest {
     public void tearDown() {
     }
 
-    @Test//组织绑定车辆
+    @Test//组织绑定/解绑车辆
     @Transactional
     public void testAddVehivle() {
 
@@ -54,20 +54,8 @@ public class Org6STest {
         Vehicle6S vehicle6S=new Vehicle6S(testVehicle.getId());
         vehicle6S.setAppCtxAndInit(appContext);
         org6S.addVehicle(vehicle6S);
-    }
-
-    /**
-     * 车辆从组织解除绑定
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void testUnbindVehicle() throws Exception{
-        Org6S org6S = new Org6S(1);
-        org6S.setAppCtxAndInit(appContext);
-        Vehicle6S vehicle6S = new Vehicle6S(1);
-        org6S.addVehicle(vehicle6S);
+        //解绑车辆
         org6S.deleteVehicle(vehicle6S);
-
     }
+
 }
