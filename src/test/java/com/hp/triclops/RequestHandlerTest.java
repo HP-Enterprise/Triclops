@@ -80,6 +80,16 @@ public class RequestHandlerTest {
     }
 
     @Test
+    public void test_getSleepResp() {
+        //休眠测试
+        String byteString="23 23 00 20 01 56 04 BF DA 27 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 56 1E 16 3D 63 ";
+        System.out.println("request.:"+byteString);
+        System.out.println("response:"+requestHandler.getSleepResp(byteString));
+
+    }
+
+
+    @Test
       public void test_getRegisterResp() {
         //注册测试
         String byteString="23 23 00 4D 01 55 D2 0F E7 13 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 39 31 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 ";

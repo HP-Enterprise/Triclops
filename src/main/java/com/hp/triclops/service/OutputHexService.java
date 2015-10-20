@@ -146,7 +146,7 @@ public class OutputHexService {
      */
     public String getWarningMessageForPush(String vin,String msg){
         //报警数据保存
-        _logger.info(">>get WarningMessage For Push:"+msg);
+      /*  _logger.info(">>get WarningMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         WarningMessage bean=dp.loadBean(WarningMessage.class);
@@ -247,7 +247,8 @@ public class OutputHexService {
         if(wd.getAirbagTriggered().equals("0")){
             sb.append("安全气囊触发;"); //安全气囊触发 0: 触发 1:未触发
         }
-        return sb.toString();
+        return sb.toString();*/
+        return null;
     }
 
     public  void saveCmdToRedis(String vin,String hexStr){

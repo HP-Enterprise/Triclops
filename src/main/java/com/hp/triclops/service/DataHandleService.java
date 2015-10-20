@@ -49,13 +49,16 @@ public class DataHandleService {
                 saveRegularReportMes(vin,msg);
                 break;
             case 0x22://实时数据
-                saveRealTimeReportMes(vin,msg);
+                saveRealTimeReportMes(vin, msg);
                 break;
-            case 0x23://补发数据
-                saveDataResendMes(vin,msg);
+            case 0x23://补发实时数据
+                saveDataResendRealTimeMes(vin, msg);
                 break;
             case 0x24://报警数据
-                saveWarningMessage(vin,msg);
+                saveWarningMessage(vin, msg);
+                break;
+            case 0x25://补发报警数据
+                saveWarningMessage(vin, msg);
                 break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
@@ -155,13 +158,13 @@ public class DataHandleService {
         gpsDataRepository.save(gd);
     }
 
-    public void saveDataResendMes(String vin,String msg){
+    public void saveDataResendRealTimeMes(String vin,String msg){
         //补发数据保存
         _logger.info(">>save DataResendMes:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
-        DataResendMes bean=dp.loadBean(DataResendMes.class);
-        //包含实时数据和报警数据
+        DataResendRealTimeMes bean=dp.loadBean(DataResendRealTimeMes.class);
+        // 0608协议调整后实时数据和报警数据分别补发
         RealTimeReportData rd=new RealTimeReportData();
         rd.setVin(vin);
         rd.setImei(bean.getImei());
@@ -220,50 +223,10 @@ public class DataHandleService {
         gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         gd.setHeading(bean.getHeading());
         gpsDataRepository.save(gd);
-
-        //报警数据保存
-        WarningMessageData wd=new WarningMessageData();
-        wd.setVin(vin);
-        wd.setImei(bean.getImei());
-        wd.setApplicationId(bean.getApplicationID());
-        wd.setMessageId(bean.getMessageID());
-        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
-        //分解IsIsLocation信息
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
-        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
-        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
-        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
-        wd.setHeading(bean.getHeading());
-        char[] bcm1=dataTool.getBitsFromByte(bean.getBcm1());
-        wd.setBatteryVoltageTooHigh(bcm1[0] == '0' ? "0" : "1");
-        wd.setBatteryVoltageTooLow(bcm1[1] == '0' ? "0" : "1");
-        wd.setMediaAbnormal(bcm1[2] == '0' ? "0" : "1");
-        wd.setFrozenLiquidShortage(bcm1[3] == '0' ? "0" : "1");
-        wd.setLampFailure(bcm1[4] == '0' ? "0" : "1");
-        char[] ems=dataTool.getBitsFromByte(bean.getEms());
-        wd.setEngineAbnormal(ems[0] == '0' ? "0" : "1");
-        wd.setWaterTemperatureTooHigh(ems[1] == '0' ? "0" : "1");
-        char[] tcu=dataTool.getBitsFromByte(bean.getTcu());
-        wd.setDangerousDrivingSystemFault(tcu[0] == '0' ? "0" : "1");
-        wd.setWarningDrivingSystemFault(tcu[1] == '0' ? "0" : "1");
-        wd.setDrivingSystemOverheated(tcu[2] == '0' ? "0" : "1");
-        char[] ic=dataTool.getBitsFromByte(bean.getIc());
-        wd.setAirbagAbnormal(ic[0] == '0' ? "0" : "1");
-        wd.setAbsFault(ic[1] == '0' ? "0" : "1");
-        wd.setOilPressureLow(ic[2] == '0' ? "0" : "1");
-        char[] abs=dataTool.getBitsFromByte(bean.getAbs());
-        wd.setBrakeFluidLevelLow(abs[0] == '0' ? "0" : "1");
-        char[] pdc=dataTool.getBitsFromByte(bean.getPdc());
-        wd.setPdcSystemFault(pdc[0] == '0' ? "0" : "1");
-        char[] bcm2=dataTool.getBitsFromByte(bean.getBcm2());
-        wd.setAirbagTriggered(bcm2[0] == '0' ? "0" : "1");
-        warningMessageDataRespository.save(wd);
     }
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
-        _logger.info(">>save WarningMessage:"+msg);
+      /*  _logger.info(">>save WarningMessage:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         WarningMessage bean=dp.loadBean(WarningMessage.class);
@@ -305,7 +268,7 @@ public class DataHandleService {
         wd.setPdcSystemFault(pdc[0] == '0' ? "0" : "1");
         char[] bcm2=dataTool.getBitsFromByte(bean.getBcm2());
         wd.setAirbagTriggered(bcm2[0] == '0' ? "0" : "1");
-        warningMessageDataRespository.save(wd);
+        warningMessageDataRespository.save(wd);*/
     }
 
 
