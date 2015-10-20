@@ -51,11 +51,9 @@ public class DataHandleServiceTest {
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
     @Test
-    @Transactional
-    @Rollback
     public void test_saveWarningMessage(){
         //测试报警数据保存
-        String byteString="23 23 00 30 01 55 D2 10 59 24 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 1E 1E 07 06 01 00 01 DB";
+        String byteString="23 23 00 31 01 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 AA AA AA AA AA AA AA AA 4C ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
 

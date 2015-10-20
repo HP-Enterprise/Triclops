@@ -226,7 +226,7 @@ public class DataHandleService {
     }
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
-      /*  _logger.info(">>save WarningMessage:"+msg);
+        _logger.info(">>save WarningMessage:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         WarningMessage bean=dp.loadBean(WarningMessage.class);
@@ -245,30 +245,16 @@ public class DataHandleService {
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-        char[] bcm1=dataTool.getBitsFromByte(bean.getBcm1());
-        wd.setBatteryVoltageTooHigh(bcm1[0] == '0' ? "0" : "1");
-        wd.setBatteryVoltageTooLow(bcm1[1] == '0' ? "0" : "1");
-        wd.setMediaAbnormal(bcm1[2] == '0' ? "0" : "1");
-        wd.setFrozenLiquidShortage(bcm1[3] == '0' ? "0" : "1");
-        wd.setLampFailure(bcm1[4] == '0' ? "0" : "1");
-        char[] ems=dataTool.getBitsFromByte(bean.getEms());
-        wd.setEngineAbnormal(ems[0] == '0' ? "0" : "1");
-        wd.setWaterTemperatureTooHigh(ems[1] == '0' ? "0" : "1");
-        char[] tcu=dataTool.getBitsFromByte(bean.getTcu());
-        wd.setDangerousDrivingSystemFault(tcu[0] == '0' ? "0" : "1");
-        wd.setWarningDrivingSystemFault(tcu[1] == '0' ? "0" : "1");
-        wd.setDrivingSystemOverheated(tcu[2] == '0' ? "0" : "1");
-        char[] ic=dataTool.getBitsFromByte(bean.getIc());
-        wd.setAirbagAbnormal(ic[0] == '0' ? "0" : "1");
-        wd.setAbsFault(ic[1] == '0' ? "0" : "1");
-        wd.setOilPressureLow(ic[2] == '0' ? "0" : "1");
-        char[] abs=dataTool.getBitsFromByte(bean.getAbs());
-        wd.setBrakeFluidLevelLow(abs[0] == '0' ? "0" : "1");
-        char[] pdc=dataTool.getBitsFromByte(bean.getPdc());
-        wd.setPdcSystemFault(pdc[0] == '0' ? "0" : "1");
-        char[] bcm2=dataTool.getBitsFromByte(bean.getBcm2());
-        wd.setAirbagTriggered(bcm2[0] == '0' ? "0" : "1");
-        warningMessageDataRespository.save(wd);*/
+
+        wd.setInfo1(bean.getInfo1().shortValue());
+        wd.setInfo2((short)bean.getInfo2());
+        wd.setInfo3(bean.getInfo3().shortValue());
+        wd.setInfo4(bean.getInfo4().shortValue());
+        wd.setInfo5(bean.getInfo5().shortValue());
+        wd.setInfo6(bean.getInfo6().shortValue());
+        wd.setInfo7(bean.getInfo7().shortValue());
+        wd.setInfo8(bean.getInfo8().shortValue());
+        warningMessageDataRespository.save(wd);
     }
 
 
