@@ -164,7 +164,7 @@ public class RequestHandler {
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
-        short registerResult = checkRegister ? (short)1 : (short)0;
+        short registerResult = checkRegister ? (short)0 : (short)1;
         resp.setRegisterResult(registerResult);
         //注册响应
         DataPackage dpw=new DataPackage("8995_19_2");
