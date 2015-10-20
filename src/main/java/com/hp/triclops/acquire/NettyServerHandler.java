@@ -158,7 +158,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getWarningMessageAndPush(chKey,receiveDataHexString);
+                    outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
                     //补发报警数据是否需要push
                     break;
                 case 0x26://心跳

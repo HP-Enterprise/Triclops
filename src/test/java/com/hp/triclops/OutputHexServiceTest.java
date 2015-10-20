@@ -96,6 +96,13 @@ public class OutputHexServiceTest {
         System.out.println(outputHexService.getWarningMessageForPush(vin, byteString));
 
     }
+    @Test
+    public void test_getResendWarningMessageForPush() {
+        String vin="12345678919991234";
+        String byteString="23 23 00 31 01 56 04 BF DA 25 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 AA AA AA AA AA AA AA AA 4D ";
+        System.out.println(outputHexService.getResendWarningMessageForPush(vin, byteString));
+
+    }
 
     @Ignore("Not suitable for travis-ci")
     @Test

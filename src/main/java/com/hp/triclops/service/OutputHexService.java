@@ -4,6 +4,7 @@ package com.hp.triclops.service;
  * Created by luj on 2015/10/12.
  */
 
+import com.hp.data.bean.tbox.DataResendWarningMes;
 import com.hp.data.bean.tbox.PramSetCmd;
 import com.hp.data.bean.tbox.RemoteControlCmd;
 import com.hp.data.bean.tbox.WarningMessage;
@@ -126,6 +127,26 @@ public class OutputHexService {
      */
     public void getWarningMessageAndPush(String vin,String msg){
         String pushMsg=getWarningMessageForPush(vin,msg);
+        pushWarningMessage(vin,pushMsg);
+    }
+
+    /**
+     * 根据补发报警hex信息生成文本性质的报警提示 并push到对应user
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getResendWarningMessageAndPush(String vin,String msg){
+        String pushMsg=getResendWarningMessageForPush(vin, msg);
+        pushWarningMessage(vin,pushMsg);
+    }
+
+
+    /**
+     * 根报警提示push到对应user
+     * @param vin vin
+     * @param pushMsg 16进制报警信息
+     */
+    public void pushWarningMessage(String vin,String pushMsg){
         _logger.info("push message:"+pushMsg);
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
@@ -178,8 +199,48 @@ public class OutputHexService {
         wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
         wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
 
+        //生成报警信息
+        String warningMessage=buildWarningString(wd);
+        return warningMessage;
+    }
 
-        //声成报警信息
+    /**
+     * 根据补发报警hex信息生成文本性质的报警提示
+     * @param vin vin
+     * @param msg 16进制报警信息
+     * @return 根据报警hex信息生成文本性质的报警提示
+     */
+    public String getResendWarningMessageForPush(String vin,String msg){
+        //报警数据保存
+        _logger.info(">>get Resend WarningMessage For Push:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        WarningMessageData wd=new WarningMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
+        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
+        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
+        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
+        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
+        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
+        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
+        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+
+        //生成报警信息
         String warningMessage=buildWarningString(wd);
         return warningMessage;
     }
