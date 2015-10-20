@@ -1,6 +1,7 @@
 package com.hp.triclops.acquire;
 
 import com.hp.triclops.entity.Vehicle;
+import com.hp.triclops.entity.WarningMessageConversion;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,9 @@ import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.stereotype.Component;
 import static io.netty.buffer.Unpooled.*;
@@ -394,5 +398,19 @@ public class DataTool {
         //参数升级比较复杂
         //...
         return re;
+    }
+
+    /**
+     * 报警消息转换
+     * @param iterator 报警消息集合
+     * @return 报警消息hashmap
+     */
+    public HashMap<Short,String> messageIteratorToMap(Iterator<WarningMessageConversion> iterator){
+        HashMap<Short,String> messages=new HashMap<Short,String>();
+        while (iterator.hasNext()){
+            WarningMessageConversion warningMessageConversion=iterator.next();
+            messages.put(warningMessageConversion.getMessageId(),warningMessageConversion.getMessageZh());
+        }
+        return messages;
     }
 }
