@@ -35,7 +35,7 @@ public class Vehicle6S{
     /**
      * 根据车辆ID查找车辆信息
      * @param vid 车辆ID
-     * @return
+     * @return 执行完后的Vehicle
      */
     public Vehicle findVehicleById(int vid){
         return this.vehicleRepository.findById(vid);

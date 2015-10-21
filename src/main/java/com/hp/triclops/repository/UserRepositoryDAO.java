@@ -295,6 +295,7 @@ public class UserRepositoryDAO<T>  {
     /** 调用存储过程查询多个组织用户
      *
      * 用户查询  支持条件模糊，条件缺省，分页显示
+     * @param uid 用户id
      * @param gender 传入参数为null或""时不作为查询条件
      * @param nick 传入参数为null或""时不作为查询条件
      * @param isVerified 0表示未验证 1表示已验证 其它数值不作为查询条件

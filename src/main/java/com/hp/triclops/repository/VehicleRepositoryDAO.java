@@ -35,6 +35,7 @@ public class VehicleRepositoryDAO {
      * @param currentPage 获取指定页码数据 必须大于0
      * @param fuzzy 是否模糊查询
      * @param oid 组织机构id
+     * @param tboxsn tboxsn码
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer fuzzy,Integer oid,String tboxsn){
@@ -162,6 +163,7 @@ public class VehicleRepositoryDAO {
      * @param currentPage 获取指定页码数据 必须大于0
      * @param oid 组织机构id
      * @return  封装了数据和页码信息的Page对象
+     * @param tboxsn tboxsn码
      */
     public Page findVehiclesByKeys(Integer id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date start_date,Date end_date,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Integer oid,String tboxsn){
         String jpql="select v FROM Vehicle v";
@@ -275,15 +277,21 @@ public class VehicleRepositoryDAO {
     /** 调用存储过程查询多个组织车辆
      *
      * 用户查询  支持条件模糊，条件缺省，分页显示
+     * @param uid 用户id
      * @param vin 车辆vin码
      * @param tboxsn 传入参数为null或""时不作为查询条件
      * @param vendor 传入参数为null或""时不作为查询条件
      * @param t_flag 0表示未验证 1表示已验证 其它数值不作为查询条件
+     * @param displacement 传入参数为null或""时不作为查询条件
+     * @param license_plate 传入参数为null或""时不作为查询条件
+     * @param start_date 传入参数为null或""时不作为查询条件
+     * @param end_date 传入参数为null或""时不作为查询条件
      * @param orderByProperty 排序条件 User类的某一个属性,默认id
      * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param pageSize 每页数据条数 必须大于0
      * @param currentPage 获取指定页码数据 必须大于0
      * @param fuzzy 是否模糊查询 1模糊查询 0精确查询
+     * @param model 传入参数为null或""时不作为查询条件
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findVehicleList(Integer uid,String vin,String tboxsn,String vendor,Integer fuzzy,String model,Integer t_flag,String displacement,String license_plate,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,Date start_date,Date end_date){

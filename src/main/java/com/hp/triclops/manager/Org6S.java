@@ -48,6 +48,7 @@ public class Org6S {
     /**
      * 组织里面添加一辆车
      * @param v 被添加车辆
+     * @return  执行完后的Vehicle6S
      */
     public Vehicle6S addVehicle(Vehicle6S v){
         if(!isBinding(v)) {
@@ -61,6 +62,7 @@ public class Org6S {
     /**
      * 判断车辆是否已经绑定
      * @param  v 添加车辆
+     * @return True or False
      */
 
     public boolean isBinding(Vehicle6S v){
