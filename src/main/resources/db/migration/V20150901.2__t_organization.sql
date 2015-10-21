@@ -9,5 +9,3 @@ CREATE TABLE IF NOT EXISTS t_organization (
   UNIQUE KEY (org_name),
   KEY idx_typekey (type_key)
 ) DEFAULT CHARSET=utf8 COMMENT='组织表';
-
-INSERT INTO  t_organization(org_name, bre_code, type_key , descript) VALUES ("超级管理后台","SUPPER",1,"管理员组");
