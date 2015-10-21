@@ -128,10 +128,6 @@ public class DataHandleService {
         rd.setRightRearDoorInformation(doors[3] == '0' ? "0" : "1");
         rd.setTrunkDoorInformation(doors[4] == '0' ? "0" : "1");
         rd.setEngineDoorInformation(doors[5] == '0' ? "0" : "1");
-        rd.setSingleBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getSingleBatteryVoltage()));
-        rd.setMaximumVoltagePowerBatteryPack(bean.getMaximumVoltagePowerBatteryPack());
-        rd.setMaximumBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getMaximumBatteryVoltage()));
-        rd.setBatteryMonomerMinimumVoltage(dataTool.getTrueBatteryVoltage(bean.getBatteryMonomerMinimumVoltage()));
         rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
         rd.setEngineSpeed(bean.getEngineSpeed());
         rd.setRapidAcceleration(bean.getRapidAcceleration());
@@ -195,10 +191,6 @@ public class DataHandleService {
         rd.setRightRearDoorInformation(doors[3] == '0' ? "0" : "1");
         rd.setTrunkDoorInformation(doors[4] == '0' ? "0" : "1");
         rd.setEngineDoorInformation(doors[5] == '0' ? "0" : "1");
-        rd.setSingleBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getSingleBatteryVoltage()));
-        rd.setMaximumVoltagePowerBatteryPack(bean.getMaximumVoltagePowerBatteryPack());
-        rd.setMaximumBatteryVoltage(dataTool.getTrueBatteryVoltage(bean.getMaximumBatteryVoltage()));
-        rd.setBatteryMonomerMinimumVoltage(dataTool.getTrueBatteryVoltage(bean.getBatteryMonomerMinimumVoltage()));
         rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
         rd.setEngineSpeed(bean.getEngineSpeed());
         rd.setRapidAcceleration(bean.getRapidAcceleration());

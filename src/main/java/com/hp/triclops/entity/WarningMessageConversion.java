@@ -35,7 +35,7 @@ public class WarningMessageConversion {
     }
 
     @Basic
-    @Column(name = "message_zh", nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "message_zh", nullable = false, insertable = true, updatable = true, length = 150)
     public String getMessageZh() {
         return messageZh;
     }
@@ -45,7 +45,7 @@ public class WarningMessageConversion {
     }
 
     @Basic
-    @Column(name = "message_en", nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "message_en", nullable = false, insertable = true, updatable = true, length = 150)
     public String getMessageEn() {
         return messageEn;
     }

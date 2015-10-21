@@ -106,7 +106,7 @@ public class RequestHandler {
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
-        resp.setRegisterResult((short)1);
+        resp.setRegisterResult((short)0);//0唤醒成功 1唤醒失败
 
         DataPackage dpw=new DataPackage("8995_20_2");
         dpw.fillBean(resp);
