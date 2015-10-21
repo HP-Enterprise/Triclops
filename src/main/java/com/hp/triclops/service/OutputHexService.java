@@ -4,6 +4,7 @@ package com.hp.triclops.service;
  * Created by luj on 2015/10/12.
  */
 
+import com.hp.data.bean.tbox.DataResendWarningMes;
 import com.hp.data.bean.tbox.PramSetCmd;
 import com.hp.data.bean.tbox.RemoteControlCmd;
 import com.hp.data.bean.tbox.WarningMessage;
@@ -16,12 +17,14 @@ import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.TBoxParmSetRepository;
 import com.hp.triclops.repository.UserVehicleRelativedRepository;
 import com.hp.triclops.repository.VehicleRepository;
+import com.hp.triclops.repository.WarningMessageConversionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,6 +45,8 @@ public class OutputHexService {
     UserVehicleRelativedRepository userVehicleRelativedRepository;
     @Autowired
     VehicleRepository vehicleRepository;
+    @Autowired
+    WarningMessageConversionRepository warningMessageConversionRepository;
     @Autowired
     MQService mqService;
 
@@ -122,6 +127,26 @@ public class OutputHexService {
      */
     public void getWarningMessageAndPush(String vin,String msg){
         String pushMsg=getWarningMessageForPush(vin,msg);
+        pushWarningMessage(vin,pushMsg);
+    }
+
+    /**
+     * 根据补发报警hex信息生成文本性质的报警提示 并push到对应user
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getResendWarningMessageAndPush(String vin,String msg){
+        String pushMsg=getResendWarningMessageForPush(vin, msg);
+        pushWarningMessage(vin,pushMsg);
+    }
+
+
+    /**
+     * 根报警提示push到对应user
+     * @param vin vin
+     * @param pushMsg 16进制报警信息
+     */
+    public void pushWarningMessage(String vin,String pushMsg){
         _logger.info("push message:"+pushMsg);
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
@@ -165,29 +190,67 @@ public class OutputHexService {
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-        char[] bcm1=dataTool.getBitsFromByte(bean.getBcm1());
-        wd.setBatteryVoltageTooHigh(bcm1[0] == '0' ? "0" : "1");
-        wd.setBatteryVoltageTooLow(bcm1[1] == '0' ? "0" : "1");
-        wd.setMediaAbnormal(bcm1[2] == '0' ? "0" : "1");
-        wd.setFrozenLiquidShortage(bcm1[3] == '0' ? "0" : "1");
-        wd.setLampFailure(bcm1[4] == '0' ? "0" : "1");
-        char[] ems=dataTool.getBitsFromByte(bean.getEms());
-        wd.setEngineAbnormal(ems[0] == '0' ? "0" : "1");
-        wd.setWaterTemperatureTooHigh(ems[1] == '0' ? "0" : "1");
-        char[] tcu=dataTool.getBitsFromByte(bean.getTcu());
-        wd.setDangerousDrivingSystemFault(tcu[0] == '0' ? "0" : "1");
-        wd.setWarningDrivingSystemFault(tcu[1] == '0' ? "0" : "1");
-        wd.setDrivingSystemOverheated(tcu[2] == '0' ? "0" : "1");
-        char[] ic=dataTool.getBitsFromByte(bean.getIc());
-        wd.setAirbagAbnormal(ic[0] == '0' ? "0" : "1");
-        wd.setAbsFault(ic[1] == '0' ? "0" : "1");
-        wd.setOilPressureLow(ic[2] == '0' ? "0" : "1");
-        char[] abs=dataTool.getBitsFromByte(bean.getAbs());
-        wd.setBrakeFluidLevelLow(abs[0] == '0' ? "0" : "1");
-        char[] pdc=dataTool.getBitsFromByte(bean.getPdc());
-        wd.setPdcSystemFault(pdc[0] == '0' ? "0" : "1");
-        char[] bcm2=dataTool.getBitsFromByte(bean.getBcm2());
-        wd.setAirbagTriggered(bcm2[0] == '0' ? "0" : "1");
+        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
+        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
+        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
+        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
+        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
+        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
+        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
+        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+
+        //生成报警信息
+        String warningMessage=buildWarningString(wd);
+        return warningMessage;
+    }
+
+    /**
+     * 根据补发报警hex信息生成文本性质的报警提示
+     * @param vin vin
+     * @param msg 16进制报警信息
+     * @return 根据报警hex信息生成文本性质的报警提示
+     */
+    public String getResendWarningMessageForPush(String vin,String msg){
+        //报警数据保存
+        _logger.info(">>get Resend WarningMessage For Push:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        WarningMessageData wd=new WarningMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
+        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
+        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
+        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
+        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
+        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
+        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
+        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+
+        //生成报警信息
+        String warningMessage=buildWarningString(wd);
+        return warningMessage;
+    }
+
+    /**
+     * 根据报警消息类生成报警消息
+     * @param wd 报警消息实体类
+     * @return 便于阅读的报警消息
+     */
+    public String buildWarningString(WarningMessageData wd){
 
         StringBuilder sb=new StringBuilder() ;
         sb.append("车辆报警信息: ");
@@ -199,53 +262,39 @@ public class OutputHexService {
             sb.append("速度:").append(wd.getSpeed()).append("km/h;");
             sb.append("方向:").append(wd.getHeading()).append(";");
         }
-        if(wd.getBatteryVoltageTooHigh().equals("0")){
-            sb.append("车辆电瓶过压;"); //车辆电瓶过压 0:故障发生 1:故障消除
+        Iterator<WarningMessageConversion> iterator=warningMessageConversionRepository.findAll().iterator();
+        HashMap<Short,String> messages=dataTool.messageIteratorToMap(iterator);
+        String info1=messages.get(wd.getInfo1());
+        if(info1!=null){
+            sb.append(info1+";");
         }
-        if(wd.getBatteryVoltageTooLow().equals("0")){
-            sb.append("车辆电瓶欠压;"); //车辆电瓶欠压 0:故障发生 1:故障消除
+        String info2=messages.get(wd.getInfo2());
+        if(info2!=null){
+            sb.append(info2+";");
         }
-        if(wd.getMediaAbnormal().equals("0")){
-            sb.append("多媒体异常;"); //多媒体异常 0:故障发生 1:故障消除
+        String info3=messages.get(wd.getInfo3());
+        if(info3!=null){
+            sb.append(info3+";");
         }
-        if(wd.getFrozenLiquidShortage().equals("0")){
-            sb.append("冷冻液不足;"); //冷冻液不足 0:故障发生 1:故障消除
+        String info4=messages.get(wd.getInfo4());
+        if(info4!=null){
+            sb.append(info4+";");
         }
-        if(wd.getLampFailure().equals("0")){
-            sb.append("车灯系统故障;"); //车灯系统故障  0:故障发生 1:故障消除
+        String info5=messages.get(wd.getInfo5());
+        if(info5!=null){
+            sb.append(info5+";");
         }
-        if(wd.getEngineAbnormal().equals("0")){
-            sb.append("发动机异常;"); //发动机异常 0:故障发生 1:故障消除
+        String info6=messages.get(wd.getInfo6());
+        if(info6!=null){
+            sb.append(info6+";");
         }
-        if(wd.getWaterTemperatureTooHigh().equals("0")){
-            sb.append("水温过高;"); //水温过高 0:故障发生 1:故障消除
+        String info7=messages.get(wd.getInfo7());
+        if(info7!=null){
+            sb.append(info7+";");
         }
-        if(wd.getDangerousDrivingSystemFault().equals("0")){
-            sb.append("危险传动系统故障;"); //危险传动系统故障 0:故障发生 1:故障消除
-        }
-        if(wd.getWarningDrivingSystemFault().equals("0")){
-            sb.append("警告传动系统故障;"); //警告传动系统故障  0:故障发生 1:故障消除
-        }
-        if(wd.getDrivingSystemOverheated().equals("0")){
-            sb.append("传动系统过热;"); //传动系统过热 0:故障发生 1:故障消除
-        }
-        if(wd.getAirbagAbnormal().equals("0")){
-            sb.append("安全气囊异常;"); //安全气囊异常 0:故障发生 1:故障消除
-        }
-        if(wd.getAbsFault().equals("0")){
-            sb.append("ABS故障;"); //ABS故障  0:故障发生 1:故障消除
-        }
-        if(wd.getOilPressureLow().equals("0")){
-            sb.append("油压低;"); //油压低 0:故障发生 1:故障消除
-        }
-        if(wd.getBrakeFluidLevelLow().equals("0")){
-            sb.append("刹车液位低;"); //刹车液位低  0:故障发生 1:故障消除
-        }
-        if(wd.getPdcSystemFault().equals("0")){
-            sb.append("PDC系统故障;"); //PDC系统故障 0:故障发生 1:故障消除
-        }
-        if(wd.getAirbagTriggered().equals("0")){
-            sb.append("安全气囊触发;"); //安全气囊触发 0: 触发 1:未触发
+        String info8=messages.get(wd.getInfo8());
+        if(info8!=null){
+            sb.append(info8+";");
         }
         return sb.toString();
     }

@@ -131,8 +131,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
-                case 0x23://补发数据上报
-                    _logger.info("Data ReSend Message");
+                case 0x23://补发实时数据上报
+                    _logger.info("Data ReSend RealTime Message");
                     chKey=getKeyByValue(ch);
                     if(chKey==null){
                         _logger.info("Connection is not registered,no response");
@@ -148,9 +148,19 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getWarningMessageAndPush(chKey,receiveDataHexString);
+                    outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
                     break;
-
+                case 0x25://补发报警数据上报
+                    _logger.info("Data ReSend Warning Message");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
+                    //补发报警数据是否需要push
+                    break;
                 case 0x26://心跳
                     _logger.info("Heartbeat request");
                     chKey=getKeyByValue(ch);
@@ -159,6 +169,17 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     respStr=requestHandler.getHeartbeatResp(receiveDataHexString);
+                    buf=dataTool.getByteBuf(respStr);
+                    ch.writeAndFlush(buf);//回发数据直接回消息
+                    break;
+                case 0x27://休眠请求
+                    _logger.info("Sleep request");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    respStr=requestHandler.getSleepResp(receiveDataHexString);
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
                     break;

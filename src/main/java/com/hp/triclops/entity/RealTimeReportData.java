@@ -38,10 +38,6 @@ public class RealTimeReportData {
     private String rightRearDoorInformation;
     private String engineDoorInformation;
     private String trunkDoorInformation;
-    private double singleBatteryVoltage;
-    private Short maximumVoltagePowerBatteryPack;
-    private double maximumBatteryVoltage;
-    private double batteryMonomerMinimumVoltage;
     private String engineCondition;
     //  0:engine stop 1:engine start 2:idle speed 3:part load  4:trailling throttle  5:full load  6:Fuel Cut Off  7:undefined
     private int engineSpeed;
@@ -314,46 +310,6 @@ public class RealTimeReportData {
         this.trunkDoorInformation = trunkDoorInformation;
     }
 
-
-    @Basic
-    @Column(name = "single_battery_voltage",nullable = false, insertable = true, updatable = true)
-    public double getSingleBatteryVoltage() {
-        return singleBatteryVoltage;
-    }
-
-    public void setSingleBatteryVoltage(double singleBatteryVoltage) {
-        this.singleBatteryVoltage = singleBatteryVoltage;
-    }
-
-    @Basic
-    @Column(name = "maximum_voltage_power_pattery_pack", nullable = false, insertable = true, updatable = true)
-    public Short getMaximumVoltagePowerBatteryPack() {
-        return maximumVoltagePowerBatteryPack;
-    }
-
-    public void setMaximumVoltagePowerBatteryPack(Short maximumVoltagePowerBatteryPack) {
-        this.maximumVoltagePowerBatteryPack = maximumVoltagePowerBatteryPack;
-    }
-
-    @Basic
-    @Column(name = "maximum_battery_voltage",nullable = false, insertable = true, updatable = true)
-    public double getMaximumBatteryVoltage() {
-        return maximumBatteryVoltage;
-    }
-
-    public void setMaximumBatteryVoltage(double maximumBatteryVoltage) {
-        this.maximumBatteryVoltage = maximumBatteryVoltage;
-    }
-
-    @Basic
-    @Column(name = "battery_monomer_minimum_voltage", nullable = false, insertable = true, updatable = true)
-    public double getBatteryMonomerMinimumVoltage() {
-        return batteryMonomerMinimumVoltage;
-    }
-
-    public void setBatteryMonomerMinimumVoltage(double batteryMonomerMinimumVoltage) {
-        this.batteryMonomerMinimumVoltage = batteryMonomerMinimumVoltage;
-    }
 
     @Basic
     @Column(name = "engine_condition", nullable = false, insertable = true, updatable = true, length = 1)
