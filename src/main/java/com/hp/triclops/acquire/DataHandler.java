@@ -27,7 +27,7 @@ public class DataHandler extends Thread{
 
     }
 
-    public  void run()
+    public  synchronized void run()
     {
         while (true){
             try{
