@@ -11,6 +11,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,12 +52,13 @@ public class NettyServer {
                         .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
+                                ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024,2,2,1,0));
                                 ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool,requestHandler,outputHexService));
                                 connectionCount++;
                                // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }
                         })
-                        .option(ChannelOption.SO_BACKLOG, 128)          // (5)
+                        .option(ChannelOption.SO_BACKLOG, 1024)          // (5)
                         .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
                 // Bind and start to accept incoming connections.
