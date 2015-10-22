@@ -32,7 +32,9 @@ public class DataHandlerThread  extends Thread{
     public void HandleMessage(String vin,String k){
         //将input:{vin}对应的十六进制字符串处理入库
         String msg =socketRedis.popSetOneString(k);
-        _logger.info("handle msg>>>>>"+k+":"+msg);
-        dataHandleService.saveMessage(vin,msg);
+        _logger.info("handle msg>>>>>" + k + ":" + msg);
+        if(msg!=null){
+            dataHandleService.saveMessage(vin,msg);
+        }
     }
 }
