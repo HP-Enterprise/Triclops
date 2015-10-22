@@ -7,6 +7,7 @@ import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.TBoxParmSetRepository;
+import com.hp.triclops.service.OutputHexService;
 import com.hp.triclops.service.TboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ public class RequestHandler {
     SocketRedis socketRedis;
     @Autowired
     TboxService tboxService;
+    @Autowired
+    OutputHexService outputHexService;
     @Autowired
     TBoxParmSetRepository tBoxParmSetRepository;
 
@@ -106,7 +109,7 @@ public class RequestHandler {
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
-        resp.setRegisterResult((short)0);//0唤醒成功 1唤醒失败
+        resp.setRegisterResult((short) 0);//0唤醒成功 1唤醒失败
 
         DataPackage dpw=new DataPackage("8995_20_2");
         dpw.fillBean(resp);
@@ -228,25 +231,77 @@ public class RequestHandler {
 
     /**
      *
-     * @param reqString 远程控制响应hex
+     * @param reqString 远程控制上行hex
      * @param vin vin码
      */
-    public void getRemoteControlAck(String reqString,String vin){
-        //处理远程控制响应的16进制字符串
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
-        DataPackage dp=conversionTBox.generate(bb);
-        RemoteControlAck bean=dp.loadBean(RemoteControlAck.class);
-        //请求解析到bean
-        _logger.info("RemoteControlAck>>>>>>>>>>>" + bean.getRemoteControlAck());//0：成功 1：失败
-        String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
-        //变更消息状态
-        String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
-        String statusValue=String.valueOf(bean.getMessageID());
-        socketRedis.saveValueString(statusKey, statusValue,-1);
-        socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
-        //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
-        _logger.info("Remote Control finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
+    public void handleRemoteControlRequest(String reqString,String vin){
+        //处理远程控制上行的16进制字符串
+        byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId=dataTool.getMessageId(bytes);
+        if(messageId==0x02){
+        //RemoteControlPreconditionResp
+        //根据预处理响应判断是否下发控制指令
+            ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp=conversionTBox.generate(bb);
+            RemoteControlPreconditionResp bean=dp.loadBean(RemoteControlPreconditionResp.class);
+            if(vertifyRemoteControlPreconditionResp(bean)){
+                //从redis取出远程控制参数 生成控制指令 save redis
+                int type=0;
+                int acTmp=0;
+
+            }
+        }else if(messageId==0x04){
+        //RemoteControlAck
+            ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp=conversionTBox.generate(bb);
+            RemoteControlAck bean=dp.loadBean(RemoteControlAck.class);
+            //请求解析到bean
+            _logger.info("RemoteControlAck>>>>>>>>>>>" + bean.getRemoteControlAck());//0：无效 1：命令已接收
+            String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
+            //变更消息状态
+            String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
+            String statusValue=String.valueOf(bean.getMessageID());
+            socketRedis.saveValueString(statusKey, statusValue,-1);
+            socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
+            //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
+            _logger.info("handle remote Control Ack finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
+        }else if(messageId==0x05){
+        //RemoteControlRst
+            ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp=conversionTBox.generate(bb);
+            RemoteControlRst bean=dp.loadBean(RemoteControlRst.class);
+            //请求解析到bean
+            _logger.info("RemoteControlRst>>>>>>>>>>>" + bean.getRemoteControlAck());//0：无效 1：命令已接收
+            String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
+            //变更消息状态
+            String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
+            String statusValue=String.valueOf(bean.getMessageID());
+            socketRedis.saveValueString(statusKey, statusValue,-1);
+            socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
+            //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
+            _logger.info("handle remote Control Rst finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
+        }else{
+            _logger.info("remote control data error");
+        }
     }
+
+    /**
+     * 校验,是否发送远程指令
+     * @param remoteControlPreconditionResp 数据bean
+     * @return 是否通过
+     */
+    public boolean vertifyRemoteControlPreconditionResp(RemoteControlPreconditionResp remoteControlPreconditionResp){
+        //目前逻辑 车速低于5km/h=上传数据500
+        boolean re=false;
+        if(remoteControlPreconditionResp!=null){
+            if(remoteControlPreconditionResp.getVehicleSpeed()<500){
+                re=true;
+            }
+        }
+        return re;
+    }
+
+
 
     /**
      *

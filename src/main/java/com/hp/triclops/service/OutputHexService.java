@@ -4,10 +4,7 @@ package com.hp.triclops.service;
  * Created by luj on 2015/10/12.
  */
 
-import com.hp.data.bean.tbox.DataResendWarningMes;
-import com.hp.data.bean.tbox.PramSetCmd;
-import com.hp.data.bean.tbox.RemoteControlCmd;
-import com.hp.data.bean.tbox.WarningMessage;
+import com.hp.data.bean.tbox.*;
 import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
@@ -51,6 +48,24 @@ public class OutputHexService {
     MQService mqService;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
+
+    public String getRemoteControlPreHex(RemoteControl remoteControl,int eventId){
+        //产生远程控制预指令hex
+        RemoteControlPreconditionReq remoteControlCmd=new RemoteControlPreconditionReq();
+        remoteControlCmd.setApplicationID((short) 49);
+        remoteControlCmd.setMessageID((short) 1);
+        remoteControlCmd.setEventID((long) eventId);
+        remoteControlCmd.setSendingTime((long)dataTool.getCurrentSeconds());
+        remoteControlCmd.setTestFlag((short) 0);
+
+        DataPackage dpw=new DataPackage("8995_49_1");//>>>
+        dpw.fillBean(remoteControlCmd);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr= PackageEntityManager.getByteString(bbw);
+
+        return byteStr;
+    }
+
     public String getRemoteControlHex(RemoteControl remoteControl,int eventId){
         //产生远程控制指令hex
         RemoteControlCmd  remoteControlCmd=new RemoteControlCmd();
@@ -299,6 +314,11 @@ public class OutputHexService {
         return sb.toString();
     }
 
+    public  void saveRemoteCmdValueToRedis(String vin,String eventId,RemoteControl rc){
+        String valueStr=rc.getControlType()+","+rc.getAcTemperature();
+        socketRedis.saveValueString(dataTool.remote_cmd_value_preStr +"-"+ vin+"-"+eventId, valueStr, -1);
+        //控制参数暂存redis
+    }
     public  void saveCmdToRedis(String vin,String hexStr){
         socketRedis.saveSetString(dataTool.out_cmd_preStr + vin, hexStr, -1);
         //保存到redis

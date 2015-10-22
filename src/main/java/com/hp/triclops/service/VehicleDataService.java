@@ -71,10 +71,13 @@ public class VehicleDataService {
             remoteControlRepository.save(rc);
             _logger.info("save RemoteControl to db");
             //保存到数据库
-            //产生数据包hex并入redis
-            String byteStr=outputHexService.getRemoteControlHex(rc,eventId);
-            outputHexService.saveCmdToRedis(vin,byteStr);
-            _logger.info("command hex:"+byteStr);
+            //产生预控制数据包hex并入redis发送，将远程控制参数暂存redis
+            //remoteCommand:vin:eventId->type,acTmp
+
+            //
+            String byteStr=outputHexService.getRemoteControlPreHex(rc,eventId);
+            outputHexService.saveCmdToRedis(vin,byteStr);//发送预命令
+            _logger.info("pre command hex:"+byteStr);
             return rc;
         }
         return null;

@@ -27,6 +27,7 @@ public class DataTool {
 
     public static final String msgSendCount_preStr="msgSendCount:";
     public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
+    public static final String remote_cmd_value_preStr="remoteCommand:";
     public static final String out_cmd_preStr="output:";
 
     private Logger _logger = LoggerFactory.getLogger(DataTool.class);
@@ -92,6 +93,16 @@ public class DataTool {
         if(bytes!=null){
             if(bytes.length>9) {
                 data=bytes[9];
+            }
+        }
+        return data;
+    }
+    public  byte getMessageId(byte[] bytes){
+        //返回数据包操作类型对应的byte
+        byte data=0;
+        if(bytes!=null){
+            if(bytes.length>10) {
+                data=bytes[10];
             }
         }
         return data;
@@ -364,9 +375,11 @@ public class DataTool {
 
     public int getMaxSendCount(String applicationId,String messageId){
         //某一消息的下发最大发送次数 参考文档
-        //为什么写这么多的if elseif ?开发阶段 为了更清晰，完成后会简化。
-        int re=0;
-        if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+        //为什么写这么多的if elseif ?这样更像参数配置 易懂易改。
+        int re=3;
+        if(applicationId.equals("49")&&messageId.equals("1")){//远程控制预指令
+            re=3;
+        }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
             re=3;
         }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
             re=3;
@@ -383,8 +396,10 @@ public class DataTool {
     }
     public int getTimeOutSeconds(String applicationId,String messageId){
         //某一消息的下发超时时间（秒） 参考文档
-        int re=0;
+        int re=60;
         if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+            re=60;
+        }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
             re=60;
         }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
             re=60;
