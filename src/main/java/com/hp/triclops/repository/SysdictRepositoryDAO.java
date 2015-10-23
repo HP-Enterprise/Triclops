@@ -47,20 +47,20 @@ public class SysdictRepositoryDAO {
         dictid=(dictid==null)?-1:dictid;
         type=(type==null)?-1:type;
         jpql=jpql+" where 1=1";
-        if(dictid!=null){
+        if(dictid>=0){
             jpql=jpql+" and s.dictid=:dictid";
         }
-        if(type!=null){
+        if(type>=0){
             jpql=jpql+" and s.type=:type";
         }
         jpql_count=jpql;
         TypedQuery query=em.createQuery(jpql,Sysdict.class);
         TypedQuery queryCount=em.createQuery(jpql_count,Sysdict.class);
-        if (dictid!=null && dictid>0){
+        if (dictid>=0){
             query.setParameter("dictid",dictid);
             queryCount.setParameter("dictid",dictid);
         }
-        if (type!=null && type>0){
+        if (type>=0){
             query.setParameter("type",type);
             queryCount.setParameter("type",type);
         }
@@ -69,6 +69,7 @@ public class SysdictRepositoryDAO {
         for (int i = 0; i < items.size(); i++) {
             sysdicts.add(i,(Sysdict)items.get(i));
         }
+        System.out.println(sysdicts);
         return sysdicts;
     }
 }
