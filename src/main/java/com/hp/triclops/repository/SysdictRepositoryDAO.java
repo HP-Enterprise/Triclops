@@ -2,6 +2,7 @@ package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.Sysdict;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,6 +13,8 @@ import java.util.List;
 /**
  * Created by Teemol on 2015/10/22.
  */
+
+@Component
 public class SysdictRepositoryDAO {
 
     @Autowired
