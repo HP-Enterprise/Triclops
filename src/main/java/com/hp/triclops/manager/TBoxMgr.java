@@ -3,12 +3,8 @@ package com.hp.triclops.manager;
 import com.hp.triclops.entity.TBox;
 import com.hp.triclops.repository.TBoxRepository;
 import com.hp.triclops.repository.TBoxRepositoryDAO;
-import com.hp.triclops.utils.Page;
 import com.hp.triclops.utils.Page2;
 import org.springframework.context.ApplicationContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by liz on 2015/10/23.
@@ -75,6 +71,7 @@ public class TBoxMgr {
      */
     public TBox updateTBox(TBox tbox){
         TBox tboxtemp = new TBox();
+        if(tbox.getId() != 0) tboxtemp.setId(tbox.getId());
         if(tbox.getVin() != null) tboxtemp.setVin(tbox.getVin());
         if(tbox.getT_sn() != null) tboxtemp.setT_sn(tbox.getT_sn());
         if(tbox.getIs_activated() != 0) tboxtemp.setIs_activated(tbox.getIs_activated());
@@ -124,6 +121,10 @@ public class TBoxMgr {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public TBox fingTboxByVin(String vin){
+        return this.tBoxRepository.findByVin(vin);
     }
 
 

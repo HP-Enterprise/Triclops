@@ -1,17 +1,11 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.TBox;
-import com.hp.triclops.entity.Vehicle;
-import com.hp.triclops.utils.EscapeStringUtil;
-import com.hp.triclops.utils.Page;
 import com.hp.triclops.utils.Page2;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.EntityManager;
+import javax.persistence.*;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -104,8 +98,8 @@ public class TBoxRepositoryDAO {
         }
         Long count= (long) query.getResultList().size();
         if(pageSize != 0  && currentPage != 0){
-           query.setFirstResult((currentPage - 1)* pageSize);
-           query.setMaxResults(pageSize);
+           /*query.setFirstResult((currentPage - 1)* pageSize);
+           query.setMaxResults(pageSize);*/
         }else{
             currentPage = 1;
             pageSize = count.intValue();
