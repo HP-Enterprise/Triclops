@@ -39,17 +39,27 @@ public class OutputHexServiceTest {
     @Test
     @Transactional
     @Rollback
-    public void test_getRemoteControlHex(){
-        //
-     /*   RemoteControl remoteControl=new RemoteControl();
+    public void test_getRemoteControlPreHex(){
+        RemoteControl remoteControl=new RemoteControl();
         remoteControl.setSendingTime(new Date());
         remoteControl.setControlType((short) 13);
         remoteControl.setAcTemperature((short) 23);
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
-        long eventId=(long)dataTool.getCurrentSeconds();
+        System.out.println(">>>>>>>"+outputHexService.getRemoteControlPreHex(remoteControl, (long) 1444812349));
+    }
 
-        System.out.println(">>>>>>>"+outputHexService.getRemoteControlHex(remoteControl,eventId));*/
+    @Test
+    @Transactional
+    @Rollback
+    public void test_getRemoteControlCmdHex(){
+        RemoteControl remoteControl=new RemoteControl();
+        remoteControl.setSendingTime(new Date());
+        remoteControl.setControlType((short) 13);
+        remoteControl.setAcTemperature((short) 23);
+        remoteControl.setUid(1);
+        remoteControl.setVin("12345678919991234");
+        System.out.println(">>>>>>>"+outputHexService.getRemoteControlCmdHex(remoteControl, (long) 1444812349));
     }
 
     @Test

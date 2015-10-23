@@ -53,7 +53,7 @@ public class CommandHandler extends Thread{
         String statusValue=messageId;
         //已经取到可以标识 跟踪一条指令的信息
 
-        _logger.info("statusKey:" + statusKey + "|statusValue:" + statusValue);
+        _logger.info("set status value>statusKey:" + statusKey + "|statusValue:" + statusValue);
         //通过Redis来跟踪消息状态
         socketRedis.saveValueString(statusKey, statusValue,-1);//此处可以考虑设置一个合适的TTL
         // 记录下这些信息，应答超时时间过后内后如果redis对应的messageID变化了表明已经处理完毕了 本线程自行了断，否则把记录放到redis里面

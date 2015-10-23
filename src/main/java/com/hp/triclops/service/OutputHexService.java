@@ -172,7 +172,7 @@ public class OutputHexService {
                 _logger.info("push to:"+uid+":"+pushMsg);
                 try {
                     this.mqService.pushToUser(uid, pushMsg);
-                }catch (RuntimeException e){e.printStackTrace();}
+                }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
         }else{
             _logger.info("can not push warning message,because no user found for vin:"+vin);
@@ -350,12 +350,12 @@ public class OutputHexService {
 
     /**
      * 处理远程控制Ack上行（持久化 push）
-     * @param vin
-     * @param eventId
+     * @param vin vin
+     * @param eventId eventId
      */
     public void handleRemoteControlPreconditionResp(String vin,long eventId){
         String sessionId=49+"-"+eventId;
-        Short dbResult=2;//参考建表sql 1 返回无效 2不符合条件终止 3执行成功 4执行失败
+        Short dbResult=1;//参考建表sql 1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
@@ -368,7 +368,7 @@ public class OutputHexService {
             String pushMsg="远程命令不符合发送条件:"+sessionId;
             try{
                 this.mqService.pushToUser(rc.getUid(), pushMsg);
-            }catch (RuntimeException e){e.printStackTrace();}
+            }catch (RuntimeException e){_logger.info(e.getMessage());}
 
             _logger.info("RemoteControl PreconditionResp persistence and push success");
               }
@@ -376,27 +376,27 @@ public class OutputHexService {
 
     /**
      * 处理远程控制Ack上行（持久化 push）
-     * @param vin
-     * @param eventId
-     * @param result
+     * @param vin vin
+     * @param eventId eventId
+     * @param result Ack响应结果
      */
     public void handleRemoteControlAck(String vin,long eventId,Short result){
         String sessionId=49+"-"+eventId;
-        Short dbResult=(result==(short)0)?(short)1:(short)-1;//参考建表sql 1 返回无效 2不符合条件终止 3执行成功 4执行失败,  Rst 0：无效 1：命令已接收
+        Short dbResult=(result==(short)0)?(short)2:(short)-1;//参考建表sql 1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败  Rst 0：无效 1：命令已接收
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
             //持久化远程控制记录状态，push to sender
-           if(dbResult==(short)1){
+           if(dbResult==(short)2){
                _logger.info("RemoteControl Ack persistence and push start");
-               //返回无效才更新db记录
+               //返回无效才更新db记录 不阻塞
                rc.setStatus(dbResult);
                remoteControlRepository.save(rc);
                String pushMsg="远程命令无效:"+sessionId;
                try{
                this.mqService.pushToUser(rc.getUid(), pushMsg);
-               }catch (RuntimeException e){e.printStackTrace();}
+               }catch (RuntimeException e){_logger.info(e.getMessage());}
                _logger.info("RemoteControl Ack persistence and push success");
            }
 
@@ -405,13 +405,13 @@ public class OutputHexService {
 
     /**
      * 处理远程控制结果上行（持久化 push）
-     * @param vin
-     * @param eventId
-     * @param result
+     * @param vin vin
+     * @param eventId eventId
+     * @param result Rst响应结果
      */
     public void handleRemoteControlRst(String vin,long eventId,Short result){
         String sessionId=49+"-"+eventId;
-        Short dbResult=(short)(result+(short)3);//参考建表sql  1 返回无效 2不符合条件终止 3执行成功 4执行失败',  Rst 0：成功 1：失败
+        Short dbResult=(short)(result+(short)3);//参考建表sql  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败,  Rst 0：成功 1：失败
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
@@ -424,7 +424,7 @@ public class OutputHexService {
             pushMsg=pushMsg+sessionId;
             try{
             this.mqService.pushToUser(rc.getUid(), pushMsg);
-            }catch (RuntimeException e){e.printStackTrace();}
+            }catch (RuntimeException e){_logger.info(e.getMessage());}
             _logger.info("RemoteControl Rst persistence and push success");
         }
     }
