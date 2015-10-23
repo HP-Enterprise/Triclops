@@ -28,7 +28,6 @@ public class TBoxMgr {
        this.setId(id);
     }
 
-
     /**
      * 手动注入Repository
      * @param appContext ApplicationContext
@@ -36,6 +35,7 @@ public class TBoxMgr {
     public void setAppCtxAndInit(ApplicationContext appContext){
         this.appContext = appContext;
         this.tBoxRepository = this.appContext.getBean(TBoxRepository.class);
+        this.tBoxRepositoryDao = this.appContext.getBean(TBoxRepositoryDAO.class);
         if(this.getId() != 0){
             this.setTbox(this.findTboxById(this.getId()));
         }
@@ -46,8 +46,15 @@ public class TBoxMgr {
      * @param tbox tbox对象
      */
     public TBox addTBox(TBox tbox){
-        TBox _tbox = this.tBoxRepository.save(tbox);
-        return _tbox;
+        if(tbox.getT_sn() != null && tbox.getVin() != null) {
+            TBox _box_1 = this.tBoxRepository.findByT_sn(tbox.getT_sn());
+            TBox _box_2 = this.tBoxRepository.findByVin(tbox.getVin());
+            if(_box_1 == null &&  _box_2 == null){
+               TBox _tbox = this.tBoxRepository.save(tbox);
+                return _tbox;
+            }
+        }
+        return null;
     }
 
     /**
@@ -66,12 +73,14 @@ public class TBoxMgr {
      * @return
      */
     public TBox updateTBox(TBox tbox){
-        //TODO 加入要修改字段判断
         TBox tboxtemp = new TBox();
         if(tbox.getVin() != null) tboxtemp.setVin(tbox.getVin());
         if(tbox.getT_sn() != null) tboxtemp.setT_sn(tbox.getT_sn());
-        if(tbox.getImei() != null) tboxtemp.setIs_activated(tbox.getIs_activated());
-
+        if(tbox.getIs_activated() != 0) tboxtemp.setIs_activated(tbox.getIs_activated());
+        if(tbox.getActivation_time() != null) tboxtemp.setActivation_time(tbox.getActivation_time());
+        if(tbox.getImei() != null) tboxtemp.setImei(tbox.getImei());
+        if(tbox.getMobile() != null) tboxtemp.setMobile(tbox.getMobile());
+        if(tbox.getRemark() != null) tboxtemp.setRemark(tbox.getRemark());
         TBox _tbox = this.tBoxRepository.save(tboxtemp);
         return _tbox;
     }
@@ -99,7 +108,6 @@ public class TBoxMgr {
     public TBox findTboxById(int tid){
         return this.tBoxRepository.findById(tid);
     }
-
 
     public TBox getTbox() {
         return tbox;

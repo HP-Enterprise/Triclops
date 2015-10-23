@@ -33,14 +33,84 @@ public class TBoxRepositoryDAO {
      * @return 分页对象
      */
     public Page findTboxByKeys(int id, String t_sn, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
-        TypedQuery query = em.createQuery("", TBox.class);
-        TypedQuery queryCount = em.createQuery("", TBox.class);
-        query.setFirstResult((currentPage - 1)* pageSize);
-        query.setMaxResults(pageSize);
+        String jpql = "select b from TBox b where 1=1";
+        if(id != 0){
+            jpql += " and b.id = :id";
+        }
+        if(isActivated != 0){
+            jpql += " and b.is_activated = :is_activated";
+        }
+        if(fuzzy != 0){ //模糊查询
+            if(t_sn != null){
+                jpql += " and b.t_sn = :t_sn";
+            }
+            if(vin != null){
+                jpql += " and b.vin = :vin";
+            }
+            if(imei != null){
+                jpql += " and b.imei = :imei";
+            }
+            if(mobile != null){
+                jpql += " and b.mobile = :mobile";
+            }
+        }else{
+            if(t_sn != null){
+                jpql += " and b.t_sn like :t_sn";
+            }
+            if(vin != null){
+                jpql += " and b.vin like :vin";
+            }
+            if(imei != null){
+                jpql += " and b.imei like :imei";
+            }
+            if(mobile != null){
+                jpql += " and b.mobile like :mobile";
+            }
+        }
+        TypedQuery query = em.createQuery(jpql, TBox.class);
+        if(id != 0){
+            query.setParameter("id",id);
+        }
+        if(isActivated != 0){
+            query.setParameter("is_activated",isActivated);
+        }
+        if(fuzzy != 0){ //模糊查询
+            if(t_sn != null){
+                query.setParameter("it_sn",t_sn);
+            }
+            if(vin != null){
+                query.setParameter("vin",vin);
+            }
+            if(imei != null){
+                query.setParameter("imei",imei);
+            }
+            if(mobile != null){
+                query.setParameter("mobile",mobile);
+            }
+        }else{
+            if(t_sn != null){
+                query.setParameter("it_sn","%"+t_sn+"%");
+            }
+            if(vin != null){
+                query.setParameter("vin","%"+vin+"%");
+            }
+            if(imei != null){
+                query.setParameter("imei","%"+imei+"%");
+            }
+            if(mobile != null){
+                query.setParameter("mobile","%"+mobile+"%");
+            }
+        }
+        Long count= (long) query.getResultList().size();
+        if(pageSize != 0  && currentPage != 0){
+           query.setFirstResult((currentPage - 1)* pageSize);
+           query.setMaxResults(pageSize);
+        }else{
+            currentPage = 1;
+            pageSize = count.intValue();
+        }
         List items=query.getResultList();
-        Long count= (long) queryCount.getResultList().size();
         return new Page(currentPage,pageSize,count,items);
     }
-
 
 }
