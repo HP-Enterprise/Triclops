@@ -184,16 +184,16 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     ch.writeAndFlush(buf);//回发数据直接回消息
                     break;
 
-                case 0x31://远程控制响应(上行)
-                    _logger.info("RemoteControl Ack");
+                case 0x31://远程控制响应(上行)包含mid 2 4 5
+                    _logger.info("RemoteControl resp");
                     chKey=getKeyByValue(ch);
                     if(chKey==null){
                         _logger.info("Connection is not registered,no response");
                         return;
                     }
                     String _vin=chKey;
-                    requestHandler.getRemoteControlAck(receiveDataHexString, _vin);
-                   //只需要记录远程控制结果，无数据下行
+                    requestHandler.handleRemoteControlRequest(receiveDataHexString, _vin);
+                   //远程控制上行处理，无数据下行
                     break;
                 case 0x41://参数查询响应(上行)
                     _logger.info("ParamStatus Ack");

@@ -5,6 +5,7 @@ import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.VehicleDataService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -37,9 +38,19 @@ public class VehicleDataServiceTest {
     public void tearDown() {
     }
 
+    @Ignore("Not suitable for travis-ci")
     @Test
     public void test_remoteWakeUp() {
        vehicleDataService.remoteWakeUp("123456");
+    }
+
+
+    @Test
+    @Transactional
+    @Rollback
+    public void test_handleRemoteControl() {
+        System.out.println("handleRemoteControl return:" + vehicleDataService.handleRemoteControl(1, "1443151834l", (short)15,(short)22));
+        //单元测试无法唤醒 总是null
     }
 
     @Test

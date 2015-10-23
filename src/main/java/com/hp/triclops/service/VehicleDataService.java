@@ -58,7 +58,7 @@ public class VehicleDataService {
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
         if(hasConnection(vin)){
             _logger.info("vin:"+vin+" have connection,sending command...");
-            int eventId=dataTool.getCurrentSeconds();
+            Long eventId=(long)dataTool.getCurrentSeconds();
             RemoteControl rc=new RemoteControl();
             rc.setUid(uid);
             rc.setSessionId(49+"-"+eventId);//根据application和eventid生成的session_id
@@ -71,10 +71,12 @@ public class VehicleDataService {
             remoteControlRepository.save(rc);
             _logger.info("save RemoteControl to db");
             //保存到数据库
-            //产生数据包hex并入redis
-            String byteStr=outputHexService.getRemoteControlHex(rc,eventId);
-            outputHexService.saveCmdToRedis(vin,byteStr);
-            _logger.info("command hex:"+byteStr);
+            //产生预控制数据包hex并入redis发送，将远程控制参数暂存redis
+            //remoteCommand:vin:eventId->type,acTmp
+            outputHexService.saveRemoteCmdValueToRedis(vin,eventId,rc);
+            String byteStr=outputHexService.getRemoteControlPreHex(rc,eventId);
+            outputHexService.saveCmdToRedis(vin,byteStr);//发送预命令
+            _logger.info("pre command hex:"+byteStr);
             return rc;
         }
         return null;
