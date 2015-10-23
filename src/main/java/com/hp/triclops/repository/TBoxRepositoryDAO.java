@@ -4,6 +4,7 @@ import com.hp.triclops.entity.TBox;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
+import com.hp.triclops.utils.Page2;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -32,7 +33,7 @@ public class TBoxRepositoryDAO {
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
      * @return 分页对象
      */
-    public Page findTboxByKeys(int id, String t_sn, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
+    public Page2<TBox> findTboxByKeys(int id, String t_sn, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
         String jpql = "select b from TBox b where 1=1";
         if(id != 0){
             jpql += " and b.id = :id";
@@ -110,7 +111,7 @@ public class TBoxRepositoryDAO {
             pageSize = count.intValue();
         }
         List items=query.getResultList();
-        return new Page(currentPage,pageSize,count,items);
+        return new Page2(currentPage,pageSize,count,items);
     }
 
 }

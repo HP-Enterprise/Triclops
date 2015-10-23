@@ -4,6 +4,7 @@ import com.hp.triclops.entity.TBox;
 import com.hp.triclops.repository.TBoxRepository;
 import com.hp.triclops.repository.TBoxRepositoryDAO;
 import com.hp.triclops.utils.Page;
+import com.hp.triclops.utils.Page2;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class TBoxMgr {
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
      * @return 分页对象
      */
-    public Page findTboxByKeys(int id, String t_sn, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
+    public Page2<TBox> findTboxByKeys(int id, String t_sn, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
         return this.tBoxRepositoryDao.findTboxByKeys(id,t_sn,vin,isActivated,imei,mobile,fuzzy,pageSize,currentPage);
     }
 
