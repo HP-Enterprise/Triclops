@@ -24,7 +24,7 @@ public class DataHandlerThread  extends Thread{
         this.key=k;
         this._logger = LoggerFactory.getLogger(DataHandlerThread.class);
     }
-    public  void run()
+    public  synchronized void run()
     {
         HandleMessage(vin,key);
     }
@@ -32,7 +32,9 @@ public class DataHandlerThread  extends Thread{
     public void HandleMessage(String vin,String k){
         //将input:{vin}对应的十六进制字符串处理入库
         String msg =socketRedis.popSetOneString(k);
-        _logger.info("handle msg>>>>>"+k+":"+msg);
-        dataHandleService.saveMessage(vin,msg);
+        _logger.info("handle msg>>>>>" + k + ":" + msg);
+        if(msg!=null&&!msg.equalsIgnoreCase("null")){
+            dataHandleService.saveMessage(vin,msg);
+        }
     }
 }
