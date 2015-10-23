@@ -40,16 +40,16 @@ public class OutputHexServiceTest {
     @Transactional
     @Rollback
     public void test_getRemoteControlHex(){
-        //测试固定数据保存
-        RemoteControl remoteControl=new RemoteControl();
+        //
+     /*   RemoteControl remoteControl=new RemoteControl();
         remoteControl.setSendingTime(new Date());
         remoteControl.setControlType((short) 13);
         remoteControl.setAcTemperature((short) 23);
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
-        int eventId=dataTool.getCurrentSeconds();
+        long eventId=(long)dataTool.getCurrentSeconds();
 
-        System.out.println(">>>>>>>"+outputHexService.getRemoteControlHex(remoteControl,eventId));
+        System.out.println(">>>>>>>"+outputHexService.getRemoteControlHex(remoteControl,eventId));*/
     }
 
     @Test

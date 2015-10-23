@@ -27,7 +27,7 @@ public class DataTool {
 
     public static final String msgSendCount_preStr="msgSendCount:";
     public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
-    public static final String remote_cmd_value_preStr="remoteCommand:";
+    public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
 
     private Logger _logger = LoggerFactory.getLogger(DataTool.class);
@@ -317,7 +317,7 @@ public class DataTool {
         int eventId=0;
         HashMap<String,Object> re=new HashMap<String ,Object>();
         if(data!=null){
-            if(data.length>18) {
+            if(data.length>15) {//下行数据包最小长度16
                 ByteBuffer bb= ByteBuffer.allocate(1024);
                 bb.put(data);
                 bb.flip();

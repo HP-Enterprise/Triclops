@@ -120,7 +120,7 @@ public class DataHandleService {
         rd.setRightRearWindowInformation(windows[3] == '0' ? "0" : "1");
         rd.setVehicleTemperature(dataTool.getTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
         rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
-        char[] doors=dataTool.getBitsFromShort(bean.getWindowInformation());//门 1开0关  bit0-5 分别左前 左后 右前  右后 后备箱 前舱盖
+        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit0-5 分别左前 左后 右前  右后 后备箱 前舱盖
         //此处千万注意!注意门和窗的顺序不一样，编协议的要么不是同一个人 要么人格分裂。
         rd.setLeftFrontDoorInformation(doors[0] == '0' ? "0" : "1");
         rd.setLeftRearDoorInformation(doors[1] == '0' ? "0" : "1");
