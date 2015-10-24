@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -83,12 +84,12 @@ public class TboxTest {
 
        //先新增一条tbox信息
         TBox insertTbox = new TBox();
-        insertTbox.setT_sn("FG099213");
-        insertTbox.setVin("VIN000010");
+        insertTbox.setT_sn("FG099111");
+        insertTbox.setVin("VIN00111");
         tBoxMgr.addTBox(insertTbox);
 
         //删除tbox信息
-        TBox deleteTbox = tBoxMgr.fingTboxByVin("VIN000010");
+        TBox deleteTbox = tBoxMgr.fingTboxByVin("VIN00111");
         tBoxMgr.deleteTbox(deleteTbox);
 
     }
