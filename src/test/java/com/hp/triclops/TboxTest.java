@@ -101,9 +101,6 @@ public class TboxTest {
     public void findTBox(){
         TBoxMgr tBoxMgr = new TBoxMgr();
         tBoxMgr.setAppCtxAndInit(this.appContext);
-
-        Page2<TBox> page2 = tBoxMgr.findTboxByKeys(0, null, null, 0, null, null, 0, 10, 1);
-
-
+        Page2<TBox> page2 = tBoxMgr.findTboxByKeys(0, null, null, 0, null, null, 1, 0, 0);
     }
 }

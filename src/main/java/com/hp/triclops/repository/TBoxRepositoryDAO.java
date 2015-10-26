@@ -12,7 +12,8 @@ import java.util.List;
  * Created by luj on 2015/8/26.
  */
 @Component
-public class TBoxRepositoryDAO {
+public class TBoxRepositoryDAO<T> {
+
     @PersistenceContext
     private EntityManager em;
 
@@ -35,7 +36,7 @@ public class TBoxRepositoryDAO {
         if(isActivated != 0){
             jpql += " and b.is_activated = :is_activated";
         }
-        if(fuzzy != 0){ //模糊查询
+        if(fuzzy == 0){ //精确查询
             if(t_sn != null){
                 jpql += " and b.t_sn = :t_sn";
             }
@@ -62,49 +63,61 @@ public class TBoxRepositoryDAO {
                 jpql += " and b.mobile like :mobile";
             }
         }
+
         TypedQuery query = em.createQuery(jpql, TBox.class);
+        TypedQuery queryCount = em.createQuery(jpql, TBox.class);//EntityManager id closed
         if(id != 0){
             query.setParameter("id",id);
+            queryCount.setParameter("id",id);
         }
         if(isActivated != 0){
             query.setParameter("is_activated",isActivated);
+            queryCount.setParameter("is_activated", isActivated);
         }
-        if(fuzzy != 0){ //模糊查询
+        if(fuzzy == 0){ //精确查询
             if(t_sn != null){
-                query.setParameter("it_sn",t_sn);
+                query.setParameter("t_sn",t_sn);
+                queryCount.setParameter("t_sn",t_sn);
             }
             if(vin != null){
                 query.setParameter("vin",vin);
+                queryCount.setParameter("vin",vin);
             }
             if(imei != null){
                 query.setParameter("imei",imei);
+                queryCount.setParameter("imei",imei);
             }
             if(mobile != null){
                 query.setParameter("mobile",mobile);
+                queryCount.setParameter("mobile",mobile);
             }
-        }else{
+        }else{ //模糊查询
             if(t_sn != null){
-                query.setParameter("it_sn","%"+t_sn+"%");
+                query.setParameter("t_sn","%"+t_sn+"%");
+                queryCount.setParameter("t_sn","%"+t_sn+"%");
             }
             if(vin != null){
                 query.setParameter("vin","%"+vin+"%");
+                queryCount.setParameter("vin","%"+vin+"%");
             }
             if(imei != null){
                 query.setParameter("imei","%"+imei+"%");
+                queryCount.setParameter("imei","%"+imei+"%");
             }
             if(mobile != null){
                 query.setParameter("mobile","%"+mobile+"%");
+                queryCount.setParameter("mobile","%"+mobile+"%");
             }
         }
-        Long count= (long) query.getResultList().size();
+        Long count= (long) queryCount.getResultList().size();
         if(pageSize != 0  && currentPage != 0){
-           /*query.setFirstResult((currentPage - 1)* pageSize);
-           query.setMaxResults(pageSize);*/
+           query.setFirstResult((currentPage - 1)* pageSize);
+           query.setMaxResults(pageSize);
         }else{
             currentPage = 1;
             pageSize = count.intValue();
         }
-        List items=query.getResultList();
+        List items = query.getResultList();
         return new Page2(currentPage,pageSize,count,items);
     }
 
