@@ -4,7 +4,6 @@ import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
 import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;

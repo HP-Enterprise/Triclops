@@ -22,6 +22,8 @@ public class TBox {
     private String mobile;
     private String remark;
 
+    public TBox() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
