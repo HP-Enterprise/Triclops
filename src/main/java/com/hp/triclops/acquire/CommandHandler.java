@@ -39,8 +39,7 @@ public class CommandHandler extends Thread{
     public  void run()
     {
 
-        _logger.info("Send message from CommandHandler>>:" + message);
-        _logger.info("vin:>>>>" + vin);
+        _logger.info("vin:" + vin+" Send message from CommandHandler>>:" + message);
 
         //发出一条命令可以知道当前的vin、eventID、messageID、applicationId等信息
         datas=dataTool.getApplicationIdAndMessageIdFromDownBytes(message);
@@ -54,7 +53,7 @@ public class CommandHandler extends Thread{
         String statusValue=messageId;
         //已经取到可以标识 跟踪一条指令的信息
 
-        _logger.info("statusKey:" + statusKey + "|statusValue:" + statusValue);
+        _logger.info("set status value>statusKey:" + statusKey + "|statusValue:" + statusValue);
         //通过Redis来跟踪消息状态
         socketRedis.saveValueString(statusKey, statusValue,-1);//此处可以考虑设置一个合适的TTL
         // 记录下这些信息，应答超时时间过后内后如果redis对应的messageID变化了表明已经处理完毕了 本线程自行了断，否则把记录放到redis里面
@@ -66,7 +65,7 @@ public class CommandHandler extends Thread{
         //timeOutSeconds秒后操作
 
         String currentValue=socketRedis.getValueString(statusKey);
-        _logger.info("currentStatusValue:" + currentValue);
+        _logger.info("statusValue:" + statusValue+"==currentStatusValue"+currentValue+"?");
         if(!currentValue.equals(statusValue)){
             _logger.info("Client has received the command successfully! So I have nothing to do!");
         }else{
@@ -76,7 +75,7 @@ public class CommandHandler extends Thread{
             int maxSendCount=dataTool.getMaxSendCount(applicationId,messageId);//基于applicationId-messageId和参考文档得出同一event最多发送的次数
             int sendCount=getCurrentSendCount(vin, eventId, messageId);//从redis取出，这一event已经发了的次数
             if(sendCount<maxSendCount){
-                _logger.info("sendCount"+sendCount+"<maxSendCount"+maxSendCount+",ReTry>>");
+                _logger.info("sendCount"+sendCount+"<maxSendCount"+maxSendCount+",I will ReTry...");
                 socketRedis.saveSetString("output:" + vin,message,-1);
                 //这里是原样将消息再次发送还是重新设置SendTime待考虑，暂时原样重发，无论如何EventId应该是一样的
             }else{

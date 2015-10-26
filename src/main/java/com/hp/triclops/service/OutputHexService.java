@@ -4,20 +4,14 @@ package com.hp.triclops.service;
  * Created by luj on 2015/10/12.
  */
 
-import com.hp.data.bean.tbox.DataResendWarningMes;
-import com.hp.data.bean.tbox.PramSetCmd;
-import com.hp.data.bean.tbox.RemoteControlCmd;
-import com.hp.data.bean.tbox.WarningMessage;
+import com.hp.data.bean.tbox.*;
 import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
-import com.hp.triclops.repository.TBoxParmSetRepository;
-import com.hp.triclops.repository.UserVehicleRelativedRepository;
-import com.hp.triclops.repository.VehicleRepository;
-import com.hp.triclops.repository.WarningMessageConversionRepository;
+import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +36,8 @@ public class OutputHexService {
     @Autowired
     TBoxParmSetRepository tBoxParmSetRepository;
     @Autowired
+    RemoteControlRepository remoteControlRepository;
+    @Autowired
     UserVehicleRelativedRepository userVehicleRelativedRepository;
     @Autowired
     VehicleRepository vehicleRepository;
@@ -51,11 +47,10 @@ public class OutputHexService {
     MQService mqService;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
-    public String getRemoteControlHex(RemoteControl remoteControl,int eventId){
-        //产生远程控制指令hex
-        RemoteControlCmd  remoteControlCmd=new RemoteControlCmd();
-        remoteControlCmd.setRemoteControlType(remoteControl.getControlType().intValue());
-        remoteControlCmd.setAcTemperature(remoteControl.getAcTemperature());
+
+    public String getRemoteControlPreHex(RemoteControl remoteControl,long eventId){
+        //产生远程控制预指令hex
+        RemoteControlPreconditionReq remoteControlCmd=new RemoteControlPreconditionReq();
         remoteControlCmd.setApplicationID((short) 49);
         remoteControlCmd.setMessageID((short) 1);
         remoteControlCmd.setEventID((long) eventId);
@@ -63,6 +58,25 @@ public class OutputHexService {
         remoteControlCmd.setTestFlag((short) 0);
 
         DataPackage dpw=new DataPackage("8995_49_1");//>>>
+        dpw.fillBean(remoteControlCmd);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr= PackageEntityManager.getByteString(bbw);
+
+        return byteStr;
+    }
+
+    public String getRemoteControlCmdHex(RemoteControl remoteControl,long eventId){
+        //产生远程控制指令hex
+        RemoteControlCmd  remoteControlCmd=new RemoteControlCmd();
+        remoteControlCmd.setRemoteControlType(remoteControl.getControlType().intValue());
+        remoteControlCmd.setAcTemperature(remoteControl.getAcTemperature());
+        remoteControlCmd.setApplicationID((short) 49);
+        remoteControlCmd.setMessageID((short) 3);
+        remoteControlCmd.setEventID(eventId);
+        remoteControlCmd.setSendingTime((long)dataTool.getCurrentSeconds());
+        remoteControlCmd.setTestFlag((short) 0);
+
+        DataPackage dpw=new DataPackage("8995_49_3");//>>>
         dpw.fillBean(remoteControlCmd);
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr= PackageEntityManager.getByteString(bbw);
@@ -126,7 +140,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getWarningMessageAndPush(String vin,String msg){
-        String pushMsg=getWarningMessageForPush(vin,msg);
+        String pushMsg=getWarningMessageForPush(vin, msg);
         pushWarningMessage(vin,pushMsg);
     }
 
@@ -156,7 +170,9 @@ public class OutputHexService {
             while (iterator.hasNext()){
                 int uid=iterator.next().getUid().getId();
                 _logger.info("push to:"+uid+":"+pushMsg);
-                this.mqService.pushToUser(uid, pushMsg);
+                try {
+                    this.mqService.pushToUser(uid, pushMsg);
+                }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
         }else{
             _logger.info("can not push warning message,because no user found for vin:"+vin);
@@ -297,6 +313,120 @@ public class OutputHexService {
             sb.append(info8+";");
         }
         return sb.toString();
+    }
+
+    /**
+     * 远程控制参数暂存redis
+     * @param vin vin
+     * @param eventId eventId
+     * @param rc 封装远程控制参数的RemoteControl对象
+     */
+    public  void saveRemoteCmdValueToRedis(String vin,long eventId,RemoteControl rc){
+        String valueStr=rc.getControlType()+","+rc.getAcTemperature();//类型和温度值 15,25
+        socketRedis.saveValueString(dataTool.remote_cmd_value_preStr +"-"+ vin+"-"+eventId, valueStr, -1);
+        //控制参数暂存redis
+    }
+
+    /**
+     * 从redis取出暂存的远程控制参数
+     * @param vin vin
+     * @param eventId eventId
+     * @return 封装远程控制参数的RemoteControl对象
+     */
+    public  RemoteControl getRemoteCmdValueFromRedis(String vin,long eventId){
+        String cmdValueKey=dataTool.remote_cmd_value_preStr +"-"+ vin+"-"+eventId;
+        String valueStr=socketRedis.getValueString(cmdValueKey);
+        socketRedis.delValueString(cmdValueKey);
+        if(!valueStr.equalsIgnoreCase("null")&&valueStr.length()>0){
+            String[] values=valueStr.split(",");
+            RemoteControl  rc=new RemoteControl();
+            rc.setControlType(Short.parseShort(values[0]));
+            rc.setAcTemperature(Short.parseShort(values[1]));
+            return rc;
+        }
+        return null;
+        //取出暂存redis控制参数
+    }
+
+    /**
+     * 处理远程控制Ack上行（持久化 push）
+     * @param vin vin
+     * @param eventId eventId
+     */
+    public void handleRemoteControlPreconditionResp(String vin,long eventId){
+        String sessionId=49+"-"+eventId;
+        Short dbResult=1;//参考建表sql 1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        if (rc == null) {
+            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
+        }else{
+            //持久化远程控制记录状态，push to sender
+            _logger.info("RemoteControl PreconditionResp persistence and push start");
+            //返回无效才更新db记录
+            rc.setStatus(dbResult);
+            remoteControlRepository.save(rc);
+            String pushMsg="远程命令不符合发送条件:"+sessionId;
+            try{
+                this.mqService.pushToUser(rc.getUid(), pushMsg);
+            }catch (RuntimeException e){_logger.info(e.getMessage());}
+
+            _logger.info("RemoteControl PreconditionResp persistence and push success");
+              }
+    }
+
+    /**
+     * 处理远程控制Ack上行（持久化 push）
+     * @param vin vin
+     * @param eventId eventId
+     * @param result Ack响应结果
+     */
+    public void handleRemoteControlAck(String vin,long eventId,Short result){
+        String sessionId=49+"-"+eventId;
+        Short dbResult=(result==(short)0)?(short)2:(short)-1;//参考建表sql 1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败  Rst 0：无效 1：命令已接收
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        if (rc == null) {
+            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
+        }else{
+            //持久化远程控制记录状态，push to sender
+           if(dbResult==(short)2){
+               _logger.info("RemoteControl Ack persistence and push start");
+               //返回无效才更新db记录 不阻塞
+               rc.setStatus(dbResult);
+               remoteControlRepository.save(rc);
+               String pushMsg="远程命令无效:"+sessionId;
+               try{
+               this.mqService.pushToUser(rc.getUid(), pushMsg);
+               }catch (RuntimeException e){_logger.info(e.getMessage());}
+               _logger.info("RemoteControl Ack persistence and push success");
+           }
+
+        }
+    }
+
+    /**
+     * 处理远程控制结果上行（持久化 push）
+     * @param vin vin
+     * @param eventId eventId
+     * @param result Rst响应结果
+     */
+    public void handleRemoteControlRst(String vin,long eventId,Short result){
+        String sessionId=49+"-"+eventId;
+        Short dbResult=(short)(result+(short)3);//参考建表sql  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败,  Rst 0：成功 1：失败
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        if (rc == null) {
+            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
+        }else{
+            //持久化远程控制记录状态，push to sender
+            _logger.info("RemoteControl Rst persistence and push start");
+            rc.setStatus(dbResult);
+            remoteControlRepository.save(rc);
+            String pushMsg=(result==(short)0)?"远程命令执行成功:":"远程命令执行失败:";
+            pushMsg=pushMsg+sessionId;
+            try{
+            this.mqService.pushToUser(rc.getUid(), pushMsg);
+            }catch (RuntimeException e){_logger.info(e.getMessage());}
+            _logger.info("RemoteControl Rst persistence and push success");
+        }
     }
 
     public  void saveCmdToRedis(String vin,String hexStr){

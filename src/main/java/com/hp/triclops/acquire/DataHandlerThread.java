@@ -15,26 +15,24 @@ public class DataHandlerThread  extends Thread{
     private Logger _logger;
     private DataTool dataTool;
     private String msg;
-    private String key;
-    public DataHandlerThread(String vin, SocketRedis socketRedis, DataHandleService dataHandleService,DataTool dt, String k){
+    public DataHandlerThread(String vin, SocketRedis socketRedis, DataHandleService dataHandleService,DataTool dt, String msg){
         this.vin=vin;
         this.socketRedis=socketRedis;
         this.dataHandleService=dataHandleService;
         this.dataTool=dt;
-        this.key=k;
+        this.msg=msg;
         this._logger = LoggerFactory.getLogger(DataHandlerThread.class);
     }
     public  synchronized void run()
     {
-        HandleMessage(vin,key);
+        HandleMessage(vin,msg);
     }
 
-    public void HandleMessage(String vin,String k){
+    public void HandleMessage(String vin,String message){
         //将input:{vin}对应的十六进制字符串处理入库
-        String msg =socketRedis.popSetOneString(k);
-        _logger.info("handle msg>>>>>" + k + ":" + msg);
+        _logger.info("handle msg>>>>>:" + message);
         if(msg!=null&&!msg.equalsIgnoreCase("null")){
-            dataHandleService.saveMessage(vin,msg);
+            dataHandleService.saveMessage(vin,message);
         }
     }
 }
