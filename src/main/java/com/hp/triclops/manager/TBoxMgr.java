@@ -94,7 +94,12 @@ public class TBoxMgr {
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
      * @return 分页对象
      */
-    public Page2<TBox> findTboxByKeys(int id, String t_sn, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
+    public Page2<TBox> findTboxByKeys(Integer id, String t_sn, String vin, Integer isActivated, String imei, String mobile, Integer fuzzy, Integer pageSize,Integer currentPage){
+        currentPage = currentPage == null ? 0 : currentPage;
+        pageSize = pageSize == null ? 0 : pageSize;
+        id = id == null ? 0 : id;
+        isActivated = isActivated == null ? 0 : isActivated;
+        fuzzy = fuzzy == null ? 0 : fuzzy;
         return this.tBoxRepositoryDao.findTboxByKeys(id,t_sn,vin,isActivated,imei,mobile,fuzzy,pageSize,currentPage);
     }
 
