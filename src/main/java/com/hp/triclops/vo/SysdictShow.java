@@ -7,6 +7,44 @@ import com.hp.triclops.entity.Sysdict;
  * Created by Administrator on 2015/9/10.
  */
 
+/**
+ * <table summary="SysdictShow" class="typeSummary">
+ *     <thead>
+ *         <tr>
+ *             <th>字段</th>
+ *             <th>数据类型</th>
+ *             <th>说明</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>dictid</td>
+ *             <td>int</td>
+ *             <td>字典表ID</td>
+ *         </tr>
+ *         <tr>
+ *             <td>type</td>
+ *             <td>int</td>
+ *             <td>字典类型</td>
+ *         </tr>
+ *         <tr>
+ *             <td>dictname</td>
+ *             <td>String</td>
+ *             <td>字典名称</td>
+ *         </tr>
+ *         <tr>
+ *             <td>remark</td>
+ *             <td>String</td>
+ *             <td>备注</td>
+ *         </tr>
+ *         <tr>
+ *             <td></td>
+ *             <td></td>
+ *             <td></td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ */
 public class SysdictShow {
     private int dictid;
     private int type;
