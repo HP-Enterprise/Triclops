@@ -19,8 +19,12 @@ public class TBox {
     private int is_activated;
     private Date activation_time;
     private String imei;
+
+
+
     private String mobile;
     private String remark;
+    private VehicleTBox vehicleTBox;
 
     public TBox() {
     }
@@ -105,5 +109,13 @@ public class TBox {
         this.remark = remark;
     }
 
+    @OneToOne(mappedBy = "tid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public VehicleTBox getVehicleTBox() {
+        return vehicleTBox;
+    }
+
+    public void setVehicleTBox(VehicleTBox vehicleTBox) {
+        this.vehicleTBox = vehicleTBox;
+    }
 
 }

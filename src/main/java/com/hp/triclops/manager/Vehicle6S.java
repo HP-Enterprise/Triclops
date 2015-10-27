@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContext;
 public class Vehicle6S{
 
 
-    private VehicleRepository vehicleRepository;
+    public VehicleRepository vehicleRepository;
 
     private Vehicle vehicle;
 
