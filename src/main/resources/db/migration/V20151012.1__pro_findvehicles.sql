@@ -17,8 +17,7 @@ BEGIN
   product_date datetime ,
   PRIMARY KEY (id),
   UNIQUE key (vin),
-  UNIQUE key (tboxsn),
-  UNIQUE KEY idx_license (license_plate)
+  UNIQUE key (tboxsn)
 ) ENGINE = MEMORY;
 			INSERT INTO the_vehicles SELECT DISTINCT V.* FROM t_vehicle V LEFT JOIN t_organization_vehicle OV ON v.id = ov.vid WHERE ov.oid in
              (SELECT O.id FROM t_organization O 
