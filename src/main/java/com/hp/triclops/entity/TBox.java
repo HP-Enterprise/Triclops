@@ -21,6 +21,7 @@ public class TBox {
     private String imei;
     private String mobile;
     private String remark;
+    private Vehicle vehicle;
 
     public TBox() {
     }
@@ -105,5 +106,13 @@ public class TBox {
         this.remark = remark;
     }
 
+    @ManyToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "vid",referencedColumnName="id")
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
 
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
 }

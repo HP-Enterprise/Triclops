@@ -43,13 +43,13 @@ public class TBoxMgr {
      * @param tbox tbox对象
      */
     public TBox addTBox(TBox tbox){
-        if(tbox.getT_sn() != null && tbox.getVin() != null) {
+        if(tbox.getT_sn() != null) {
             TBox _box_1 = this.tBoxRepository.findByT_sn(tbox.getT_sn());
-            TBox _box_2 = this.tBoxRepository.findByVin(tbox.getVin());
-            if(_box_1 == null &&  _box_2 == null){
+            if(_box_1 == null){
                TBox _tbox = this.tBoxRepository.save(tbox);
                 return _tbox;
             }
+            return _box_1;
         }
         return null;
     }
