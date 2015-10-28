@@ -11,14 +11,14 @@ import org.springframework.context.ApplicationContext;
 public class Vehicle6S{
 
 
-    private VehicleRepository vehicleRepository;
+    public VehicleRepository vehicleRepository;
 
     private Vehicle vehicle;
 
 
     private int vid;
 
-    private ApplicationContext appContext;
+    public ApplicationContext appContext;
 
     public Vehicle6S() {
     }
