@@ -32,6 +32,8 @@ public class UserRepositoryDAO<T>  {
      * @param nick 传入参数为null或""时不作为查询条件
      * @param phone 传入参数为null或""时不作为查询条件
      * @param isVerified 0表示未验证 1表示已验证 其它数值不作为查询条件
+     * @param contacts 传入参数为null或""时不作为查询条件
+     * @param contactsPhone 传入参数为null或""时不作为查询条件
      * @param orderByProperty 排序条件 User类的某一个属性,默认id
      * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param pageSize 每页数据条数 必须大于0
@@ -42,7 +44,7 @@ public class UserRepositoryDAO<T>  {
      * @param oid 组织id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer fuzzy,Integer oid){
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts,String contactsPhone,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer fuzzy,Integer oid){
         String jpql="select u from User u";
         String jpql_count="";
         id=(id==null)?-1:id;
@@ -51,6 +53,8 @@ public class UserRepositoryDAO<T>  {
         nick=(nick==null)?"": EscapeStringUtil.toEscape(nick);
         phone=(phone==null)?"":phone;
         isVerified=(isVerified==null)?-1:isVerified;
+        contacts = (contacts==null)?"": EscapeStringUtil.toEscape(contacts);
+        contactsPhone = (contactsPhone==null)?"":contactsPhone;
         orderByProperty=(orderByProperty==null)?"id":orderByProperty;
         ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
         pageSize=(pageSize==null)?10:pageSize;
@@ -108,6 +112,12 @@ public class UserRepositoryDAO<T>  {
         if(isVerified==0||isVerified==1){
             jpql=jpql+" And u.isVerified =:isVerified";
         }
+        if(!contacts.equals("")){
+            jpql=jpql+" And u.contacts like :contacts";
+        }
+        if(!contactsPhone.equals("")){
+            jpql=jpql+" And u.contactsPhone like :contactsPhone";
+        }
 
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
@@ -142,6 +152,14 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
         }
+        if(!contacts.equals("")){
+            query.setParameter("contacts","%"+contacts+"%");
+            queryCount.setParameter("contacts","%"+contacts+"%");
+        }
+        if(!contactsPhone.equals("")){
+            query.setParameter("contactsPhone","%"+contactsPhone+"%");
+            queryCount.setParameter("contactsPhone","%"+contactsPhone+"%");
+        }
         if (isowner==0||isowner==1){
             query.setParameter("isowner",isowner);
             queryCount.setParameter("isowner",isowner);
@@ -166,6 +184,8 @@ public class UserRepositoryDAO<T>  {
      * @param nick 传入参数为null或""时不作为查询条件
      * @param phone 传入参数为null或""时不作为查询条件
      * @param isVerified 0表示未验证 1表示已验证 其它数值不作为查询条件
+     * @param contacts 传入参数为null或""时不作为查询条件
+     * @param contactsPhone 传入参数为null或""时不作为查询条件
      * @param orderByProperty 排序条件 User类的某一个属性,默认id
      * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param pageSize 每页数据条数 必须大于0
@@ -175,7 +195,7 @@ public class UserRepositoryDAO<T>  {
      * @param oid 组织id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer oid){
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts,String contactsPhone,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer oid){
         String jpql="select u from User u";
         String jpql_count="";
         id=(id==null)?-1:id;
@@ -184,6 +204,8 @@ public class UserRepositoryDAO<T>  {
         nick=(nick==null)?"": EscapeStringUtil.toEscape(nick);
         phone=(phone==null)?"":phone;
         isVerified=(isVerified==null)?-1:isVerified;
+        contacts=(contacts==null)?"": EscapeStringUtil.toEscape(contacts);
+        contactsPhone=(contactsPhone==null)?"":contactsPhone;
         orderByProperty=(orderByProperty==null)?"id":orderByProperty;
         ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
         pageSize=(pageSize==null)?10:pageSize;
@@ -240,6 +262,12 @@ public class UserRepositoryDAO<T>  {
         if (isVerified==0||isVerified==1){
             jpql=jpql+" And u.isVerified =:isVerified";
         }
+        if (!contacts.equals("")){
+            jpql=jpql+" And u.contacts =:contacts";
+        }
+        if (!contactsPhone.equals("")){
+            jpql=jpql+" And u.contactsPhone =:contactsPhone";
+        }
 
         jpql=jpql+" Order by u."+orderByProperty+" "+ascOrDesc;
         jpql_count=jpql;
@@ -273,6 +301,14 @@ public class UserRepositoryDAO<T>  {
         if (isVerified==0||isVerified==1){
             query.setParameter("isVerified",isVerified);
             queryCount.setParameter("isVerified",isVerified);
+        }
+        if (!contacts.equals("")){
+            query.setParameter("contacts",contacts);
+            queryCount.setParameter("contacts",contacts);
+        }
+        if (!contactsPhone.equals("")){
+            query.setParameter("contactsPhone",contactsPhone);
+            queryCount.setParameter("contactsPhone",contactsPhone);
         }
         if (isowner==0||isowner==1){
             query.setParameter("isowner",isowner);

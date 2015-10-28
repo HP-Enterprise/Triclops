@@ -17,6 +17,8 @@ public class User implements Serializable {
     private String nick;
     private String phone;
     private int isVerified;
+    private String contacts;
+    private String contactsPhone;
     private Set<UserVehicleRelatived> userSet;
     private Set<UserVehicleRelatived> parentUserSet;
     private Set<Organization> organizationSet;
@@ -29,12 +31,14 @@ public class User implements Serializable {
         this.vehicleSet=new HashSet<Vehicle>();
     }
 
-    public User(String name, Integer gender, String nick, String phone,int isVerified) {
+    public User(String name, Integer gender, String nick, String phone,int isVerified,String contacts,String contactsPhone) {
         this.name = name;
         this.gender = gender;
         this.nick = nick;
         this.phone = phone;
         this.isVerified = isVerified;
+        this.contacts = contacts;
+        this.contactsPhone = contactsPhone;
     }
 
     @Id
@@ -96,6 +100,26 @@ public class User implements Serializable {
 
     public void setIsVerified(int isVerified) {
         this.isVerified = isVerified;
+    }
+
+    @Basic
+    @Column(name = "contacts", nullable = true, insertable = true, updatable = true, length = 50)
+    public String getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(String contacts) {
+        this.contacts = contacts;
+    }
+
+    @Basic
+    @Column(name = "contacts_phone", nullable = true, insertable = true, updatable = true, length = 11)
+    public String getContactsPhone() {
+        return contactsPhone;
+    }
+
+    public void setContactsPhone(String contactsPhone) {
+        this.contactsPhone = contactsPhone;
     }
 
     @OneToMany(mappedBy = "uid", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
