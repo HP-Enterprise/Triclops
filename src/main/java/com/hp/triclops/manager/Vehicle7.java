@@ -41,6 +41,7 @@ public class Vehicle7 extends Vehicle6S {
         if(this.isBinding(tbox)){
             tbox.getTbox().setVehicle(null);
             this.tBoxRepository.save(tbox.getTbox());
+            this.getVehicle().getTboxSet().remove(tbox.getTbox());
         }
     }
 
