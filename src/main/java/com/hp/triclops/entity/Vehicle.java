@@ -21,7 +21,7 @@ public class Vehicle implements Serializable {
     private String license_plate;
     private Date product_date;
     private String tboxsn;
-    private Set<VehicleTBox> tboxSet;
+    private Set<TBox> tboxSet;
 
     private Set<UserVehicleRelatived> vinSet;
 
@@ -30,7 +30,7 @@ public class Vehicle implements Serializable {
     public Vehicle() {
         this.vinSet = new HashSet<UserVehicleRelatived>();
         this.organizationSet = new HashSet<Organization>();
-        this.tboxSet = new HashSet<VehicleTBox>();
+        this.tboxSet = new HashSet<TBox>();
     }
 
 
@@ -161,12 +161,19 @@ public class Vehicle implements Serializable {
         this.organizationSet = organizationSet;
     }
 
-    @OneToMany(mappedBy = "vid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public Set<VehicleTBox> getTboxSet() {
+    @OneToMany(mappedBy = "vehicle", cascade ={CascadeType.REMOVE, CascadeType.PERSIST})
+    public Set<TBox> getTboxSet() {
         return tboxSet;
     }
 
-    public void setTboxSet(Set<VehicleTBox> tboxSet) {
+    public void setTboxSet(Set<TBox> tboxSet) {
         this.tboxSet = tboxSet;
     }
+
+    public void addTboxVehicle(TBox tbox) {
+        tbox.setVehicle(this);
+        this.tboxSet.add(tbox);
+    }
+
+
 }

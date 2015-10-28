@@ -19,12 +19,9 @@ public class TBox {
     private int is_activated;
     private Date activation_time;
     private String imei;
-
-
-
     private String mobile;
     private String remark;
-    private VehicleTBox vehicleTBox;
+    private Vehicle vehicle;
 
     public TBox() {
     }
@@ -109,13 +106,13 @@ public class TBox {
         this.remark = remark;
     }
 
-    @OneToOne(mappedBy = "tid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public VehicleTBox getVehicleTBox() {
-        return vehicleTBox;
+    @ManyToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "vid",referencedColumnName="id")
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
-    public void setVehicleTBox(VehicleTBox vehicleTBox) {
-        this.vehicleTBox = vehicleTBox;
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
-
 }

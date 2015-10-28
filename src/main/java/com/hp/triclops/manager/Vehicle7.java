@@ -1,21 +1,25 @@
 package com.hp.triclops.manager;
 
-import com.hp.triclops.entity.Vehicle;
-import com.hp.triclops.entity.VehicleTBox;
-
-import java.util.Set;
+import com.hp.triclops.repository.OrganizationRepository;
+import com.hp.triclops.repository.TBoxRepository;
 
 /**
  * Created by liz on 2015/10/26.
  */
 public class Vehicle7 extends Vehicle6S {
 
+
+    private TBoxRepository tBoxRepository;
+
     public Vehicle7() {
     }
+
 
     public Vehicle7(int vid) {
         super(vid);
     }
+
+
 
     /**
      * 绑定TBox
@@ -23,11 +27,8 @@ public class Vehicle7 extends Vehicle6S {
      */
     public void bindTbox(TBoxMgr tbox){
         if(!this.isBinding(tbox)){
-            VehicleTBox vt = new VehicleTBox(tbox.getTbox(), this.getVehicle());
-            Vehicle v = this.getVehicle();
-            Set<VehicleTBox> tboxSet = v.getTboxSet();
-            tboxSet.add(vt);
-            this.vehicleRepository.save(v);
+            this.getVehicle().addTboxVehicle(tbox.getTbox());
+            this.vehicleRepository.save(this.getVehicle());
         }
     }
 
@@ -36,25 +37,19 @@ public class Vehicle7 extends Vehicle6S {
      * @param tbox TBox
      */
     public void unbindTbox(TBoxMgr tbox){
+        this.tBoxRepository = this.appContext.getBean(TBoxRepository.class);
         if(this.isBinding(tbox)){
-            VehicleTBox vt = new VehicleTBox(tbox.getTbox(), this.getVehicle());
-            Vehicle v = this.getVehicle();
-            Set<VehicleTBox> tboxSet = v.getTboxSet();
-            tboxSet.remove(vt);
-            this.vehicleRepository.save(v);
+            tbox.getTbox().setVehicle(null);
+            this.tBoxRepository.save(tbox.getTbox());
         }
     }
 
     /**
      * 判断是否已经绑定
      * @param tbox TBoxMgr
-     * @return
+     * @return Boolean true-已绑定 false-未绑定
      */
     public Boolean isBinding(TBoxMgr tbox){
-        VehicleTBox vt = new VehicleTBox(tbox.getTbox(), this.getVehicle());
-        if(this.getVehicle().getTboxSet().contains(vt)){
-            return true;
-        }
-        return false;
+        return this.getVehicle().getTboxSet().contains(tbox.getTbox());
     }
 }

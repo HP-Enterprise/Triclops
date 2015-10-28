@@ -18,7 +18,7 @@ public class Vehicle6S{
 
     private int vid;
 
-    private ApplicationContext appContext;
+    public ApplicationContext appContext;
 
     public Vehicle6S() {
     }
