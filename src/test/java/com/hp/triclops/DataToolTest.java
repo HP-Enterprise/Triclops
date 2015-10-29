@@ -1,7 +1,9 @@
 package com.hp.triclops;
 
 import com.hp.triclops.acquire.DataTool;
+import com.hp.triclops.entity.DiagnosticData;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -102,6 +104,14 @@ public class DataToolTest {
         String ip="192.168.1.1";
         byte[] bytes=dataTool.getIpBytes(ip);
 
+    }
+
+    @Test
+    public void test_getDatasFromDiagAckMsg(){
+        String byteStr="23 23 4D 40 00 55 D2 0F E7 42 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 00 00 00 00 00 00 00 55 BE E2 58 01 03 01 61 62 63 64 65 66 02 61 03 61 62 63 64 65 5D ";
+        DiagnosticData d= dataTool.getDatasFromDiagAckMsg(byteStr);
+        System.out.println("m1:"+d.getMessage1()+"|m2:"+d.getMessage2()+"|m3:"+d.getMessage3()+"|m4:"+d.getMessage4());
+        Assert.assertEquals(d.getMessage1(), "abcdef");
     }
 
 

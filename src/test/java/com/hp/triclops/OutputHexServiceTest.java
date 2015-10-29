@@ -1,7 +1,7 @@
 package com.hp.triclops;
 
-import com.hp.data.core.Conversion;
 import com.hp.triclops.acquire.DataTool;
+import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.OutputHexService;
@@ -122,4 +122,17 @@ public class OutputHexServiceTest {
        outputHexService.getWarningMessageAndPush(vin, byteString);
 
     }
+
+    @Test
+    public void test_getDiagCmdHex() {
+        String vin="12345678919991234";
+        DiagnosticData diagnosticData=new DiagnosticData();
+        diagnosticData.setDiaCmdDataSize((short) 17);
+        diagnosticData.setDiaNumber((short) 17);
+        diagnosticData.setDiaId((short) 0);
+        diagnosticData.setEventId(1444812349l);
+        System.out.println(outputHexService.getDiagCmdHex(diagnosticData));
+
+    }
+
 }

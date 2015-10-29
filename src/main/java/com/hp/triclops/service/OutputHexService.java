@@ -135,6 +135,32 @@ public class OutputHexService {
     }
 
     /**
+     * 生成远程诊断的下行hex
+     * @param diagnosticData diagnosticData实体类
+     * @return 下行hex
+     */
+    public String getDiagCmdHex(DiagnosticData diagnosticData){
+        DiagnosticCommandCmd diagnosticCommandCmd=new DiagnosticCommandCmd();
+        diagnosticCommandCmd.setTestFlag((short) 0);
+        diagnosticCommandCmd.setSendingTime((long)dataTool.getCurrentSeconds());
+        diagnosticCommandCmd.setApplicationID((short) 66);//>>>
+        diagnosticCommandCmd.setMessageID((short) 1);//>>>
+        diagnosticCommandCmd.setEventID(diagnosticData.getEventId());
+
+        diagnosticCommandCmd.setDiaCmdDataSize((short)17);
+        diagnosticCommandCmd.setDiaNumber((short)17);
+        diagnosticCommandCmd.setDiaID((byte)0);
+
+        DataPackage dpw=new DataPackage("8995_66_1");//>>>
+        dpw.fillBean(diagnosticCommandCmd);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+
+
+    /**
      * 根据报警hex信息生成文本性质的报警提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
@@ -365,7 +391,7 @@ public class OutputHexService {
             //返回无效才更新db记录
             rc.setStatus(dbResult);
             remoteControlRepository.save(rc);
-            String pushMsg="远程命令不符合发送条件:"+sessionId;
+            String pushMsg="行驶中，不能远程控制:"+sessionId;
             try{
                 this.mqService.pushToUser(rc.getUid(), pushMsg);
             }catch (RuntimeException e){_logger.info(e.getMessage());}
