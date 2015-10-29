@@ -332,6 +332,35 @@ public class DataTool {
         return re;
     }
 
+    /**
+     * 解析远程诊断响应数据
+     * @param msg
+     * @return
+     */
+    public   Object  getDatasFromDiagAckMsg(String msg)
+    {
+        //String ApplicationId="";
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        byte applicationId=0;
+        byte messageId=0;
+        int eventId=0;
+        HashMap<String,Object> re=new HashMap<String ,Object>();
+        if(data!=null){
+            if(data.length>15) {//下行数据包最小长度16
+                ByteBuffer bb= ByteBuffer.allocate(1024);
+                bb.put(data);
+                bb.flip();
+                applicationId=bb.get(9);
+                messageId=bb.get(10);
+                eventId= bb.getInt(11);
+            }
+        }
+        re.put("applicationId",applicationId);
+        re.put("messageId",messageId);
+        re.put("eventId",eventId);
+        return re;
+    }
+
 
 
 

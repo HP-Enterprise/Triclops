@@ -200,10 +200,16 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
                 case 0x42://远程车辆诊断响应(上行)
-                    _logger.info("DiagnosticComman Ack");
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    _logger.info("DiagnosticCommand Ack");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    _vin=chKey;
+                   requestHandler.handleDiagnosticAck(receiveDataHexString, _vin);
                     break;
-                case 0x51://上报数据设置响应(上行)
+                 case 0x51://上报数据设置响应(上行)
                     _logger.info("SignalSetting Ack");
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;

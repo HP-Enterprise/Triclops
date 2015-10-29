@@ -362,4 +362,16 @@ public class RequestHandler {
     }
 
 
+    /**
+     * 处理远程诊断响应数据
+     * @param reqString 响应hex
+     * @param vin vin码
+     */
+    public void handleDiagnosticAck(String reqString,String vin){
+        Object o=dataTool.getDatasFromDiagAckMsg(reqString);
+        //因为数据结构目前没办法用DataCenter处理,只能直接解析
+
+
+    }
+
 }

@@ -6,9 +6,9 @@ package com.hp.triclops.service;
 
 import com.hp.triclops.acquire.AcquirePort;
 import com.hp.triclops.acquire.DataTool;
+import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.entity.TBoxParmSet;
-import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.repository.RemoteControlRepository;
 import com.hp.triclops.repository.TBoxParmSetRepository;
 import com.hp.triclops.repository.VehicleRepository;
@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * 车辆控制相关业务代码
@@ -119,6 +117,23 @@ public class VehicleDataService {
         }
         return null;//TBox不在线 Controller通知出去
     }
+
+    /**
+     * 远程车辆诊断相关
+     * @param diagnosticData
+     * @return
+     */
+    public DiagnosticData handleDiag(DiagnosticData diagnosticData){
+        //参数数据保存到数据库表 如果TBox在线，通过连接下发；如果不在线，保存到数据库，等待注册后进行下发。
+        if(hasConnection(diagnosticData.getVin())){
+            String byteStr=outputHexService.getDiagCmdHex(diagnosticData);
+            //生成output数据包并进入redis
+            outputHexService.saveCmdToRedis(diagnosticData.getVin(), byteStr);
+            return diagnosticData;
+        }
+        return null;//TBox不在线 Controller通知出去
+    }
+
 
     /**
      * 远程唤醒流程 最多三次 每次唤醒后等待10s检测结果

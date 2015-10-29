@@ -135,6 +135,32 @@ public class OutputHexService {
     }
 
     /**
+     * 生成远程诊断的下行hex
+     * @param diagnosticData diagnosticData实体类
+     * @return 下行hex
+     */
+    public String getDiagCmdHex(DiagnosticData diagnosticData){
+        DiagnosticCommandCmd diagnosticCommandCmd=new DiagnosticCommandCmd();
+        diagnosticCommandCmd.setTestFlag((short) 0);
+        diagnosticCommandCmd.setSendingTime((long)dataTool.getCurrentSeconds());
+        diagnosticCommandCmd.setApplicationID((short) 66);//>>>
+        diagnosticCommandCmd.setMessageID((short) 1);//>>>
+        diagnosticCommandCmd.setEventID(diagnosticData.getEventId());
+
+        diagnosticCommandCmd.setDiaCmdDataSize(diagnosticData.getDiaCmdDataSize());
+        diagnosticCommandCmd.setDiaNumber(diagnosticData.getDiaNumber());
+        diagnosticCommandCmd.setDiaID(diagnosticData.getDiaId().byteValue());
+
+        DataPackage dpw=new DataPackage("8995_66_1");//>>>
+        dpw.fillBean(diagnosticCommandCmd);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+
+
+    /**
      * 根据报警hex信息生成文本性质的报警提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
