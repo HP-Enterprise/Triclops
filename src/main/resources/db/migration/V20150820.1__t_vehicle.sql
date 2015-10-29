@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS t_vehicle
   license_plate varchar(10) COMMENT '车牌号',
   product_date datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '生产日期',
   PRIMARY KEY (id),
-  UNIQUE key (vin),
-  UNIQUE key (tboxsn)
+  UNIQUE key (vin)
+--   UNIQUE key (tboxsn)
 ) DEFAULT CHARSET=utf8 COMMENT='车辆表';
 
