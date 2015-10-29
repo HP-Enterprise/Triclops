@@ -103,15 +103,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
                 case 0x14://远程唤醒
                     _logger.info("RemoteWakeUp start...");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
+
                     respStr=requestHandler.getRemoteWakeUpResp(receiveDataHexString);
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
-
                     break;
                 case 0x21://固定数据上报
                     _logger.info("Regular Data Report Message");

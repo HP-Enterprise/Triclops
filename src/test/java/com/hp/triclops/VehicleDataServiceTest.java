@@ -1,6 +1,7 @@
 package com.hp.triclops;
 
 import com.hp.triclops.acquire.DataTool;
+import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.VehicleDataService;
 import org.junit.After;
@@ -49,7 +50,7 @@ public class VehicleDataServiceTest {
     @Transactional
     @Rollback
     public void test_handleRemoteControl() {
-        System.out.println("handleRemoteControl return:" + vehicleDataService.handleRemoteControl(1, "1443151834l", (short)15,(short)22));
+        System.out.println("handleRemoteControl return:" + vehicleDataService.handleRemoteControl(1, "1443151834l", (short) 15, (short) 22));
         //单元测试无法唤醒 总是null
     }
 
@@ -77,5 +78,18 @@ public class VehicleDataServiceTest {
         tBoxParmSet.setEnterpriseDomainNameSize((short) 13);
         tBoxParmSet.setVersion("1.0.0.1");
         vehicleDataService.handleParmSet(tBoxParmSet);
+    }
+
+    @Ignore("Not suitable for travis-ci")
+    @Test
+    @Transactional
+    @Rollback
+     public void test_handleDiag() {
+        DiagnosticData diagnosticData=new DiagnosticData();
+        diagnosticData.setVin("12345678919991234");
+        int eventId=1438573144;
+        diagnosticData.setEventId((long) eventId);
+
+        vehicleDataService.handleDiag(diagnosticData);
     }
 }

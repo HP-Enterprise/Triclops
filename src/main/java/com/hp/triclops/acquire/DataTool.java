@@ -1,5 +1,6 @@
 package com.hp.triclops.acquire;
 
+import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
 import io.netty.buffer.ByteBuf;
@@ -337,29 +338,146 @@ public class DataTool {
      * @param msg
      * @return
      */
-    public   Object  getDatasFromDiagAckMsg(String msg)
-    {
-        //String ApplicationId="";
-        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
-        byte applicationId=0;
-        byte messageId=0;
-        int eventId=0;
-        HashMap<String,Object> re=new HashMap<String ,Object>();
-        if(data!=null){
-            if(data.length>15) {//下行数据包最小长度16
-                ByteBuffer bb= ByteBuffer.allocate(1024);
+    public DiagnosticData getDatasFromDiagAckMsg(String msg) {
+        try {
+            DiagnosticData diagnosticData =null;
+            byte[] data = getBytesFromByteBuf(getByteBuf(msg));
+            if (data != null) {
+                diagnosticData = new DiagnosticData();
+                ByteBuffer bb = ByteBuffer.allocate(1024);
                 bb.put(data);
                 bb.flip();
-                applicationId=bb.get(9);
-                messageId=bb.get(10);
-                eventId= bb.getInt(11);
-            }
+                int offset=9;//初始索引
+                byte applicationId = bb.get(offset);
+                offset+=1;
+                byte messageId = bb.get(offset);
+                offset+=1;
+                offset+=22;//跳过imei编号~预留字段
+                int eventId = bb.getInt(offset);
+                offset+=4;
+                byte diagDataSizeAck=bb.get(offset);
+                offset+=1;
+                int sizeAck=diagDataSizeAck&0xFF;
+                byte diagNumberAck=bb.get(offset);//响应个数
+                offset+=1;
+                int ack=diagNumberAck&0xFF;
+                for(int i=0;i<ack;i++){
+                    int id=bb.get(offset);
+                    offset+=1;
+                    int fieldLength=getFieldLength(id);
+                    String _msg=new String(data, offset, fieldLength);//vin在字节数组中的位置
+                    offset+=fieldLength;
+                    if(id==1){
+                        diagnosticData.setMessage1(_msg);
+                    }else if(id==2){
+                        diagnosticData.setMessage2(_msg);
+                    }else if (id ==3){
+                        diagnosticData.setMessage3(_msg);
+                    }else if (id ==4){
+                        diagnosticData.setMessage4(_msg);
+                    }else if (id ==5){
+                        diagnosticData.setMessage5(_msg);
+                    }else if (id ==6){
+                        diagnosticData.setMessage6(_msg);
+                    }else if (id ==7){
+                        diagnosticData.setMessage7(_msg);
+                    }else if (id ==8){
+                        diagnosticData.setMessage8(_msg);
+                    }else if (id ==9){
+                        diagnosticData.setMessage9(_msg);
+                    }else if (id == 10){
+                        diagnosticData.setMessage10(_msg);
+                    }else if (id == 11){
+                        diagnosticData.setMessage11(_msg);
+                    }else if (id == 12){
+                        diagnosticData.setMessage12(_msg);
+                    }else if (id == 13){
+                        diagnosticData.setMessage13(_msg);
+                    }else if (id == 14){
+                        diagnosticData.setMessage14(_msg);
+                    }else if (id == 15){
+                        diagnosticData.setMessage15(_msg);
+                    }else if (id == 16){
+                        diagnosticData.setMessage16(_msg);
+                    }else if (id == 17){
+                        diagnosticData.setMessage17(_msg);
+                    }
+                 }
+                diagnosticData.setDiaCmdDataSize((short)sizeAck);
+                diagnosticData.setDiaNumber((short)ack);//保存响应个数
+                diagnosticData.setEventId((long)eventId);
+                }
+            return diagnosticData;
+        } catch (Exception e) {
+            e.printStackTrace();
+            _logger.error("handle Diagnostic Ack error" + e.getMessage());
         }
-        re.put("applicationId",applicationId);
-        re.put("messageId",messageId);
-        re.put("eventId",eventId);
+        return null;
+    }
+
+
+
+    private int getFieldLength(int id){
+        //参考文档关于诊断的部分
+        int re=0;
+        switch(id) {
+            case 1://
+                re=6;
+                break;
+            case 2://
+                re=1;
+                break;
+            case 3://
+                re=5;
+                break;
+            case 4://
+                re=3;
+                break;
+            case 5://
+                re=7;
+                break;
+            case 6://
+                re=7;
+                break;
+            case 7://
+                re=30;
+                break;
+            case 8://
+                re=2;
+                break;
+            case 9://
+                re=3;
+                break;
+            case 10://
+                re=4;
+                break;
+            case 11://
+                re=3;
+                break;
+            case 12://
+                re=3;
+                break;
+            case 13://
+                re=27;
+                break;
+            case 14://
+                re=4;
+                break;
+            case 15://
+                re=2;
+                break;
+            case 16://
+                re=1;
+                break;
+            case 17://
+                re=1;
+                break;
+            default:
+                break;
+        }
         return re;
     }
+
 
 
 

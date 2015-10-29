@@ -9,6 +9,7 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.entity.TBoxParmSet;
+import com.hp.triclops.repository.DiagnosticDataRepository;
 import com.hp.triclops.repository.RemoteControlRepository;
 import com.hp.triclops.repository.TBoxParmSetRepository;
 import com.hp.triclops.repository.VehicleRepository;
@@ -35,6 +36,8 @@ public class VehicleDataService {
     VehicleRepository vehicleRepository;
     @Autowired
     DataTool dataTool;
+    @Autowired
+    DiagnosticDataRepository diagnosticDataRepository;
 
     private Logger _logger = LoggerFactory.getLogger(VehicleDataService.class);
 
@@ -120,14 +123,25 @@ public class VehicleDataService {
 
     /**
      * 远程车辆诊断相关
-     * @param diagnosticData
-     * @return
+     * @param diagnosticData 来自api的诊断指令
+     * @return handleDiag或者null
      */
     public DiagnosticData handleDiag(DiagnosticData diagnosticData){
-        //参数数据保存到数据库表 如果TBox在线，通过连接下发；如果不在线，保存到数据库，等待注册后进行下发。
+        //参数数据保存到数据库表
+        //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
+        if(!hasConnection(diagnosticData.getVin())){
+            _logger.info("vin:"+diagnosticData.getVin()+" have not connection,do wake up...");
+            remoteWakeUp(diagnosticData.getVin());
+        }
         if(hasConnection(diagnosticData.getVin())){
+            diagnosticData.setDiaId((short)0);
+            diagnosticData.setHasAck((short) 0);
+            diagnosticData.setSendDate(new Date());
+            diagnosticDataRepository.save(diagnosticData);
+
             String byteStr=outputHexService.getDiagCmdHex(diagnosticData);
             //生成output数据包并进入redis
+            _logger.info(byteStr);
             outputHexService.saveCmdToRedis(diagnosticData.getVin(), byteStr);
             return diagnosticData;
         }

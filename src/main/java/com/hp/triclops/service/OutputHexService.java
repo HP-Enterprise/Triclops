@@ -147,9 +147,9 @@ public class OutputHexService {
         diagnosticCommandCmd.setMessageID((short) 1);//>>>
         diagnosticCommandCmd.setEventID(diagnosticData.getEventId());
 
-        diagnosticCommandCmd.setDiaCmdDataSize(diagnosticData.getDiaCmdDataSize());
-        diagnosticCommandCmd.setDiaNumber(diagnosticData.getDiaNumber());
-        diagnosticCommandCmd.setDiaID(diagnosticData.getDiaId().byteValue());
+        diagnosticCommandCmd.setDiaCmdDataSize((short)17);
+        diagnosticCommandCmd.setDiaNumber((short)17);
+        diagnosticCommandCmd.setDiaID((byte)0);
 
         DataPackage dpw=new DataPackage("8995_66_1");//>>>
         dpw.fillBean(diagnosticCommandCmd);
@@ -391,7 +391,7 @@ public class OutputHexService {
             //返回无效才更新db记录
             rc.setStatus(dbResult);
             remoteControlRepository.save(rc);
-            String pushMsg="远程命令不符合发送条件:"+sessionId;
+            String pushMsg="行驶中，不能远程控制:"+sessionId;
             try{
                 this.mqService.pushToUser(rc.getUid(), pushMsg);
             }catch (RuntimeException e){_logger.info(e.getMessage());}

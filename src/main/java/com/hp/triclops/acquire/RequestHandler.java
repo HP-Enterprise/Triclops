@@ -4,9 +4,11 @@ import com.hp.data.bean.tbox.*;
 import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
+import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.repository.DiagnosticDataRepository;
 import com.hp.triclops.repository.TBoxParmSetRepository;
 import com.hp.triclops.service.OutputHexService;
 import com.hp.triclops.service.TboxService;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +39,8 @@ public class RequestHandler {
     OutputHexService outputHexService;
     @Autowired
     TBoxParmSetRepository tBoxParmSetRepository;
+    @Autowired
+    DiagnosticDataRepository diagnosticDataRepository;
 
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -368,10 +373,42 @@ public class RequestHandler {
      * @param vin vin码
      */
     public void handleDiagnosticAck(String reqString,String vin){
-        Object o=dataTool.getDatasFromDiagAckMsg(reqString);
+        _logger.info("DiagnosticAck:"+reqString);
         //因为数据结构目前没办法用DataCenter处理,只能直接解析
-
-
+        DiagnosticData d=dataTool.getDatasFromDiagAckMsg(reqString);
+        DiagnosticData diagnosticData=diagnosticDataRepository.findByVinAndEventId(vin,d.getEventId());
+        if(d!=null){
+        if(diagnosticData==null){
+            _logger.info("no record found for vin:" + vin + "eventId:" + d.getEventId());
+        }else{
+            diagnosticData.setReceiveDate(new Date());
+            diagnosticData.setHasAck((short) 1);
+            diagnosticData.setDiaCmdDataSize(d.getDiaCmdDataSize());
+            diagnosticData.setDiaNumber(d.getDiaNumber());
+            diagnosticData.setMessage1(d.getMessage1());
+            diagnosticData.setMessage1(d.getMessage1());
+            diagnosticData.setMessage2(d.getMessage2());
+            diagnosticData.setMessage3(d.getMessage3());
+            diagnosticData.setMessage4(d.getMessage4());
+            diagnosticData.setMessage5(d.getMessage5());
+            diagnosticData.setMessage6(d.getMessage6());
+            diagnosticData.setMessage7(d.getMessage7());
+            diagnosticData.setMessage8(d.getMessage8());
+            diagnosticData.setMessage9(d.getMessage9());
+            diagnosticData.setMessage10(d.getMessage10());
+            diagnosticData.setMessage11(d.getMessage11());
+            diagnosticData.setMessage12(d.getMessage12());
+            diagnosticData.setMessage13(d.getMessage13());
+            diagnosticData.setMessage14(d.getMessage14());
+            diagnosticData.setMessage15(d.getMessage15());
+            diagnosticData.setMessage16(d.getMessage16());
+            diagnosticData.setMessage17(d.getMessage17());
+            //保存Ack数据
+            diagnosticDataRepository.save(diagnosticData);
+        }
+        }else{
+            _logger.info("no diagnostic ack data");
+        }
     }
 
 }
