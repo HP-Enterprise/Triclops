@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS t_vehicle
   product_date datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '生产日期',
   PRIMARY KEY (id),
   UNIQUE key (vin),
-  UNIQUE key (tboxsn),
-  UNIQUE KEY idx_license (license_plate)
+  UNIQUE key (tboxsn)
 ) DEFAULT CHARSET=utf8 COMMENT='车辆表';
 

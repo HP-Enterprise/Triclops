@@ -21,7 +21,7 @@ public class Org6S {
 
 
 
-    private ApplicationContext appContext;
+    public ApplicationContext appContext;
 
     public Org6S() {
     }

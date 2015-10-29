@@ -59,11 +59,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
             {
                 case 0x11://电检
                     _logger.info("Diag start...");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
+
                     respStr=requestHandler.getDiagResp(receiveDataHexString);
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
