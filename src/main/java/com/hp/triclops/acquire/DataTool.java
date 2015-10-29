@@ -335,8 +335,8 @@ public class DataTool {
 
     /**
      * 解析远程诊断响应数据
-     * @param msg
-     * @return
+     * @param msg 远程诊断响应hex
+     * @return 远程诊断数据实体
      */
     public DiagnosticData getDatasFromDiagAckMsg(String msg) {
         try {
