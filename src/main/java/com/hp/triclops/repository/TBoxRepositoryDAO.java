@@ -37,8 +37,8 @@ public class TBoxRepositoryDAO<T> {
         if(isActivated != 0){
             jpql += " and b.is_activated = :is_activated";
         }
-        if(isbind != 0){
-            jpql += " and b.vehicle is not null";
+        if(isbind == 1){
+            jpql += " and b.vehicle is null";
         }
         if(fuzzy == 0){ //精确查询
             if(t_sn != null){

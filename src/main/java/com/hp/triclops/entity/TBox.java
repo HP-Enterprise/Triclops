@@ -106,7 +106,7 @@ public class TBox {
         this.remark = remark;
     }
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = true)
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = true)
     @JoinColumn(name = "vid",referencedColumnName="id")
     public Vehicle getVehicle() {
         return vehicle;

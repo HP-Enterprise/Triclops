@@ -96,8 +96,8 @@ public class TBoxMgr {
      * @return 分页对象
      */
     public Page2<TBox> findTboxByKeys(Integer id, String t_sn, Integer isbind, String vin, Integer isActivated, String imei, String mobile, Integer fuzzy, Integer pageSize,Integer currentPage){
-        currentPage = currentPage == null ? 0 : currentPage;
-        pageSize = pageSize == null ? 0 : pageSize;
+        currentPage = currentPage == null ? 1 : currentPage;
+        pageSize = pageSize == null ? 10 : pageSize;
         id = id == null ? 0 : id;
         isActivated = isActivated == null ? 0 : isActivated;
         fuzzy = fuzzy == null ? 0 : fuzzy;
