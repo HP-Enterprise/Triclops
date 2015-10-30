@@ -21,6 +21,7 @@ public class TBoxRepositoryDAO<T> {
      * 根据条件查询TBox列表
      * @param id ID
      * @param t_sn tobx码
+     * @param isbind 0 or null 查找全部 1 查找未绑定的
      * @param vin VIN码
      * @param isActivated 是否被激活
      * @param imei IMEI
@@ -28,13 +29,16 @@ public class TBoxRepositoryDAO<T> {
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
      * @return 分页对象
      */
-    public Page2<TBox> findTboxByKeys(int id, String t_sn, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
+    public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
         String jpql = "select b from TBox b where 1=1";
         if(id != 0){
             jpql += " and b.id = :id";
         }
         if(isActivated != 0){
             jpql += " and b.is_activated = :is_activated";
+        }
+        if(isbind != 0){
+            jpql += " and b.vehicle is not null";
         }
         if(fuzzy == 0){ //精确查询
             if(t_sn != null){
