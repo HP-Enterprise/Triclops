@@ -32,9 +32,9 @@ public class DemoTest {
     @Transactional
     @Rollback
     public void testSample() {
-        userRepository.save(new User("Sam1",1,"张三1","13296630210",0));
-        userRepository.save(new User("Sam2",0,"张三2","13296630310",0));
-        userRepository.save(new User("Sam3",1,"张三3","13296630410",0));
+        userRepository.save(new User("Sam1",1,"张三1","13296630210",0,"",""));
+        userRepository.save(new User("Sam2",0,"张三2","13296630310",0,"",""));
+        userRepository.save(new User("Sam3",1,"张三3","13296630410",0,"",""));
 
         int count = 0;
         for(User user : userRepository.findAll()){
