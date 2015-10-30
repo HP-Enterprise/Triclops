@@ -23,4 +23,7 @@ public interface VehicleRepository extends CrudRepository<Vehicle, String> {
     @Query("select Ve from Vehicle Ve where Ve.vin = ?1 and Ve.tboxsn = ?2")
     Vehicle findByVinAndTbox(String vin, String tboxsn);
 
+    @Query("select ve from Vehicle ve where ve.id > ?1 and ve.id <= ?2")
+    List<Vehicle> findByStartIdAndEndId(int startId,int endId);
+
 }
