@@ -27,6 +27,8 @@ public class TBoxRepositoryDAO<T> {
      * @param imei IMEI
      * @param mobile SIM卡
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
+     * @param pageSize 每页大小
+     * @param currentPage 页码
      * @return 分页对象
      */
     public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
