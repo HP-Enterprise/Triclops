@@ -4,6 +4,7 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.VehicleDataService;
+import com.hp.triclops.vo.RealTimeDataShow;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -92,4 +93,16 @@ public class VehicleDataServiceTest {
 
         vehicleDataService.handleDiag(diagnosticData);
     }
+
+    @Test
+    public void test_getRealTimeData() {
+       String vin="12345678919991235";
+        RealTimeDataShow realTimeDataShow= vehicleDataService.getRealTimeData(vin);
+        if(realTimeDataShow!=null){
+            System.out.println(realTimeDataShow.getSendingTime());
+        }
+
+    }
+
+
 }

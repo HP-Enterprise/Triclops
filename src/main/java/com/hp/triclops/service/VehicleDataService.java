@@ -6,13 +6,9 @@ package com.hp.triclops.service;
 
 import com.hp.triclops.acquire.AcquirePort;
 import com.hp.triclops.acquire.DataTool;
-import com.hp.triclops.entity.DiagnosticData;
-import com.hp.triclops.entity.RemoteControl;
-import com.hp.triclops.entity.TBoxParmSet;
-import com.hp.triclops.repository.DiagnosticDataRepository;
-import com.hp.triclops.repository.RemoteControlRepository;
-import com.hp.triclops.repository.TBoxParmSetRepository;
-import com.hp.triclops.repository.VehicleRepository;
+import com.hp.triclops.entity.*;
+import com.hp.triclops.repository.*;
+import com.hp.triclops.vo.RealTimeDataShow;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 车辆控制相关业务代码
@@ -38,6 +35,10 @@ public class VehicleDataService {
     DataTool dataTool;
     @Autowired
     DiagnosticDataRepository diagnosticDataRepository;
+    @Autowired
+    RealTimeReportDataRespository realTimeReportDataRespository;
+    @Autowired
+    GpsDataRepository gpsDataRepository;
 
     private Logger _logger = LoggerFactory.getLogger(VehicleDataService.class);
 
@@ -194,5 +195,71 @@ public class VehicleDataService {
         }
         return re;
     }
+
+    /**
+     * 获取车辆实时数据
+     * @param vin vin
+     * @return 封装数据的vo实体
+     */
+    public RealTimeDataShow getRealTimeData(String vin){
+        RealTimeReportData rd=null;
+        GpsData gd=null;
+        List<RealTimeReportData> rdList=realTimeReportDataRespository.findLatestOneByVin(vin);
+        if(rdList!=null&&rdList.size()>0){
+                rd=rdList.get(0);
+                List<GpsData> gdList=gpsDataRepository.findByVinAndSendingTime(vin,rd.getSendingTime());
+                if(gdList!=null&&gdList.size()>0){
+                gd=gdList.get(0);}
+        }
+        if(rd==null||gd==null){
+                return null;
+        }else{
+                RealTimeDataShow data=new RealTimeDataShow();
+                data.setId(rd.getId());
+                data.setVin(rd.getVin());
+                data.setImei(rd.getImei());
+                data.setApplicationId(rd.getApplicationId());
+                data.setMessageId(rd.getMessageId());
+                data.setSendingTime(rd.getSendingTime());
+                data.setFuelOil(rd.getFuelOil());
+                data.setAvgOil(rd.getAvgOil());
+                data.setOilLife(rd.getOilLife());
+                data.setDriveRange(rd.getDriveRange());//
+                data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
+                data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
+                data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
+                data.setRightRearTirePressure(rd.getRightRearTirePressure());
+                data.setLeftFrontWindowInformation(rd.getLeftFrontWindowInformation());
+                data.setRightFrontWindowInformation(rd.getRightFrontWindowInformation());
+                data.setLeftRearWindowInformation(rd.getLeftRearWindowInformation());
+                data.setRightRearWindowInformation(rd.getRightRearWindowInformation());
+                data.setVehicleTemperature(rd.getVehicleTemperature());//
+                data.setVehicleOuterTemperature(rd.getVehicleOuterTemperature());
+                data.setLeftFrontDoorInformation(rd.getLeftFrontDoorInformation());
+                data.setLeftRearDoorInformation(rd.getLeftRearDoorInformation());
+                data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
+                data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
+                data.setTrunkDoorInformation(rd.getTrunkDoorInformation());
+                data.setEngineDoorInformation(rd.getEngineDoorInformation());
+                data.setEngineCondition(rd.getEngineCondition());
+                data.setEngineSpeed(rd.getEngineSpeed());
+                data.setRapidAcceleration(rd.getRapidAcceleration());
+                data.setRapidDeceleration(rd.getRapidDeceleration());
+                data.setSpeeding(rd.getSpeeding());
+                data.setSignalStrength(rd.getSignalStrength());
+
+                data.setIsLocation(gd.getIsLocation());//
+                data.setNorthSouth(gd.getNorthSouth());//
+                data.setEastWest(gd.getEastWest());//
+                data.setLatitude(gd.getLatitude());
+                data.setLongitude(gd.getLongitude());
+                data.setSpeed(gd.getSpeed());
+                data.setHeading(gd.getHeading());
+                return data;
+        }
+
+        }
+
+
 
 }
