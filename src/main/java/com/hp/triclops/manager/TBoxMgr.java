@@ -67,7 +67,7 @@ public class TBoxMgr {
     /**
      * 修改TBox
      * @param tbox tobx对象
-     * @return
+     * @return tbox对象
      */
     public TBox updateTBox(TBox tbox){
         TBox tboxtemp = new TBox();
@@ -93,13 +93,13 @@ public class TBoxMgr {
      * @param imei IMEI
      * @param mobile SIM卡
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
+     * @param pageSize 每页大小
+     * @param currentPage 页码
      * @return 分页对象
      */
-    public Page2<TBox> findTboxByKeys(Integer id, String t_sn, Integer isbind, String vin, Integer isActivated, String imei, String mobile, Integer fuzzy, Integer pageSize,Integer currentPage){
+    public Page2<TBox> findTboxByKeys(int id, String t_sn, Integer isbind, String vin, int isActivated, String imei, String mobile, Integer fuzzy, Integer pageSize,Integer currentPage){
         currentPage = currentPage == null ? 1 : currentPage;
         pageSize = pageSize == null ? 10 : pageSize;
-        id = id == null ? 0 : id;
-        isActivated = isActivated == null ? 0 : isActivated;
         fuzzy = fuzzy == null ? 0 : fuzzy;
         isbind = isbind == null ? 0 : isbind;
         return this.tBoxRepositoryDao.findTboxByKeys(id,t_sn, isbind, vin,isActivated,imei,mobile,fuzzy,pageSize,currentPage);
