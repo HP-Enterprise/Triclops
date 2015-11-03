@@ -6,13 +6,14 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by luj on 2015/8/26.
  */
 @Component
-public class TBoxRepositoryDAO<T> {
+public class TBoxRepositoryDAO{
 
     @PersistenceContext
     private EntityManager em;
@@ -27,9 +28,12 @@ public class TBoxRepositoryDAO<T> {
      * @param imei IMEI
      * @param mobile SIM卡
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
+     * @param pageSize 每页大小
+     * @param currentPage 页码
      * @return 分页对象
      */
     public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
+
         String jpql = "select b from TBox b where 1=1";
         if(id != 0){
             jpql += " and b.id = :id";
@@ -121,8 +125,20 @@ public class TBoxRepositoryDAO<T> {
             currentPage = 1;
             pageSize = count.intValue();
         }
-        List items = query.getResultList();
-        return new Page2(currentPage,pageSize,count,items);
+
+        List items =  query.getResultList();
+        List<TBox> tboxList =new ArrayList<TBox>();
+        for(Object obj: items){
+            TBox tBox=(TBox)obj;
+            tboxList.add(tBox);
+        }
+
+        Page2<TBox> page2 = new Page2<TBox>();
+        page2.setCurrentPage(currentPage);
+        page2.setPageSize(pageSize);
+        page2.setRecordCount(count);
+        page2.setItems(tboxList);
+        return page2;
     }
 
 }
