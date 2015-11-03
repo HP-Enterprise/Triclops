@@ -6,7 +6,84 @@ import java.util.Date;
 /**
  * Created by luj on 2015/9/28.
  */
-
+/**
+ * <table summary="GpsData" class="typeSummary">
+ *     <thead>
+ *         <tr>
+ *             <th>字段</th>
+ *             <th>数据类型</th>
+ *             <th>说明</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>id</td>
+ *             <td>Long</td>
+ *             <td>ID</td>
+ *         </tr>
+ *         <tr>
+ *             <td>vin</td>
+ *             <td>String</td>
+ *             <td>车辆VIN码</td>
+ *         </tr>
+ *         <tr>
+ *             <td>imei</td>
+ *             <td>String</td>
+ *             <td>T-Box imei</td>
+ *         </tr>
+ *         <tr>
+ *             <td>applicationId</td>
+ *             <td>int</td>
+ *             <td>业务标识</td>
+ *         </tr>
+ *         <tr>
+ *             <td>messageId</td>
+ *             <td>int</td>
+ *             <td>消息标识</td>
+ *         </tr>
+ *         <tr>
+ *             <td>sendingTime</td>
+ *             <td>Date</td>
+ *             <td>发送时间</td>
+ *         </tr>
+ *         <tr>
+ *             <td>isLocation</td>
+ *             <td>Short</td>
+ *             <td>是否定位</td>
+ *         </tr>
+ *         <tr>
+ *             <td>northSouth</td>
+ *             <td>String</td>
+ *             <td>南纬北纬</td>
+ *         </tr>
+ *         <tr>
+ *             <td>eastWest</td>
+ *             <td>String</td>
+ *             <td>东经西经</td>
+ *         </tr>
+ *         <tr>
+ *             <td>latitude</td>
+ *             <td>double</td>
+ *             <td>纬度</td>
+ *         </tr>
+ *          <tr>
+ *             <td>longitude</td>
+ *             <td>double</td>
+ *             <td>经度</td>
+ *         </tr>
+ *          <tr>
+ *             <td>speed</td>
+ *             <td>float</td>
+ *             <td>速度</td>
+ *         </tr>
+ *          <tr>
+ *             <td>heading</td>
+ *             <td>int</td>
+ *             <td>方向角</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ */
 @Entity
 @Table(name = "t_data_gps")
 public class GpsData {
