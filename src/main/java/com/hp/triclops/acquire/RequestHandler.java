@@ -340,7 +340,11 @@ public class RequestHandler {
         byte[] pramValue=bean.getPramValue();
         //请求解析到bean
         String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
-        //变更消息状态
+        //变更消息状态 不会当作失败而重试
+        String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
+        String statusValue=String.valueOf(bean.getMessageID());
+        socketRedis.saveValueString(statusKey, statusValue, -1);
+
         List<TBoxParmSet> tpss=tBoxParmSetRepository.findByVinAndEventId(vin, bean.getEventID());
         if(tpss.size()>0){
             TBoxParmSet tps=tpss.get(0);
@@ -377,6 +381,10 @@ public class RequestHandler {
         //因为数据结构目前没办法用DataCenter处理,只能直接解析
         DiagnosticData d=dataTool.getDatasFromDiagAckMsg(reqString);
         DiagnosticData diagnosticData=diagnosticDataRepository.findByVinAndEventId(vin,d.getEventId());
+        //变更消息状态 不会当作失败而重试
+        String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+66+"-"+d.getEventId();//0X42=66 ACK mid=2
+        String statusValue=String.valueOf(2);//ACK mid=2
+        socketRedis.saveValueString(statusKey, statusValue, -1);
         if(d!=null){
         if(diagnosticData==null){
             _logger.info("no record found for vin:" + vin + "eventId:" + d.getEventId());
