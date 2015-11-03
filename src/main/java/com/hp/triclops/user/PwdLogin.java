@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 import java.util.List;
 
 /**
+ * 用户登录类
  * Created by Teemol on 2015/11/3.
  */
 public class PwdLogin {
@@ -13,7 +14,7 @@ public class PwdLogin {
      * @param token  登录令牌
      * @return  正常情况下返回登录信息，否则抛出异常code
      */
-    public LoginInfo getLoginInfo(String token){
+    public PwdLoginInfo getLoginInfo(String token){
         return null;
     }
 
