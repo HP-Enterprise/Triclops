@@ -2,6 +2,7 @@ package com.hp.triclops;
 
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.DiagnosticData;
+import com.hp.triclops.entity.GpsData;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.VehicleDataService;
 import com.hp.triclops.vo.RealTimeDataShow;
@@ -100,6 +101,16 @@ public class VehicleDataServiceTest {
         RealTimeDataShow realTimeDataShow= vehicleDataService.getRealTimeData(vin);
         if(realTimeDataShow!=null){
             System.out.println(realTimeDataShow.getSendingTime());
+        }
+
+    }
+
+    @Test
+    public void test_getLatestGpseData() {
+        String vin="12345678919991234";
+        GpsData gd=vehicleDataService.getLatestGpseData(vin);
+        if(gd!=null){
+            System.out.println(gd.getSendingTime());
         }
 
     }
