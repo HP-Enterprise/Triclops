@@ -39,7 +39,6 @@ public class Area {
         this.province = province;
     }
 
-
     @Column(name = "location", nullable = false, insertable = true, updatable = true, length = 50)
     public String getLocation() {
         return location;
