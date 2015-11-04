@@ -11,7 +11,7 @@ public class Area {
     private int id;
     private String province;
     private String location;
-
+ 
     public Area(){}
 
     public Area(String province,String location){
