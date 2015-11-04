@@ -365,7 +365,7 @@ public class DataTool {
                     int id=bb.get(offset);
                     offset+=1;
                     int fieldLength=getFieldLength(id);
-                    String _msg=new String(data, offset, fieldLength);//vin在字节数组中的位置
+                    String _msg=new String(data, offset, fieldLength);//依次读取msg
                     offset+=fieldLength;
                     if(id==1){
                         diagnosticData.setMessage1(_msg);
