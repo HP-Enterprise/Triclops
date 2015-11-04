@@ -109,21 +109,33 @@ public class OutputHexService {
         pramSetCmd.setMessageID((short) 1);//>>>
         pramSetCmd.setEventID(tps.getEventId());
         pramSetCmd.setTestFlag((short) 0);
-        pramSetCmd.setSendingTime((long)dataTool.getCurrentSeconds());
+        pramSetCmd.setSendingTime((long) dataTool.getCurrentSeconds());
         pramSetCmd.setPramSetNumber((short) 13);
-        pramSetCmd.setPramSetID(new byte[]{(byte) 1, (byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7, (byte) 8, (byte) 9, (byte) 10, (byte) 11, (byte) 12, (byte) 13});
+        pramSetCmd.setPramSetID1((byte) 1);
         pramSetCmd.setFrequencySaveLocalMedia(tps.getFrequencySaveLocalMedia());
+        pramSetCmd.setPramSetID2((byte) 2);
         pramSetCmd.setFrequencyForReport(tps.getFrequencyForReport());
+        pramSetCmd.setPramSetID3((byte) 3);
         pramSetCmd.setFrequencyForWarningReport(tps.getFrequencyForWarningReport());
+        pramSetCmd.setPramSetID4((byte) 4);
         pramSetCmd.setFrequencyHeartbeat(tps.getFrequencyHeartbeat());
+        pramSetCmd.setPramSetID5((byte) 5);
         pramSetCmd.setTimeOutForTerminalSearch(tps.getTimeOutForTerminalSearch());
+        pramSetCmd.setPramSetID6((byte) 6);
         pramSetCmd.setTimeOutForServerSearch(tps.getTimeOutForServerSearch());
+        pramSetCmd.setPramSetID7((byte) 7);
         pramSetCmd.setUploadType(tps.getUploadType());
+        pramSetCmd.setPramSetID8((byte) 8);
         pramSetCmd.setEnterpriseBroadcastAddress1(dataTool.getIpBytes(tps.getEnterpriseBroadcastAddress1()));
+        pramSetCmd.setPramSetID9((byte) 9);
         pramSetCmd.setEnterpriseBroadcastPort1(tps.getEnterpriseBroadcastPort1());
+        pramSetCmd.setPramSetID10((byte) 10);
         pramSetCmd.setEnterpriseBroadcastAddress2(dataTool.getIpBytes(tps.getEnterpriseBroadcastAddress2()));
+        pramSetCmd.setPramSetID11((byte) 11);
         pramSetCmd.setEnterpriseBroadcastPort2(tps.getEnterpriseBroadcastPort2());
+        pramSetCmd.setPramSetID12((byte) 12);
         pramSetCmd.setEnterpriseDomainNameSize(tps.getEnterpriseDomainNameSize());
+        pramSetCmd.setPramSetID13((byte) 13);
         pramSetCmd.setEnterpriseDomainName(tps.getEnterpriseDomainName());
 
         DataPackage dpw=new DataPackage("8995_82_1");//>>>
