@@ -8,6 +8,7 @@ import com.hp.triclops.acquire.AcquirePort;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.repository.*;
+import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.vo.RealTimeDataShow;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -39,7 +40,8 @@ public class VehicleDataService {
     RealTimeReportDataRespository realTimeReportDataRespository;
     @Autowired
     GpsDataRepository gpsDataRepository;
-
+    @Autowired
+    GpsTool gpsTool;
     private Logger _logger = LoggerFactory.getLogger(VehicleDataService.class);
 
 
@@ -260,6 +262,18 @@ public class VehicleDataService {
 
         }
 
-
-
+    /**
+     * 获取车辆实时位置数据
+     * @param vin vin
+     * @return 封装位置数据的实体
+     */
+    public GpsData getLatestGpseData(String vin){
+        GpsData gd=null;
+        List<GpsData> gdList=gpsDataRepository.findLatestByVin(vin);
+        if(gdList!=null&&gdList.size()>0){
+            gd=gdList.get(0);
+            gd=gpsTool.convertToGCJ02(gd);
+        }
+        return gd;
+    }
 }

@@ -42,7 +42,7 @@ public class Page2<T> {
     }
 
     public void setRecordCount(Long recordCount) {
-        recordCount = recordCount;
+        this.recordCount = recordCount;
     }
 
     public Integer getPageCount() {
