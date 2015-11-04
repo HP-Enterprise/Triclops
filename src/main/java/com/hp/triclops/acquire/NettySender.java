@@ -38,7 +38,7 @@ public class NettySender extends Thread{
             //_logger.info("Connection count>>:" + channels.keySet().size()+"|Thread count>>:" + maps.size());
             //读取数据库中所有的命令集合
             Set<String> setKey = socketRedis.getKeysSet("output:*");
-            if(setKey.size()>0){   _logger.info("size:" + setKey.size()); }
+            if(setKey.size()>0){   _logger.info( setKey.size()+" message wait to be handle "); }
             Iterator keys = setKey.iterator();
             while (keys.hasNext()){
                 //遍历待发数据,处理

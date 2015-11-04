@@ -38,20 +38,27 @@ public class CommandHandler extends Thread{
 
     public  void run()
     {
-
-        _logger.info("vin:" + vin+" Send message from CommandHandler>>:" + message);
-
         //发出一条命令可以知道当前的vin、eventID、messageID、applicationId等信息
         datas=dataTool.getApplicationIdAndMessageIdFromDownBytes(message);
         applicationId=String.valueOf(datas.get("applicationId"));
         eventId=String.valueOf(datas.get("eventId"));
         messageId=String.valueOf(datas.get("messageId"));
-        channel.writeAndFlush(dataTool.getByteBuf(message));
+
+        int maxSendCount=dataTool.getMaxSendCount(applicationId,messageId);//基于applicationId-messageId和参考文档得出同一event最多发送的次数
+        int sendCount=getCurrentSendCount(vin, eventId, messageId);//从redis取出，这一event已经发了的次数
+        if(sendCount<maxSendCount){
+            _logger.info("vin:" + vin+" Send message from CommandHandler>>:" + message);
+            channel.writeAndFlush(dataTool.getByteBuf(message));
+        }else{
+            _logger.info("max send count reached!");
+            return;
+        }
+
         //发出消息，redis记录已发次数
         setSendCountPlusOne(vin,eventId,messageId);
         String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+applicationId+"-"+eventId;
         String statusValue=messageId;
-        //已经取到可以标识 跟踪一条指令的信息
+        //已经取到可以标识 、跟踪一条指令的信息
 
         _logger.info("set status value>statusKey:" + statusKey + "|statusValue:" + statusValue);
         //通过Redis来跟踪消息状态
@@ -72,8 +79,7 @@ public class CommandHandler extends Thread{
             _logger.info("maybe I need Resend the Command!");
             //将数据放入redis，作为另外一条命令处理，本次处理结束
             //在此之前需要判断重发次数是否已经达到
-            int maxSendCount=dataTool.getMaxSendCount(applicationId,messageId);//基于applicationId-messageId和参考文档得出同一event最多发送的次数
-            int sendCount=getCurrentSendCount(vin, eventId, messageId);//从redis取出，这一event已经发了的次数
+             sendCount=getCurrentSendCount(vin, eventId, messageId);//从redis取出，这一event已经发了的次数
             if(sendCount<maxSendCount){
                 _logger.info("sendCount"+sendCount+"<maxSendCount"+maxSendCount+",I will ReTry...");
                 socketRedis.saveSetString("output:" + vin,message,-1);
