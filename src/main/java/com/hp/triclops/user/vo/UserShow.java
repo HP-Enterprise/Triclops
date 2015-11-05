@@ -1,10 +1,9 @@
-package com.hp.triclops.user;
+package com.hp.triclops.user.vo;
 
 /**
- * Created by Teemol on 2015/11/3.
+ * Created by  on 2015/11/4.
  */
-public class User {
-
+public class UserShow {
     private int id;
     private String name;
     private Integer gender;
@@ -14,7 +13,7 @@ public class User {
     private String contacts;
     private String contactsPhone;
 
-    public User(int id, String name, Integer gender, String nick, String phone, int isVerified, String contacts, String contactsPhone) {
+    public UserShow(int id, String name, Integer gender, String nick, String phone, int isVerified, String contacts, String contactsPhone) {
         this.id = id;
         this.name = name;
         this.gender = gender;
