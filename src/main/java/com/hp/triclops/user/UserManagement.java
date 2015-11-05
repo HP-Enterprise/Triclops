@@ -1,5 +1,7 @@
 package com.hp.triclops.user;
 
+import com.hp.triclops.entity.User;
+
 import java.util.List;
 
 /**
