@@ -5,7 +5,6 @@ import com.hp.triclops.repository.UserRepository;
 import com.hp.triclops.repository.UserRepositoryDAO;
 import com.hp.triclops.user.vo.UserShow;
 import com.hp.triclops.utils.Page;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -37,16 +36,15 @@ public class UserManagement {
      * @return 修改后的用户信息
      */
     public User modifyUser(User user){
-        int id = user.getId();
-        String name = user.getName();
-        String nick = user.getNick();
-        String phone = user.getPhone();
-        Integer gender = user.getGender();
-        String contacts = user.getContacts();
-        String contactsPhone = user.getContactsPhone();
-        int isVerified = user.getIsVerified();
-        user = userRepository.update(name,gender,nick,phone,isVerified,contacts,contactsPhone,id);
-        return user;
+//        int id = user.getId();
+//        String name = user.getName();
+//        String nick = user.getNick();
+//        String phone = user.getPhone();
+//        Integer gender = user.getGender();
+//        String contacts = user.getContacts();
+//        String contactsPhone = user.getContactsPhone();
+//        int isVerified = user.getIsVerified();
+        return userRepository.save(user);
     }
 
     /**
@@ -71,14 +69,14 @@ public class UserManagement {
      */
     public List<UserShow> getUserList(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts, String contactsPhone,
                                   String orderByProperty,String ascOrDesc,Integer currentPage,Integer pageSize, String vin, Integer isowner, Integer fuzzy, Integer oid){
-        List<UserShow> usershows = new ArrayList<UserShow>();
+        List<UserShow> userList = new ArrayList<UserShow>();
         Page page= userRepositoryDAO.findUserByKeys(id,name,gender,nick,phone,isVerified,contacts,contactsPhone,orderByProperty,ascOrDesc,currentPage,pageSize,vin,isowner,fuzzy,oid);
         if (page.getItems() != null && page.getItems().size() > 0) {
             for (Object o : page.getItems()) {
                 User user = (User) o;
-                usershows.add(new UserShow(user.getId(),user.getName(),user.getGender(),user.getNick(),user.getPhone(),user.getIsVerified(),user.getContacts(),user.getContactsPhone()));
+                userList.add(new UserShow(user.getId(),user.getName(),user.getGender(),user.getNick(),user.getPhone(),user.getIsVerified(),user.getContacts(),user.getContactsPhone()));
             }
         }
-        return usershows;
+        return userList;
     }
 }

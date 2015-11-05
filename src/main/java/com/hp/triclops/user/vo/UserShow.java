@@ -1,9 +1,10 @@
 package com.hp.triclops.user.vo;
 
 /**
- * Created by  on 2015/11/4.
+ * Created by Teemol on 2015/11/5.
  */
 public class UserShow {
+
     private int id;
     private String name;
     private Integer gender;

@@ -1,5 +1,6 @@
 package com.hp.triclops.user;
 
+import com.hp.triclops.entity.User;
 import com.hp.triclops.redis.SessionRedis;
 import com.hp.triclops.repository.UserRepository;
 import com.hp.triclops.utils.DateUtil;
@@ -81,7 +82,7 @@ public class PwdLogin {
              * 登记到redis服务器
              * 用户id,当前登录的用户ID, 用户名称,用户昵称,登录时间.
              */
-            com.hp.triclops.entity.User loginUser = userRepository.findByName(evidence.getName());
+            User loginUser = userRepository.findByName(evidence.getName());
             PwdLoginInfo loginInfo = new PwdLoginInfo();   //登录信息
 
             loginInfo.setId(loginUser.getId());
