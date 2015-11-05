@@ -36,18 +36,18 @@ public class Verifier {
      * 校验
      * @param target 校验目标
      * @param code 校验码
-     * @return 成功返回0，失败返回1，验证码过期返回2
+     * @return  返回码   -1：验证失败  0：验证码已过期  1：验证成功
      */
     public int verifyCode(String target, String code){
-        int result=2;
-        String trueCode=sessionRedis.getSessionOfVal(target);
-        if (trueCode!="null")
+        int result = 0;
+        String trueCode = sessionRedis.getSessionOfVal(target);
+        if (trueCode!=null)
         {
-            if(trueCode .equals(code)){
-                result=0;
+            if(trueCode.equals(code)){
+                result = 1;
             }
             else {
-                result=1;
+                result = -1;
             }
         }
         return result;

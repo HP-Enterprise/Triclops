@@ -82,7 +82,7 @@ public class SessionRedis {
         sessionKey = setPreOfKey(1,sessionId);
         this.valOpts = this.stringRedisTemplate.opsForValue();
         if(!this.stringRedisTemplate.hasKey(sessionKey)){
-            return "null";
+            return null;
         }
         return valOpts.get(sessionKey);
 
