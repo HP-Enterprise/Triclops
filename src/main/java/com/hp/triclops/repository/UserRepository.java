@@ -20,6 +20,8 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     User findByPhone(String phone);
 
+    List<User> findByIdAndPhone(int id,String phone);
+
     @Modifying
     @Query("update User u set u.name=?1,u.gender=?2,u.nick=?3,u.phone=?4,u.isVerified=?5,u.contacts=?6,u.contactsPhone=?7 where u.id=?8")
     User update(String name, Integer gender, String nick, String phone,int isVerified,String contacts,String contactsPhone,int id);
