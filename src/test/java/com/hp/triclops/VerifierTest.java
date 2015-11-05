@@ -40,8 +40,8 @@ public class VerifierTest {
         String code = verifier.generateCode(target, 60);
         this._logger.info("生成验证码{} -> {}", target, code);
 
-        Assert.assertTrue(verifier.verifyCode(target, "123456") == 1);
-        Assert.assertTrue(verifier.verifyCode(target, code) == 0);
+        Assert.assertTrue(verifier.verifyCode(target, "123456") == -1);
+        Assert.assertTrue(verifier.verifyCode(target, code) == 1);
     }
     
 }
