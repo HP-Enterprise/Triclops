@@ -5,12 +5,14 @@ BEGIN
     DROP table IF EXISTS the_users;
 		CREATE TEMPORARY table  the_users
 		(
-			Id INT PRIMARY KEY,
+			Id INT(11),
 			name VARCHAR(50),
 			gender INT(3),
 			nick VARCHAR(50),
 			phone VARCHAR(11),
 			is_verified INT(1),
+			contacts varchar(50),
+			contacts_phone varchar(11),
       UNIQUE KEY unique_name (name),
       KEY(phone)
 		)ENGINE = MEMORY DEFAULT CHARSET=utf8;
@@ -28,7 +30,7 @@ BEGIN
             SET @pageSize = pageSize;
             SET @orderByProperty = orderByProperty;
             SET @ascOrDesc = ascOrDesc;
-            SET @sql = "SELECT * FROM the_users u";
+            SET @sql = "SELECT u.* FROM the_users u";
             SET @sql = CONCAT(@sql, " LEFT JOIN t_user_vehicle_relatived uvr ON u.id = uvr.userid WHERE (@vid = 0 OR uvr.vid = ?) AND (@isowner = -1 OR uvr.iflag = ?)");
             SET @sql = CONCAT(@sql, " AND (@gender = -1 OR u.gender = ?)");
             SET @sql = CONCAT(@sql, " AND (@isVerified = -1 OR u.is_verified = ?)");
