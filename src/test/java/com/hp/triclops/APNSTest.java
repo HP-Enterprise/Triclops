@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -42,7 +43,8 @@ public class APNSTest {
     @Autowired
     private ApplePushService applePushService;
 
-
+    @Value("${com.hp.apns.cer.password}")
+    private String pwd;
 
     public  String  getParallelPath()
     {
@@ -62,7 +64,6 @@ public class APNSTest {
         }
         path.replace("/", File.separator);
         return path;
-        //D:\inCar\BriAir\Triclops\src\main\resources\certificates\certforANPS.p12
     }
 
 
@@ -70,24 +71,19 @@ public class APNSTest {
     public void test01(){
 
         /**APNS推送需要的证书、密码、和设备的Token**/
-        String  p12Path = "D:\\inCar\\ANPS\\development\\certforANPS.p12";
+        String  p12Path = "";
         p12Path = this.getParallelPath();
-        String  password = "incar@2014";
+
         String pushToken = "";
-        //String  pushToken = "b868031f 54f87b60 a391824b 4e75d16e a45d50ab ca47ecb1 08660bae ab87b83b";
-        String content = "hello incar";
+        String content = "hello test";
         try {
             /**设置参数，发送数据**/
-/*            ApnsService service = APNS.newService().withCert(p12Path,password).withSandboxDestination().build();
-            String payload = APNS.newPayload().alertBody("hello incar").badge(1).sound("default").build();
-            service.push(pushToken, payload);
-            System.out.println("推送信息已发送！");*/
             int userId = 1;
             List<UserDevice> list= this.deviceRepository.findByUserId(userId);
 
             for(UserDevice ud :list){
                 pushToken = ud.getDeviceId();
-                ApnsService service = APNS.newService().withCert(p12Path,password).withSandboxDestination().build();
+                ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
                 String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
                 service.push(pushToken, payLoad);
             }
@@ -99,16 +95,15 @@ public class APNSTest {
     @Test
     public void test02(){
 
-        this.applePushService.pushToUser("hello incar",1);
+        this.applePushService.pushToUser("hello test",1);
     }
 
     @Test
     public void test03(){
-        //origin java 实现
         //String keyPath = "/data/tmp/proj.apns.p12";
-        String keyPath = "D:\\inCar\\ANPS\\development\\certforANPS.p12";
+        String keyPath = "..path";
         String ksType = "PKCS12";
-        String ksPassword = "incar@2014";
+        String ksPassword = pwd;
         String ksAlgorithm = "SunX509";
 
         String deviceToken = "1404c88dbb0adb92c0a85f4cd09be9707f251ae5bbecdb0a6a3e572aeb337d73";

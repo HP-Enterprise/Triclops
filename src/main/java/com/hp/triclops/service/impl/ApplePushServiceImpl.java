@@ -10,6 +10,7 @@ import com.hp.triclops.service.ApplePushService;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -29,6 +30,8 @@ public class ApplePushServiceImpl implements ApplePushService {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Value("${com.hp.apns.cer.password}")
+    private String pwd;
     /**
      * 注册设备
      *
@@ -64,18 +67,16 @@ public class ApplePushServiceImpl implements ApplePushService {
     public void pushToUser(String content,int userId) {
         try {
             String p12Path = this.getParallelPath();
-            String password ="incar@2014";
 
             List<UserDevice> list= this.deviceRepository.findByUserId(userId);
             for(UserDevice ud :list){
                 String pushToken = ud.getDeviceId();
-                ApnsService service = APNS.newService().withCert(p12Path,password).withSandboxDestination().build();
+                ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
 
                 String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
                 service.push(pushToken, payLoad);
             }
 
-            //System.out.println(sb.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,7 +100,5 @@ public class ApplePushServiceImpl implements ApplePushService {
         }
         path.replace("/", File.separator);
         return path;
-        //D:\inCar\BriAir\Triclops\src\main\resources\certificates\certforANPS.p12
-        //D:\inCar\BriAir\Triclops\build\resources\main\certificates\certforANPS.p12
     }
 }
