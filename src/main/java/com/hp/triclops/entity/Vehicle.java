@@ -21,6 +21,8 @@ public class Vehicle implements Serializable {
     private String license_plate;
     private Date product_date;
     private String tboxsn;
+    private String security_pwd;
+    private String security_salt;
     private Set<TBox> tboxSet;
 
     private Set<UserVehicleRelatived> vinSet;
@@ -35,7 +37,7 @@ public class Vehicle implements Serializable {
 
 
 
-    public Vehicle(int id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date,String tboxsn){
+    public Vehicle(int id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date,String tboxsn,String security_pwd,String security_salt){
         this.id = id;
         this.vin = vin;
         
@@ -46,6 +48,8 @@ public class Vehicle implements Serializable {
         this.license_plate = license_plate;
         this.product_date = product_date;
         this.tboxsn = tboxsn;
+        this.security_pwd = security_pwd;
+        this.security_salt = security_salt;
     }
 
     @Id
@@ -137,6 +141,26 @@ public class Vehicle implements Serializable {
 
     public void setTboxsn(String tboxsn) {
         this.tboxsn = tboxsn;
+    }
+
+    @Basic
+    @Column(name = "security_salt", nullable = true, insertable = true, updatable = true, length = 4)
+    public String getSecurity_salt() {
+        return security_salt;
+    }
+
+    public void setSecurity_salt(String security_salt) {
+        this.security_salt = security_salt;
+    }
+
+    @Basic
+    @Column(name = "security_pwd", nullable = true, insertable = true, updatable = true, length = 32)
+    public String getSecurity_pwd() {
+        return security_pwd;
+    }
+
+    public void setSecurity_pwd(String security_pwd) {
+        this.security_pwd = security_pwd;
     }
 
     @OneToMany(mappedBy = "vid", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
