@@ -1,9 +1,5 @@
 package com.hp.triclops.user.vo;
 
-/**
- * Created by Teemol on 2015/11/5.
- */
-
 import com.hp.triclops.entity.User;
 
 /**
@@ -81,17 +77,6 @@ public class UserShow {
         this.isVerified = user.getIsVerified();
         this.contacts = user.getContacts();
         this.contactsPhone = user.getContactsPhone();
-    }
-
-    public UserShow(int id, String name, Integer gender, String nick, String phone, int isVerified, String contacts, String contactsPhone) {
-        this.id = id;
-        this.name = name;
-        this.gender = gender;
-        this.nick = nick;
-        this.phone = phone;
-        this.isVerified = isVerified;
-        this.contacts = contacts;
-        this.contactsPhone = contactsPhone;
     }
 
     public int getId() {
