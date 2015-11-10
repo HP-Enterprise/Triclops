@@ -74,7 +74,7 @@ public class UserManagement {
         if (page.getItems() != null && page.getItems().size() > 0) {
             for (Object o : page.getItems()) {
                 User user = (User) o;
-                userList.add(new UserShow(user.getId(),user.getName(),user.getGender(),user.getNick(),user.getPhone(),user.getIsVerified(),user.getContacts(),user.getContactsPhone()));
+                userList.add(new UserShow(user));
             }
         }
         return userList;
