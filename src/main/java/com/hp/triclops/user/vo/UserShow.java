@@ -66,8 +66,7 @@ public class UserShow {
     private String contacts;
     private String contactsPhone;
 
-    public UserShow() {
-    }
+    public UserShow() {}
 
     public UserShow(User user) {
         this.id = user.getId();
