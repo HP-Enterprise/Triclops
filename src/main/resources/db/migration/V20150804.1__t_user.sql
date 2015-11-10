@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS t_user (
   KEY idx_phone (phone)
 ) DEFAULT CHARSET=utf8 COMMENT='用户表';
 
-INSERT INTO t_user(Id,name,nick) values('1','admin','admin4096');
+INSERT INTO t_user(Id,name,gender,nick) values('1','admin','1','admin4096');
