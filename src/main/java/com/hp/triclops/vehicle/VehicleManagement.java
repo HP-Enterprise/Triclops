@@ -1,8 +1,16 @@
 package com.hp.triclops.vehicle;
 
+import com.hp.triclops.entity.User;
+import com.hp.triclops.entity.UserVehicleRelatived;
 import com.hp.triclops.entity.Vehicle;
+import com.hp.triclops.repository.UserRepository;
+import com.hp.triclops.repository.UserVehicleRelativedRepository;
+import com.hp.triclops.repository.VehicleRepository;
 import com.hp.triclops.vo.UserVehicleRelativedShow;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Created by Teemol on 2015/11/11.
@@ -10,12 +18,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class VehicleManagement {
 
+    @Autowired
+    UserVehicleRelativedRepository userVehicleRelativedRepository;
+    @Autowired
+    VehicleRepository vehicleRepository;
+    @Autowired
+    UserRepository userRepository;
+
     /**
      * 修改用户与车辆的绑定信息
      * @param userVehicleRelativedShow 用户与车辆绑定信息
      */
     public boolean updateUserVehicleRelatived(UserVehicleRelativedShow userVehicleRelativedShow){
-        return true;
+        UserVehicleRelatived userVehicleRelatived = userVehicleRelativedRepository.findById(userVehicleRelativedShow.getId());
+        if (userVehicleRelatived != null) {
+            User user = userRepository.findById(userVehicleRelativedShow.getUid());
+            Vehicle vehicle = vehicleRepository.findById(userVehicleRelativedShow.getVid());
+            User parentUser = userRepository.findById(userVehicleRelativedShow.getParentuser());
+            userVehicleRelativedRepository.update(user, vehicle, userVehicleRelativedShow.getVflag(), userVehicleRelativedShow.getIflag(), parentUser, userVehicleRelativedShow.getId());
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -23,8 +46,17 @@ public class VehicleManagement {
      * @param uid 用户ID
      */
     public Vehicle getDefaultCar(int uid){
-
-        return null;
+        User user = new User();
+        user.setId(uid);
+        Vehicle vehicle = null;
+        List<UserVehicleRelatived> userVehicleRelativedList = userVehicleRelativedRepository.findByUid(user);
+        for (UserVehicleRelatived uv : userVehicleRelativedList) {
+            if (uv.getVflag() == 1) {
+                vehicle = uv.getVid();
+                break;
+            }
+        }
+        return vehicle;
     }
 
 
