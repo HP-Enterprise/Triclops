@@ -1,6 +1,10 @@
-package com.hp.triclops.user.vo;
+package com.hp.triclops.vo;
 
 import com.hp.triclops.entity.User;
+
+/**
+ * Created by Teemol on 2015/11/11.
+ */
 
 /**
  * <table summary="UserShow" class="typeSummary">
@@ -143,3 +147,4 @@ public class UserShow {
         this.contactsPhone = contactsPhone;
     }
 }
+
