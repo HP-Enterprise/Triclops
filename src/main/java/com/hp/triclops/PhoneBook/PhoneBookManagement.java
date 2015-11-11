@@ -1,4 +1,4 @@
-package com.hp.triclops.PhoneBook;
+package com.hp.triclops.phoneBook;
 
 /**
  * Created by Teemol on 2015/11/11.

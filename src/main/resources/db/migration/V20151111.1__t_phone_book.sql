@@ -1,8 +1,9 @@
-﻿CREATE TABLE IF NOT EXISTS t_slot (
-  id bigint(12) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  uid int(11) NOT NULL COMMENT '用户id',
-  slotkey varchar(50) NOT NULL COMMENT 'slotkey',
-  slot longtext NOT NULL COMMENT 'slot数据base64',
+﻿CREATE TABLE IF NOT EXISTS t_phone_book (
+  id int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  uid int(11) NOT NULL COMMENT '用户ID',
+  name varchar(50) NOT NULL COMMENT '联系人名称',
+  phone varchar(11) COMMENT '联系人电话',
+  isuser int(1) NOT NULL COMMENT '是否为系统用户',
   PRIMARY KEY (id),
-  FOREIGN KEY (uid) REFERENCES t_user(Id)
-) DEFAULT CHARSET=utf8 COMMENT='通讯录表';
+  KEY idx_uid (uid)
+) DEFAULT CHARSET=utf8 COMMENT='用户通讯录表';
