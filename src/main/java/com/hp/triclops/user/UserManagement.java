@@ -3,8 +3,8 @@ package com.hp.triclops.user;
 import com.hp.triclops.entity.User;
 import com.hp.triclops.repository.UserRepository;
 import com.hp.triclops.repository.UserRepositoryDAO;
-import com.hp.triclops.user.vo.UserShow;
 import com.hp.triclops.utils.Page;
+import com.hp.triclops.vo.UserShow;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
