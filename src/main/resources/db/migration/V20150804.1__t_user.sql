@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS t_user (
   is_verified  int(1) DEFAULT 0 COMMENT '0表示未验证，1表示已验证',
   contacts varchar(50) DEFAULT NULL COMMENT '联系人的姓名',
   contacts_phone varchar(11) DEFAULT NULL COMMENT '联系人的电话号码',
+  icon varchar(50) DEFAULT NULL COMMENT '上传到sftp文件名',
   PRIMARY KEY (Id),
   UNIQUE KEY unique_name (name),
   KEY idx_phone (phone)
