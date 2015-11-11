@@ -72,7 +72,7 @@ public class OutputHexServiceTest {
 
         tBoxParmSet.setVin("12345678919991234");
         int eventId=dataTool.getCurrentSeconds();
-        tBoxParmSet.setEventId((long)eventId);
+        tBoxParmSet.setEventId((long) eventId);
 
         tBoxParmSet.setFrequencySaveLocalMedia(1000);
         tBoxParmSet.setFrequencyForReport(1000);
@@ -80,6 +80,7 @@ public class OutputHexServiceTest {
         tBoxParmSet.setFrequencyHeartbeat((short) 10);
         tBoxParmSet.setTimeOutForTerminalSearch(10);
         tBoxParmSet.setTimeOutForServerSearch(10);
+        tBoxParmSet.setLicensePlate("京A12345");
         tBoxParmSet.setUploadType((short) 1);
         tBoxParmSet.setEnterpriseBroadcastAddress1("192.168.1.1");
         tBoxParmSet.setEnterpriseBroadcastPort1(9000);

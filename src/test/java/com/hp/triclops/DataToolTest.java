@@ -105,6 +105,11 @@ public class DataToolTest {
         byte[] bytes=dataTool.getIpBytes(ip);
 
     }
+    @Test
+    public void test_getLengthString(){
+        String str="好好学习";
+        System.out.println(">>>>>|"+dataTool.getLengthString(str,8)+"|");
+    }
 
     @Test
     public void test_getDatasFromDiagAckMsg(){

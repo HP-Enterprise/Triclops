@@ -124,27 +124,38 @@ public class OutputHexService {
         pramSetCmd.setPramSetID6((byte) 6);
         pramSetCmd.setTimeOutForServerSearch(tps.getTimeOutForServerSearch());
         pramSetCmd.setPramSetID7((byte) 7);
-        pramSetCmd.setUploadType(tps.getUploadType());
+        pramSetCmd.setLicensePlate(dataTool.getLengthString(tps.getLicensePlate(),9));
         pramSetCmd.setPramSetID8((byte) 8);
-        pramSetCmd.setEnterpriseBroadcastAddress1(dataTool.getIpBytes(tps.getEnterpriseBroadcastAddress1()));
+        pramSetCmd.setUploadType(tps.getUploadType());
         pramSetCmd.setPramSetID9((byte) 9);
-        pramSetCmd.setEnterpriseBroadcastPort1(tps.getEnterpriseBroadcastPort1());
+        pramSetCmd.setEnterpriseBroadcastAddress1(dataTool.getIpBytes(tps.getEnterpriseBroadcastAddress1()));
         pramSetCmd.setPramSetID10((byte) 10);
-        pramSetCmd.setEnterpriseBroadcastAddress2(dataTool.getIpBytes(tps.getEnterpriseBroadcastAddress2()));
+        pramSetCmd.setEnterpriseBroadcastPort1(tps.getEnterpriseBroadcastPort1());
         pramSetCmd.setPramSetID11((byte) 11);
-        pramSetCmd.setEnterpriseBroadcastPort2(tps.getEnterpriseBroadcastPort2());
+        pramSetCmd.setEnterpriseBroadcastAddress2(dataTool.getIpBytes(tps.getEnterpriseBroadcastAddress2()));
         pramSetCmd.setPramSetID12((byte) 12);
-        pramSetCmd.setEnterpriseDomainNameSize(tps.getEnterpriseDomainNameSize());
+        pramSetCmd.setEnterpriseBroadcastPort2(tps.getEnterpriseBroadcastPort2());
         pramSetCmd.setPramSetID13((byte) 13);
+        pramSetCmd.setEnterpriseDomainNameSize(tps.getEnterpriseDomainNameSize());
+        pramSetCmd.setPramSetID14((byte) 14);
         pramSetCmd.setEnterpriseDomainName(tps.getEnterpriseDomainName());
 
         DataPackage dpw=new DataPackage("8995_82_1");//>>>
         dpw.fillBean(pramSetCmd);
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr= PackageEntityManager.getByteString(bbw);
+        ////////////////////////////////
+    /*    ByteBuffer bb=PackageEntityManager.getByteBuffer(byteStr);
+        DataPackage dp=conversionTBox.generate(bb);
+        PramSetCmd bean=dp.loadBean(PramSetCmd.class);
+        PackageEntityManager.printEntity(bean);*/
+
 
         return byteStr;
     }
+
+
+
 
     /**
      * 生成远程诊断的下行hex
