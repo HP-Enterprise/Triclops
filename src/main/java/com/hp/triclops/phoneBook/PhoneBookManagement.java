@@ -31,18 +31,15 @@ public class PhoneBookManagement {
         //Todo:  1.查询联系人电话是否在user表中
         //Todo:  2.若存在，则将isuser属性设置为"1"，否则设置为“0”
         //Todo:  3.调用PhoneBookRepositoryDAO中的方法对数据进行保存
-        if (phoneBookShow.getUid() != 0) {
-            User user = userRepository.findById(phoneBookShow.getUid());
-            if (user != null) {
-                phoneBookShow.setIsuser(0);
-            } else {
-                phoneBookShow.setIsuser(1);
-            }
-            PhoneBookShow phoneBookShowReturn =  phoneBookRepositoryDAO.add(phoneBookShow);
-            if (phoneBookShowReturn != null) {
-                return true;
-            }
-            return false;
+        User user = userRepository.findByPhone(phoneBookShow.getPhone());
+        if (user != null) {
+            phoneBookShow.setIsuser(0);
+        } else {
+            phoneBookShow.setIsuser(1);
+        }
+        PhoneBookShow phoneBookShowReturn =  phoneBookRepositoryDAO.add(phoneBookShow);
+        if (phoneBookShowReturn != null) {
+            return true;
         }
         return false;
     }
