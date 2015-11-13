@@ -190,7 +190,7 @@ public class OutputHexService {
      */
     public void getWarningMessageAndPush(String vin,String msg){
         String pushMsg=getWarningMessageForPush(vin, msg);
-        pushWarningMessage(vin,pushMsg);
+        pushWarningOrFailureMessage(vin,pushMsg);
     }
 
     /**
@@ -200,16 +200,36 @@ public class OutputHexService {
      */
     public void getResendWarningMessageAndPush(String vin,String msg){
         String pushMsg=getResendWarningMessageForPush(vin, msg);
-        pushWarningMessage(vin,pushMsg);
+        pushWarningOrFailureMessage(vin,pushMsg);
+    }
+
+    /**
+     * 根据故障hex信息生成文本性质的故障提示 并push到对应user
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getFailureMessageAndPush(String vin,String msg){
+        String pushMsg=getFailureMessageForPush(vin, msg);
+        pushWarningOrFailureMessage(vin, pushMsg);
+    }
+
+    /**
+     * 根据补发故障hex信息生成文本性质的故障提示 并push到对应user
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getResendFailureMessageAndPush(String vin,String msg){
+        String pushMsg=getResendFailureMessageForPush(vin, msg);
+        pushWarningOrFailureMessage(vin,pushMsg);
     }
 
 
     /**
      * 根报警提示push到对应user
      * @param vin vin
-     * @param pushMsg 16进制报警信息
+     * @param pushMsg 文本报警信息
      */
-    public void pushWarningMessage(String vin,String pushMsg){
+    public void pushWarningOrFailureMessage(String vin,String pushMsg){
         _logger.info("push message:"+pushMsg);
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
@@ -224,7 +244,7 @@ public class OutputHexService {
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
         }else{
-            _logger.info("can not push warning message,because no user found for vin:"+vin);
+            _logger.info("can not push  message,because no user found for vin:"+vin);
         }
     }
 
@@ -301,6 +321,90 @@ public class OutputHexService {
     }
 
     /**
+     * 根据故障hex信息生成文本性质的报警提示
+     * @param vin vin
+     * @param msg 16进制报警信息
+     * @return 根据故障hex信息生成文本性质的报警提示
+     */
+    public String getFailureMessageForPush(String vin,String msg){
+        //故障数据
+        _logger.info(">>get FailureMessage For Push:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        FailureMessage bean=dp.loadBean(FailureMessage.class);
+        FailureMessageData wd=new FailureMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+
+        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
+        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
+        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
+        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
+        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
+        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
+        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
+        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+
+        //生成故障信息
+        String failureString=buildFailureString(wd);
+        return failureString;
+    }
+
+    /**
+     * 根据补发故障hex信息生成文本性质的报警提示
+     * @param vin vin
+     * @param msg 16进制故障信息
+     * @return 根据故障hex信息生成文本性质的故障提示
+     */
+    public String getResendFailureMessageForPush(String vin,String msg){
+        //报警数据保存
+        _logger.info(">>get Resend FailureMessage For Push:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
+        FailureMessageData wd=new FailureMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+
+        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
+        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
+        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
+        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
+        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
+        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
+        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
+        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+
+        //生成故障信息
+        String failureString=buildFailureString(wd);
+        return failureString;
+    }
+
+    /**
      * 根据报警消息类生成报警消息
      * @param wd 报警消息实体类
      * @return 便于阅读的报警消息
@@ -323,6 +427,59 @@ public class OutputHexService {
         if(wd.getAtaWarning()==(short)1){
             //安全气囊报警 0未触发 1触发
             sb.append("车辆防盗报警触发;");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 根据故障消息类生成故障告警消息
+     * @param wd 故障消息实体类
+     * @return 便于阅读的消息
+     */
+    public String buildFailureString(FailureMessageData wd){
+        StringBuilder sb=new StringBuilder() ;
+        sb.append("车辆故障信息: ");
+        if(wd.getIsLocation()==(short)0){
+            //0有效 1无效
+            sb.append("当前位置:");
+            sb.append("经度:").append(wd.getLongitude()).append(wd.getEastWest()).append(",");
+            sb.append("纬度").append(wd.getLatitude()).append(wd.getNorthSouth()).append(";");
+            sb.append("速度:").append(wd.getSpeed()).append("km/h;");
+            sb.append("方向:").append(wd.getHeading()).append(";");
+        }
+        Iterator<WarningMessageConversion> iterator=warningMessageConversionRepository.findAll().iterator();
+        HashMap<Short,String> messages=dataTool.messageIteratorToMap(iterator);
+        String info1=messages.get(wd.getInfo1());
+        if(info1!=null){
+            sb.append(info1+";");
+        }
+        String info2=messages.get(wd.getInfo2());
+        if(info2!=null){
+            sb.append(info2+";");
+        }
+        String info3=messages.get(wd.getInfo3());
+        if(info3!=null){
+            sb.append(info3+";");
+        }
+        String info4=messages.get(wd.getInfo4());
+        if(info4!=null){
+            sb.append(info4+";");
+        }
+        String info5=messages.get(wd.getInfo5());
+        if(info5!=null){
+            sb.append(info5+";");
+        }
+        String info6=messages.get(wd.getInfo6());
+        if(info6!=null){
+            sb.append(info6+";");
+        }
+        String info7=messages.get(wd.getInfo7());
+        if(info7!=null){
+            sb.append(info7+";");
+        }
+        String info8=messages.get(wd.getInfo8());
+        if(info8!=null){
+            sb.append(info8+";");
         }
         return sb.toString();
     }

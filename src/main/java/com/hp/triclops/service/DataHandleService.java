@@ -5,10 +5,7 @@ import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
-import com.hp.triclops.entity.GpsData;
-import com.hp.triclops.entity.RealTimeReportData;
-import com.hp.triclops.entity.RegularReportData;
-import com.hp.triclops.entity.WarningMessageData;
+import com.hp.triclops.entity.*;
 import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +27,8 @@ public class DataHandleService {
     RealTimeReportDataRespository realTimeReportDataRespository;
     @Autowired
     WarningMessageDataRespository warningMessageDataRespository;
+    @Autowired
+    FailureMessageDataRespository failureMessageDataRespository;
 
 
     @Autowired
@@ -59,6 +58,12 @@ public class DataHandleService {
                 break;
             case 0x25://补发报警数据
                 saveDataResendWarningMessage(vin, msg);
+                break;
+            case 0x28://故障数据
+                saveFailureMessage(vin, msg);
+                break;
+            case 0x29://补发故障数据
+                saveDataResendFailureMessage(vin, msg);
                 break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
@@ -257,6 +262,72 @@ public class DataHandleService {
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
         warningMessageDataRespository.save(wd);
+    }
+
+    public void saveFailureMessage(String vin,String msg){
+        //故障数据保存
+        _logger.info(">>save FailureMessage:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        FailureMessage bean=dp.loadBean(FailureMessage.class);
+        FailureMessageData wd=new FailureMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
+        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
+        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
+        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
+        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
+        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
+        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
+        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+        failureMessageDataRespository.save(wd);
+    }
+
+    public void saveDataResendFailureMessage(String vin,String msg){
+        //补发故障数据保存
+        _logger.info(">>save DataResend FailureMessage:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
+        FailureMessageData wd=new FailureMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+
+        wd.setInfo1((short)(bean.getInfo1().shortValue()&0xFF));
+        wd.setInfo2((short)(bean.getInfo2().shortValue()&0xFF));
+        wd.setInfo3((short)(bean.getInfo3().shortValue()&0xFF));
+        wd.setInfo4((short)(bean.getInfo4().shortValue()&0xFF));
+        wd.setInfo5((short)(bean.getInfo5().shortValue()&0xFF));
+        wd.setInfo6((short)(bean.getInfo6().shortValue()&0xFF));
+        wd.setInfo7((short)(bean.getInfo7().shortValue()&0xFF));
+        wd.setInfo8((short)(bean.getInfo8().shortValue()&0xFF));
+
+        failureMessageDataRespository.save(wd);
     }
 
 
