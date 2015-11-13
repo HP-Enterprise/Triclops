@@ -28,6 +28,7 @@ public class VehicleManagement {
     /**
      * 修改用户与车辆的绑定信息
      * @param userVehicleRelativedShow 用户与车辆绑定信息
+     * @return true：修改成功   fasle:修改失败
      */
     public boolean updateUserVehicleRelatived(UserVehicleRelativedShow userVehicleRelativedShow){
         UserVehicleRelatived userVehicleRelatived = userVehicleRelativedRepository.findById(userVehicleRelativedShow.getId());
@@ -44,6 +45,7 @@ public class VehicleManagement {
     /**
      * 查询用户的默认车辆
      * @param uid 用户ID
+     * @return 车辆信息
      */
     public Vehicle getDefaultCar(int uid){
         User user = new User();
