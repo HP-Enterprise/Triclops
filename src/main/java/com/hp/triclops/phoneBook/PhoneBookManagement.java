@@ -77,12 +77,12 @@ public class PhoneBookManagement {
 
     /**
      * 获取用户通讯录
-     * @param uid
-     * @param orderByProperty
-     * @param ascOrDesc
-     * @param pageSize
-     * @param currentPage
-     * @return
+     * @param uid 用户ID
+     * @param orderByProperty 排序条件
+     * @param ascOrDesc 排序方式
+     * @param pageSize 分页大小
+     * @param currentPage 当前页
+     * @return 联系人集合
      */
     public List<PhoneBookShow> getPhoneBook(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
         return phoneBookRepositoryDAO.get(null,uid,null,null,null,orderByProperty,ascOrDesc,pageSize,currentPage);
