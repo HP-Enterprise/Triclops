@@ -12,15 +12,17 @@ public class UserVehicleRelatived implements Serializable{
     private int id;
     private User uid;
     private Vehicle vid;
+    private int vflag;
     private int iflag;
     private User parentuser;
 
     public UserVehicleRelatived() {
     }
 
-    public UserVehicleRelatived(User uid, Vehicle vid, int iflag, User parentuser) {
+    public UserVehicleRelatived(User uid, Vehicle vid, int vflag, int iflag, User parentuser) {
         this.uid = uid;
         this.vid = vid;
+        this.vflag = vflag;
         this.iflag = iflag;
         this.parentuser = parentuser;
     }
@@ -46,16 +48,6 @@ public class UserVehicleRelatived implements Serializable{
         this.uid = uid;
     }
 
-    @Basic
-    @Column(name = "iflag", nullable = false, insertable = true, updatable = true, length = 5)
-    public int getIflag() {
-        return iflag;
-    }
-
-    public void setIflag(int iflag) {
-        this.iflag = iflag;
-    }
-
     @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "vid",referencedColumnName="id")
     public Vehicle getVid() {
@@ -64,6 +56,26 @@ public class UserVehicleRelatived implements Serializable{
 
     public void setVid(Vehicle vid) {
         this.vid = vid;
+    }
+
+    @Basic
+    @Column(name = "vflag", nullable = true, insertable = true, updatable = true, length = 1)
+    public int getVflag() {
+        return vflag;
+    }
+
+    public void setVflag(int vflag) {
+        this.vflag = vflag;
+    }
+
+    @Basic
+    @Column(name = "iflag", nullable = false, insertable = true, updatable = true, length = 5)
+    public int getIflag() {
+        return iflag;
+    }
+
+    public void setIflag(int iflag) {
+        this.iflag = iflag;
     }
 
     @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
