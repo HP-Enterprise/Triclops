@@ -137,9 +137,13 @@ public class DataTool {
     }
 
     public double getTrueLatAndLon(long a){
-        //经纬度除以1000000得到真实值
+      /*  //经纬度除以1000000得到真实值
         String  num = a/1000000+"."+a%1000000;
-        return Double.valueOf(num);
+        return Double.valueOf(num);*/
+        //按照0.610协议变更经纬度取值方式
+        double  num = a * 0.00390625;
+        return num;
+
     }
     public float getTrueSpeed(int a){
         //得到真实速度值

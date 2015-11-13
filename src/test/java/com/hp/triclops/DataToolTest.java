@@ -54,7 +54,7 @@ public class DataToolTest {
     }
     @Test
     public void test_getTrueLatAndLon(){
-        long a=114123456l;
+        long a=7745l;
         System.out.println(dataTool.getTrueLatAndLon(a));
     }
     @Test
