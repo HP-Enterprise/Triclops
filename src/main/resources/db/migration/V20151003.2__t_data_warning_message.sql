@@ -12,14 +12,8 @@ CREATE TABLE IF NOT EXISTS  t_data_warning_message (
   longitude double NOT NULL COMMENT '经度',
   speed float NOT NULL COMMENT '速度',
   heading int(11) NOT NULL COMMENT '方向',
-  info1 smallint(3) NOT NULL COMMENT '报警信息1mid',
-  info2 smallint(3) NOT NULL COMMENT '报警信息2mid',
-  info3 smallint(3) NOT NULL COMMENT '报警信息3mid',
-  info4 smallint(3) NOT NULL COMMENT '报警信息4mid',
-  info5 smallint(3) NOT NULL COMMENT '报警信息5mid',
-  info6 smallint(3) NOT NULL COMMENT '报警信息6mid',
-  info7 smallint(3) NOT NULL COMMENT '报警信息7mid',
-  info8 smallint(3) NOT NULL COMMENT '报警信息8mid',
+  srs_warning smallint(1) NOT NULL COMMENT '安全气囊报警 0未触发 1触发',
+  ata_warning smallint(1) NOT NULL COMMENT '车辆防盗报警 0未触发 1触发',
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8 COMMENT='报警数据表';
 

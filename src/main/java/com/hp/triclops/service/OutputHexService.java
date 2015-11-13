@@ -255,14 +255,9 @@ public class OutputHexService {
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
-        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
-        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
-        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
-        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
-        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
-        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
-        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+
+        wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
         //生成报警信息
         String warningMessage=buildWarningString(wd);
@@ -296,14 +291,9 @@ public class OutputHexService {
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
-        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
-        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
-        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
-        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
-        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
-        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
-        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+
+        wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
         //生成报警信息
         String warningMessage=buildWarningString(wd);
@@ -316,7 +306,6 @@ public class OutputHexService {
      * @return 便于阅读的报警消息
      */
     public String buildWarningString(WarningMessageData wd){
-
         StringBuilder sb=new StringBuilder() ;
         sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
@@ -327,39 +316,13 @@ public class OutputHexService {
             sb.append("速度:").append(wd.getSpeed()).append("km/h;");
             sb.append("方向:").append(wd.getHeading()).append(";");
         }
-        Iterator<WarningMessageConversion> iterator=warningMessageConversionRepository.findAll().iterator();
-        HashMap<Short,String> messages=dataTool.messageIteratorToMap(iterator);
-        String info1=messages.get(wd.getInfo1());
-        if(info1!=null){
-            sb.append(info1+";");
+        if(wd.getSrsWarning()==(short)1){
+            //安全气囊报警 0未触发 1触发
+            sb.append("安全气囊报警触发;");
         }
-        String info2=messages.get(wd.getInfo2());
-        if(info2!=null){
-            sb.append(info2+";");
-        }
-        String info3=messages.get(wd.getInfo3());
-        if(info3!=null){
-            sb.append(info3+";");
-        }
-        String info4=messages.get(wd.getInfo4());
-        if(info4!=null){
-            sb.append(info4+";");
-        }
-        String info5=messages.get(wd.getInfo5());
-        if(info5!=null){
-            sb.append(info5+";");
-        }
-        String info6=messages.get(wd.getInfo6());
-        if(info6!=null){
-            sb.append(info6+";");
-        }
-        String info7=messages.get(wd.getInfo7());
-        if(info7!=null){
-            sb.append(info7+";");
-        }
-        String info8=messages.get(wd.getInfo8());
-        if(info8!=null){
-            sb.append(info8+";");
+        if(wd.getAtaWarning()==(short)1){
+            //安全气囊报警 0未触发 1触发
+            sb.append("车辆防盗报警触发;");
         }
         return sb.toString();
     }

@@ -24,14 +24,9 @@ public class WarningMessageData {
     private float speed;
     private int heading;
 
-    private Short info1;
-    private Short info2;
-    private Short info3;
-    private Short info4;
-    private Short info5;
-    private Short info6;
-    private Short info7;
-    private Short info8;
+    private Short srsWarning;
+    private Short ataWarning;
+
 
 
     @Id
@@ -165,82 +160,22 @@ public class WarningMessageData {
     }
 
     @Basic
-    @Column(name = "info1", nullable = false, insertable = true, updatable = true)
-    public Short getInfo1() {
-        return info1;
+    @Column(name = "srs_warning", nullable = false, insertable = true, updatable = true)
+    public Short getSrsWarning() {
+        return srsWarning;
     }
 
-    public void setInfo1(Short info1) {
-        this.info1 = info1;
-    }
-
-    @Basic
-    @Column(name = "info2", nullable = false, insertable = true, updatable = true)
-    public Short getInfo2() {
-        return info2;
-    }
-
-    public void setInfo2(Short info2) {
-        this.info2 = info2;
+    public void setSrsWarning(Short srsWarning) {
+        this.srsWarning = srsWarning;
     }
 
     @Basic
-    @Column(name = "info3", nullable = false, insertable = true, updatable = true)
-    public Short getInfo3() {
-        return info3;
+    @Column(name = "ata_warning", nullable = false, insertable = true, updatable = true)
+    public Short getAtaWarning() {
+        return ataWarning;
     }
 
-    public void setInfo3(Short info3) {
-        this.info3 = info3;
-    }
-
-    @Basic
-    @Column(name = "info4", nullable = false, insertable = true, updatable = true)
-    public Short getInfo4() {
-        return info4;
-    }
-
-    public void setInfo4(Short info4) {
-        this.info4 = info4;
-    }
-
-    @Basic
-    @Column(name = "info5", nullable = false, insertable = true, updatable = true)
-    public Short getInfo5() {
-        return info5;
-    }
-
-    public void setInfo5(Short info5) {
-        this.info5 = info5;
-    }
-
-    @Basic
-    @Column(name = "info6", nullable = false, insertable = true, updatable = true)
-    public Short getInfo6() {
-        return info6;
-    }
-
-    public void setInfo6(Short info6) {
-        this.info6 = info6;
-    }
-
-    @Basic
-    @Column(name = "info7", nullable = false, insertable = true, updatable = true)
-    public Short getInfo7() {
-        return info7;
-    }
-
-    public void setInfo7(Short info7) {
-        this.info7 = info7;
-    }
-
-    @Basic
-    @Column(name = "info8", nullable = false, insertable = true, updatable = true)
-    public Short getInfo8() {
-        return info8;
-    }
-
-    public void setInfo8(Short info8) {
-        this.info8 = info8;
+    public void setAtaWarning(Short ataWarning) {
+        this.ataWarning = ataWarning;
     }
 }

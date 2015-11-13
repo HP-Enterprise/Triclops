@@ -276,6 +276,21 @@ public class DataTool {
         return binStr.toCharArray();
     }
 
+    public Short getWarningInfoFromByte(Byte a){
+        //取包含8个数字的数组
+        Short re=0;
+        String binStr=getBinaryStrFromByte(a);
+        char[] array= binStr.toCharArray();
+        String bita_b=String.valueOf(array[0]) + String.valueOf(array[1]);
+        if(bita_b.equals("00")){
+            re=0;
+        }else if(bita_b.equals("01")){
+            re=1;
+        }
+        return re;
+    }
+
+
     public  boolean checkVinAndSerialNum(String vin,String serialNum){
         //调用平台db接口,校验vin和SerialNumber 性能测试时改为始终返回true
         // return true;
