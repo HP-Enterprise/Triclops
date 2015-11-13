@@ -34,6 +34,6 @@ public interface UserVehicleRelativedRepository extends CrudRepository<UserVehic
     UserVehicleRelatived findOneReative(User userid, Vehicle vid);
 
     @Modifying
-    @Query("update UserVehicleRelatived uvr set uvr.uid = ?1, uvr.vid = ?2, uvr.vflag = ?3, uvr.iflag = ?4, uvr.parentuser = ?5 where uvr.id = ?6")
-    void update(User user, Vehicle vehicle, int vflag, int iflag, User parentUser, int id);
+    @Query("update UserVehicleRelatived uvr set uvr.uid = ?1, uvr.vid = ?2, uvr.vflag = ?3, uvr.iflag = ?4 where uvr.id = ?5")
+    void update(User user, Vehicle vehicle, int vflag, int iflag, int id);
 }
