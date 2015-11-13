@@ -114,8 +114,12 @@ public class PhoneBookRepositoryDAO {
         }
         query.setFirstResult((currentPage - 1) * pageSize);
         query.setMaxResults(pageSize);
-        List<PhoneBookShow> queryList = query.getResultList();
-        return queryList;
+        List queryList = query.getResultList();
+        List<PhoneBookShow> phoneBookShowList = new ArrayList<PhoneBookShow>();
+        queryList.forEach(o -> {
+            phoneBookShowList.add((PhoneBookShow)o);
+        });
+        return phoneBookShowList;
     }
 
 }
