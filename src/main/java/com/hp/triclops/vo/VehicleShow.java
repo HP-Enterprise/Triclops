@@ -5,10 +5,6 @@ import com.hp.triclops.entity.Vehicle;
 import java.util.Date;
 
 /**
- * Created by samsung on 2015/9/8.
- */
-
-/**
  * <table summary="VehicleShow" class="typeSummary">
  *     <thead>
  *         <tr>
@@ -104,7 +100,7 @@ public class VehicleShow {
         this.tboxsn = vehicle.getTboxsn();
     }
 
-    public VehicleShow(Vehicle vehicle, Integer vflag) {
+    public VehicleShow(Vehicle vehicle,Integer vflag) {
         this.id = vehicle.getId();
         this.vin = vehicle.getVin();
         this.vendor = vehicle.getVendor();
@@ -185,9 +181,13 @@ public class VehicleShow {
 
     public void setTboxsn(String tboxsn) {this.tboxsn = tboxsn;}
 
-    public Integer getOid(){return oid;}
+    public Integer getOid() {
+        return oid;
+    }
 
-    public void setOid(Integer oid){this.oid=oid;}
+    public void setOid(Integer oid) {
+        this.oid = oid;
+    }
 
     public Integer getVflag() {
         return vflag;
