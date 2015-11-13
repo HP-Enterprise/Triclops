@@ -5,10 +5,7 @@ import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
-import com.hp.triclops.entity.GpsData;
-import com.hp.triclops.entity.RealTimeReportData;
-import com.hp.triclops.entity.RegularReportData;
-import com.hp.triclops.entity.WarningMessageData;
+import com.hp.triclops.entity.*;
 import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +27,8 @@ public class DataHandleService {
     RealTimeReportDataRespository realTimeReportDataRespository;
     @Autowired
     WarningMessageDataRespository warningMessageDataRespository;
+    @Autowired
+    FailureMessageDataRespository failureMessageDataRespository;
 
 
     @Autowired
@@ -59,6 +58,12 @@ public class DataHandleService {
                 break;
             case 0x25://补发报警数据
                 saveDataResendWarningMessage(vin, msg);
+                break;
+            case 0x28://故障数据
+                saveFailureMessage(vin, msg);
+                break;
+            case 0x29://补发故障数据
+                saveDataResendFailureMessage(vin, msg);
                 break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
@@ -104,36 +109,31 @@ public class DataHandleService {
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
-        rd.setFuelOil(bean.getFuelOil());
-        rd.setAvgOil(dataTool.getTrueAvgOil(bean.getAvgOil()));
-        rd.setOilLife(bean.getOilLife());
-        String driveRangeHexStr=dataTool.bytes2hex(bean.getDriveRange());
-        rd.setDriveRange(Integer.valueOf(driveRangeHexStr.replace(" ", ""), 16));//此处要处理3个byte为一个int
-        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure());
-        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure());
-        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure());
-        rd.setRightRearTirePressure(bean.getRightRearTirePressure());
-        char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//窗 1开0关  bit0-3 分别左前 右前 左后 右后
-        rd.setLeftFrontWindowInformation(windows[0] == '0' ? "0" : "1");
-        rd.setRightFrontWindowInformation(windows[1] == '0' ? "0" : "1");
-        rd.setLeftRearWindowInformation(windows[2] == '0' ? "0" : "1");
-        rd.setRightRearWindowInformation(windows[3] == '0' ? "0" : "1");
+
+        rd.setFuelOil(bean.getFuelOil() / 2f);
+        rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
+        rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
+        rd.setServiceIntervall(bean.getServiceIntervall());
+
+        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure()*2.8f);
+        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure()*2.8f);
+        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure()*2.8f);
+        rd.setRightRearTirePressure(bean.getRightRearTirePressure()*2.8f);
+        char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//
+        rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
+        rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
+        rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
+        rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+
         rd.setVehicleTemperature(dataTool.getTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
         rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit0-5 分别左前 左后 右前  右后 后备箱 前舱盖
-        //此处千万注意!注意门和窗的顺序不一样，编协议的要么不是同一个人 要么人格分裂。
-        rd.setLeftFrontDoorInformation(doors[0] == '0' ? "0" : "1");
-        rd.setLeftRearDoorInformation(doors[1] == '0' ? "0" : "1");
-        rd.setRightFrontDoorInformation(doors[2] == '0' ? "0" : "1");
-        rd.setRightRearDoorInformation(doors[3] == '0' ? "0" : "1");
-        rd.setTrunkDoorInformation(doors[4] == '0' ? "0" : "1");
-        rd.setEngineDoorInformation(doors[5] == '0' ? "0" : "1");
-        rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
-        rd.setEngineSpeed(bean.getEngineSpeed());
-        rd.setRapidAcceleration(bean.getRapidAcceleration());
-        rd.setRapidDeceleration(bean.getRapidDeceleration());
-        rd.setSpeeding(bean.getSpeeding());
-        rd.setSignalStrength(bean.getSignalStrength());
+
+        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[0])+String.valueOf(windows[1])));
+        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[2])+String.valueOf(windows[3])));
+        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[4])+String.valueOf(windows[5])));
+        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[6])+String.valueOf(windows[7])));
+
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
         GpsData gd=new GpsData();
@@ -167,36 +167,30 @@ public class DataHandleService {
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
-        rd.setFuelOil(bean.getFuelOil());
-        rd.setAvgOil(dataTool.getTrueAvgOil(bean.getAvgOil()));
-        rd.setOilLife(bean.getOilLife());
-        String driveRangeHexStr=dataTool.bytes2hex(bean.getDriveRange());
-        rd.setDriveRange(Integer.valueOf(driveRangeHexStr.replace(" ", ""), 16));//此处要处理3个byte为一个int
-        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure());
-        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure());
-        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure());
-        rd.setRightRearTirePressure(bean.getRightRearTirePressure());
-        char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//窗 1开0关  bit0-3 分别左前 右前 左后 右后
-        rd.setLeftFrontWindowInformation(windows[0] == '0' ? "0" : "1");
-        rd.setRightFrontWindowInformation(windows[1] == '0' ? "0" : "1");
-        rd.setLeftRearWindowInformation(windows[2] == '0' ? "0" : "1");
-        rd.setRightRearWindowInformation(windows[3] == '0' ? "0" : "1");
+        rd.setFuelOil(bean.getFuelOil() / 2f);
+        rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
+        rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
+        rd.setServiceIntervall(bean.getServiceIntervall());
+
+        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure()*2.8f);
+        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure()*2.8f);
+        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure()*2.8f);
+        rd.setRightRearTirePressure(bean.getRightRearTirePressure()*2.8f);
+        char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//
+        rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
+        rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
+        rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
+        rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+
         rd.setVehicleTemperature(dataTool.getTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
         rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
-        char[] doors=dataTool.getBitsFromShort(bean.getWindowInformation());//门 1开0关  bit0-5 分别左前 左后 右前  右后 后备箱 前舱盖
+        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit0-5 分别左前 左后 右前  右后 后备箱 前舱盖
         //此处千万注意!注意门和窗的顺序不一样，编协议的要么不是同一个人 要么人格分裂。
-        rd.setLeftFrontDoorInformation(doors[0] == '0' ? "0" : "1");
-        rd.setLeftRearDoorInformation(doors[1] == '0' ? "0" : "1");
-        rd.setRightFrontDoorInformation(doors[2] == '0' ? "0" : "1");
-        rd.setRightRearDoorInformation(doors[3] == '0' ? "0" : "1");
-        rd.setTrunkDoorInformation(doors[4] == '0' ? "0" : "1");
-        rd.setEngineDoorInformation(doors[5] == '0' ? "0" : "1");
-        rd.setEngineCondition(dataTool.getEngineConditionInfo(bean.getEngineCondition()));
-        rd.setEngineSpeed(bean.getEngineSpeed());
-        rd.setRapidAcceleration(bean.getRapidAcceleration());
-        rd.setRapidDeceleration(bean.getRapidDeceleration());
-        rd.setSpeeding(bean.getSpeeding());
-        rd.setSignalStrength(bean.getSignalStrength());
+        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
+        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
+        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
+        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
         GpsData gd=new GpsData();
@@ -237,15 +231,8 @@ public class DataHandleService {
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-
-        wd.setInfo1((short)(bean.getInfo1().shortValue()&0xFF));
-        wd.setInfo2((short)(bean.getInfo2().shortValue()&0xFF));
-        wd.setInfo3((short)(bean.getInfo3().shortValue()&0xFF));
-        wd.setInfo4((short)(bean.getInfo4().shortValue()&0xFF));
-        wd.setInfo5((short)(bean.getInfo5().shortValue()&0xFF));
-        wd.setInfo6((short)(bean.getInfo6().shortValue()&0xFF));
-        wd.setInfo7((short)(bean.getInfo7().shortValue()&0xFF));
-        wd.setInfo8((short)(bean.getInfo8().shortValue()&0xFF));
+        wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
         warningMessageDataRespository.save(wd);
     }
 
@@ -271,6 +258,66 @@ public class DataHandleService {
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
 
+        wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
+
+        warningMessageDataRespository.save(wd);
+    }
+
+    public void saveFailureMessage(String vin,String msg){
+        //故障数据保存
+        _logger.info(">>save FailureMessage:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        FailureMessage bean=dp.loadBean(FailureMessage.class);
+        FailureMessageData wd=new FailureMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
+        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
+        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
+        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
+        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
+        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
+        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
+        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+        failureMessageDataRespository.save(wd);
+    }
+
+    public void saveDataResendFailureMessage(String vin,String msg){
+        //补发故障数据保存
+        _logger.info(">>save DataResend FailureMessage:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
+        FailureMessageData wd=new FailureMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+
         wd.setInfo1((short)(bean.getInfo1().shortValue()&0xFF));
         wd.setInfo2((short)(bean.getInfo2().shortValue()&0xFF));
         wd.setInfo3((short)(bean.getInfo3().shortValue()&0xFF));
@@ -279,7 +326,8 @@ public class DataHandleService {
         wd.setInfo6((short)(bean.getInfo6().shortValue()&0xFF));
         wd.setInfo7((short)(bean.getInfo7().shortValue()&0xFF));
         wd.setInfo8((short)(bean.getInfo8().shortValue()&0xFF));
-        warningMessageDataRespository.save(wd);
+
+        failureMessageDataRespository.save(wd);
     }
 
 

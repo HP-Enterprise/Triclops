@@ -25,6 +25,7 @@ public class TBoxParmSet {
     private Short timeOutForTerminalSearchResult;
     private int timeOutForServerSearch;
     private Short timeOutForServerSearchResult;
+    private String licensePlate;
     private Short uploadType;
     private Short uploadTypeResult;
     private String enterpriseBroadcastAddress1;
@@ -148,6 +149,14 @@ public class TBoxParmSet {
 
     public void setTimeOutForTerminalSearch(int timeOutForTerminalSearch) {
         this.timeOutForTerminalSearch = timeOutForTerminalSearch;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 
     public Short getTimeOutForTerminalSearchResult() {

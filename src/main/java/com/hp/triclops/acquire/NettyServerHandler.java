@@ -46,7 +46,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         //将缓冲区的数据读出到byte[]
 
         byte[] receiveData=dataTool.getBytesFromByteBuf(m);
-        ch.writeAndFlush(msg); // (1)
+
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
         _logger.info("Receive date from " + ch.remoteAddress() + ">>>:" + receiveDataHexString);
 
@@ -174,7 +174,27 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
                     break;
-
+                case 0x28://故障数据上报
+                    _logger.info("Failure Message");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
+                    break;
+                case 0x29://补发故障数据上报
+                    _logger.info("Data ReSend Failure Message");
+                    chKey=getKeyByValue(ch);
+                    if(chKey==null){
+                        _logger.info("Connection is not registered,no response");
+                        return;
+                    }
+                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
+                    //补发故障数据是否需要push
+                    break;
                 case 0x31://远程控制响应(上行)包含mid 2 4 5
                     _logger.info("RemoteControl resp");
                     chKey=getKeyByValue(ch);

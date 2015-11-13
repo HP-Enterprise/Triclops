@@ -223,14 +223,14 @@ public class RealTimeDataShow {
     private int messageId;
     private Date sendingTime;
 
-    private Short fuelOil;
-    private float avgOil;
-    private Short oilLife;
-    private int driveRange;
-    private int leftFrontTirePressure;
-    private int leftRearTirePressure;
-    private int rightFrontTirePressure;
-    private int rightRearTirePressure;
+    private float fuelOil;
+    private float avgOilA;
+    private float avgOilB;
+    private int serviceIntervall;
+    private float leftFrontTirePressure;
+    private float leftRearTirePressure;
+    private float rightFrontTirePressure;
+    private float rightRearTirePressure;
     private String leftFrontWindowInformation;
     private String leftRearWindowInformation;
     private String rightFrontWindowInformation;
@@ -241,15 +241,6 @@ public class RealTimeDataShow {
     private String leftRearDoorInformation;
     private String rightFrontDoorInformation;
     private String rightRearDoorInformation;
-    private String engineDoorInformation;
-    private String trunkDoorInformation;
-    private String engineCondition;
-    //  0:engine stop 1:engine start 2:idle speed 3:part load  4:trailling throttle  5:full load  6:Fuel Cut Off  7:undefined
-    private int engineSpeed;
-    private int rapidAcceleration;
-    private int rapidDeceleration;
-    private int speeding;
-    private Short signalStrength;
 
     private Short isLocation;
     private String northSouth;
@@ -307,67 +298,67 @@ public class RealTimeDataShow {
         this.sendingTime = sendingTime;
     }
 
-    public Short getFuelOil() {
+    public float getFuelOil() {
         return fuelOil;
     }
 
-    public void setFuelOil(Short fuelOil) {
+    public void setFuelOil(float fuelOil) {
         this.fuelOil = fuelOil;
     }
 
-    public float getAvgOil() {
-        return avgOil;
+    public float getAvgOilA() {
+        return avgOilA;
     }
 
-    public void setAvgOil(float avgOil) {
-        this.avgOil = avgOil;
+    public void setAvgOilA(float avgOilA) {
+        this.avgOilA = avgOilA;
     }
 
-    public Short getOilLife() {
-        return oilLife;
+    public float getAvgOilB() {
+        return avgOilB;
     }
 
-    public void setOilLife(Short oilLife) {
-        this.oilLife = oilLife;
+    public void setAvgOilB(float avgOilB) {
+        this.avgOilB = avgOilB;
     }
 
-    public int getDriveRange() {
-        return driveRange;
+    public int getServiceIntervall() {
+        return serviceIntervall;
     }
 
-    public void setDriveRange(int driveRange) {
-        this.driveRange = driveRange;
+    public void setServiceIntervall(int serviceIntervall) {
+        this.serviceIntervall = serviceIntervall;
     }
 
-    public int getLeftFrontTirePressure() {
+    public float getLeftFrontTirePressure() {
         return leftFrontTirePressure;
     }
 
-    public void setLeftFrontTirePressure(int leftFrontTirePressure) {
+    public void setLeftFrontTirePressure(float leftFrontTirePressure) {
         this.leftFrontTirePressure = leftFrontTirePressure;
     }
 
-    public int getLeftRearTirePressure() {
+    public float getLeftRearTirePressure() {
         return leftRearTirePressure;
     }
 
-    public void setLeftRearTirePressure(int leftRearTirePressure) {
+    public void setLeftRearTirePressure(float leftRearTirePressure) {
         this.leftRearTirePressure = leftRearTirePressure;
     }
 
-    public int getRightFrontTirePressure() {
+    public float getRightFrontTirePressure() {
         return rightFrontTirePressure;
     }
 
-    public void setRightFrontTirePressure(int rightFrontTirePressure) {
+    public void setRightFrontTirePressure(float rightFrontTirePressure) {
         this.rightFrontTirePressure = rightFrontTirePressure;
     }
 
-    public int getRightRearTirePressure() {
+    public float getRightRearTirePressure() {
         return rightRearTirePressure;
     }
 
-    public void setRightRearTirePressure(int rightRearTirePressure) {
+    public void setRightRearTirePressure(float rightRearTirePressure) {
         this.rightRearTirePressure = rightRearTirePressure;
     }
 
@@ -449,70 +440,6 @@ public class RealTimeDataShow {
 
     public void setRightRearDoorInformation(String rightRearDoorInformation) {
         this.rightRearDoorInformation = rightRearDoorInformation;
-    }
-
-    public String getEngineDoorInformation() {
-        return engineDoorInformation;
-    }
-
-    public void setEngineDoorInformation(String engineDoorInformation) {
-        this.engineDoorInformation = engineDoorInformation;
-    }
-
-    public String getTrunkDoorInformation() {
-        return trunkDoorInformation;
-    }
-
-    public void setTrunkDoorInformation(String trunkDoorInformation) {
-        this.trunkDoorInformation = trunkDoorInformation;
-    }
-
-    public String getEngineCondition() {
-        return engineCondition;
-    }
-
-    public void setEngineCondition(String engineCondition) {
-        this.engineCondition = engineCondition;
-    }
-
-    public int getEngineSpeed() {
-        return engineSpeed;
-    }
-
-    public void setEngineSpeed(int engineSpeed) {
-        this.engineSpeed = engineSpeed;
-    }
-
-    public int getRapidAcceleration() {
-        return rapidAcceleration;
-    }
-
-    public void setRapidAcceleration(int rapidAcceleration) {
-        this.rapidAcceleration = rapidAcceleration;
-    }
-
-    public int getRapidDeceleration() {
-        return rapidDeceleration;
-    }
-
-    public void setRapidDeceleration(int rapidDeceleration) {
-        this.rapidDeceleration = rapidDeceleration;
-    }
-
-    public int getSpeeding() {
-        return speeding;
-    }
-
-    public void setSpeeding(int speeding) {
-        this.speeding = speeding;
-    }
-
-    public Short getSignalStrength() {
-        return signalStrength;
-    }
-
-    public void setSignalStrength(Short signalStrength) {
-        this.signalStrength = signalStrength;
     }
 
     public Short getIsLocation() {

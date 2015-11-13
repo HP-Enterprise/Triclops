@@ -54,7 +54,7 @@ public class DataToolTest {
     }
     @Test
     public void test_getTrueLatAndLon(){
-        long a=114123456l;
+        long a=7745l;
         System.out.println(dataTool.getTrueLatAndLon(a));
     }
     @Test
@@ -104,6 +104,11 @@ public class DataToolTest {
         String ip="192.168.1.1";
         byte[] bytes=dataTool.getIpBytes(ip);
 
+    }
+    @Test
+    public void test_getLengthString(){
+        String str="好好学习";
+        System.out.println(">>>>>|"+dataTool.getLengthString(str,8)+"|");
     }
 
     @Test

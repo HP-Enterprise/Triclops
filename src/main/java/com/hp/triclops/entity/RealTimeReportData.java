@@ -17,15 +17,14 @@ public class RealTimeReportData {
     private int applicationId;
     private int messageId;
     private Date sendingTime;
-
-    private Short fuelOil;
-    private float avgOil;
-    private Short oilLife;
-    private int driveRange;
-    private int leftFrontTirePressure;
-    private int leftRearTirePressure;
-    private int rightFrontTirePressure;
-    private int rightRearTirePressure;
+    private float fuelOil;
+    private float avgOilA;
+    private float avgOilB;
+    private int serviceIntervall;
+    private float leftFrontTirePressure;
+    private float leftRearTirePressure;
+    private float rightFrontTirePressure;
+    private float rightRearTirePressure;
     private String leftFrontWindowInformation;
     private String leftRearWindowInformation;
     private String rightFrontWindowInformation;
@@ -36,15 +35,7 @@ public class RealTimeReportData {
     private String leftRearDoorInformation;
     private String rightFrontDoorInformation;
     private String rightRearDoorInformation;
-    private String engineDoorInformation;
-    private String trunkDoorInformation;
-    private String engineCondition;
-    //  0:engine stop 1:engine start 2:idle speed 3:part load  4:trailling throttle  5:full load  6:Fuel Cut Off  7:undefined
-    private int engineSpeed;
-    private int rapidAcceleration;
-    private int rapidDeceleration;
-    private int speeding;
-    private Short signalStrength;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,84 +98,82 @@ public class RealTimeReportData {
         this.sendingTime = sendingTime;
     }
 
-
     @Basic
     @Column(name = "fuel_oil", nullable = false, insertable = true, updatable = true)
-    public Short getFuelOil() {
+    public float getFuelOil() {
         return fuelOil;
     }
 
-    public void setFuelOil(Short fuelOil) {
+    public void setFuelOil(float fuelOil) {
         this.fuelOil = fuelOil;
     }
-
     @Basic
-    @Column(name = "avg_oil", nullable = false, insertable = true, updatable = true)
-    public float getAvgOil() {
-        return avgOil;
+    @Column(name = "avg_oil_a", nullable = false, insertable = true, updatable = true)
+    public float getAvgOilA() {
+        return avgOilA;
     }
 
-    public void setAvgOil(float avgOil) {
-        this.avgOil = avgOil;
-    }
-
-    @Basic
-    @Column(name = "oil_life", nullable = false, insertable = true, updatable = true)
-    public Short getOilLife() {
-        return oilLife;
-    }
-
-    public void setOilLife(Short oilLife) {
-        this.oilLife = oilLife;
+    public void setAvgOilA(float avgOilA) {
+        this.avgOilA = avgOilA;
     }
 
     @Basic
-    @Column(name = "drive_range", nullable = false, insertable = true, updatable = true)
-    public int getDriveRange() {
-        return driveRange;
+    @Column(name = "avg_oil_b", nullable = false, insertable = true, updatable = true)
+    public float getAvgOilB() {
+        return avgOilB;
     }
 
-    public void setDriveRange(int driveRange) {
-        this.driveRange = driveRange;
+    public void setAvgOilB(float avgOilB) {
+        this.avgOilB = avgOilB;
+    }
+
+    @Basic
+    @Column(name = "service_intervall", nullable = false, insertable = true, updatable = true)
+    public int getServiceIntervall() {
+        return serviceIntervall;
+    }
+
+    public void setServiceIntervall(int serviceIntervall) {
+        this.serviceIntervall = serviceIntervall;
     }
 
     @Basic
     @Column(name = "left_front_tire_pressure", nullable = false, insertable = true, updatable = true)
-    public int getLeftFrontTirePressure() {
+    public float getLeftFrontTirePressure() {
         return leftFrontTirePressure;
     }
 
-    public void setLeftFrontTirePressure(int leftFrontTirePressure) {
+    public void setLeftFrontTirePressure(float leftFrontTirePressure) {
         this.leftFrontTirePressure = leftFrontTirePressure;
     }
 
     @Basic
     @Column(name = "left_rear_tire_pressure", nullable = false, insertable = true, updatable = true)
-    public int getLeftRearTirePressure() {
+    public float getLeftRearTirePressure() {
         return leftRearTirePressure;
     }
 
-    public void setLeftRearTirePressure(int leftRearTirePressure) {
+    public void setLeftRearTirePressure(float leftRearTirePressure) {
         this.leftRearTirePressure = leftRearTirePressure;
     }
 
     @Basic
     @Column(name = "right_front_tire_pressure", nullable = false, insertable = true, updatable = true)
-    public int getRightFrontTirePressure() {
+    public float getRightFrontTirePressure() {
         return rightFrontTirePressure;
     }
 
-    public void setRightFrontTirePressure(int rightFrontTirePressure) {
+    public void setRightFrontTirePressure(float rightFrontTirePressure) {
         this.rightFrontTirePressure = rightFrontTirePressure;
     }
 
     @Basic
     @Column(name = "right_rear_tire_pressure", nullable = false, insertable = true, updatable = true)
-    public int getRightRearTirePressure() {
+    public float getRightRearTirePressure() {
         return rightRearTirePressure;
     }
 
-    public void setRightRearTirePressure(int rightRearTirePressure) {
+    public void setRightRearTirePressure(float rightRearTirePressure) {
         this.rightRearTirePressure = rightRearTirePressure;
     }
 
@@ -290,86 +279,7 @@ public class RealTimeReportData {
         this.rightRearDoorInformation = rightRearDoorInformation;
     }
 
-    @Basic
-    @Column(name = "engine_door_information", nullable = false, insertable = true, updatable = true, length = 1)
-    public String getEngineDoorInformation() {
-        return engineDoorInformation;
-    }
 
-    public void setEngineDoorInformation(String engineDoorInformation) {
-        this.engineDoorInformation = engineDoorInformation;
-    }
-
-    @Basic
-    @Column(name = "trunk_door_information", nullable = false, insertable = true, updatable = true, length = 1)
-    public String getTrunkDoorInformation() {
-        return trunkDoorInformation;
-    }
-
-    public void setTrunkDoorInformation(String trunkDoorInformation) {
-        this.trunkDoorInformation = trunkDoorInformation;
-    }
-
-
-    @Basic
-    @Column(name = "engine_condition", nullable = false, insertable = true, updatable = true, length = 1)
-    public String getEngineCondition() {
-        return engineCondition;
-    }
-
-    public void setEngineCondition(String engineCondition) {
-        this.engineCondition = engineCondition;
-    }
-
-    @Basic
-    @Column(name = "engine_speed", nullable = false, insertable = true, updatable = true)
-    public int getEngineSpeed() {
-        return engineSpeed;
-    }
-
-    public void setEngineSpeed(int engineSpeed) {
-        this.engineSpeed = engineSpeed;
-    }
-
-    @Basic
-    @Column(name = "rapid_acceleration", nullable = false, insertable = true, updatable = true)
-    public int getRapidAcceleration() {
-        return rapidAcceleration;
-    }
-
-    public void setRapidAcceleration(int rapidAcceleration) {
-        this.rapidAcceleration = rapidAcceleration;
-    }
-
-    @Basic
-    @Column(name = "rapid_deceleration", nullable = false, insertable = true, updatable = true)
-    public int getRapidDeceleration() {
-        return rapidDeceleration;
-    }
-
-    public void setRapidDeceleration(int rapidDeceleration) {
-        this.rapidDeceleration = rapidDeceleration;
-    }
-
-    @Basic
-    @Column(name = "speeding", nullable = false, insertable = true, updatable = true)
-    public int getSpeeding() {
-        return speeding;
-    }
-
-    public void setSpeeding(int speeding) {
-        this.speeding = speeding;
-    }
-
-    @Basic
-    @Column(name = "signal_strength", nullable = false, insertable = true, updatable = true)
-    public Short getSignalStrength() {
-        return signalStrength;
-    }
-
-    public void setSignalStrength(Short signalStrength) {
-        this.signalStrength = signalStrength;
-    }
 
 
 
