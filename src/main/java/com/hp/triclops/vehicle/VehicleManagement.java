@@ -35,8 +35,7 @@ public class VehicleManagement {
         if (userVehicleRelatived != null) {
             User user = userRepository.findById(userVehicleRelativedShow.getUid());
             Vehicle vehicle = vehicleRepository.findById(userVehicleRelativedShow.getVid());
-            User parentUser = userRepository.findById(userVehicleRelativedShow.getParentuser());
-            userVehicleRelativedRepository.update(user, vehicle, userVehicleRelativedShow.getVflag(), userVehicleRelativedShow.getIflag(), parentUser, userVehicleRelativedShow.getId());
+            userVehicleRelativedRepository.update(user, vehicle, userVehicleRelativedShow.getVflag(), userVehicleRelativedShow.getIflag(), userVehicleRelativedShow.getId());
             return true;
         }
         return false;
