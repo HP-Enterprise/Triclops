@@ -15,6 +15,8 @@ public class PhoneBook {
     private String name;
     private String phone;
     private int isuser;
+    
+    public PhoneBook(){}
 
     public PhoneBook(int id, int uid, String name, String phone, int isuser) {
         this.id = id;
