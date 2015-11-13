@@ -7,9 +7,11 @@ import com.hp.triclops.repository.UserRepository;
 import com.hp.triclops.repository.UserVehicleRelativedRepository;
 import com.hp.triclops.repository.VehicleRepository;
 import com.hp.triclops.vo.UserVehicleRelativedShow;
+import com.hp.triclops.vo.VehicleShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,19 +48,18 @@ public class VehicleManagement {
      * @param uid 用户ID
      * @return 车辆信息
      */
-    public Vehicle getDefaultCar(int uid){
+    public VehicleShow getDefaultCar(int uid){
         User user = new User();
         user.setId(uid);
-        Vehicle vehicle = null;
+        VehicleShow vehicleShow = null;
         List<UserVehicleRelatived> userVehicleRelativedList = userVehicleRelativedRepository.findByUid(user);
         for (UserVehicleRelatived uv : userVehicleRelativedList) {
             if (uv.getVflag() == 1) {
-                vehicle = uv.getVid();
+                vehicleShow = new VehicleShow(uv.getVid(),uv.getVflag());
                 break;
             }
         }
-        return vehicle;
+        return vehicleShow;
     }
-
-
+    
 }
