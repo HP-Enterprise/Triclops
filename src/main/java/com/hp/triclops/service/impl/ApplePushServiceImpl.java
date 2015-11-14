@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -69,13 +71,16 @@ public class ApplePushServiceImpl implements ApplePushService {
             String p12Path = this.getParallelPath();
 
             List<UserDevice> list= this.deviceRepository.findByUserId(userId);
+            Collection<String> deviceTokens = new ArrayList<String>();
+
             for(UserDevice ud :list){
                 String pushToken = ud.getDeviceId();
-                ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
-
-                String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
-                service.push(pushToken, payLoad);
+                deviceTokens.add(pushToken);
             }
+            ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
+
+            String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
+            service.push(deviceTokens, payLoad);
 
         } catch (Exception e) {
             e.printStackTrace();
