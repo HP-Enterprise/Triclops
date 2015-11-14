@@ -23,7 +23,7 @@ public class PhoneBookManagement {
 
     /**
      * 新增联系人信息
-     * @param phoneBookShow
+     * @param phoneBookShow 联系人信息
      * @return true：添加成功  false：添加失败
      */
     public boolean addContacter(PhoneBookShow phoneBookShow){
