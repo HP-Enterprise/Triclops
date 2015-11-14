@@ -23,7 +23,7 @@ import javax.persistence.*;
  *         <tr>
  *             <td>id</td>
  *             <td>int</td>
- *             <td>通讯录ID</td>
+ *             <td>ID</td>
  *         </tr>
  *         <tr>
  *             <td>uid</td>
@@ -33,7 +33,7 @@ import javax.persistence.*;
  *         <tr>
  *             <td>name</td>
  *             <td>String</td>
- *             <td>用户名称</td>
+ *             <td>联系人姓名</td>
  *         </tr>
  *         <tr>
  *             <td>phone</td>
