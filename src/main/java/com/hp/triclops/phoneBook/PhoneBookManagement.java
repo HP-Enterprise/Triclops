@@ -33,9 +33,9 @@ public class PhoneBookManagement {
         //Todo:  3.调用PhoneBookRepositoryDAO中的方法对数据进行保存
         User user = userRepository.findByPhone(phoneBookShow.getPhone());
         if (user != null) {
-            phoneBookShow.setIsuser(0);
-        } else {
             phoneBookShow.setIsuser(1);
+        } else {
+            phoneBookShow.setIsuser(0);
         }
         PhoneBookShow phoneBookShowReturn =  phoneBookRepositoryDAO.add(phoneBookShow);
         if (phoneBookShowReturn != null) {
