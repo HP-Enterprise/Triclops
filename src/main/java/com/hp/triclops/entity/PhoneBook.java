@@ -6,6 +6,49 @@ import javax.persistence.*;
  * Created by Teemol on 2015/11/11.
  */
 
+/**
+ * 用户通讯录类
+ */
+
+/**
+ * <table summary="PhoneBookShow" class="typeSummary">
+ *     <thead>
+ *         <tr>
+ *             <th>字段</th>
+ *             <th>数据类型</th>
+ *             <th>说明</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>id</td>
+ *             <td>int</td>
+ *             <td>ID</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uid</td>
+ *             <td>int</td>
+ *             <td>用户ID</td>
+ *         </tr>
+ *         <tr>
+ *             <td>name</td>
+ *             <td>String</td>
+ *             <td>联系人姓名</td>
+ *         </tr>
+ *         <tr>
+ *             <td>phone</td>
+ *             <td>String</td>
+ *             <td>电话号码</td>
+ *         </tr>
+ *         <tr>
+ *             <td>isuser</td>
+ *             <td>int</td>
+ *             <td>是否为系统用户</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ */
+
 @Entity
 @Table(name = "t_phone_book")
 public class PhoneBook {
