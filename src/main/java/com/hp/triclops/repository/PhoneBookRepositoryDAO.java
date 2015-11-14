@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -115,11 +116,17 @@ public class PhoneBookRepositoryDAO {
         query.setFirstResult((currentPage - 1) * pageSize);
         query.setMaxResults(pageSize);
         List queryList = query.getResultList();
-        List<PhoneBookShow> phoneBookShowList = new ArrayList<PhoneBookShow>();
-        queryList.forEach(o -> {
-            phoneBookShowList.add((PhoneBookShow)o);
+        List<PhoneBook> phoneBookShowList = new ArrayList<PhoneBook>();
+        Iterator iterator = queryList.iterator();
+        while (iterator.hasNext()) {
+            phoneBookShowList.add((PhoneBook) iterator.next());
+        }
+
+        List<PhoneBookShow> phoneBookShows = new ArrayList<PhoneBookShow>();
+        phoneBookShowList.forEach(o -> {
+            phoneBookShows.add(new PhoneBookShow(o));
         });
-        return phoneBookShowList;
+        return phoneBookShows;
     }
 
 }
