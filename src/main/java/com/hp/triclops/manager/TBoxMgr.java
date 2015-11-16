@@ -41,6 +41,7 @@ public class TBoxMgr {
     /**
      * 添加Tbox
      * @param tbox tbox对象
+     * @return tbox对象
      */
     public TBox addTBox(TBox tbox){
         if(tbox.getT_sn() != null) {
