@@ -72,7 +72,7 @@ public class OutputHexServiceTest {
 
         tBoxParmSet.setVin("12345678919991234");
         int eventId=dataTool.getCurrentSeconds();
-        tBoxParmSet.setEventId((long)eventId);
+        tBoxParmSet.setEventId((long) eventId);
 
         tBoxParmSet.setFrequencySaveLocalMedia(1000);
         tBoxParmSet.setFrequencyForReport(1000);
@@ -80,6 +80,7 @@ public class OutputHexServiceTest {
         tBoxParmSet.setFrequencyHeartbeat((short) 10);
         tBoxParmSet.setTimeOutForTerminalSearch(10);
         tBoxParmSet.setTimeOutForServerSearch(10);
+        tBoxParmSet.setLicensePlate("京A12345");
         tBoxParmSet.setUploadType((short) 1);
         tBoxParmSet.setEnterpriseBroadcastAddress1("192.168.1.1");
         tBoxParmSet.setEnterpriseBroadcastPort1(9000);
@@ -102,15 +103,30 @@ public class OutputHexServiceTest {
     @Test
     public void test_getWarningMessageForPush() {
         String vin="12345678919991234";
-        String byteString="23 23 00 31 01 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 96 97 98 99 9A 9B 9C 9D 4C ";
+        String byteString="23 23 00 2B 00 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 40 40 FC ";
         System.out.println(outputHexService.getWarningMessageForPush(vin, byteString));
 
     }
     @Test
     public void test_getResendWarningMessageForPush() {
         String vin="12345678919991234";
-        String byteString="23 23 00 31 01 56 04 BF DA 25 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 AA AA AA AA AA AA AA AA 4D ";
+        String byteString="23 23 00 2B 00 56 04 BF DA 25 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 00 00 FD ";
         System.out.println(outputHexService.getResendWarningMessageForPush(vin, byteString));
+
+    }
+
+    @Test
+    public void test_getFailureMessageForPush() {
+        String vin="12345678919991234";
+        String byteString="23 23 00 31 00 56 04 BF DA 28 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 34 35 36 39 AA AA AA AA E4 ";
+        System.out.println(outputHexService.getFailureMessageForPush(vin, byteString));
+
+    }
+    @Test
+    public void test_getResendFailureMessageForPush() {
+        String vin="12345678919991234";
+        String byteString="23 23 00 31 00 56 04 BF DA 29 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA AA AA AA AA 51 52 53 54 EF ";
+        System.out.println(outputHexService.getResendFailureMessageForPush(vin, byteString));
 
     }
 
@@ -118,7 +134,7 @@ public class OutputHexServiceTest {
     @Test
     public void test_getWarningMessageAndPush() {
         String vin="12345678919991234";
-        String byteString="23 23 00 30 01 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 AA AA AA AA AA AA AA E7 ";
+        String byteString="23 23 00 2B 00 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 40 40 FC ";
        outputHexService.getWarningMessageAndPush(vin, byteString);
 
     }

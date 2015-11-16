@@ -4,6 +4,7 @@ import com.hp.triclops.entity.User;
 import com.hp.triclops.entity.UserVehicleRelatived;
 import com.hp.triclops.entity.Vehicle;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.CrudRepository;
@@ -27,8 +28,12 @@ public interface UserVehicleRelativedRepository extends CrudRepository<UserVehic
     List<UserVehicleRelatived> findByParentuser(User user);
 
     @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.uid = ?1 and Uvr.vid = ?2 and Uvr.iflag = ?3 and Uvr.parentuser = ?4")
-    UserVehicleRelatived findOneReative(User userid,Vehicle vid,int iflag,User parentuserid);
+    UserVehicleRelatived findOneReative(User userid, Vehicle vid, int iflag, User parentuserid);
 
     @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.uid = ?1 and Uvr.vid = ?2")
-    UserVehicleRelatived findOneReative(User userid,Vehicle vid);
+    UserVehicleRelatived findOneReative(User userid, Vehicle vid);
+
+    @Modifying
+    @Query("update UserVehicleRelatived uvr set uvr.uid = ?1, uvr.vid = ?2, uvr.vflag = ?3, uvr.iflag = ?4 where uvr.id = ?5")
+    void update(User user, Vehicle vehicle, int vflag, int iflag, int id);
 }

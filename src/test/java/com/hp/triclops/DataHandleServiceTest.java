@@ -43,15 +43,15 @@ public class DataHandleServiceTest {
     @Rollback
     public void test_saveRealTimeMessage(){
         //测试实时数据保存
-        String byteString="23 23 00 4D 01 55 D2 10 6D 22 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FE 00 00 00 01 00 03 5A 84 00 00 00 03 00 00 00 00 00 00 00 00 3C 00 32 00 46 00 5A 00 28 28 06 00 00 00 00 00 00 00 00 FE FF 00 00 00 00 00 00 0A AB";
+        String byteString="23 23 00 39 00 56 04 BF DA 22 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 00 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F A2";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
     @Test
     @Transactional
     @Rollback
-    public void test_saveDataResendReadTimeMes(){
+    public void test_saveDataResendRealTimeMes(){
         //测试补发数据保存
-        String byteString="23 23 00 54 01 56 04 BF DA 23 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 0A 00 0B 0F 63 63 5A 00 FB 00 FC 00 FD 00 FE AA 41 43 AA 36 B0 C8 3A 98 36 B0 AA 0F A0 00 C8 01 2C 00 1E 0A AA AA AA AA AA AA AA 48";
+        String byteString="23 23 00 39 00 56 04 BF DA 23 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 00 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F A3 ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
     @Test
@@ -59,7 +59,7 @@ public class DataHandleServiceTest {
     @Rollback
     public void test_saveWarningMessage(){
         //测试报警数据保存
-        String byteString="23 23 00 31 01 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 96 97 98 99 9A 9B 9C 9D 4C ";
+        String byteString="23 23 00 2B 00 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 40 40 FC ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
 
@@ -68,7 +68,25 @@ public class DataHandleServiceTest {
     @Rollback
     public void test_saveDataResendWarningMessage(){
         //测试补发报警数据保存
-        String byteString="23 23 00 31 01 56 04 BF DA 25 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 01 06 CF 6A 0E 00 00 00 6F 00 7B 00 E6 A1 A2 A3 A4 A5 A6 A7 A8 45 ";
+        String byteString="23 23 00 2B 00 56 04 BF DA 25 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 00 00 FD ";
+        dataHandleService.saveMessage("12345678919991234",byteString);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void test_saveFailureMessage(){
+        //测试故障数据保存
+        String byteString="23 23 00 31 00 56 04 BF DA 28 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 34 35 36 39 AA AA AA AA E4 ";
+        dataHandleService.saveMessage("12345678919991234",byteString);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void test_saveDataResendFailureMessage(){
+        //测试补发故障数据保存
+        String byteString="23 23 00 31 00 56 04 BF DA 29 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA AA AA AA AA 51 52 53 54 EF ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
 

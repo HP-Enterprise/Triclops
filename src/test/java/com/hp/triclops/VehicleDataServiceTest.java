@@ -71,6 +71,7 @@ public class VehicleDataServiceTest {
         tBoxParmSet.setFrequencyHeartbeat((short) 10);
         tBoxParmSet.setTimeOutForTerminalSearch(10);
         tBoxParmSet.setTimeOutForServerSearch(10);
+        tBoxParmSet.setLicensePlate("京A123456");
         tBoxParmSet.setUploadType((short) 1);
         tBoxParmSet.setEnterpriseBroadcastAddress1("192.168.1.1");
         tBoxParmSet.setEnterpriseBroadcastPort1(9000);

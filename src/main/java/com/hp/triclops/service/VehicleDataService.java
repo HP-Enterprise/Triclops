@@ -49,8 +49,8 @@ public class VehicleDataService {
      * 下发参数设置命令
      * @param uid user id
      * @param vin vin
-     * @param cType 控制类别
-     * @param acTmp 空调温度
+     * @param cType 控制类别 0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：远程寻车
+     * @param acTmp 空调温度 cType=4时有效
      * @return 持久化后的RemoteControl对象
      */
     public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp){
@@ -223,10 +223,11 @@ public class VehicleDataService {
                 data.setApplicationId(rd.getApplicationId());
                 data.setMessageId(rd.getMessageId());
                 data.setSendingTime(rd.getSendingTime());
+
                 data.setFuelOil(rd.getFuelOil());
-                data.setAvgOil(rd.getAvgOil());
-                data.setOilLife(rd.getOilLife());
-                data.setDriveRange(rd.getDriveRange());//
+                data.setAvgOilA(rd.getAvgOilA());
+                data.setAvgOilB(rd.getAvgOilB());
+                data.setServiceIntervall(rd.getServiceIntervall());
                 data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
                 data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
                 data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
@@ -241,14 +242,6 @@ public class VehicleDataService {
                 data.setLeftRearDoorInformation(rd.getLeftRearDoorInformation());
                 data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
                 data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
-                data.setTrunkDoorInformation(rd.getTrunkDoorInformation());
-                data.setEngineDoorInformation(rd.getEngineDoorInformation());
-                data.setEngineCondition(rd.getEngineCondition());
-                data.setEngineSpeed(rd.getEngineSpeed());
-                data.setRapidAcceleration(rd.getRapidAcceleration());
-                data.setRapidDeceleration(rd.getRapidDeceleration());
-                data.setSpeeding(rd.getSpeeding());
-                data.setSignalStrength(rd.getSignalStrength());
 
                 data.setIsLocation(gd.getIsLocation());//
                 data.setNorthSouth(gd.getNorthSouth());//

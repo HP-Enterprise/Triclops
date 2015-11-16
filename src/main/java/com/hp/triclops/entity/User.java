@@ -23,6 +23,7 @@ public class User implements Serializable {
     private Set<UserVehicleRelatived> parentUserSet;
     private Set<Organization> organizationSet;
     private Set<Vehicle> vehicleSet;
+    private String icon;
 
     public User() {
         this.userSet = new HashSet<UserVehicleRelatived>();
@@ -163,5 +164,15 @@ public class User implements Serializable {
 
     public void setVehicleSet(Set<Vehicle> vehicleSet) {
         this.vehicleSet = vehicleSet;
+    }
+
+    @Basic
+    @Column(name = "icon", nullable = true, insertable = true, updatable = true, length = 50)
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
