@@ -8,5 +8,5 @@ import org.springframework.data.repository.CrudRepository;
  * Created by Teemol on 2015/11/11.
  */
 @EnableJpaRepositories
-public interface PhoneBookRepository extends CrudRepository<PhoneBook, Long> {
+public interface PhoneBookRepository extends CrudRepository<PhoneBook, Integer> {
 }
