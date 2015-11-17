@@ -30,29 +30,8 @@ public class PhoneBookManagement {
      * @param currentPage 当前页
      * @return 联系人集合
      */
-    public List<PhoneBookShow> getPhoneBook(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+    public List<PhoneBookShow> getContacters(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
         return phoneBookRepositoryDAO.get(null,uid,null,null,null,orderByProperty,ascOrDesc,pageSize,currentPage);
-    }
-
-    /**
-     * 创建或修改指定通讯录
-     * @return  0：失败  1：成功
-     */
-    public int addPhoneBook(int uid){
-
-        //Todo： 1.删除用户通讯录
-        //Todo:  2.保存新的通讯录
-
-        return 1;
-    }
-
-    /**
-     * 删除用户通讯录
-     * @param uid 用户ID
-     * @return 0：删除失败 1：删除成功
-     */
-    public int deletePhoneBook(String uid){
-        return 1;
     }
 
     /**
@@ -62,16 +41,6 @@ public class PhoneBookManagement {
      */
     public boolean addContacter(PhoneBookShow phoneBookShow){
 
-        //Todo:  1.查询联系人电话是否在user表中
-        //Todo:  2.若不存在，则将isuser属性设置为"1"
-        //Todo:  3.若为系统用户则查询此用户是否已被加为好友，未加为好友则将isuser属性设置为“2”，已加为好友则设置为“3”
-        //Todo:  4.调用PhoneBookRepositoryDAO中的方法对数据进行保存
-        User user = userRepository.findByPhone(phoneBookShow.getPhone());
-        if (user != null) {
-            phoneBookShow.setIsuser(1);
-        } else {
-            phoneBookShow.setIsuser(0);
-        }
         PhoneBookShow phoneBookShowReturn =  phoneBookRepositoryDAO.add(phoneBookShow);
         if (phoneBookShowReturn != null) {
             return true;
