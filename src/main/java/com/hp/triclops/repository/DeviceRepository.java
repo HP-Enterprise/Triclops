@@ -2,10 +2,12 @@ package com.hp.triclops.repository;
 
 
 import com.hp.triclops.entity.UserDevice;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,4 +20,10 @@ public interface DeviceRepository extends CrudRepository<UserDevice,Integer>{
 
     @Query("select ud from UserDevice ud where ud.user.id=:userId")
     public List<UserDevice> findByUserId(@Param("userId") int userId);
+
+
+    @Modifying
+    @Transactional
+    @Query("delete from  UserDevice ud where ud.deviceId=:deviceId")
+    public void deleteByDeviceId(String deviceId);
 }
