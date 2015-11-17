@@ -9,6 +9,8 @@ com.hp.mqtt:
     port: 5672
     userName:
     password:
+# apns cer password
+com.hp.apns.cer.password:
 
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:

@@ -10,6 +10,9 @@ com.hp.mqtt:
     userName:
     password:
 
+# apns cer password
+com.hp.apns.cer.password:
+
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:
     level:
