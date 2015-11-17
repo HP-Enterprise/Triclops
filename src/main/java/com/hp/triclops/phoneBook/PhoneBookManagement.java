@@ -22,22 +22,25 @@ public class PhoneBookManagement {
     private UserRepository userRepository;
 
     /**
+     * 获取用户通讯录
+     * @param uid 用户ID
+     * @param orderByProperty 排序条件
+     * @param ascOrDesc 排序方式
+     * @param pageSize 分页大小
+     * @param currentPage 当前页
+     * @return 联系人集合
+     */
+    public List<PhoneBookShow> getContacters(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+        return phoneBookRepositoryDAO.get(null,uid,null,null,null,orderByProperty,ascOrDesc,pageSize,currentPage);
+    }
+
+    /**
      * 新增联系人信息
      * @param phoneBookShow 联系人信息
      * @return true：添加成功  false：添加失败
      */
     public boolean addContacter(PhoneBookShow phoneBookShow){
 
-        //Todo:  1.查询联系人电话是否在user表中
-        //Todo:  2.若不存在，则将isuser属性设置为"1"
-        //Todo:  3.若为系统用户则查询此用户是否已被加为好友，未加为好友则将isuser属性设置为“2”，已加为好友则设置为“3”
-        //Todo:  4.调用PhoneBookRepositoryDAO中的方法对数据进行保存
-        User user = userRepository.findByPhone(phoneBookShow.getPhone());
-        if (user != null) {
-            phoneBookShow.setIsuser(1);
-        } else {
-            phoneBookShow.setIsuser(0);
-        }
         PhoneBookShow phoneBookShowReturn =  phoneBookRepositoryDAO.add(phoneBookShow);
         if (phoneBookShowReturn != null) {
             return true;
@@ -75,17 +78,4 @@ public class PhoneBookManagement {
         return 1;
     }
 
-
-    /**
-     * 获取用户通讯录
-     * @param uid 用户ID
-     * @param orderByProperty 排序条件
-     * @param ascOrDesc 排序方式
-     * @param pageSize 分页大小
-     * @param currentPage 当前页
-     * @return 联系人集合
-     */
-    public List<PhoneBookShow> getPhoneBook(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
-        return phoneBookRepositoryDAO.get(null,uid,null,null,null,orderByProperty,ascOrDesc,pageSize,currentPage);
-    }
 }
