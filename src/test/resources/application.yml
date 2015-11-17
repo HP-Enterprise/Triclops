@@ -13,6 +13,9 @@ com.hp.mqtt:
 # apns cer password
 com.hp.apns.cer.password:
 
+# apns p12 file path
+com.hp.apns.p12:
+
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:
     level:
