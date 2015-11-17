@@ -25,5 +25,10 @@ public class RepositoryTAop {
     @Before(value = "excudeController()")
     public void BeforeMethodRun(JoinPoint joinPoint){
         System.out.println("----------------------");
+        /*PerStatisticsUtil perStatisticsUtil = new PerStatisticsUtil();
+        perStatisticsUtil.setAppCtxAndInit(appContext);
+        //开始对API调用次数计数
+        perStatisticsUtil.statisticsTranCount();
+        System.out.println("事务总数=====" + perStatisticsUtil.getStatisticsTranCount());*/
     }
 }
