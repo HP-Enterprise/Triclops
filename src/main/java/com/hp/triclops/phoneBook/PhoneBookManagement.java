@@ -22,6 +22,40 @@ public class PhoneBookManagement {
     private UserRepository userRepository;
 
     /**
+     * 获取用户通讯录
+     * @param uid 用户ID
+     * @param orderByProperty 排序条件
+     * @param ascOrDesc 排序方式
+     * @param pageSize 分页大小
+     * @param currentPage 当前页
+     * @return 联系人集合
+     */
+    public List<PhoneBookShow> getPhoneBook(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+        return phoneBookRepositoryDAO.get(null,uid,null,null,null,orderByProperty,ascOrDesc,pageSize,currentPage);
+    }
+
+    /**
+     * 创建或修改指定通讯录
+     * @return  0：失败  1：成功
+     */
+    public int addPhoneBook(int uid){
+
+        //Todo： 1.删除用户通讯录
+        //Todo:  2.保存新的通讯录
+
+        return 1;
+    }
+
+    /**
+     * 删除用户通讯录
+     * @param uid 用户ID
+     * @return 0：删除失败 1：删除成功
+     */
+    public int deletePhoneBook(String uid){
+        return 1;
+    }
+
+    /**
      * 新增联系人信息
      * @param phoneBookShow 联系人信息
      * @return true：添加成功  false：添加失败
@@ -75,17 +109,4 @@ public class PhoneBookManagement {
         return 1;
     }
 
-
-    /**
-     * 获取用户通讯录
-     * @param uid 用户ID
-     * @param orderByProperty 排序条件
-     * @param ascOrDesc 排序方式
-     * @param pageSize 分页大小
-     * @param currentPage 当前页
-     * @return 联系人集合
-     */
-    public List<PhoneBookShow> getPhoneBook(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
-        return phoneBookRepositoryDAO.get(null,uid,null,null,null,orderByProperty,ascOrDesc,pageSize,currentPage);
-    }
 }
