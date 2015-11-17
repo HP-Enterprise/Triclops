@@ -38,11 +38,10 @@ public class PhoneBookRepositoryDAO {
 
     /**
      * 删除一条联系人记录
-     * @param phoneBookShow 通讯录信息
+     * @param id
      */
-    public void delete(PhoneBookShow phoneBookShow){
-        PhoneBook phoneBook=new PhoneBook(phoneBookShow.getId(),phoneBookShow.getUid(),phoneBookShow.getName(),phoneBookShow.getPhone(),phoneBookShow.getIsuser());
-        phoneBookRepository.delete(phoneBook);
+    public void delete(int id){
+        phoneBookRepository.delete(id);
     }
 
     /**

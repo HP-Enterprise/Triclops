@@ -47,16 +47,16 @@ public class PhoneBookManagement {
 
     /**
      * 删除一条联系人信息
-     * @param phoneBookShow 联系人信息
+     * @param id 联系人信息
      * @return  0：不存在此联系人记录   1：删除成功
      */
-    public int deleteContacter(PhoneBookShow phoneBookShow){
+    public int deleteContacter(int id){
 
-        List<PhoneBookShow> phoneBookShowList = phoneBookRepositoryDAO.get(phoneBookShow.getId(),null,null,null,null,null,null,null,null);
+        List<PhoneBookShow> phoneBookShowList = phoneBookRepositoryDAO.get(id,null,null,null,null,null,null,null,null);
         if (phoneBookShowList.size() == 0) {
             return 0;
         }
-        phoneBookRepositoryDAO.delete(phoneBookShow);
+        phoneBookRepositoryDAO.delete(id);
         return 1;
     }
 
