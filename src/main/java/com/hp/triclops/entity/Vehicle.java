@@ -7,26 +7,123 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 用户类
+ * 车辆实体类
+ */
+
+/**
+ * <table summary="Vehicle" class="typeSummary">
+ *     <thead>
+ *         <tr>
+ *             <th>字段</th>
+ *             <th>数据类型</th>
+ *             <th>说明</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>id</td>
+ *             <td>int</td>
+ *             <td>用户ID</td>
+ *         </tr>
+ *         <tr>
+ *             <td>vin</td>
+ *             <td>int</td>
+ *             <td>车辆VIN码</td>
+ *         </tr>
+ *         <tr>
+ *             <td>tboxsn</td>
+ *             <td>String</td>
+ *             <td>tbox码</td>
+ *         </tr>
+ *         <tr>
+ *             <td>vendor</td>
+ *             <td>String</td>
+ *             <td>厂家</td>
+ *         </tr>
+ *         <tr>
+ *             <td>model</td>
+ *             <td>String</td>
+ *             <td>型号</td>
+ *         </tr>
+ *         <tr>
+ *             <td>displacement </td>
+ *             <td>String</td>
+ *             <td>排量</td>
+ *         </tr>
+ *         <tr>
+ *             <td>product_date</td>
+ *             <td>datetime</td>
+ *             <td>生产日期</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vcolor</td>
+ *             <td>String</td>
+ *             <td>颜色</td>
+ *         </tr>
+ *          <tr>
+ *             <td>buystore</td>
+ *             <td>String</td>
+ *             <td>购买4S店</td>
+ *         </tr>
+ *          <tr>
+ *             <td>buydate</td>
+ *             <td>datetime</td>
+ *             <td>购买时间</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vpurl</td>
+ *             <td>String</td>
+ *             <td>车辆图片URL</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vtype</td>
+ *             <td>int</td>
+ *             <td>车辆类型(1:乘用 2:电动)</td>
+ *         </tr>
+ *          <tr>
+ *             <td>license_plate</td>
+ *             <td>String</td>
+ *             <td>车牌号</td>
+ *         </tr>
+ *          <tr>
+ *             <td>t_flag</td>
+ *             <td>int</td>
+ *             <td>0 车辆未禁用 1 已禁用</td>
+ *         </tr>
+ *          <tr>
+ *             <td>security_pwd</td>
+ *             <td>String</td>
+ *             <td>安防密码</td>
+ *         </tr>
+ *          <tr>
+ *             <td>security_salt</td>
+ *             <td>String</td>
+ *             <td>salt</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
  */
 @Entity
 @Table(name = "t_vehicle")
 public class Vehicle implements Serializable {
     private int id;
     private String vin;
+    private String tboxsn;
     private String vendor;
     private String model;
-    private Integer t_flag;
     private String displacement;
-    private String license_plate;
     private Date product_date;
-    private String tboxsn;
+    private String vcolor;
+    private String buystore;
+    private Date buydate;
+    private String vpurl;
+    private Integer vtype;
+    private String license_plate;
+    private Integer t_flag;
     private String security_pwd;
     private String security_salt;
     private Set<TBox> tboxSet;
-
     private Set<UserVehicleRelatived> vinSet;
-
     private Set<Organization> organizationSet;
 
     public Vehicle() {
@@ -35,19 +132,21 @@ public class Vehicle implements Serializable {
         this.tboxSet = new HashSet<TBox>();
     }
 
-
-
-    public Vehicle(int id,String vin,String vendor,String model,Integer t_flag,String displacement,String license_plate,Date product_date,String tboxsn,String security_pwd,String security_salt){
+    public Vehicle(int id, String vin, String tboxsn, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, Date buydate, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt) {
         this.id = id;
         this.vin = vin;
-        
+        this.tboxsn = tboxsn;
         this.vendor = vendor;
         this.model = model;
-        this.t_flag = t_flag;
         this.displacement = displacement;
-        this.license_plate = license_plate;
         this.product_date = product_date;
-        this.tboxsn = tboxsn;
+        this.vcolor = vcolor;
+        this.buystore = buystore;
+        this.buydate = buydate;
+        this.vpurl = vpurl;
+        this.vtype = vtype;
+        this.license_plate = license_plate;
+        this.t_flag = t_flag;
         this.security_pwd = security_pwd;
         this.security_salt = security_salt;
     }
@@ -74,6 +173,16 @@ public class Vehicle implements Serializable {
     }
 
     @Basic
+    @Column(name = "tboxsn", nullable = true, insertable = true, updatable = true)
+    public String getTboxsn() {
+        return tboxsn;
+    }
+
+    public void setTboxsn(String tboxsn) {
+        this.tboxsn = tboxsn;
+    }
+
+    @Basic
     @Column(name = "vendor", nullable = false, insertable = true, updatable = true, length = 50)
     public String getVendor() {
         return vendor;
@@ -94,16 +203,6 @@ public class Vehicle implements Serializable {
     }
 
     @Basic
-    @Column(name = "t_flag", nullable = true, insertable = true, updatable = true)
-    public Integer getT_flag() {
-        return t_flag;
-    }
-
-    public void setT_flag(Integer t_flag) {
-        this.t_flag = t_flag;
-    }
-
-    @Basic
     @Column(name = "displacement", nullable = false, insertable = true, updatable = true, length = 100)
     public String getDisplacement() {
         return displacement;
@@ -111,16 +210,6 @@ public class Vehicle implements Serializable {
 
     public void setDisplacement(String displacement) {
         this.displacement = displacement;
-    }
-
-    @Basic
-    @Column(name = "license_plate", nullable = true, insertable = true, updatable = true, length = 100)
-    public String getLicense_plate() {
-        return license_plate;
-    }
-
-    public void setLicense_plate(String license_plate) {
-        this.license_plate = license_plate;
     }
 
     @Basic
@@ -134,23 +223,73 @@ public class Vehicle implements Serializable {
     }
 
     @Basic
-    @Column(name = "tboxsn", nullable = true, insertable = true, updatable = true)
-    public String getTboxsn() {
-        return tboxsn;
+    @Column(name = "vcolor", nullable = true, insertable = true, updatable = true)
+    public String getVcolor() {
+        return vcolor;
     }
 
-    public void setTboxsn(String tboxsn) {
-        this.tboxsn = tboxsn;
+    public void setVcolor(String vcolor) {
+        this.vcolor = vcolor;
     }
 
     @Basic
-    @Column(name = "security_salt", nullable = true, insertable = true, updatable = true, length = 4)
-    public String getSecurity_salt() {
-        return security_salt;
+    @Column(name = "buystore", nullable = true, insertable = true, updatable = true)
+    public String getBuystore() {
+        return buystore;
     }
 
-    public void setSecurity_salt(String security_salt) {
-        this.security_salt = security_salt;
+    public void setBuystore(String buystore) {
+        this.buystore = buystore;
+    }
+
+    @Basic
+    @Column(name = "buydate", nullable = true, insertable = true, updatable = true)
+    public Date getBuydate() {
+        return buydate;
+    }
+
+    public void setBuydate(Date buydate) {
+        this.buydate = buydate;
+    }
+
+    @Basic
+    @Column(name = "vpurl", nullable = true, insertable = true, updatable = true)
+    public String getVpurl() {
+        return vpurl;
+    }
+
+    public void setVpurl(String vpurl) {
+        this.vpurl = vpurl;
+    }
+
+    @Basic
+    @Column(name = "vtype", nullable = true, insertable = true, updatable = true)
+    public Integer getVtype() {
+        return vtype;
+    }
+
+    public void setVtype(Integer vtype) {
+        this.vtype = vtype;
+    }
+
+    @Basic
+    @Column(name = "license_plate", nullable = true, insertable = true, updatable = true, length = 100)
+    public String getLicense_plate() {
+        return license_plate;
+    }
+
+    public void setLicense_plate(String license_plate) {
+        this.license_plate = license_plate;
+    }
+
+    @Basic
+    @Column(name = "t_flag", nullable = true, insertable = true, updatable = true)
+    public Integer getT_flag() {
+        return t_flag;
+    }
+
+    public void setT_flag(Integer t_flag) {
+        this.t_flag = t_flag;
     }
 
     @Basic
@@ -161,6 +300,16 @@ public class Vehicle implements Serializable {
 
     public void setSecurity_pwd(String security_pwd) {
         this.security_pwd = security_pwd;
+    }
+
+    @Basic
+    @Column(name = "security_salt", nullable = true, insertable = true, updatable = true, length = 4)
+    public String getSecurity_salt() {
+        return security_salt;
+    }
+
+    public void setSecurity_salt(String security_salt) {
+        this.security_salt = security_salt;
     }
 
     @OneToMany(mappedBy = "vid", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
