@@ -38,7 +38,7 @@ public class PhoneBookRepositoryDAO {
 
     /**
      * 删除一条联系人记录
-     * @param id
+     * @param id ID
      */
     public void delete(int id){
         phoneBookRepository.delete(id);
