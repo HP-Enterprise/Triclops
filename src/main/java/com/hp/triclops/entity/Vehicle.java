@@ -9,6 +9,100 @@ import java.util.Set;
 /**
  * 车辆实体类
  */
+
+/**
+ * <table summary="Vehicle" class="typeSummary">
+ *     <thead>
+ *         <tr>
+ *             <th>字段</th>
+ *             <th>数据类型</th>
+ *             <th>说明</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>id</td>
+ *             <td>int</td>
+ *             <td>用户ID</td>
+ *         </tr>
+ *         <tr>
+ *             <td>vin</td>
+ *             <td>int</td>
+ *             <td>车辆VIN码</td>
+ *         </tr>
+ *         <tr>
+ *             <td>tboxsn</td>
+ *             <td>String</td>
+ *             <td>tbox码</td>
+ *         </tr>
+ *         <tr>
+ *             <td>vendor</td>
+ *             <td>String</td>
+ *             <td>厂家</td>
+ *         </tr>
+ *         <tr>
+ *             <td>model</td>
+ *             <td>String</td>
+ *             <td>型号</td>
+ *         </tr>
+ *         <tr>
+ *             <td>displacement </td>
+ *             <td>String</td>
+ *             <td>排量</td>
+ *         </tr>
+ *         <tr>
+ *             <td>product_date</td>
+ *             <td>datetime</td>
+ *             <td>生产日期</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vcolor</td>
+ *             <td>String</td>
+ *             <td>颜色</td>
+ *         </tr>
+ *          <tr>
+ *             <td>buystore</td>
+ *             <td>String</td>
+ *             <td>购买4S店</td>
+ *         </tr>
+ *          <tr>
+ *             <td>buydate</td>
+ *             <td>datetime</td>
+ *             <td>购买时间</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vpurl</td>
+ *             <td>String</td>
+ *             <td>车辆图片URL</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vtype</td>
+ *             <td>int</td>
+ *             <td>车辆类型(1:乘用 2:电动)</td>
+ *         </tr>
+ *          <tr>
+ *             <td>license_plate</td>
+ *             <td>String</td>
+ *             <td>车牌号</td>
+ *         </tr>
+ *          <tr>
+ *             <td>t_flag</td>
+ *             <td>int</td>
+ *             <td>0 车辆未禁用 1 已禁用</td>
+ *         </tr>
+ *          <tr>
+ *             <td>security_pwd</td>
+ *             <td>String</td>
+ *             <td>安防密码</td>
+ *         </tr>
+ *          <tr>
+ *             <td>security_salt</td>
+ *             <td>String</td>
+ *             <td>salt</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ */
 @Entity
 @Table(name = "t_vehicle")
 public class Vehicle implements Serializable {
