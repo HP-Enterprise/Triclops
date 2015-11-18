@@ -10,5 +10,7 @@ CREATE TABLE IF NOT EXISTS t_message (
   content_type int(1) COMMENT '发送内容类型 ,1 文本,2 音乐,3 图片,41 位置信息,42 位置共享开始,43 位置共享结束',
   text_content varchar(1000) COMMENT '发送内容文本、经纬度',
   file_name varchar(100) COMMENT '发送的附件名',
+  message_nums  int(100) COMMENT '信息条数',
+  clean_flag  int(1) COMMENT '消息推送消除标志，仅针对 气囊报警、防盗报警,0报警,1消除',
   PRIMARY KEY (id)
 )DEFAULT CHARSET=utf8 COMMENT = '消息表';
