@@ -4,6 +4,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -12,7 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Aspect
 @Configuration
 public class RepositoryTAop {
-
+    @Autowired
+    ApplicationContext appContext;
 
     @Pointcut("execution(* com.hp.*.repository.*.*(..))")
     public void excudeController(){}
@@ -24,11 +27,10 @@ public class RepositoryTAop {
      */
     @Before(value = "excudeController()")
     public void BeforeMethodRun(JoinPoint joinPoint){
-        System.out.println("----------------------");
-        /*PerStatisticsUtil perStatisticsUtil = new PerStatisticsUtil();
+        PerStatisticsUtil perStatisticsUtil = new PerStatisticsUtil();
         perStatisticsUtil.setAppCtxAndInit(appContext);
         //开始对API调用次数计数
         perStatisticsUtil.statisticsTranCount();
-        System.out.println("事务总数=====" + perStatisticsUtil.getStatisticsTranCount());*/
+        System.out.println("T事务总数=====" + perStatisticsUtil.getStatisticsTranCount());
     }
 }
