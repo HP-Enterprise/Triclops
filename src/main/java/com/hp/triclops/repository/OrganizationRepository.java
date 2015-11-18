@@ -18,4 +18,6 @@ public interface OrganizationRepository extends CrudRepository<Organization, Lon
     Organization findByOrgName(String orgName);
 
     Organization findByBreCode(String breCode);
+
+    Set<Organization> findByAreaid(Integer areaid);
 }
