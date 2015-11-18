@@ -5,7 +5,7 @@ import com.hp.triclops.entity.Vehicle;
 import java.util.Date;
 
 /**
- * <table summary="VehicleShow" class="typeSummary">
+ * <table summary="Vehicle" class="typeSummary">
  *     <thead>
  *         <tr>
  *             <th>字段</th>
@@ -21,8 +21,13 @@ import java.util.Date;
  *         </tr>
  *         <tr>
  *             <td>vin</td>
- *             <td>String</td>
+ *             <td>int</td>
  *             <td>车辆VIN码</td>
+ *         </tr>
+ *         <tr>
+ *             <td>tboxsn</td>
+ *             <td>String</td>
+ *             <td>tbox码</td>
  *         </tr>
  *         <tr>
  *             <td>vendor</td>
@@ -35,39 +40,59 @@ import java.util.Date;
  *             <td>型号</td>
  *         </tr>
  *         <tr>
- *             <td>t_flag</td>
- *             <td>int</td>
- *             <td>车辆禁用标示0-未禁用 1-禁用</td>
- *         </tr>
- *         <tr>
- *             <td>displacement</td>
+ *             <td>displacement </td>
  *             <td>String</td>
  *             <td>排量</td>
  *         </tr>
  *         <tr>
+ *             <td>product_date</td>
+ *             <td>datetime</td>
+ *             <td>生产日期</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vcolor</td>
+ *             <td>String</td>
+ *             <td>颜色</td>
+ *         </tr>
+ *          <tr>
+ *             <td>buystore</td>
+ *             <td>String</td>
+ *             <td>购买4S店</td>
+ *         </tr>
+ *          <tr>
+ *             <td>buydate</td>
+ *             <td>datetime</td>
+ *             <td>购买时间</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vpurl</td>
+ *             <td>String</td>
+ *             <td>车辆图片URL</td>
+ *         </tr>
+ *          <tr>
+ *             <td>vtype</td>
+ *             <td>int</td>
+ *             <td>车辆类型(1:乘用 2:电动)</td>
+ *         </tr>
+ *          <tr>
  *             <td>license_plate</td>
  *             <td>String</td>
  *             <td>车牌号</td>
  *         </tr>
- *         <tr>
- *             <td>product_date</td>
- *             <td>Date</td>
- *             <td>生产日期</td>
- *         </tr>
- *         <tr>
- *             <td>tboxsn</td>
- *             <td>String</td>
- *             <td>tbox码</td>
- *         </tr>
- *         <tr>
- *             <td>oid</td>
+ *          <tr>
+ *             <td>t_flag</td>
  *             <td>int</td>
- *             <td>组织ID</td>
+ *             <td>0 车辆未禁用 1 已禁用</td>
  *         </tr>
  *          <tr>
- *             <td>vflag</td>
- *             <td>int</td>
- *             <td>是否为默认车辆</td>
+ *             <td>security_pwd</td>
+ *             <td>String</td>
+ *             <td>安防密码</td>
+ *         </tr>
+ *          <tr>
+ *             <td>security_salt</td>
+ *             <td>String</td>
+ *             <td>salt</td>
  *         </tr>
  *     </tbody>
  * </table>
