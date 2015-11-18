@@ -75,13 +75,20 @@ import java.util.Date;
 public class VehicleShow {
     private int id;
     private String vin;
+    private String tboxsn;
     private String vendor;
     private String model;
-    private Integer t_flag;
     private String displacement;
-    private String license_plate;
     private Date product_date;
-    private String tboxsn;
+    private String vcolor;
+    private String buystore;
+    private Date buydate;
+    private String vpurl;
+    private Integer vtype;
+    private String license_plate;
+    private Integer t_flag;
+    private String security_pwd;
+    private String security_salt;
     private Integer oid;
     private Integer vflag;
 
@@ -91,25 +98,39 @@ public class VehicleShow {
     public VehicleShow(Vehicle vehicle) {
         this.id = vehicle.getId();
         this.vin = vehicle.getVin();
+        this.tboxsn = vehicle.getTboxsn();
         this.vendor = vehicle.getVendor();
         this.model = vehicle.getModel();
-        this.t_flag = vehicle.getT_flag();
         this.displacement = vehicle.getDisplacement();
-        this.license_plate = vehicle.getLicense_plate();
         this.product_date = vehicle.getProduct_date();
-        this.tboxsn = vehicle.getTboxsn();
+        this.vcolor = vehicle.getVcolor();
+        this.buystore = vehicle.getBuystore();
+        this.buydate = vehicle.getBuydate();
+        this.vpurl = vehicle.getVpurl();
+        this.vtype = vehicle.getVtype();
+        this.license_plate = vehicle.getLicense_plate();
+        this.t_flag = vehicle.getT_flag();
+        this.security_pwd = vehicle.getSecurity_pwd();
+        this.security_salt = vehicle.getSecurity_salt();
     }
 
     public VehicleShow(Vehicle vehicle,Integer vflag) {
         this.id = vehicle.getId();
         this.vin = vehicle.getVin();
+        this.tboxsn = vehicle.getTboxsn();
         this.vendor = vehicle.getVendor();
         this.model = vehicle.getModel();
-        this.t_flag = vehicle.getT_flag();
         this.displacement = vehicle.getDisplacement();
-        this.license_plate = vehicle.getLicense_plate();
         this.product_date = vehicle.getProduct_date();
-        this.tboxsn = vehicle.getTboxsn();
+        this.vcolor = vehicle.getVcolor();
+        this.buystore = vehicle.getBuystore();
+        this.buydate = vehicle.getBuydate();
+        this.vpurl = vehicle.getVpurl();
+        this.vtype = vehicle.getVtype();
+        this.license_plate = vehicle.getLicense_plate();
+        this.t_flag = vehicle.getT_flag();
+        this.security_pwd = vehicle.getSecurity_pwd();
+        this.security_salt = vehicle.getSecurity_salt();
         this.vflag = vflag;
     }
 
@@ -129,6 +150,14 @@ public class VehicleShow {
         this.vin = vin;
     }
 
+    public String getTboxsn() {
+        return tboxsn;
+    }
+
+    public void setTboxsn(String tboxsn) {
+        this.tboxsn = tboxsn;
+    }
+
     public String getVendor() {
         return vendor;
     }
@@ -145,28 +174,12 @@ public class VehicleShow {
         this.model = model;
     }
 
-    public Integer getT_flag() {
-        return t_flag;
-    }
-
-    public void setT_flag(Integer t_flag) {
-        this.t_flag = t_flag;
-    }
-
     public String getDisplacement() {
         return displacement;
     }
 
     public void setDisplacement(String displacement) {
         this.displacement = displacement;
-    }
-
-    public String getLicense_plate() {
-        return license_plate;
-    }
-
-    public void setLicense_plate(String license_plate) {
-        this.license_plate = license_plate;
     }
 
     public Date getProduct_date() {
@@ -177,9 +190,77 @@ public class VehicleShow {
         this.product_date = product_date;
     }
 
-    public String getTboxsn() {return tboxsn;}
+    public String getVcolor() {
+        return vcolor;
+    }
 
-    public void setTboxsn(String tboxsn) {this.tboxsn = tboxsn;}
+    public void setVcolor(String vcolor) {
+        this.vcolor = vcolor;
+    }
+
+    public String getBuystore() {
+        return buystore;
+    }
+
+    public void setBuystore(String buystore) {
+        this.buystore = buystore;
+    }
+
+    public Date getBuydate() {
+        return buydate;
+    }
+
+    public void setBuydate(Date buydate) {
+        this.buydate = buydate;
+    }
+
+    public String getVpurl() {
+        return vpurl;
+    }
+
+    public void setVpurl(String vpurl) {
+        this.vpurl = vpurl;
+    }
+
+    public Integer getVtype() {
+        return vtype;
+    }
+
+    public void setVtype(Integer vtype) {
+        this.vtype = vtype;
+    }
+
+    public String getLicense_plate() {
+        return license_plate;
+    }
+
+    public void setLicense_plate(String license_plate) {
+        this.license_plate = license_plate;
+    }
+
+    public Integer getT_flag() {
+        return t_flag;
+    }
+
+    public void setT_flag(Integer t_flag) {
+        this.t_flag = t_flag;
+    }
+
+    public String getSecurity_pwd() {
+        return security_pwd;
+    }
+
+    public void setSecurity_pwd(String security_pwd) {
+        this.security_pwd = security_pwd;
+    }
+
+    public String getSecurity_salt() {
+        return security_salt;
+    }
+
+    public void setSecurity_salt(String security_salt) {
+        this.security_salt = security_salt;
+    }
 
     public Integer getOid() {
         return oid;
