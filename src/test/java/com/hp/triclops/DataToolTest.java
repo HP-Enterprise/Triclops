@@ -119,5 +119,11 @@ public class DataToolTest {
         Assert.assertEquals(d.getMessage1(), "abcdef");
     }
 
-
+    @Test
+    public void test_getHitSpeedFromSpeeds(){
+        float[] speeds = {100.0f, 95.9f, 85.8f, 75.7f, 65.6f, 55.5f, 45.4f, 35.3f, 25.1f, 10.0f, 1.1f, 0.0f};//12个数据
+//       float[] speeds = {100.f};
+        float max = dataTool.getHitSpeedFromSpeeds(speeds);
+        System.out.println("******************max=" + max);
+    }
 }
