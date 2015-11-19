@@ -16,16 +16,19 @@ public class Organization implements Serializable {
     private String breCode;
     private Sysdict typeKey;
     private String descript;
+    private int areaid;
     private int available;
     private Set<Organization> organizationSet;
     private Set<Vehicle> vehicleSet;
     private Set<User> userSet;
+    private Set<Area> areaSet;
 
 
     public Organization() {
         this.organizationSet = new HashSet<Organization>();
         this.vehicleSet = new HashSet<Vehicle>();
         this.userSet = new HashSet<User>();
+        this.areaSet = new HashSet<Area>();
     }
 
     public Organization(String orgName, String breCode, Sysdict typeKey, Set<Organization> organizationSet) {
@@ -115,6 +118,19 @@ public class Organization implements Serializable {
         this.userSet = userSet;
     }
 
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_organization_area",
+            joinColumns ={@JoinColumn(name = "oid", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "areaid", referencedColumnName = "id")
+            })
+    public Set<Area> getAreaSet() {
+        return areaSet;
+    }
+
+    public void setAreaSet(Set<Area> areaSet) {
+        this.areaSet = areaSet;
+    }
+
     @Basic
     @Column(name = "available", nullable = false, insertable = true, updatable = true)
     public int getAvailable() {
@@ -123,6 +139,16 @@ public class Organization implements Serializable {
 
     public void setAvailable(int available) {
         this.available = available;
+    }
+
+    @Basic
+    @Column(name = "areaid", nullable = false, insertable = true, updatable = true)
+    public int getAreaid() {
+        return areaid;
+    }
+
+    public void setAreaid(int areaid) {
+        this.areaid = areaid;
     }
 
     @Basic

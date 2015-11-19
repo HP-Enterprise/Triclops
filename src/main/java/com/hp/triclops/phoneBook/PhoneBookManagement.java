@@ -1,8 +1,8 @@
 package com.hp.triclops.phoneBook;
 
-import com.hp.triclops.entity.User;
+import com.hp.triclops.repository.PhoneBookRepository;
 import com.hp.triclops.repository.PhoneBookRepositoryDAO;
-import com.hp.triclops.repository.UserRepository;
+import com.hp.triclops.utils.Page;
 import com.hp.triclops.vo.PhoneBookShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,21 @@ public class PhoneBookManagement {
     private PhoneBookRepositoryDAO phoneBookRepositoryDAO;
 
     @Autowired
-    private UserRepository userRepository;
+    private PhoneBookRepository phoneBookRepository;
+
+
+    /**
+     * 条件查询用户通讯录，并分页
+     * @param uid 用户ID
+     * @param orderByProperty 排序条件
+     * @param ascOrDesc 排序方式："ASC"或"DESC"
+     * @param pageSize 分页大小
+     * @param currentPage 当前页
+     * @return 联系人集合
+     */
+    public Page getContactersByPage(int uid, String orderByProperty, String ascOrDesc, Integer pageSize, Integer currentPage) {
+        return phoneBookRepositoryDAO.getByPage(null, uid, null, null, null, orderByProperty, ascOrDesc, pageSize, currentPage);
+    }
 
     /**
      * 新增联系人信息
@@ -28,16 +42,6 @@ public class PhoneBookManagement {
      */
     public boolean addContacter(PhoneBookShow phoneBookShow){
 
-        //Todo:  1.查询联系人电话是否在user表中
-        //Todo:  2.若不存在，则将isuser属性设置为"1"
-        //Todo:  3.若为系统用户则查询此用户是否已被加为好友，未加为好友则将isuser属性设置为“2”，已加为好友则设置为“3”
-        //Todo:  4.调用PhoneBookRepositoryDAO中的方法对数据进行保存
-        User user = userRepository.findByPhone(phoneBookShow.getPhone());
-        if (user != null) {
-            phoneBookShow.setIsuser(1);
-        } else {
-            phoneBookShow.setIsuser(0);
-        }
         PhoneBookShow phoneBookShowReturn =  phoneBookRepositoryDAO.add(phoneBookShow);
         if (phoneBookShowReturn != null) {
             return true;
@@ -47,16 +51,16 @@ public class PhoneBookManagement {
 
     /**
      * 删除一条联系人信息
-     * @param phoneBookShow 联系人信息
+     * @param id 联系人信息
      * @return  0：不存在此联系人记录   1：删除成功
      */
-    public int deleteContacter(PhoneBookShow phoneBookShow){
+    public int deleteContacter(int id){
 
-        List<PhoneBookShow> phoneBookShowList = phoneBookRepositoryDAO.get(phoneBookShow.getId(),null,null,null,null,null,null,null,null);
+        List phoneBookShowList = phoneBookRepositoryDAO.getByPage(id, null, null, null, null, null, null, null, null).getItems();
         if (phoneBookShowList.size() == 0) {
             return 0;
         }
-        phoneBookRepositoryDAO.delete(phoneBookShow);
+        phoneBookRepositoryDAO.delete(id);
         return 1;
     }
 
@@ -67,7 +71,7 @@ public class PhoneBookManagement {
      */
     public int updataContacter(PhoneBookShow phoneBookShow){
 
-        List<PhoneBookShow> phoneBookShowList = phoneBookRepositoryDAO.get(phoneBookShow.getId(),null,null,null,null,null,null,null,null);
+        List phoneBookShowList = phoneBookRepositoryDAO.getByPage(phoneBookShow.getId(),null,null,null,null,null,null,null,null).getItems();
         if (phoneBookShowList.size() == 0) {
             return 0;
         }
@@ -75,17 +79,17 @@ public class PhoneBookManagement {
         return 1;
     }
 
-
     /**
-     * 获取用户通讯录
+     * 删除用户通讯录
      * @param uid 用户ID
-     * @param orderByProperty 排序条件
-     * @param ascOrDesc 排序方式
-     * @param pageSize 分页大小
-     * @param currentPage 当前页
-     * @return 联系人集合
+     * @return 0：删除失败 1：删除成功
      */
-    public List<PhoneBookShow> getPhoneBook(int uid,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
-        return phoneBookRepositoryDAO.get(null,uid,null,null,null,orderByProperty,ascOrDesc,pageSize,currentPage);
+    public int deletePhoneBook(int uid){
+        int flag = phoneBookRepository.deleteByUid(uid);
+        if (flag > 0) {
+            return 1;
+        }
+        return 0;
     }
+
 }
