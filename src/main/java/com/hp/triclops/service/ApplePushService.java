@@ -24,7 +24,7 @@ public interface ApplePushService {
      * @param content   推送内容
      * @param userId    用户Id
      */
-    public void pushToUser(String content, int userId);
+    public void pushToUser(String content, int userId,String deviceTokens);
 
 
 }

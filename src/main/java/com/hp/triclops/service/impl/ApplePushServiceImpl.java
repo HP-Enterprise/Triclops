@@ -34,6 +34,9 @@ public class ApplePushServiceImpl implements ApplePushService {
 
     @Value("${com.hp.apns.cer.password}")
     private String pwd;
+
+    @Value("${com.hp.apns.p12}")
+    private String p12Path;
     /**
      * 注册设备
      *
@@ -66,17 +69,15 @@ public class ApplePushServiceImpl implements ApplePushService {
      * @param content 推送内容
      */
     @Override
-    public void pushToUser(String content,int userId) {
+    public void pushToUser(String content,int userId,String deviceTokens) {
         try {
-            String p12Path = this.getParallelPath();
-
             List<UserDevice> list= this.deviceRepository.findByUserId(userId);
-            Collection<String> deviceTokens = new ArrayList<String>();
+           // Collection<String> deviceTokens = new ArrayList<String>();
 
-            for(UserDevice ud :list){
+            /*for(UserDevice ud :list){
                 String pushToken = ud.getDeviceId();
                 deviceTokens.add(pushToken);
-            }
+            }*/
             ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
 
             String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
@@ -87,23 +88,4 @@ public class ApplePushServiceImpl implements ApplePushService {
         }
     }
 
-
-    public  String  getParallelPath()
-    {
-        String filename = "certforANPS.p12";
-        String pre=System.getProperty("user.dir");
-        String path=pre;
-        for(String arg:new String[]{"src","main","resources","certificates"})
-        {
-
-            path+= File.separator+arg;
-        }
-        path+=File.separator+filename;
-        if(path.startsWith("file"))
-        {
-            path=path.substring(5);
-        }
-        path.replace("/", File.separator);
-        return path;
-    }
 }
