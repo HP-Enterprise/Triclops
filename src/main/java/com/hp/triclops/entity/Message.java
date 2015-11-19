@@ -19,6 +19,8 @@ public class Message {
     private int contentType;
     private String textContent;
     private String fileName;
+    private int messageNums;
+    private int cleanFlag;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -108,5 +110,21 @@ public class Message {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public int getMessageNums() {
+        return messageNums;
+    }
+
+    public void setMessageNums(int messageNums) {
+        this.messageNums = messageNums;
+    }
+
+    public int getCleanFlag() {
+        return cleanFlag;
+    }
+
+    public void setCleanFlag(int cleanFlag) {
+        this.cleanFlag = cleanFlag;
     }
 }

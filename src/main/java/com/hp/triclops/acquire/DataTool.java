@@ -284,8 +284,8 @@ public class DataTool {
         //取包含8个数字的数组
         Short re=0;
         String binStr=getBinaryStrFromByte(a);
-        char[] array= binStr.toCharArray();
-        String bita_b=String.valueOf(array[0]) + String.valueOf(array[1]);
+        char[] array= binStr.toCharArray();//bit 0~1读取char[6] char[7]
+        String bita_b=String.valueOf(array[6]) + String.valueOf(array[7]);
         if(bita_b.equals("00")){
             re=0;
         }else if(bita_b.equals("01")){

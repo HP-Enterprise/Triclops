@@ -9,4 +9,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 @EnableJpaRepositories
 public interface PhoneBookRepository extends CrudRepository<PhoneBook, Integer> {
+
+    Integer deleteByUid(int uid);
 }

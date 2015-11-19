@@ -38,7 +38,7 @@ public class PhoneBookRepositoryDAO {
 
     /**
      * 删除一条联系人记录
-     * @param id
+     * @param id ID
      */
     public void delete(int id){
         phoneBookRepository.delete(id);
@@ -54,20 +54,21 @@ public class PhoneBookRepositoryDAO {
     }
 
     /**
-     *
+     * 条件查询联系人信息，并分页
      * @param id ID
      * @param uid 用户ID
      * @param name 联系人姓名
      * @param phone 联系人电话
      * @param isuser 是否为系统用户
      * @param orderByProperty 排序条件
-     * @param ascOrDesc 排序方式
+     * @param ascOrDesc 排序方式:"ASC"或"DESC"  大小写均可,默认ASC
      * @param pageSize 分页大小
      * @param currentPage 当前页
      * @return 联系人集合
      */
-    public List<PhoneBookShow> get(Integer id,Integer uid,String name,String phone,Integer isuser,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+    public Page getByPage(Integer id,Integer uid,String name,String phone,Integer isuser,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
         String jpql="select p from PhoneBook p";
+        String jpql_count = "";
         id=(id==null)?-1:id;
         uid=(uid==null)?-1:uid;
         name=(name==null)?"":name;
@@ -96,36 +97,35 @@ public class PhoneBookRepositoryDAO {
             jpql=jpql+" and p.isuser=:isuser";
         }
         jpql=jpql+" Order by p."+orderByProperty+" "+ascOrDesc;
+        jpql_count = jpql;
         TypedQuery query=em.createQuery(jpql,PhoneBook.class);
+        TypedQuery queryCount = em.createQuery(jpql_count,PhoneBook.class);
         if (id>=0){
             query.setParameter("id",id);
+            queryCount.setParameter("id",id);
         }
         if (uid>=0){
             query.setParameter("uid",uid);
+            queryCount.setParameter("uid",uid);
         }
         if (!name.equals("")){
             query.setParameter("name",name);
+            queryCount.setParameter("name",name);
         }
         if (!phone.equals("")){
             query.setParameter("phone",phone);
+            queryCount.setParameter("phone",phone);
         }
         if (isuser>=0){
             query.setParameter("isuser",isuser);
+            queryCount.setParameter("isuser",isuser);
         }
         query.setFirstResult((currentPage - 1) * pageSize);
         query.setMaxResults(pageSize);
         List queryList = query.getResultList();
-        List<PhoneBook> phoneBookShowList = new ArrayList<PhoneBook>();
-        Iterator iterator = queryList.iterator();
-        while (iterator.hasNext()) {
-            phoneBookShowList.add((PhoneBook) iterator.next());
-        }
+        Long count = (long)queryCount.getResultList().size();
 
-        List<PhoneBookShow> phoneBookShows = new ArrayList<PhoneBookShow>();
-        phoneBookShowList.forEach(o -> {
-            phoneBookShows.add(new PhoneBookShow(o));
-        });
-        return phoneBookShows;
+        return new Page(currentPage,pageSize,count,queryList);
     }
 
 }

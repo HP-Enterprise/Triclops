@@ -120,19 +120,19 @@ public class DataHandleService {
         rd.setRightFrontTirePressure(bean.getRightFrontTirePressure()*2.8f);
         rd.setRightRearTirePressure(bean.getRightRearTirePressure()*2.8f);
         char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//
-        rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
-        rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
-        rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
-        rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+        rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+        rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
+        rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
+        rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
         rd.setVehicleTemperature(dataTool.getTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
         rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
-        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit0-5 分别左前 左后 右前  右后 后备箱 前舱盖
+        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit 大端传输
 
-        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[0])+String.valueOf(windows[1])));
-        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[2])+String.valueOf(windows[3])));
-        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[4])+String.valueOf(windows[5])));
-        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[6])+String.valueOf(windows[7])));
+        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6])+String.valueOf(doors[7])));
+        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4])+String.valueOf(doors[5])));
+        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2])+String.valueOf(doors[3])));
+        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0])+String.valueOf(doors[1])));
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -144,9 +144,9 @@ public class DataHandleService {
         gd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        gd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        gd.setNorthSouth(location[1]=='0'?"N":"S");//bit1 0北纬 1南纬
-        gd.setEastWest(location[2]=='0'?"E":"W");//bit2 0东经 1西经
+        gd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        gd.setNorthSouth(location[6]=='0'?"N":"S");//bit1 0北纬 1南纬
+        gd.setEastWest(location[5]=='0'?"E":"W");//bit2 0东经 1西经
         gd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         gd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -177,19 +177,19 @@ public class DataHandleService {
         rd.setRightFrontTirePressure(bean.getRightFrontTirePressure()*2.8f);
         rd.setRightRearTirePressure(bean.getRightRearTirePressure()*2.8f);
         char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//
-        rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
-        rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
-        rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
-        rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+        rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+        rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
+        rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
+        rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
         rd.setVehicleTemperature(dataTool.getTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
         rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
-        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit0-5 分别左前 左后 右前  右后 后备箱 前舱盖
-        //此处千万注意!注意门和窗的顺序不一样，编协议的要么不是同一个人 要么人格分裂。
-        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
-        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
-        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
-        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
+        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 bit位置按照大端传输原则
+        //
+        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6])+String.valueOf(doors[7])));
+        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4])+String.valueOf(doors[5])));
+        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2])+String.valueOf(doors[3])));
+        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0])+String.valueOf(doors[1])));
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -201,9 +201,9 @@ public class DataHandleService {
         gd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        gd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        gd.setNorthSouth(location[1]=='0'?"N":"S");//bit1 0北纬 1南纬
-        gd.setEastWest(location[2]=='0'?"E":"W");//bit2 0东经 1西经
+        gd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        gd.setNorthSouth(location[6]=='0'?"N":"S");//bit1 0北纬 1南纬
+        gd.setEastWest(location[5]=='0'?"E":"W");//bit2 0东经 1西经
         gd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         gd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -224,9 +224,9 @@ public class DataHandleService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -250,9 +250,9 @@ public class DataHandleService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -278,9 +278,9 @@ public class DataHandleService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -310,9 +310,9 @@ public class DataHandleService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
