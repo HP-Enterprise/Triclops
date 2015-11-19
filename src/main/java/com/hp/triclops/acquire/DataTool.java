@@ -39,6 +39,24 @@ public class DataTool {
         return true;
     }
 
+    public int getHitSpeed(Integer[] speeds) {
+        //todo 根据速度数组得到碰撞前速度
+        //todo 传入一个速度数组，计算前后两个速度的差值，返回差值正值最大（即发送最大减速）前的速度
+        if(speeds.length < 0){
+            return -1;
+        }
+        float max = 0f;
+        int index = 0;
+        for(int i = 0 ; i< speeds.length-1 ; i++){
+            float temp = speeds[i] - speeds[i+1];
+            if(temp >= max){
+                max = temp;
+                index = i;
+            }
+        }
+        return speeds[index];
+    }
+
     public float getHitSpeedFromSpeeds(float[] speeds) {
         //todo 根据速度数组得到碰撞前速度
         //todo 传入一个速度数组，计算前后两个速度的差值，返回差值正值最大（即发送最大减速）前的速度
