@@ -45,22 +45,16 @@ public class DataTool {
         if(speeds.length < 0){
             return -1f;
         }
-        if(speeds.length == 1){
-            return speeds[0];
-        }
-
-        float max = (speeds[0] - speeds[1]) >0 ? speeds[0] - speeds[1] : speeds[1] - speeds[0];
+        float max = 0f;
         int index = 0;
-
-        for(int i = 1 ; i< speeds.length-1 ; i++){
-            float temp = (speeds[i] - speeds[i+1])> 0? speeds[i] - speeds[i+1]: speeds[i+1] - speeds[i];
+        for(int i = 0 ; i< speeds.length-1 ; i++){
+            float temp = speeds[i] - speeds[i+1];
             if(temp >= max){
                 max = temp;
                 index = i;
             }
         }
         System.out.println("______________maxGap = " + max + "|| index = "+ index + "|| speeds = " + speeds[index]);
-
         return speeds[index];
     }
 
