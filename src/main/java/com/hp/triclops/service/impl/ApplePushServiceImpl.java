@@ -65,13 +65,14 @@ public class ApplePushServiceImpl implements ApplePushService {
     /**
      * 向用户对应的设备推送消息
      *
-     * @param userId  userId
      * @param content 推送内容
+     * @param userId  userId
+     * @param deviceTokens  deviceTokens
      */
     @Override
     public void pushToUser(String content,int userId,String deviceTokens) {
         try {
-            List<UserDevice> list= this.deviceRepository.findByUserId(userId);
+            //List<UserDevice> list= this.deviceRepository.findByUserId(userId);
            // Collection<String> deviceTokens = new ArrayList<String>();
 
             /*for(UserDevice ud :list){
@@ -79,9 +80,9 @@ public class ApplePushServiceImpl implements ApplePushService {
                 deviceTokens.add(pushToken);
             }*/
             ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
-
             String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
             service.push(deviceTokens, payLoad);
+            service.stop();
 
         } catch (Exception e) {
             e.printStackTrace();
