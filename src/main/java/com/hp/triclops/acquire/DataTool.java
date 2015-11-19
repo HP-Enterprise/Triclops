@@ -54,7 +54,6 @@ public class DataTool {
                 index = i;
             }
         }
-        System.out.println("______________maxGap = " + max + "|| index = "+ index + "|| speeds = " + speeds[index]);
         return speeds[index];
     }
 
