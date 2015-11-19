@@ -7,4 +7,5 @@ CREATE TABLE IF NOT EXISTS t_fs_shop (
   city varchar(50) COMMENT '城市',
   cityid int(11) NOT NULL COMMENT '城市id',
   PRIMARY KEY (id)
+  
 ) DEFAULT CHARSET=utf8 COMMENT='4s店信息表';
