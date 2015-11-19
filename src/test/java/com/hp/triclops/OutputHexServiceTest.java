@@ -143,9 +143,6 @@ public class OutputHexServiceTest {
     public void test_getDiagCmdHex() {
         String vin="12345678919991234";
         DiagnosticData diagnosticData=new DiagnosticData();
-        diagnosticData.setDiaCmdDataSize((short) 17);
-        diagnosticData.setDiaNumber((short) 17);
-        diagnosticData.setDiaId((short) 0);
         diagnosticData.setEventId(1444812349l);
         System.out.println(outputHexService.getDiagCmdHex(diagnosticData));
 

@@ -378,44 +378,45 @@ public class RequestHandler {
      */
     public void handleDiagnosticAck(String reqString,String vin){
         _logger.info("DiagnosticAck:"+reqString);
-        //因为数据结构目前没办法用DataCenter处理,只能直接解析
-        DiagnosticData d=dataTool.getDatasFromDiagAckMsg(reqString);
-        DiagnosticData diagnosticData=diagnosticDataRepository.findByVinAndEventId(vin,d.getEventId());
+        //
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        DiagnosticCommanAck bean=dp.loadBean(DiagnosticCommanAck.class);
+        DiagnosticData diagnosticData=diagnosticDataRepository.findByVinAndEventId(vin,bean.getEventID());
         //变更消息状态 不会当作失败而重试
-        String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+66+"-"+d.getEventId();//0X42=66 ACK mid=2
+        String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+66+"-"+bean.getEventID();//0X42=66 ACK mid=2
         String statusValue=String.valueOf(2);//ACK mid=2
         socketRedis.saveValueString(statusKey, statusValue, -1);
-        if(d!=null){
         if(diagnosticData==null){
-            _logger.info("no record found for vin:" + vin + "eventId:" + d.getEventId());
+            _logger.info("no record found for vin:" + vin + "eventId:" + bean.getEventID());
         }else{
+            //按位解析诊断数据
+            byte[] bytes=bean.getDiagData();
+            char[] datas_1=dataTool.getBitsFromByte(bytes[0]);
+            char[] datas_2=dataTool.getBitsFromByte(bytes[1]);
             diagnosticData.setReceiveDate(new Date());
             diagnosticData.setHasAck((short) 1);
-            diagnosticData.setDiaCmdDataSize(d.getDiaCmdDataSize());
-            diagnosticData.setDiaNumber(d.getDiaNumber());
-            diagnosticData.setMessage1(d.getMessage1());
-            diagnosticData.setMessage1(d.getMessage1());
-            diagnosticData.setMessage2(d.getMessage2());
-            diagnosticData.setMessage3(d.getMessage3());
-            diagnosticData.setMessage4(d.getMessage4());
-            diagnosticData.setMessage5(d.getMessage5());
-            diagnosticData.setMessage6(d.getMessage6());
-            diagnosticData.setMessage7(d.getMessage7());
-            diagnosticData.setMessage8(d.getMessage8());
-            diagnosticData.setMessage9(d.getMessage9());
-            diagnosticData.setMessage10(d.getMessage10());
-            diagnosticData.setMessage11(d.getMessage11());
-            diagnosticData.setMessage12(d.getMessage12());
-            diagnosticData.setMessage13(d.getMessage13());
-            diagnosticData.setMessage14(d.getMessage14());
-            diagnosticData.setMessage15(d.getMessage15());
-            diagnosticData.setMessage16(d.getMessage16());
-            diagnosticData.setMessage17(d.getMessage17());
+            //拆解bit0-bit15
+            diagnosticData.setMessage1(datas_2[7] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage2(datas_2[6] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage3(datas_2[5] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage4(datas_2[4] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage5(datas_2[3] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage6(datas_2[2] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage7(datas_2[1] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage8(datas_2[0] == '0' ? (short) 0 : (short) 1);
+
+            diagnosticData.setMessage9(datas_1[7] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage10(datas_1[6] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage11(datas_1[5] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage12(datas_1[4] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage13(datas_1[3] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage14(datas_1[2] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage15(datas_1[1] == '0' ? (short) 0 : (short) 1);
+            diagnosticData.setMessage16(datas_1[0] == '0' ? (short) 0 : (short) 1);
+
             //保存Ack数据
             diagnosticDataRepository.save(diagnosticData);
-        }
-        }else{
-            _logger.info("no diagnostic ack data");
         }
     }
 

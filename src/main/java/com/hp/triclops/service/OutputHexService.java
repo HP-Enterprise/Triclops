@@ -170,9 +170,6 @@ public class OutputHexService {
         diagnosticCommandCmd.setMessageID((short) 1);//>>>
         diagnosticCommandCmd.setEventID(diagnosticData.getEventId());
 
-        diagnosticCommandCmd.setDiaCmdDataSize((short)17);
-        diagnosticCommandCmd.setDiaNumber((short)17);
-        diagnosticCommandCmd.setDiaID((byte)0);
 
         DataPackage dpw=new DataPackage("8995_66_1");//>>>
         dpw.fillBean(diagnosticCommandCmd);

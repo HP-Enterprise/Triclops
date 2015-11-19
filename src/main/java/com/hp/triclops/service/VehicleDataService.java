@@ -137,7 +137,6 @@ public class VehicleDataService {
             remoteWakeUp(diagnosticData.getVin());
         }
         if(hasConnection(diagnosticData.getVin())){
-            diagnosticData.setDiaId((short)0);
             diagnosticData.setHasAck((short) 0);
             diagnosticData.setSendDate(new Date());
             diagnosticDataRepository.save(diagnosticData);
