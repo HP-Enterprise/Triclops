@@ -10,18 +10,19 @@ import javax.persistence.*;
 public class Shop4s {
     private int id;
     private int oid;
-    private String fSname;
-    private String fSphone;
-    private String fSaddress;
+    private String fsname;
+    private String fsphone;
+    private String fsaddress;
     private String city;
     private int cityid;
     public Shop4s(){}
 
-    public Shop4s(Integer oid,String fSname,String fSphone,String fSaddress,String city,Integer cityid){
+    public Shop4s(Integer id,Integer oid,String fsname,String fsphone,String fsaddress,String city,Integer cityid){
+        this.id = id;
         this.oid = oid;
-        this.fSname = fSname;
-        this.fSphone = fSphone;
-        this.fSaddress = fSaddress;
+        this.fsname = fsname;
+        this.fsphone = fsphone;
+        this.fsaddress = fsaddress;
         this.city = city;
         this.cityid = cityid;
     }
@@ -46,48 +47,53 @@ public class Shop4s {
         this.oid = oid;
     }
 
-    @Column(name = "fSname", nullable = false, insertable = true, updatable = true, length = 50)
-    public String getfSname() {
-        return fSname;
+    @Basic
+    @Column(name = "fsname", nullable = false, insertable = true, updatable = true, length = 50)
+    public String getfsname() {
+        return fsname;
     }
 
-    public void setfSname(String fSname) {
-        this.fSname = fSname;
+    public void setfsname(String fsname) {
+        this.fsname = fsname;
     }
 
-    @Column(name = "fSphone", nullable = false, insertable = true, updatable = true, length = 50)
-    public String getfSphone() {
-        return fSphone;
+    @Basic
+    @Column(name = "fsphone", nullable = false, insertable = true, updatable = true, length = 50)
+    public String getfsphone() {
+        return fsphone;
     }
 
-    public void setfSphone(String fSphone) {
-        this.fSphone = fSphone;
+    public void setfsphone(String fsphone) {
+        this.fsphone = fsphone;
     }
 
-    @Column(name = "fSaddress", nullable = false, insertable = true, updatable = true, length = 50)
-    public String getfSaddress() {
-        return fSaddress;
+    @Basic
+    @Column(name = "fsaddress", nullable = false, insertable = true, updatable = true, length = 50)
+    public String getfsaddress() {
+        return fsaddress;
     }
 
-    public void setfSaddress(String fSaddress) {
-        this.fSaddress = fSaddress;
+    public void setfsaddress(String fsaddress) {
+        this.fsaddress = fsaddress;
     }
 
+    @Basic
     @Column(name = "city", nullable = false, insertable = true, updatable = true, length = 50)
-    public String getCity() {
+    public String getcity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setcity(String city) {
         this.city = city;
     }
 
+    @Basic
     @Column(name = "cityid", nullable = false, insertable = true, updatable = true, length = 11)
-    public Integer getCityid() {
+    public Integer getcityid() {
         return cityid;
     }
 
-    public void setCity(Integer cityid) {
+    public void setcityid(Integer cityid) {
         this.cityid = cityid;
     }
 
