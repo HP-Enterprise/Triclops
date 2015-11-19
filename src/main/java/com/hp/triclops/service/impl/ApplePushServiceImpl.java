@@ -69,15 +69,15 @@ public class ApplePushServiceImpl implements ApplePushService {
      * @param content 推送内容
      */
     @Override
-    public void pushToUser(String content,int userId) {
+    public void pushToUser(String content,int userId,String deviceTokens) {
         try {
             List<UserDevice> list= this.deviceRepository.findByUserId(userId);
-            Collection<String> deviceTokens = new ArrayList<String>();
+           // Collection<String> deviceTokens = new ArrayList<String>();
 
-            for(UserDevice ud :list){
+            /*for(UserDevice ud :list){
                 String pushToken = ud.getDeviceId();
                 deviceTokens.add(pushToken);
-            }
+            }*/
             ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
 
             String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
