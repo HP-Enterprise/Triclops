@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS t_fs_shop (
   city varchar(50) COMMENT '城市',
   cityid int(11) NOT NULL COMMENT '城市id',
   PRIMARY KEY (id)
-  
+
 ) DEFAULT CHARSET=utf8 COMMENT='4s店信息表';
+INSERT INTO t_fs_shop(id,oid,fsname,fsphone,fsaddress,city,cityid) values('1','1','华晨汽车4s店','3244754','关山大道155号','武汉','1');

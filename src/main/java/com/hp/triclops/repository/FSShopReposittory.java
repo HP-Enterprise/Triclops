@@ -9,5 +9,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 @EnableJpaRepositories
 public interface FSShopReposittory extends CrudRepository<Shop4s,Long> {
-    Shop4s findByCityId(int cityid);
+    Shop4s findByCityid(int cityid);
 }

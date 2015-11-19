@@ -26,6 +26,14 @@ public class Shop4s {
         this.city = city;
         this.cityid = cityid;
     }
+    public Shop4s(Integer id,String fsname,String fsphone,String fsaddress,String city,Integer cityid){
+        this.id = id;
+        this.fsname = fsname;
+        this.fsphone = fsphone;
+        this.fsaddress = fsaddress;
+        this.city = city;
+        this.cityid = cityid;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
