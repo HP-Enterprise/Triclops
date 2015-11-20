@@ -276,6 +276,8 @@ public class OutputHexService {
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
         String warningMessage=buildWarningString(wd);
         return warningMessage;
@@ -312,6 +314,8 @@ public class OutputHexService {
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
         String warningMessage=buildWarningString(wd);
         return warningMessage;
@@ -420,8 +424,8 @@ public class OutputHexService {
         if(wd.getSrsWarning()==(short)1){
             //安全气囊报警 0未触发 1触发
             sb.append("安全气囊报警触发,");
-            sb.append("背扣安全带数量").append(wd.getSafetyBeltCount()).append(",");
-            sb.append("碰撞速度").append(wd.getVehicleHitSpeed()).append(";");
+            sb.append("背扣安全带数量:").append(wd.getSafetyBeltCount()).append(",");
+            sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");
         }
         if(wd.getAtaWarning()==(short)1){
             //安全气囊报警 0未触发 1触发
