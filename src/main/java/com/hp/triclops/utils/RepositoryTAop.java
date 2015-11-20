@@ -31,6 +31,5 @@ public class RepositoryTAop {
         perStatisticsUtil.setAppCtxAndInit(appContext);
         //开始对API调用次数计数
         perStatisticsUtil.statisticsTranCount();
-        System.out.println("T事务总数=====" + perStatisticsUtil.getStatisticsTranCount());
     }
 }
