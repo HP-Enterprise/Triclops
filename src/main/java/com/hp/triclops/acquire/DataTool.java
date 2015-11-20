@@ -39,7 +39,43 @@ public class DataTool {
         return true;
     }
 
-    public  String getIp(byte[] bytes){
+    public int getHitSpeed(Integer[] speeds) {
+        //todo 根据速度数组得到碰撞前速度
+        //todo 传入一个速度数组，计算前后两个速度的差值，返回差值正值最大（即发送最大减速）前的速度
+        if(speeds.length < 0){
+            return -1;
+        }
+        float max = 0f;
+        int index = 0;
+        for(int i = 0 ; i< speeds.length-1 ; i++){
+            float temp = speeds[i] - speeds[i+1];
+            if(temp >= max){
+                max = temp;
+                index = i;
+            }
+        }
+        return speeds[index];
+    }
+
+    public float getHitSpeedFromSpeeds(float[] speeds) {
+        //todo 根据速度数组得到碰撞前速度
+        //todo 传入一个速度数组，计算前后两个速度的差值，返回差值正值最大（即发送最大减速）前的速度
+        if(speeds.length < 0){
+            return -1f;
+        }
+        float max = 0f;
+        int index = 0;
+        for(int i = 0 ; i< speeds.length-1 ; i++){
+            float temp = speeds[i] - speeds[i+1];
+            if(temp >= max){
+                max = temp;
+                index = i;
+            }
+        }
+        return speeds[index];
+    }
+
+        public  String getIp(byte[] bytes){
         //IP地址转换 00 00 C0 A8 01 01 读出192.168.1.1
         String re="";
         StringBuilder sb=new StringBuilder();
@@ -407,87 +443,6 @@ public class DataTool {
         return re;
     }
 
-    /**
-     * 解析远程诊断响应数据
-     * @param msg 远程诊断响应hex
-     * @return 远程诊断数据实体
-     */
-    public DiagnosticData getDatasFromDiagAckMsg(String msg) {
-        try {
-            DiagnosticData diagnosticData =null;
-            byte[] data = getBytesFromByteBuf(getByteBuf(msg));
-            if (data != null) {
-                diagnosticData = new DiagnosticData();
-                ByteBuffer bb = ByteBuffer.allocate(1024);
-                bb.put(data);
-                bb.flip();
-                int offset=9;//初始索引
-                byte applicationId = bb.get(offset);
-                offset+=1;
-                byte messageId = bb.get(offset);
-                offset+=1;
-                offset+=22;//跳过imei编号~预留字段
-                int eventId = bb.getInt(offset);
-                offset+=4;
-                byte diagDataSizeAck=bb.get(offset);
-                offset+=1;
-                int sizeAck=diagDataSizeAck&0xFF;
-                byte diagNumberAck=bb.get(offset);//响应个数
-                offset+=1;
-                int ack=diagNumberAck&0xFF;
-                for(int i=0;i<ack;i++){
-                    int id=bb.get(offset);
-                    offset+=1;
-                    int fieldLength=getFieldLength(id);
-                    String _msg=new String(data, offset, fieldLength);//依次读取msg
-                    offset+=fieldLength;
-                    if(id==1){
-                        diagnosticData.setMessage1(_msg);
-                    }else if(id==2){
-                        diagnosticData.setMessage2(_msg);
-                    }else if (id ==3){
-                        diagnosticData.setMessage3(_msg);
-                    }else if (id ==4){
-                        diagnosticData.setMessage4(_msg);
-                    }else if (id ==5){
-                        diagnosticData.setMessage5(_msg);
-                    }else if (id ==6){
-                        diagnosticData.setMessage6(_msg);
-                    }else if (id ==7){
-                        diagnosticData.setMessage7(_msg);
-                    }else if (id ==8){
-                        diagnosticData.setMessage8(_msg);
-                    }else if (id ==9){
-                        diagnosticData.setMessage9(_msg);
-                    }else if (id == 10){
-                        diagnosticData.setMessage10(_msg);
-                    }else if (id == 11){
-                        diagnosticData.setMessage11(_msg);
-                    }else if (id == 12){
-                        diagnosticData.setMessage12(_msg);
-                    }else if (id == 13){
-                        diagnosticData.setMessage13(_msg);
-                    }else if (id == 14){
-                        diagnosticData.setMessage14(_msg);
-                    }else if (id == 15){
-                        diagnosticData.setMessage15(_msg);
-                    }else if (id == 16){
-                        diagnosticData.setMessage16(_msg);
-                    }else if (id == 17){
-                        diagnosticData.setMessage17(_msg);
-                    }
-                 }
-                diagnosticData.setDiaCmdDataSize((short)sizeAck);
-                diagnosticData.setDiaNumber((short)ack);//保存响应个数
-                diagnosticData.setEventId((long)eventId);
-                }
-            return diagnosticData;
-        } catch (Exception e) {
-            e.printStackTrace();
-            _logger.error("handle Diagnostic Ack error" + e.getMessage());
-        }
-        return null;
-    }
 
 
 

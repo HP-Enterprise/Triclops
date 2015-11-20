@@ -165,14 +165,11 @@ public class OutputHexService {
     public String getDiagCmdHex(DiagnosticData diagnosticData){
         DiagnosticCommandCmd diagnosticCommandCmd=new DiagnosticCommandCmd();
         diagnosticCommandCmd.setTestFlag((short) 0);
-        diagnosticCommandCmd.setSendingTime((long)dataTool.getCurrentSeconds());
+        diagnosticCommandCmd.setSendingTime((long) dataTool.getCurrentSeconds());
         diagnosticCommandCmd.setApplicationID((short) 66);//>>>
         diagnosticCommandCmd.setMessageID((short) 1);//>>>
         diagnosticCommandCmd.setEventID(diagnosticData.getEventId());
 
-        diagnosticCommandCmd.setDiaCmdDataSize((short)17);
-        diagnosticCommandCmd.setDiaNumber((short)17);
-        diagnosticCommandCmd.setDiaID((byte)0);
 
         DataPackage dpw=new DataPackage("8995_66_1");//>>>
         dpw.fillBean(diagnosticCommandCmd);
@@ -279,6 +276,8 @@ public class OutputHexService {
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
         String warningMessage=buildWarningString(wd);
         return warningMessage;
@@ -315,6 +314,8 @@ public class OutputHexService {
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
         String warningMessage=buildWarningString(wd);
         return warningMessage;
@@ -422,11 +423,13 @@ public class OutputHexService {
         }
         if(wd.getSrsWarning()==(short)1){
             //安全气囊报警 0未触发 1触发
-            sb.append("安全气囊报警触发;");
+            sb.append("安全气囊报警触发,");
+            sb.append("背扣安全带数量:").append(wd.getSafetyBeltCount()).append(",");
+            sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");
         }
         if(wd.getAtaWarning()==(short)1){
             //安全气囊报警 0未触发 1触发
-            sb.append("车辆防盗报警触发;");
+            sb.append("车辆防盗报警触发");
         }
         return sb.toString();
     }

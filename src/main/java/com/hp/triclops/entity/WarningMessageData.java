@@ -27,7 +27,8 @@ public class WarningMessageData {
     private Short srsWarning;
     private Short ataWarning;
 
-
+    private Short safetyBeltCount;
+    private int  vehicleHitSpeed;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -177,5 +178,25 @@ public class WarningMessageData {
 
     public void setAtaWarning(Short ataWarning) {
         this.ataWarning = ataWarning;
+    }
+
+    @Basic
+    @Column(name = "vehicle_hit_speed", nullable = false, insertable = true, updatable = true)
+    public int getVehicleHitSpeed() {
+        return vehicleHitSpeed;
+    }
+
+    public void setVehicleHitSpeed(int vehicleHitSpeed) {
+        this.vehicleHitSpeed = vehicleHitSpeed;
+    }
+
+    @Basic
+    @Column(name = "safety_belt_count", nullable = false, insertable = true, updatable = true)
+    public Short getSafetyBeltCount() {
+        return safetyBeltCount;
+    }
+
+    public void setSafetyBeltCount(Short safetyBeltCount) {
+        this.safetyBeltCount = safetyBeltCount;
     }
 }
