@@ -212,7 +212,7 @@ public class DataHandleService {
     }
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
-        _logger.info(">>save WarningMessage:"+msg);
+        _logger.info(">>save WarningMessage:" + msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         WarningMessage bean=dp.loadBean(WarningMessage.class);
@@ -233,6 +233,9 @@ public class DataHandleService {
         wd.setHeading(bean.getHeading());
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
         warningMessageDataRespository.save(wd);
     }
 
@@ -260,6 +263,9 @@ public class DataHandleService {
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
+
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
         warningMessageDataRespository.save(wd);
     }

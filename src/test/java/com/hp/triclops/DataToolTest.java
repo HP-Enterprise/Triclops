@@ -111,13 +111,13 @@ public class DataToolTest {
         System.out.println(">>>>>|"+dataTool.getLengthString(str,8)+"|");
     }
 
+
+
     @Test
-    public void test_getDatasFromDiagAckMsg(){
-        String byteStr="23 23 00 31 00 55 D2 0F E7 42 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 00 00 00 00 00 00 00 56 1E 16 3D 01 03 01 61 62 63 64 65 66 02 61 03 61 62 63 64 65 48 ";
-        DiagnosticData d= dataTool.getDatasFromDiagAckMsg(byteStr);
-        System.out.println("m1:"+d.getMessage1()+"|m2:"+d.getMessage2()+"|m3:"+d.getMessage3()+"|m4:"+d.getMessage4());
-        Assert.assertEquals(d.getMessage1(), "abcdef");
+    public void test_getHitSpeedFromSpeeds(){
+        float[] speeds = {100.0f, 95.9f, 85.8f, 75.7f, 65.6f, 55.5f, 45.4f, 35.3f, 25.1f, 10.0f, 1.1f, 0.0f};//12个数据,速度为递减的
+//       float[] speeds = {100.f};
+        float max = dataTool.getHitSpeedFromSpeeds(speeds);
+        System.out.println("******************max=" + max);
     }
-
-
 }
