@@ -95,7 +95,7 @@ public class APNSTest {
     @Test
     public void test02(){
 
-        this.applePushService.pushToUser("hello test",1);
+        this.applePushService.pushToUser("hello test",1,"ed86d51d 1a3ffe75 f7f27b5b 8d98160e 0c962f90 c7ddaf04 3eb85403 7cdeb81f");
     }
 
     @Test
