@@ -12,21 +12,29 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
+import com.hp.triclops.utils.HttpRequestTool;
+import com.hp.triclops.utils.HttpRequestor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 生成下行数据包hex 并写入redis
  */
 @Service
 public class OutputHexService {
+
+    @Value("${com.hp.push.url}")
+    private String urlLink;
+
     @Autowired
     Conversion conversionTBox;
     @Autowired
@@ -45,6 +53,8 @@ public class OutputHexService {
     WarningMessageConversionRepository warningMessageConversionRepository;
     @Autowired
     MQService mqService;
+    @Autowired
+    HttpRequestTool httpRequestTool;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
@@ -186,7 +196,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getWarningMessageAndPush(String vin,String msg){
-        String pushMsg=getWarningMessageForPush(vin, msg);
+        Map pushMsg=getWarningMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin,pushMsg);
     }
 
@@ -196,7 +206,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendWarningMessageAndPush(String vin,String msg){
-        String pushMsg=getResendWarningMessageForPush(vin, msg);
+        Map pushMsg=getResendWarningMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin,pushMsg);
     }
 
@@ -206,7 +216,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getFailureMessageAndPush(String vin,String msg){
-        String pushMsg=getFailureMessageForPush(vin, msg);
+        Map pushMsg=getFailureMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin, pushMsg);
     }
 
@@ -216,7 +226,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendFailureMessageAndPush(String vin,String msg){
-        String pushMsg=getResendFailureMessageForPush(vin, msg);
+        Map pushMsg=getResendFailureMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin,pushMsg);
     }
 
@@ -226,7 +236,7 @@ public class OutputHexService {
      * @param vin vin
      * @param pushMsg 文本报警信息
      */
-    public void pushWarningOrFailureMessage(String vin,String pushMsg){
+    public void pushWarningOrFailureMessage(String vin,Map pushMsg){
         _logger.info("push message:"+pushMsg);
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
@@ -237,8 +247,29 @@ public class OutputHexService {
                 int uid=iterator.next().getUid().getId();
                 _logger.info("push to:"+uid+":"+pushMsg);
                 try {
-                    this.mqService.pushToUser(uid, pushMsg);
-                }catch (RuntimeException e){_logger.info(e.getMessage());}
+                    //this.mqService.pushToUser(uid, pushMsg);
+/*                    * @param sourceId    发送用户id<br>
+                    * @param resourceFrom  数据来源,1 手机,2 车机<br>
+                    * @param targetType 目标对象类型 ,1 user ,2 organize <br>
+                    * @param targetId 目标对象id<br>
+                    * @param resourceTo 目标类型 ,1 手机,2 车机,3 短信,4 手机,车机 ,短信<br>1
+                    * @param funType 消息类型 ,1 ,即时通讯 ,2 ,推送消息<br>2
+                    * @param pType 推送消息类型,1 远程控制,2 故障提醒,3 保养提醒,4 位置分享,5 智能寻车,6 位置共享,7 发送位置,8 气囊报警,9 防盗报警<br>289
+                    * @param textContent 发送内容文本、经纬度<br>
+                    * @param contentType 发送内容类型 ,1 文本,2 音乐,3 图片,41 位置信息,42 位置共享开始,43 位置共享结束<br>
+                    * @param messageNums 信息条数 count
+                    * @param cleanFlag 消息推送消除标志，仅针对 气囊报警、防盗报警,0报警,1消除
+                    * @param file 上传的附件*/
+                    pushMsg.put("targetType",1);
+                    pushMsg.put("targetId",uid);
+                    pushMsg.put("resourceTo",1);
+                    pushMsg.put("funType", 2);
+
+                    httpRequestTool.doHttp(urlLink,pushMsg);
+
+                }catch (RuntimeException e){_logger.info(e.getMessage());} catch (Exception e) {
+                    _logger.info(e.getMessage());
+                }
             }
         }else{
             _logger.info("can not push  message,because no user found for vin:"+vin);
@@ -251,7 +282,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public String getWarningMessageForPush(String vin,String msg){
+    public Map getWarningMessageForPush(String vin,String msg){
         //报警数据保存
         _logger.info(">>get WarningMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -265,9 +296,9 @@ public class OutputHexService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -279,7 +310,7 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
-        String warningMessage=buildWarningString(wd);
+        Map warningMessage=buildWarningString(wd);
         return warningMessage;
     }
 
@@ -289,7 +320,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public String getResendWarningMessageForPush(String vin,String msg){
+    public Map getResendWarningMessageForPush(String vin,String msg){
         //报警数据保存
         _logger.info(">>get Resend WarningMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -303,9 +334,9 @@ public class OutputHexService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -317,7 +348,7 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
-        String warningMessage=buildWarningString(wd);
+        Map warningMessage=buildWarningString(wd);
         return warningMessage;
     }
 
@@ -327,7 +358,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据故障hex信息生成文本性质的报警提示
      */
-    public String getFailureMessageForPush(String vin,String msg){
+    public Map getFailureMessageForPush(String vin,String msg){
         //故障数据
         _logger.info(">>get FailureMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -341,9 +372,9 @@ public class OutputHexService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -359,7 +390,7 @@ public class OutputHexService {
         wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
 
         //生成故障信息
-        String failureString=buildFailureString(wd);
+        Map failureString=buildFailureString(wd);
         return failureString;
     }
 
@@ -369,7 +400,7 @@ public class OutputHexService {
      * @param msg 16进制故障信息
      * @return 根据故障hex信息生成文本性质的故障提示
      */
-    public String getResendFailureMessageForPush(String vin,String msg){
+    public Map getResendFailureMessageForPush(String vin,String msg){
         //报警数据保存
         _logger.info(">>get Resend FailureMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -383,9 +414,9 @@ public class OutputHexService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
-        wd.setIsLocation(location[0] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
-        wd.setNorthSouth(location[1] == '0' ? "N" : "S");//bit1 0北纬 1南纬
-        wd.setEastWest(location[2] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
         wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
@@ -401,7 +432,7 @@ public class OutputHexService {
         wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
 
         //生成故障信息
-        String failureString=buildFailureString(wd);
+        Map failureString=buildFailureString(wd);
         return failureString;
     }
 
@@ -410,7 +441,8 @@ public class OutputHexService {
      * @param wd 报警消息实体类
      * @return 便于阅读的报警消息
      */
-    public String buildWarningString(WarningMessageData wd){
+    public Map buildWarningString(WarningMessageData wd){
+        Map dataMap = new HashMap();
         StringBuilder sb=new StringBuilder() ;
         sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
@@ -426,12 +458,16 @@ public class OutputHexService {
             sb.append("安全气囊报警触发,");
             sb.append("背扣安全带数量:").append(wd.getSafetyBeltCount()).append(",");
             sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");
+            dataMap.put("pType",8);
         }
         if(wd.getAtaWarning()==(short)1){
             //安全气囊报警 0未触发 1触发
             sb.append("车辆防盗报警触发");
+            dataMap.put("pType", 9);
         }
-        return sb.toString();
+
+        dataMap.put("textContent",sb.toString());
+        return dataMap;
     }
 
     /**
@@ -439,7 +475,9 @@ public class OutputHexService {
      * @param wd 故障消息实体类
      * @return 便于阅读的消息
      */
-    public String buildFailureString(FailureMessageData wd){
+    public Map buildFailureString(FailureMessageData wd){
+        Map dataMap = new HashMap();
+        int count = 0;
         StringBuilder sb=new StringBuilder() ;
         sb.append("车辆故障信息: ");
         if(wd.getIsLocation()==(short)0){
@@ -455,14 +493,17 @@ public class OutputHexService {
         String info1=messages.get(wd.getInfo1());
         if(info1!=null){
             sb.append(info1+";");
+            count++;
         }
         String info2=messages.get(wd.getInfo2());
         if(info2!=null){
             sb.append(info2+";");
+            count++;
         }
         String info3=messages.get(wd.getInfo3());
         if(info3!=null){
             sb.append(info3+";");
+            count++;
         }
         String info4=messages.get(wd.getInfo4());
         if(info4!=null){
@@ -471,20 +512,28 @@ public class OutputHexService {
         String info5=messages.get(wd.getInfo5());
         if(info5!=null){
             sb.append(info5+";");
+            count++;
         }
         String info6=messages.get(wd.getInfo6());
         if(info6!=null){
             sb.append(info6+";");
+            count++;
         }
         String info7=messages.get(wd.getInfo7());
         if(info7!=null){
             sb.append(info7+";");
+            count++;
         }
         String info8=messages.get(wd.getInfo8());
         if(info8!=null){
             sb.append(info8+";");
+            count++;
         }
-        return sb.toString();
+        dataMap.put("messageNums",count);
+        dataMap.put("textContent",sb.toString());
+        dataMap.put("pType",2);
+
+        return dataMap;
     }
 
     /**

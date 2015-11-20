@@ -15,6 +15,9 @@ com.hp.apns.cer.password:
 # apns p12 file path
 com.hp.apns.p12:
 
+# com.hp.push.url
+com.hp.push.url:
+
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:
     level:
