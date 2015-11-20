@@ -37,7 +37,7 @@ public class HttpRequestTool {
                 sb.append("&").append("messageNums=").append(messageNums);
             }
             if(textContent!=null&&!textContent.equals("null")){
-                String textContentEncode=java.net.URLEncoder.encode(textContent);
+                String textContentEncode=java.net.URLEncoder.encode(textContent,"UTF-8");
                 sb.append("&").append("textContent=").append(textContentEncode);
             }
             if(pType!=null&&!pType.equals("null")){
