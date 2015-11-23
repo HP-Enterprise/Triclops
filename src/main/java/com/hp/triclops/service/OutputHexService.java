@@ -13,7 +13,6 @@ import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
 import com.hp.triclops.utils.HttpRequestTool;
-import com.hp.triclops.utils.HttpRequestor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
