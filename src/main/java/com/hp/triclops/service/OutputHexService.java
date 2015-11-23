@@ -13,7 +13,6 @@ import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
 import com.hp.triclops.utils.HttpRequestTool;
-import com.hp.triclops.utils.HttpRequestor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,7 +195,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getWarningMessageAndPush(String vin,String msg){
-        Map pushMsg=getWarningMessageForPush(vin, msg);
+        Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin,pushMsg);
     }
 
@@ -206,7 +205,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendWarningMessageAndPush(String vin,String msg){
-        Map pushMsg=getResendWarningMessageForPush(vin, msg);
+        Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin,pushMsg);
     }
 
@@ -216,7 +215,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getFailureMessageAndPush(String vin,String msg){
-        Map pushMsg=getFailureMessageForPush(vin, msg);
+        Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin, pushMsg);
     }
 
@@ -226,7 +225,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendFailureMessageAndPush(String vin,String msg){
-        Map pushMsg=getResendFailureMessageForPush(vin, msg);
+        Map<String,Object> pushMsg=getResendFailureMessageForPush(vin, msg);
         pushWarningOrFailureMessage(vin,pushMsg);
     }
 
@@ -236,7 +235,7 @@ public class OutputHexService {
      * @param vin vin
      * @param pushMsg 文本报警信息
      */
-    public void pushWarningOrFailureMessage(String vin,Map pushMsg){
+    public void pushWarningOrFailureMessage(String vin,Map<String,Object> pushMsg){
         _logger.info("push message:"+pushMsg);
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
@@ -282,7 +281,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map getWarningMessageForPush(String vin,String msg){
+    public Map<String,Object> getWarningMessageForPush(String vin,String msg){
         //报警数据保存
         _logger.info(">>get WarningMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -310,7 +309,7 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
-        Map warningMessage=buildWarningString(wd);
+        Map<String,Object> warningMessage=buildWarningString(wd);
         return warningMessage;
     }
 
@@ -320,7 +319,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map getResendWarningMessageForPush(String vin,String msg){
+    public Map<String,Object> getResendWarningMessageForPush(String vin,String msg){
         //报警数据保存
         _logger.info(">>get Resend WarningMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -348,7 +347,7 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
         //生成报警信息
-        Map warningMessage=buildWarningString(wd);
+        Map<String,Object> warningMessage=buildWarningString(wd);
         return warningMessage;
     }
 
@@ -358,7 +357,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据故障hex信息生成文本性质的报警提示
      */
-    public Map getFailureMessageForPush(String vin,String msg){
+    public Map<String,Object> getFailureMessageForPush(String vin,String msg){
         //故障数据
         _logger.info(">>get FailureMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -390,7 +389,7 @@ public class OutputHexService {
         wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
 
         //生成故障信息
-        Map failureString=buildFailureString(wd);
+        Map<String,Object> failureString=buildFailureString(wd);
         return failureString;
     }
 
@@ -400,7 +399,7 @@ public class OutputHexService {
      * @param msg 16进制故障信息
      * @return 根据故障hex信息生成文本性质的故障提示
      */
-    public Map getResendFailureMessageForPush(String vin,String msg){
+    public Map<String,Object> getResendFailureMessageForPush(String vin,String msg){
         //报警数据保存
         _logger.info(">>get Resend FailureMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -432,7 +431,7 @@ public class OutputHexService {
         wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
 
         //生成故障信息
-        Map failureString=buildFailureString(wd);
+        Map<String,Object> failureString=buildFailureString(wd);
         return failureString;
     }
 
@@ -441,8 +440,8 @@ public class OutputHexService {
      * @param wd 报警消息实体类
      * @return 便于阅读的报警消息
      */
-    public Map buildWarningString(WarningMessageData wd){
-        Map dataMap = new HashMap();
+    public Map<String,Object> buildWarningString(WarningMessageData wd){
+        Map<String,Object> dataMap = new HashMap<String,Object>();
         StringBuilder sb=new StringBuilder() ;
         sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
@@ -475,8 +474,8 @@ public class OutputHexService {
      * @param wd 故障消息实体类
      * @return 便于阅读的消息
      */
-    public Map buildFailureString(FailureMessageData wd){
-        Map dataMap = new HashMap();
+    public Map<String,Object> buildFailureString(FailureMessageData wd){
+        Map<String,Object> dataMap = new HashMap<String,Object>();
         int count = 0;
         StringBuilder sb=new StringBuilder() ;
         sb.append("车辆故障信息: ");
