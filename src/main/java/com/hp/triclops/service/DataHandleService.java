@@ -109,6 +109,7 @@ public class DataHandleService {
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        rd.setTripId(bean.getTripID());
 
         rd.setFuelOil(bean.getFuelOil() / 2f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
@@ -167,6 +168,8 @@ public class DataHandleService {
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        rd.setTripId(bean.getTripID());
+
         rd.setFuelOil(bean.getFuelOil() / 2f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));

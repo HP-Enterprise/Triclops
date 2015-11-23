@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   application_id int(11) NOT NULL COMMENT 'application id',
   message_id int(11) NOT NULL COMMENT 'message id',
   sending_time DATETIME NOT NULL COMMENT '发送时间',
+  trip_id int(6) NOT NULL COMMENT '电动机启动次数',
   fuel_oil float NOT NULL COMMENT '燃油量',
   avg_oil_a float NOT NULL COMMENT '平均油耗A',
   avg_oil_b float NOT NULL COMMENT '平均油耗B',
