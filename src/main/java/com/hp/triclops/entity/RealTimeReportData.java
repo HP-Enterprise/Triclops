@@ -35,6 +35,7 @@ public class RealTimeReportData {
     private String leftRearDoorInformation;
     private String rightFrontDoorInformation;
     private String rightRearDoorInformation;
+    private int tripId;
 
 
     @Id
@@ -279,8 +280,13 @@ public class RealTimeReportData {
         this.rightRearDoorInformation = rightRearDoorInformation;
     }
 
+    @Basic
+    @Column(name = "trip_id", nullable = false, insertable = true, updatable = true)
+    public int getTripId() {
+        return tripId;
+    }
 
-
-
-
+    public void setTripId(int tripId) {
+        this.tripId = tripId;
+    }
 }
