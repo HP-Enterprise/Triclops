@@ -52,6 +52,8 @@ public class OutputHexService {
     MQService mqService;
     @Autowired
     HttpRequestTool httpRequestTool;
+    @Autowired
+    RealTimeReportDataRespository realTimeReportDataRespository;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
@@ -193,8 +195,19 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getWarningMessageAndPush(String vin,String msg){
-        Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin,pushMsg);
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
+        //一个车对应多个uid
+        if(uvr.size()>0) {
+            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
+            while (iterator.hasNext()) {
+                //int uid = iterator.next().getUid().getId();
+                User user = iterator.next().getUid();
+
+                Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user);
+                pushWarningOrFailureMessage(vin,pushMsg);
+            }
+        }
     }
 
     /**
@@ -203,8 +216,18 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendWarningMessageAndPush(String vin,String msg){
-        Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin,pushMsg);
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
+        //一个车对应多个uid
+        if(uvr.size()>0) {
+            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
+            while (iterator.hasNext()) {
+                User user = iterator.next().getUid();
+                Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user);
+                pushWarningOrFailureMessage(vin,pushMsg);
+            }
+        }
+
     }
 
     /**
@@ -279,7 +302,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map<String,Object> getWarningMessageForPush(String vin,String msg){
+    public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user){
         //报警数据保存
         _logger.info(">>get WarningMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -306,8 +329,15 @@ public class OutputHexService {
 
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
+        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+        RealTimeReportData rd=null;
+        if(rdList!=null&&rdList.size()>0) {
+            rd = rdList.get(0);
+        }
+
         //生成报警信息
-        Map<String,Object> warningMessage=buildWarningString(wd);
+        Map<String,Object> warningMessage=buildWarningString(wd,user,rd);
         return warningMessage;
     }
 
@@ -317,7 +347,7 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map<String,Object> getResendWarningMessageForPush(String vin,String msg){
+    public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user){
         //报警数据保存
         _logger.info(">>get Resend WarningMessage For Push:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -344,8 +374,14 @@ public class OutputHexService {
 
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
+        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+        RealTimeReportData rd=null;
+        if(rdList!=null&&rdList.size()>0) {
+            rd = rdList.get(0);
+        }
         //生成报警信息
-        Map<String,Object> warningMessage=buildWarningString(wd);
+        Map<String,Object> warningMessage=buildWarningString(wd, user, rd);
         return warningMessage;
     }
 
@@ -386,8 +422,14 @@ public class OutputHexService {
         wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
         wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
 
+        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+        RealTimeReportData rd=null;
+        if(rdList!=null&&rdList.size()>0) {
+            rd = rdList.get(0);
+        }
+        //RealTimeDataShow realTimeDataShow = vehicleDataService.getRealTimeData(vin);
         //生成故障信息
-        Map<String,Object> failureString=buildFailureString(wd);
+        Map<String,Object> failureString=buildFailureString(wd, rd);
         return failureString;
     }
 
@@ -428,8 +470,13 @@ public class OutputHexService {
         wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
         wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
 
+        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+        RealTimeReportData rd=null;
+        if(rdList!=null&&rdList.size()>0) {
+            rd = rdList.get(0);
+        }
         //生成故障信息
-        Map<String,Object> failureString=buildFailureString(wd);
+        Map<String,Object> failureString=buildFailureString(wd, rd);
         return failureString;
     }
 
@@ -438,7 +485,7 @@ public class OutputHexService {
      * @param wd 报警消息实体类
      * @return 便于阅读的报警消息
      */
-    public Map<String,Object> buildWarningString(WarningMessageData wd){
+    public Map<String,Object> buildWarningString(WarningMessageData wd,User user,RealTimeReportData realTimeReportData){
         Map<String,Object> dataMap = new HashMap<String,Object>();
        // StringBuilder sb=new StringBuilder() ;
         Map<String,Object> jsonMap = new HashMap<String,Object>();
@@ -468,12 +515,38 @@ public class OutputHexService {
             jsonMap.put("vehicle_hit_speed",wd.getVehicleHitSpeed());
             dataMap.put("pType", 8);
 
+            String contactsPhone ="";
+            if(user!=null){
+                contactsPhone =  user.getContactsPhone();
+            }
+            jsonMap.put("contacts_phone",contactsPhone);
         }
         if(wd.getAtaWarning()==(short)1){
-            //安全气囊报警 0未触发 1触发
+            //防盗报警 0未触发 1触发
            // sb.append("车辆防盗报警触发");
             jsonMap.put("ata_warning",true);
             dataMap.put("pType", 9);
+
+            String leftFrontDoorInformation = "";
+            String leftRearDoorInformation = "";
+            String rightFrontDoorInformation = "";
+            String rightRearDoorInformation = "";
+            String engineCoverState = "";
+            String trunkLidState = "";
+            if(realTimeReportData!=null){
+                leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
+                leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
+                rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
+                rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
+                engineCoverState = realTimeReportData.getEngineCoverState();
+                trunkLidState = realTimeReportData.getTrunkLidState();
+            }
+            jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
+            jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
+            jsonMap.put("rightFrontDoorInformation",rightFrontDoorInformation);
+            jsonMap.put("rightRearDoorInformation",rightRearDoorInformation);
+            jsonMap.put("engineCoverState",engineCoverState);
+            jsonMap.put("trunkLidState",trunkLidState);
         }
         jsonMap.put("position", positionMap);
         String contextJson= JSON.toJSONString(jsonMap);
@@ -487,27 +560,37 @@ public class OutputHexService {
      * @param wd 故障消息实体类
      * @return 便于阅读的消息
      */
-    public Map<String,Object> buildFailureString(FailureMessageData wd){
+    public Map<String,Object> buildFailureString(FailureMessageData wd,RealTimeReportData realTimeReportData){
         Map<String,Object> dataMap = new HashMap<String,Object>();
 
         Map<String,Object> jsonMap = new HashMap<String,Object>();
-        Map<String,String> positionMap = new HashMap<String,String>();
+       // Map<String,String> positionMap = new HashMap<String,String>();
         List<String> failInfo = new ArrayList<String>();
+
+        int drivingRange = 0;
+        int drivingTime = 0;
+        if(realTimeReportData!=null){
+            drivingRange = realTimeReportData.getDrivingRange();
+            drivingTime = realTimeReportData.getDrivingTime();
+        }
+        jsonMap.put("driving_range",drivingRange);
+        jsonMap.put("driving_time",drivingTime);
+
         int count = 0;
         //StringBuilder sb=new StringBuilder() ;
         //sb.append("车辆故障信息: ");
-        if(wd.getIsLocation()==(short)0){
+    /*    if(wd.getIsLocation()==(short)0){
             //0有效 1无效
-/*            sb.append("当前位置:");
+            sb.append("当前位置:");
             sb.append("经度:").append(wd.getLongitude()).append(wd.getEastWest()).append(",");
             sb.append("纬度").append(wd.getLatitude()).append(wd.getNorthSouth()).append(";");
             sb.append("速度:").append(wd.getSpeed()).append("km/h;");
-            sb.append("方向:").append(wd.getHeading()).append(";");*/
+            sb.append("方向:").append(wd.getHeading()).append(";");
             positionMap.put("longitude", new StringBuilder().append(wd.getLongitude()).append(wd.getEastWest()).toString());
             positionMap.put("latitude", new StringBuilder().append(wd.getLatitude()).append(wd.getNorthSouth()).toString());
             positionMap.put("speed", new StringBuilder().append(wd.getSpeed()).append("km/h;").toString());
             positionMap.put("heading", new StringBuilder().append(wd.getHeading()).toString());
-        }
+        }*/
         Iterator<WarningMessageConversion> iterator=warningMessageConversionRepository.findAll().iterator();
         HashMap<Short,String> messages=dataTool.messageIteratorToMap(iterator);
         String info1=messages.get(wd.getInfo1());
@@ -558,7 +641,7 @@ public class OutputHexService {
             failInfo.add(info8);
             count++;
         }
-        jsonMap.put("position",positionMap);
+        //jsonMap.put("position",positionMap);
         jsonMap.put("failure_info",failInfo);
         jsonMap.put("failure_num",count);
         String contextJson= JSON.toJSONString(jsonMap);
