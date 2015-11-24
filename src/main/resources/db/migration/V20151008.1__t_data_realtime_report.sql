@@ -5,10 +5,14 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   application_id int(11) NOT NULL COMMENT 'application id',
   message_id int(11) NOT NULL COMMENT 'message id',
   sending_time DATETIME NOT NULL COMMENT '发送时间',
+  driving_time int(11)  COMMENT '行驶时间',
   trip_id int(6) NOT NULL COMMENT '电动机启动次数',
+  oil_life smallint(6)   COMMENT '机油寿命',
   fuel_oil float NOT NULL COMMENT '燃油量',
   avg_oil_a float NOT NULL COMMENT '平均油耗A',
   avg_oil_b float NOT NULL COMMENT '平均油耗B',
+  driving_range int(11)  COMMENT '行驶里程',
+  mileage_range int(11)  COMMENT '续航里程',
   service_intervall int(11) NOT NULL COMMENT '保养里程',
   left_front_tire_pressure float NOT NULL COMMENT '左前轮胎压',
   left_rear_tire_pressure float NOT NULL COMMENT '左后轮胎压',
@@ -24,6 +28,10 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   left_rear_door_information varchar(1) NOT NULL COMMENT '左后车门信息1开0关',
   right_front_door_information varchar(1) NOT NULL COMMENT '右前车门信息1开0关',
   right_rear_door_information varchar(1) NOT NULL COMMENT '右后车门信息1开0关',
+  engine_cover_state varchar(1)  COMMENT '发动机盖状态1开0关',
+  trunk_lid_state varchar(1)  COMMENT '后备箱盖状态1开0关',
+  skylight_state varchar(1)  COMMENT '天窗状态1开0关',
+  parking_state varchar(1)  COMMENT '驻车状态',
 
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8 COMMENT='实时数据表';
