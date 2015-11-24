@@ -17,9 +17,13 @@ public class RealTimeReportData {
     private int applicationId;
     private int messageId;
     private Date sendingTime;
+    private int drivingTime;
+    private Short oilLife;
     private float fuelOil;
     private float avgOilA;
     private float avgOilB;
+    private int drivingRange;
+    private int mileageRange;
     private int serviceIntervall;
     private float leftFrontTirePressure;
     private float leftRearTirePressure;
@@ -35,6 +39,10 @@ public class RealTimeReportData {
     private String leftRearDoorInformation;
     private String rightFrontDoorInformation;
     private String rightRearDoorInformation;
+    private String engineCoverState;
+    private String trunkLidState;
+    private String skylightState;
+    private String parkingState;
     private int tripId;
 
 
@@ -288,5 +296,85 @@ public class RealTimeReportData {
 
     public void setTripId(int tripId) {
         this.tripId = tripId;
+    }
+
+    @Basic
+    @Column(name = "driving_time", nullable = true, insertable = true, updatable = true)
+    public int getDrivingTime() {
+        return drivingTime;
+    }
+
+    public void setDrivingTime(int drivingTime) {
+        this.drivingTime = drivingTime;
+    }
+
+    @Basic
+    @Column(name = "oil_life", nullable = true, insertable = true, updatable = true)
+    public Short getOilLife() {
+        return oilLife;
+    }
+
+    public void setOilLife(Short oilLife) {
+        this.oilLife = oilLife;
+    }
+
+    @Basic
+    @Column(name = "driving_range", nullable = true, insertable = true, updatable = true)
+    public int getDrivingRange() {
+        return drivingRange;
+    }
+
+    public void setDrivingRange(int drivingRange) {
+        this.drivingRange = drivingRange;
+    }
+
+    @Basic
+    @Column(name = "mileageRange", nullable = true, insertable = true, updatable = true)
+    public int getMileageRange() {
+        return mileageRange;
+    }
+
+    public void setMileageRange(int mileageRange) {
+        this.mileageRange = mileageRange;
+    }
+
+    @Basic
+    @Column(name = "engine_cover_state", nullable = true, insertable = true, updatable = true, length = 1)
+    public String getEngineCoverState() {
+        return engineCoverState;
+    }
+
+    public void setEngineCoverState(String engineCoverState) {
+        this.engineCoverState = engineCoverState;
+    }
+
+    @Basic
+    @Column(name = "trunk_lid_state", nullable = true, insertable = true, updatable = true, length = 1)
+    public String getTrunkLidState() {
+        return trunkLidState;
+    }
+
+    public void setTrunkLidState(String trunkLidState) {
+        this.trunkLidState = trunkLidState;
+    }
+
+    @Basic
+    @Column(name = "skylight_state", nullable = true, insertable = true, updatable = true, length = 1)
+    public String getSkylightState() {
+        return skylightState;
+    }
+
+    public void setSkylightState(String skylightState) {
+        this.skylightState = skylightState;
+    }
+
+    @Basic
+    @Column(name = "parking_state", nullable = true, insertable = true, updatable = true, length = 1)
+    public String getParkingState() {
+        return parkingState;
+    }
+
+    public void setParkingState(String parkingState) {
+        this.parkingState = parkingState;
     }
 }
