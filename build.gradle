@@ -37,6 +37,7 @@ dependencies {
     compile("com.notnoop.apns:apns:0.1.6")
     compile("com.rabbitmq:amqp-client:3.5.4")
     compile("commons-lang:commons-lang:2.6")
+    compile("joda-time:joda-time:2.9.+")
     runtime("mysql:mysql-connector-java:5.1.+")
     testCompile("org.springframework.boot:spring-boot-starter-test:1.2+")
 }
