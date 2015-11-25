@@ -29,6 +29,8 @@ public class DataHandleService {
     WarningMessageDataRespository warningMessageDataRespository;
     @Autowired
     FailureMessageDataRespository failureMessageDataRespository;
+    @Autowired
+    OutputHexService outputHexService;
 
 
     @Autowired
@@ -55,15 +57,19 @@ public class DataHandleService {
                 break;
             case 0x24://报警数据
                 saveWarningMessage(vin, msg);
+                outputHexService.getWarningMessageAndPush(vin, msg);
                 break;
             case 0x25://补发报警数据
                 saveDataResendWarningMessage(vin, msg);
+                outputHexService.getResendWarningMessageAndPush(vin, msg);
                 break;
             case 0x28://故障数据
                 saveFailureMessage(vin, msg);
+                outputHexService.getFailureMessageAndPush(vin, msg);
                 break;
             case 0x29://补发故障数据
                 saveDataResendFailureMessage(vin, msg);
+                outputHexService.getResendFailureMessageAndPush(vin, msg);
                 break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
