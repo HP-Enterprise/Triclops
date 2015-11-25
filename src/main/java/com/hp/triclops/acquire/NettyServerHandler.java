@@ -139,7 +139,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
+                    //outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
                     break;
                 case 0x25://补发报警数据上报
                     _logger.info("Data ReSend Warning Message");
@@ -149,7 +149,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
+                    //outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
                     //补发报警数据是否需要push
                     break;
                 case 0x26://心跳
@@ -182,7 +182,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
+                    //outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
                     break;
                 case 0x29://补发故障数据上报
                     _logger.info("Data ReSend Failure Message");
@@ -192,7 +192,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
+                    //outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
                     //补发故障数据是否需要push
                     break;
                 case 0x31://远程控制响应(上行)包含mid 2 4 5

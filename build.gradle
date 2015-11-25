@@ -35,6 +35,7 @@ dependencies {
     compile("io.netty:netty-all:4.0.31.Final")
     compile("redis.clients:jedis:2.7.+")
     compile("com.notnoop.apns:apns:0.1.6")
+    compile("com.alibaba:fastjson:1.1.41")
     compile("com.rabbitmq:amqp-client:3.5.4")
     compile("commons-lang:commons-lang:2.6")
     runtime("mysql:mysql-connector-java:5.1.+")
