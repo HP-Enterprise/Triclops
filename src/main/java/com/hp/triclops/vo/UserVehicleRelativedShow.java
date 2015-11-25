@@ -56,7 +56,7 @@ public class UserVehicleRelativedShow {
     private int vid;          // 车辆ID
     private int vflag;        // 是否为默认车辆
     private int iflag;        // 是否为车主
-    private int parentuser;   // 共享驾驶人ID
+    private int parentuser;   // 车主ID
 
     public UserVehicleRelativedShow() {}
 
