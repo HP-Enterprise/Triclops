@@ -504,6 +504,11 @@ public class OutputHexService {
             positionMap.put("speed",new StringBuilder().append(wd.getSpeed()).append("km/h;").toString());
             positionMap.put("heading",new StringBuilder().append(wd.getHeading()).toString());
 
+        }else{
+            positionMap.put("longitude","");
+            positionMap.put("latitude","");
+            positionMap.put("speed","");
+            positionMap.put("heading","");
         }
         if(wd.getSrsWarning()==(short)1){
             //安全气囊报警 0未触发 1触发
@@ -520,8 +525,7 @@ public class OutputHexService {
                 contactsPhone =  user.getContactsPhone();
             }
             jsonMap.put("contacts_phone",contactsPhone);
-        }
-        if(wd.getAtaWarning()==(short)1){
+        }else if(wd.getAtaWarning()==(short)1){
             //防盗报警 0未触发 1触发
            // sb.append("车辆防盗报警触发");
             jsonMap.put("ata_warning",true);
