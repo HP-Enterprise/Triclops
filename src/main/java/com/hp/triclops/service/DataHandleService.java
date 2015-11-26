@@ -144,7 +144,7 @@ public class DataHandleService {
 
         // waiting for protocol after 6.1.3
         rd.setDrivingTime(1);
-        rd.setOilLife((short)1);
+        rd.setOilLife((short) 1);
         rd.setDrivingRange(1);
         rd.setMileageRange(1);
         rd.setEngineCoverState("0");
@@ -210,6 +210,16 @@ public class DataHandleService {
         rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4])+String.valueOf(doors[5])));
         rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2])+String.valueOf(doors[3])));
         rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0])+String.valueOf(doors[1])));
+
+        // waiting for protocol after 6.1.3
+        rd.setDrivingTime(1);
+        rd.setOilLife((short)1);
+        rd.setDrivingRange(1);
+        rd.setMileageRange(1);
+        rd.setEngineCoverState("0");
+        rd.setTrunkLidState("0");
+        rd.setSkylightState("0");
+        rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
