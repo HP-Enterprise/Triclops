@@ -147,10 +147,10 @@ public class DataHandleService {
         rd.setOilLife((short)1);
         rd.setDrivingRange(1);
         rd.setMileageRange(1);
-        rd.setEngineCoverState("关");
-        rd.setTrunkLidState("关");
-        rd.setSkylightState("关");
-        rd.setParkingState("关");
+        rd.setEngineCoverState("0");
+        rd.setTrunkLidState("0");
+        rd.setSkylightState("0");
+        rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
