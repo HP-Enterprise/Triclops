@@ -245,6 +245,24 @@ public class VehicleDataService {
                 data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
                 data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
 
+                data.setOilLife(rd.getOilLife());
+                data.setParkingState(Integer.parseInt(rd.getParkingState()));
+                data.setMileageRange(rd.getMileageRange());
+                data.setDrivingRange(rd.getDrivingRange());
+                data.setDrivingTime(rd.getDrivingTime());
+                data.setSkylightState(Integer.parseInt(rd.getSkylightState()));
+                data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
+                data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
+
+                data.setFmax(280);
+                data.setFmin(200);
+                data.setRmax(290);
+                data.setRmin(210);
+                data.setLfok(this.getLfokStatu(rd.getLeftFrontTirePressure()));
+                data.setLrok(this.getLrokStatu(rd.getLeftRearTirePressure()));
+                data.setRfok(this.getRfokStatu(rd.getRightRearTirePressure()));
+                data.setRrok(this.getRrokStatu(rd.getRightRearTirePressure()));
+
                 data.setIsLocation(gd.getIsLocation());//
                 data.setNorthSouth(gd.getNorthSouth());//
                 data.setEastWest(gd.getEastWest());//
@@ -252,10 +270,39 @@ public class VehicleDataService {
                 data.setLongitude(gd.getLongitude());
                 data.setSpeed(gd.getSpeed());
                 data.setHeading(gd.getHeading());
+
+
                 return data;
         }
 
         }
+
+    public int getLfokStatu(Float leftFrontTirePressure){
+        if(leftFrontTirePressure>=200 && leftFrontTirePressure<=280){
+            return 0;
+        }
+        return 1;
+    }
+    public int getLrokStatu(Float leftRearTirePressure){
+        if(leftRearTirePressure>=210 && leftRearTirePressure<=290){
+            return 0;
+        }
+        return 1;
+    }
+    public int getRfokStatu(Float rightFrontTirePressure){
+        if(rightFrontTirePressure>=200 && rightFrontTirePressure<=280){
+            return 0;
+        }
+        return 1;
+    }
+    public int getRrokStatu(Float rightRearTirePressure){
+        if(rightRearTirePressure>=210 && rightRearTirePressure<=290){
+            return 0;
+        }
+        return 1;
+    }
+
+
 
     /**
      * 获取车辆实时位置数据
