@@ -65,7 +65,7 @@ public class VehicleDataService {
             Long eventId=(long)dataTool.getCurrentSeconds();
             RemoteControl rc=new RemoteControl();
             rc.setUid(uid);
-            rc.setSessionId(49+"-"+eventId);//根据application和eventid生成的session_id
+            rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
             rc.setVin(vin);
             rc.setSendingTime(new Date());
             rc.setControlType(cType);
@@ -97,6 +97,9 @@ public class VehicleDataService {
         return count;
     }
     public TBoxParmSet handleParmSet(TBoxParmSet tBoxParmSet){
+        Long eventId=(long)dataTool.getCurrentSeconds();
+        tBoxParmSet.setEventId(eventId);
+        tBoxParmSet.setSendingTime(new Date());
         tBoxParmSet.setStatus((short)0);//初始标识
         tBoxParmSet.setFrequencySaveLocalMediaResult((short)1);//标识单条参数结果默认值 默认为未成功 等待响应数据来标识
         tBoxParmSet.setFrequencyForReportResult((short)1);

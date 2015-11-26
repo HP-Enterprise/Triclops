@@ -31,6 +31,12 @@ public class DataTool {
     public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
 
+    public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
+    public static final long msgCurrentStatus_ttl=600l;
+    public static final long remote_cmd_value_ttl=600l;
+
+
+
     private Logger _logger = LoggerFactory.getLogger(DataTool.class);
     @Autowired
     VehicleRepository vehicleRepository;
