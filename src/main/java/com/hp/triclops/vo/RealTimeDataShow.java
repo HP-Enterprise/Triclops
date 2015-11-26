@@ -211,6 +211,91 @@ import java.util.Date;
  *             <td>int</td>
  *             <td>方向角</td>
  *         </tr>
+ *          <tr>
+ *             <td>oilLife</td>
+ *             <td>int</td>
+ *             <td>机油寿命</td>
+ *         </tr>
+ *          <tr>
+ *             <td>parkingState</td>
+ *             <td>int</td>
+ *             <td>驻车状态</td>
+ *         </tr>
+ *          <tr>
+ *             <td>heading</td>
+ *             <td>int</td>
+ *             <td>方向角</td>
+ *         </tr>
+ *          <tr>
+ *             <td>mileageRange</td>
+ *             <td>int</td>
+ *             <td>续航里程</td>
+ *         </tr>
+ *          <tr>
+ *             <td>drivingRange</td>
+ *             <td>int</td>
+ *             <td>行驶里程</td>
+ *         </tr>
+ *          <tr>
+ *             <td>drivingTime</td>
+ *             <td>int</td>
+ *             <td>行驶时间</td>
+ *         </tr>
+ *          <tr>
+ *             <td>lfok</td>
+ *             <td>int</td>
+ *             <td>左前轮正常标识</td>
+ *         </tr>
+ *          <tr>
+ *             <td>lrok</td>
+ *             <td>int</td>
+ *             <td>左后轮正常标识</td>
+ *         </tr>
+ *          <tr>
+ *             <td>rfok</td>
+ *             <td>int</td>
+ *             <td>右前轮正常标识</td>
+ *         </tr>
+ *          <tr>
+ *             <td>rrok</td>
+ *             <td>int</td>
+ *             <td>右后轮正常标识</td>
+ *         </tr>
+ *          <tr>
+ *             <td>fmax</td>
+ *             <td>int</td>
+ *             <td>前轮最大值</td>
+ *         </tr>
+ *          <tr>
+ *             <td>fmin</td>
+ *             <td>int</td>
+ *             <td>前轮最小值</td>
+ *         </tr>
+ *          <tr>
+ *             <td>rmax</td>
+ *             <td>int</td>
+ *             <td>后轮最大值</td>
+ *         </tr>
+ *          <tr>
+ *             <td>rmin</td>
+ *             <td>int</td>
+ *             <td>后轮最小值</td>
+ *         </tr>
+ *          <tr>
+ *             <td>skylightState</td>
+ *             <td>int</td>
+ *             <td>天窗信息</td>
+ *         </tr>
+ *          <tr>
+ *             <td>engineDoorInformation</td>
+ *             <td>int</td>
+ *             <td>发动机门状态</td>
+ *         </tr>
+ *          <tr>
+ *             <td>trunkDoorInformation</td>
+ *             <td>int</td>
+ *             <td>行李箱门状态</td>
+ *         </tr>
  *     </tbody>
  * </table>
  */
@@ -249,6 +334,24 @@ public class RealTimeDataShow {
     private double longitude;
     private float speed;
     private int heading;
+
+    private int oilLife;
+    private int parkingState;
+    private int mileageRange;
+    private int drivingRange;
+    private int drivingTime;
+    private int lfok;
+    private int lrok;
+    private int rfok;
+    private int rrok;
+    private int fmax;
+    private int fmin;
+    private int rmax;
+    private int rmin;
+    private int skylightState;
+    private int engineDoorInformation;
+    private int trunkDoorInformation;
+
 
     public Long getId() {
         return id;
@@ -496,5 +599,133 @@ public class RealTimeDataShow {
 
     public void setHeading(int heading) {
         this.heading = heading;
+    }
+
+    public int getOilLife() {
+        return oilLife;
+    }
+
+    public void setOilLife(int oilLife) {
+        this.oilLife = oilLife;
+    }
+
+    public int getParkingState() {
+        return parkingState;
+    }
+
+    public void setParkingState(int parkingState) {
+        this.parkingState = parkingState;
+    }
+
+    public int getMileageRange() {
+        return mileageRange;
+    }
+
+    public void setMileageRange(int mileageRange) {
+        this.mileageRange = mileageRange;
+    }
+
+    public int getDrivingRange() {
+        return drivingRange;
+    }
+
+    public void setDrivingRange(int drivingRange) {
+        this.drivingRange = drivingRange;
+    }
+
+    public int getDrivingTime() {
+        return drivingTime;
+    }
+
+    public void setDrivingTime(int drivingTime) {
+        this.drivingTime = drivingTime;
+    }
+
+    public int getLfok() {
+        return lfok;
+    }
+
+    public void setLfok(int lfok) {
+        this.lfok = lfok;
+    }
+
+    public int getLrok() {
+        return lrok;
+    }
+
+    public void setLrok(int lrok) {
+        this.lrok = lrok;
+    }
+
+    public int getRfok() {
+        return rfok;
+    }
+
+    public void setRfok(int rfok) {
+        this.rfok = rfok;
+    }
+
+    public int getRrok() {
+        return rrok;
+    }
+
+    public void setRrok(int rrok) {
+        this.rrok = rrok;
+    }
+
+    public int getFmax() {
+        return fmax;
+    }
+
+    public void setFmax(int fmax) {
+        this.fmax = fmax;
+    }
+
+    public int getFmin() {
+        return fmin;
+    }
+
+    public void setFmin(int fmin) {
+        this.fmin = fmin;
+    }
+
+    public int getRmax() {
+        return rmax;
+    }
+
+    public void setRmax(int rmax) {
+        this.rmax = rmax;
+    }
+
+    public int getRmin() {
+        return rmin;
+    }
+
+    public void setRmin(int rmin) {
+        this.rmin = rmin;
+    }
+
+    public int getSkylightState() {
+        return skylightState;
+    }
+
+    public void setSkylightState(int skylightState) {
+        this.skylightState = skylightState;
+    }
+
+    public int getEngineDoorInformation() {
+        return engineDoorInformation;
+    }
+
+    public void setEngineDoorInformation(int engineDoorInformation) {
+        this.engineDoorInformation = engineDoorInformation;
+    }
+
+    public int getTrunkDoorInformation() {
+        return trunkDoorInformation;
+    }
+
+    public void setTrunkDoorInformation(int trunkDoorInformation) {
+        this.trunkDoorInformation = trunkDoorInformation;
     }
 }
