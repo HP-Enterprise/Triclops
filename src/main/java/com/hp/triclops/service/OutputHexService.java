@@ -665,7 +665,7 @@ public class OutputHexService {
      */
     public  void saveRemoteCmdValueToRedis(String vin,long eventId,RemoteControl rc){
         String valueStr=rc.getControlType()+","+rc.getAcTemperature();//类型和温度值 15,25
-        socketRedis.saveValueString(dataTool.remote_cmd_value_preStr +"-"+ vin+"-"+eventId, valueStr, -1);
+        socketRedis.saveValueString(dataTool.remote_cmd_value_preStr +"-"+ vin+"-"+eventId, valueStr, DataTool.remote_cmd_value_ttl);
         //控制参数暂存redis
     }
 
@@ -772,7 +772,7 @@ public class OutputHexService {
     }
 
     public  void saveCmdToRedis(String vin,String hexStr){
-        socketRedis.saveSetString(dataTool.out_cmd_preStr + vin, hexStr, -1);
+        socketRedis.saveSetString(dataTool.out_cmd_preStr + vin, hexStr, -1);//代发命令的TTL为-1 由处理程序取出
         //保存到redis
 
 
