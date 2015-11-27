@@ -62,11 +62,6 @@ import java.util.Date;
  *             <td>机油寿命</td>
  *         </tr>
  *         <tr>
- *             <td>driveRange</td>
- *             <td>int</td>
- *             <td>行驶里程</td>
- *         </tr>
- *         <tr>
  *             <td>leftFrontTirePressure</td>
  *             <td>int</td>
  *             <td>左前轮胎压</td>
