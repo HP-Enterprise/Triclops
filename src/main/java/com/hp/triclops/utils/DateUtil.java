@@ -1,5 +1,7 @@
 package com.hp.triclops.utils;
 
+import org.joda.time.DateTime;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -377,5 +379,17 @@ public class DateUtil {
 		 return getDaysBetween(d1, d2)-getWorkingDay(d1, d2);
 	  
 	 }
+
+	/**
+	 * 月份增加
+	 * @param date 原始日期
+	 * @param month 需要增加的月份
+     * @return 增加后的月份
+     */
+	public static Date plusMonth(Date date,int month){
+		DateTime dateTime = new DateTime(date);
+		dateTime.plusMonths(month);
+		return  dateTime.toDate();
+	}
 
 }

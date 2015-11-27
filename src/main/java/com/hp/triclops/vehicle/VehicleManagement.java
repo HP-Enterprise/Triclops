@@ -28,6 +28,15 @@ public class VehicleManagement {
     UserRepository userRepository;
 
     /**
+     * 根据id查询车辆信息
+     * @param vid 车辆ID
+     * @return 车辆信息
+     */
+    public Vehicle findById(int vid){
+        return vehicleRepository.findById(vid);
+    }
+
+    /**
      * 修改用户与车辆的绑定信息
      * @param userVehicleRelativedShow 用户与车辆绑定信息
      * @return true：修改成功   fasle:修改失败
