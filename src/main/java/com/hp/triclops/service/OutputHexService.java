@@ -119,7 +119,7 @@ public class OutputHexService {
         pramSetCmd.setEventID(tps.getEventId());
         pramSetCmd.setTestFlag((short) 0);
         pramSetCmd.setSendingTime((long) dataTool.getCurrentSeconds());
-        pramSetCmd.setPramSetNumber((short) 13);
+        pramSetCmd.setPramSetNumber((short) 14);
         pramSetCmd.setPramSetID1((byte) 1);
         pramSetCmd.setFrequencySaveLocalMedia(tps.getFrequencySaveLocalMedia());
         pramSetCmd.setPramSetID2((byte) 2);
@@ -133,7 +133,7 @@ public class OutputHexService {
         pramSetCmd.setPramSetID6((byte) 6);
         pramSetCmd.setTimeOutForServerSearch(tps.getTimeOutForServerSearch());
         pramSetCmd.setPramSetID7((byte) 7);
-        pramSetCmd.setLicensePlate(dataTool.getLengthString(tps.getLicensePlate(),9));
+        pramSetCmd.setLicensePlate(dataTool.getLengthString(tps.getLicensePlate(),8));
         pramSetCmd.setPramSetID8((byte) 8);
         pramSetCmd.setUploadType(tps.getUploadType());
         pramSetCmd.setPramSetID9((byte) 9);
