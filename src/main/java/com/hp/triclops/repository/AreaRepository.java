@@ -15,7 +15,7 @@ import java.util.Set;
     @EnableJpaRepositories
     public interface AreaRepository extends CrudRepository<Area,Integer> {
 
-    @Query("select a.location from Area a where a.province=?1")
+    @Query("select a.city from Area a where a.province=?1")
     List<String> findAreaByProvince(String province);
     @Query("select a.province from Area a ")
     Set<String> findAllProvince();
