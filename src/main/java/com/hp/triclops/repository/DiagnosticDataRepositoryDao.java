@@ -1,6 +1,7 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.DiagnosticData;
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,8 +17,10 @@ public class DiagnosticDataRepositoryDao {
     EntityManager em;
 
     public DiagnosticData findByDiaId(Long id){
-        em.clear();
-        DiagnosticData resultData = em.find(DiagnosticData.class,id);
+       // em.clear();
+        Session session = em.unwrap(org.hibernate.Session.class);
+        DiagnosticData resultData= em.find(DiagnosticData.class, id);
+        session.evict(resultData);
         return  resultData;
     }
 }
