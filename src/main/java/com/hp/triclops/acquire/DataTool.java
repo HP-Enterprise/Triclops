@@ -514,8 +514,42 @@ public class DataTool {
     }
 
 
+    public   int getProtocolFromByteArray(ByteBuf data)
+    {
+
+        int protocolType=0;//0:未知 1:TBOX 2:LANDU
+        boolean result=false;
+        if(data!=null){
+            if(data.readableBytes()>2) {
+                int head=data.readUnsignedShort();
+                if (head==0x2323) {
+                    protocolType = 1;
+                }else if(head==0xAA55){
+                    protocolType = 2;
+                }
+            }
+        }
+        return protocolType;
+    }
 
 
+
+
+    public   boolean checkLanduByteArray(byte[] data)
+    {
+        //校验数据包是否合法
+        // 包头 0X23 0X23  2个字节长度
+        //包尾 将编码后的报文（ Message Header -- Application Data）进行异或操作，1个字节长度
+        boolean result=false;
+        if(data!=null){
+            if(data.length>2) {
+                if (data[0] == 0xAA && data[1] == 0x55) {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
 
 
     public   boolean checkByteArray(byte[] data)

@@ -49,7 +49,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
         _logger.info("Receive date from " + ch.remoteAddress() + ">>>:" + receiveDataHexString);
-
+        int protocolType=dataTool.getProtocolFromByteArray(dataTool.getByteBuf(receiveDataHexString));
+        if(protocolType==1){
         if(!dataTool.checkByteArray(receiveData)) {
             _logger.info(">>>>>bytes data is invalid,we will not handle them");
         }else{
@@ -240,6 +241,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
             }
+        }
+        }else if(protocolType==2){
+            _logger.info("Receive LANDU DATA from " + ch.remoteAddress() + ">>>:" + receiveDataHexString);
+
         }
     }
     @Override
