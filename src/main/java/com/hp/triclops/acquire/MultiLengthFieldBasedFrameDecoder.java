@@ -59,9 +59,10 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
 
             failIfNecessary(false);
         }
-
+        if (in.readableBytes() < 2) {
+            return null;
+        }
         int head=in.readUnsignedShort();//读取包头
-
         this._maxFrameLength =1024;
         this._lengthFieldOffset = 2;
         this._lengthFieldLength = 2;
