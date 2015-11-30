@@ -1,12 +1,12 @@
 package com.hp.triclops.repository;
 
+import com.hp.triclops.entity.User;
 import com.hp.triclops.entity.UserVehicleRelatived;
+import com.hp.triclops.entity.Vehicle;
+import com.hp.triclops.vo.UserVehicleRelativedShow;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import java.util.List;
 
 /**
  * Created by Teemol on 2015/9/5.
@@ -14,73 +14,37 @@ import java.util.List;
 
 @Component
 public class UserVehicleRelativedRepositoryDAO<T>  {
-    @PersistenceContext
-    private EntityManager em;
+
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    UserVehicleRelativedRepository userVehicleRelativedRepository;
+    @Autowired
+    VehicleRepository vehicleRepository;
 
     /**
-     * 模糊查询车主车辆关系集
-     * @param vin 车辆vin码
-     * @param isowner 是否为车主 1：车主
+     * 查询车主车辆关系集
+     * @param uid 用户id
+     * @param vid 车辆vid
+     * @param iflag '车主标识 1 车主 0 朋友'
      * @return 车主车辆关系集
      */
-    public List getList(String vin,Integer isowner)
+    public UserVehicleRelativedShow getRelative(int uid, int vid,Integer iflag)
     {
-        String jpql="FROM UserVehicleRelatived where 1=1";
 
-        vin=(vin==null)?"":vin;
-        Integer iflag=(isowner==null)?0:isowner;
-        if(!vin.equals("")){
-            jpql=jpql+" And vin like :vin";
-        }
-        if(iflag==1) {
-            jpql=jpql+" And iflag =:iflag";
-        }
-
-        TypedQuery query = em.createQuery(jpql, UserVehicleRelatived.class);
-
-        if(!vin.equals("")){
-            query.setParameter("vin","%"+vin+"%");
-        }
-        if(iflag==1) {
-            query.setParameter("iflag",iflag);
-        }
-
-        List items=query.getResultList();
-
-        return items;
-    }
-
-    /**
-     * 精确查询车主车辆关系集
-     * @param vin 车辆vin码
-     * @param isowner 是否为车主   1：车主
-     * @return 车主车辆关系集
-     */
-    public List getListAccurate(String vin,Integer isowner)
-    {
-        String jpql="FROM UserVehicleRelatived where 1=1";
-
-        vin=(vin==null)?"":vin;
-        Integer iflag=(isowner==null)?0:isowner;
-        if(!vin.equals("")){
-            jpql=jpql+" And vin =:vin";
-        }
-        if(iflag==1) {
-            jpql=jpql+" And iflag =:iflag";
-        }
-
-        TypedQuery query = em.createQuery(jpql, UserVehicleRelatived.class);
-
-        if(!vin.equals("")){
-            query.setParameter("vin",vin);
-        }
-        if(iflag==1) {
-            query.setParameter("iflag",iflag);
-        }
-
-        List items=query.getResultList();
-
-        return items;
+        Vehicle vehilce = vehicleRepository.findById(vid);
+        User user = userRepository.findById(uid);
+        UserVehicleRelatived userVehicleRelatived = userVehicleRelativedRepository.findOneReative(user,vehilce,iflag,user);
+        if(userVehicleRelatived == null)
+            return null;
+        UserVehicleRelativedShow us = new UserVehicleRelativedShow();
+        us.setId(userVehicleRelatived.getId());
+        us.setUid(userVehicleRelatived.getUid().getId());
+        us.setVid(userVehicleRelatived.getVid().getId());
+        us.setIflag(userVehicleRelatived.getIflag());
+        us.setVflag(userVehicleRelatived.getVflag());
+        us.setParentuser(userVehicleRelatived.getParentuser().getId());
+        return us;
     }
 
 }
