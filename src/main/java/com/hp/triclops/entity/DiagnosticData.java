@@ -1,5 +1,7 @@
 package com.hp.triclops.entity;
 
+import org.springframework.cache.annotation.CacheEvict;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -146,6 +148,7 @@ import java.util.Date;
  * </table>
  */
 @Entity
+@CacheEvict
 @Table(name = "t_data_diagnostic")
 public class DiagnosticData {
     private Long id;
