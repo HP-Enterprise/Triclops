@@ -300,6 +300,7 @@ public class OutputHexService {
      * 根据报警hex信息生成文本性质的报警提示
      * @param vin vin
      * @param msg 16进制报警信息
+     * @param user user
      * @return 根据报警hex信息生成文本性质的报警提示
      */
     public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user){

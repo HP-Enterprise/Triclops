@@ -148,7 +148,6 @@ import java.util.Date;
  * </table>
  */
 @Entity
-@CacheEvict
 @Table(name = "t_data_diagnostic")
 public class DiagnosticData {
     private Long id;
