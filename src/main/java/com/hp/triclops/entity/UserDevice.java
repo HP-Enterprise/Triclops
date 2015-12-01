@@ -53,7 +53,7 @@ public class UserDevice {
         this.deviceId = deviceId;
     }
 
-    public int isActive() {
+    public int getActive() {
         return active;
     }
 
