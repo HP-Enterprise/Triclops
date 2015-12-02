@@ -10,20 +10,20 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 /**
- * 多协议粘包解码器
+ * 多协议粘包、半包解码器
  * Created by luj on 2015/11/30.
  */
 public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
 
-    private final ByteOrder byteOrder=ByteOrder.BIG_ENDIAN;
+    private  ByteOrder byteOrder=ByteOrder.BIG_ENDIAN;
 
-    private  int _maxFrameLength;
-    private  int _lengthFieldOffset;
-    private  int _lengthFieldLength;
-    private  int _lengthFieldEndOffset;
-    private  int _lengthAdjustment;
-    private  int _initialBytesToStrip;
-    private  boolean _failFast;
+    private  int maxFrameLength;
+    private  int lengthFieldOffset;
+    private  int lengthFieldLength;
+    private  int lengthFieldEndOffset;
+    private  int lengthAdjustment;
+    private  int initialBytesToStrip;
+    private  boolean failFast=true;
 
     private boolean discardingTooLongFrame;
     private long tooLongFrameLength;
@@ -32,6 +32,112 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
 
 
 
+    public MultiLengthFieldBasedFrameDecoder(
+         ) {
+        this(
+                1024,
+                2, 2, 2,
+                0, true);
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param maxFrameLength
+     *        the maximum length of the frame.  If the length of the frame is
+     *        greater than this value, {@link TooLongFrameException} will be
+     *        thrown.
+     * @param lengthFieldOffset
+     *        the offset of the length field
+     * @param lengthFieldLength
+     *        the length of the length field
+     * @param lengthAdjustment
+     *        the compensation value to add to the value of the length field
+     * @param initialBytesToStrip
+     *        the number of first bytes to strip out from the decoded frame
+     * @param failFast
+     *        If <tt>true</tt>, a {@link TooLongFrameException} is thrown as
+     *        soon as the decoder notices the length of the frame will exceed
+     *        <tt>maxFrameLength</tt> regardless of whether the entire frame
+     *        has been read.  If <tt>false</tt>, a {@link TooLongFrameException}
+     *        is thrown after the entire frame that exceeds <tt>maxFrameLength</tt>
+     *        has been read.
+     */
+    public MultiLengthFieldBasedFrameDecoder(
+            int maxFrameLength, int lengthFieldOffset, int lengthFieldLength,
+            int lengthAdjustment, int initialBytesToStrip, boolean failFast) {
+        this(
+                ByteOrder.BIG_ENDIAN, maxFrameLength, lengthFieldOffset, lengthFieldLength,
+                lengthAdjustment, initialBytesToStrip, failFast);
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param byteOrder
+     *        the {@link ByteOrder} of the length field
+     * @param maxFrameLength
+     *        the maximum length of the frame.  If the length of the frame is
+     *        greater than this value, {@link TooLongFrameException} will be
+     *        thrown.
+     * @param lengthFieldOffset
+     *        the offset of the length field
+     * @param lengthFieldLength
+     *        the length of the length field
+     * @param lengthAdjustment
+     *        the compensation value to add to the value of the length field
+     * @param initialBytesToStrip
+     *        the number of first bytes to strip out from the decoded frame
+     * @param failFast
+     *        If <tt>true</tt>, a {@link TooLongFrameException} is thrown as
+     *        soon as the decoder notices the length of the frame will exceed
+     *        <tt>maxFrameLength</tt> regardless of whether the entire frame
+     *        has been read.  If <tt>false</tt>, a {@link TooLongFrameException}
+     *        is thrown after the entire frame that exceeds <tt>maxFrameLength</tt>
+     *        has been read.
+     */
+    public MultiLengthFieldBasedFrameDecoder(
+            ByteOrder byteOrder, int maxFrameLength, int lengthFieldOffset, int lengthFieldLength,
+            int lengthAdjustment, int initialBytesToStrip, boolean failFast) {
+        if (byteOrder == null) {
+            throw new NullPointerException("byteOrder");
+        }
+
+        if (maxFrameLength <= 0) {
+            throw new IllegalArgumentException(
+                    "maxFrameLength must be a positive integer: " +
+                            maxFrameLength);
+        }
+
+        if (lengthFieldOffset < 0) {
+            throw new IllegalArgumentException(
+                    "lengthFieldOffset must be a non-negative integer: " +
+                            lengthFieldOffset);
+        }
+
+        if (initialBytesToStrip < 0) {
+            throw new IllegalArgumentException(
+                    "initialBytesToStrip must be a non-negative integer: " +
+                            initialBytesToStrip);
+        }
+
+        if (lengthFieldOffset > maxFrameLength - lengthFieldLength) {
+            throw new IllegalArgumentException(
+                    "maxFrameLength (" + maxFrameLength + ") " +
+                            "must be equal to or greater than " +
+                            "lengthFieldOffset (" + lengthFieldOffset + ") + " +
+                            "lengthFieldLength (" + lengthFieldLength + ").");
+        }
+
+        this.byteOrder = byteOrder;
+        this.maxFrameLength = maxFrameLength;
+        this.lengthFieldOffset = lengthFieldOffset;
+        this.lengthFieldLength = lengthFieldLength;
+        this.lengthAdjustment = lengthAdjustment;
+        lengthFieldEndOffset = lengthFieldOffset + lengthFieldLength;
+        this.initialBytesToStrip = initialBytesToStrip;
+        this.failFast = failFast;
+    }
 
     @Override
     protected final void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -50,6 +156,30 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
      *                          be created.
      */
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+        if (in.readableBytes() < 2) {
+        return null;
+        }
+        int head=in.readUnsignedShort();//读取包头
+        in.readerIndex(in.readerIndex() - 2);//还原readerIndex
+        if(head==0x2323){
+            //TBox协议
+            this.maxFrameLength = 1024;
+            this.lengthFieldOffset = 2;
+            this.lengthFieldLength = 2;
+            this.lengthAdjustment = 2;
+            lengthFieldEndOffset = lengthFieldOffset + lengthFieldLength;
+            this.initialBytesToStrip = 0;
+        }else if(head==0xAA55){
+            //LanDu协议
+            this.maxFrameLength =1024;
+            this.lengthFieldOffset = 2;
+            this.lengthFieldLength = 2;
+            this.lengthAdjustment = -2;
+            lengthFieldEndOffset = lengthFieldOffset + lengthFieldLength;
+            this.initialBytesToStrip = 0;
+
+        }
+
         if (discardingTooLongFrame) {
             long bytesToDiscard = this.bytesToDiscard;
             int localBytesToDiscard = (int) Math.min(bytesToDiscard, in.readableBytes());
@@ -59,49 +189,30 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
 
             failIfNecessary(false);
         }
-        if (in.readableBytes() < 2) {
+
+        if (in.readableBytes() < lengthFieldEndOffset) {
             return null;
         }
-        int head=in.readUnsignedShort();//读取包头
-        this._maxFrameLength =1024;
-        this._lengthFieldOffset = 2;
-        this._lengthFieldLength = 2;
-        this._lengthAdjustment = 2;
-        _lengthFieldEndOffset = _lengthFieldOffset + _lengthFieldLength;
-        this._initialBytesToStrip = 0;
-        this._failFast = true;
-         if(head==0xAA55){
-            this._maxFrameLength =1024;
-            this._lengthFieldOffset = 2;
-            this._lengthFieldLength = 2;
-            this._lengthAdjustment = -2;
-            _lengthFieldEndOffset = _lengthFieldOffset + _lengthFieldLength;
-            this._initialBytesToStrip = 0;
-            this._failFast = true;
-        }
-        in.resetReaderIndex();
-        if (in.readableBytes() < _lengthFieldEndOffset) {
-            return null;
-        }
-        int actualLengthFieldOffset = in.readerIndex() + _lengthFieldOffset;
-        long frameLength = getUnadjustedFrameLength(in, actualLengthFieldOffset, _lengthFieldLength, byteOrder);
+
+        int actualLengthFieldOffset = in.readerIndex() + lengthFieldOffset;
+        long frameLength = getUnadjustedFrameLength(in, actualLengthFieldOffset, lengthFieldLength, byteOrder);
 
         if (frameLength < 0) {
-            in.skipBytes(_lengthFieldEndOffset);
+            in.skipBytes(lengthFieldEndOffset);
             throw new CorruptedFrameException(
                     "negative pre-adjustment length field: " + frameLength);
         }
 
-        frameLength += _lengthAdjustment + _lengthFieldEndOffset;
+        frameLength += lengthAdjustment + lengthFieldEndOffset;
 
-        if (frameLength < _lengthFieldEndOffset) {
-            in.skipBytes(_lengthFieldEndOffset);
+        if (frameLength < lengthFieldEndOffset) {
+            in.skipBytes(lengthFieldEndOffset);
             throw new CorruptedFrameException(
                     "Adjusted frame length (" + frameLength + ") is less " +
-                            "than lengthFieldEndOffset: " + _lengthFieldEndOffset);
+                            "than lengthFieldEndOffset: " + lengthFieldEndOffset);
         }
 
-        if (frameLength > _maxFrameLength) {
+        if (frameLength > maxFrameLength) {
             long discard = frameLength - in.readableBytes();
             tooLongFrameLength = frameLength;
 
@@ -124,17 +235,17 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
             return null;
         }
 
-        if (_initialBytesToStrip > frameLengthInt) {
+        if (initialBytesToStrip > frameLengthInt) {
             in.skipBytes(frameLengthInt);
             throw new CorruptedFrameException(
                     "Adjusted frame length (" + frameLength + ") is less " +
-                            "than initialBytesToStrip: " + _initialBytesToStrip);
+                            "than initialBytesToStrip: " + initialBytesToStrip);
         }
-        in.skipBytes(_initialBytesToStrip);
+        in.skipBytes(initialBytesToStrip);
 
         // extract frame
         int readerIndex = in.readerIndex();
-        int actualFrameLength = frameLengthInt - _initialBytesToStrip;
+        int actualFrameLength = frameLengthInt - initialBytesToStrip;
         ByteBuf frame = extractFrame(ctx, in, readerIndex, actualFrameLength);
         in.readerIndex(readerIndex + actualFrameLength);
         return frame;
@@ -169,7 +280,7 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
                 break;
             default:
                 throw new DecoderException(
-                        "unsupported lengthFieldLength: " + _lengthFieldLength + " (expected: 1, 2, 3, 4, or 8)");
+                        "unsupported lengthFieldLength: " + lengthFieldLength + " (expected: 1, 2, 3, 4, or 8)");
         }
         return frameLength;
     }
@@ -181,13 +292,13 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
             long tooLongFrameLength = this.tooLongFrameLength;
             this.tooLongFrameLength = 0;
             discardingTooLongFrame = false;
-            if (!_failFast ||
-                    _failFast && firstDetectionOfTooLongFrame) {
+            if (!failFast ||
+                    failFast && firstDetectionOfTooLongFrame) {
                 fail(tooLongFrameLength);
             }
         } else {
             // Keep discarding and notify handlers if necessary.
-            if (_failFast && firstDetectionOfTooLongFrame) {
+            if (failFast && firstDetectionOfTooLongFrame) {
                 fail(tooLongFrameLength);
             }
         }
@@ -211,11 +322,11 @@ public class MultiLengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
     private void fail(long frameLength) {
         if (frameLength > 0) {
             throw new TooLongFrameException(
-                    "Adjusted frame length exceeds " + _maxFrameLength +
+                    "Adjusted frame length exceeds " + maxFrameLength +
                             ": " + frameLength + " - discarded");
         } else {
             throw new TooLongFrameException(
-                    "Adjusted frame length exceeds " + _maxFrameLength +
+                    "Adjusted frame length exceeds " + maxFrameLength +
                             " - discarding");
         }
     }
