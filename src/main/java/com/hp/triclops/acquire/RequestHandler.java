@@ -101,7 +101,8 @@ public class RequestHandler {
      * @param reqString 远程唤醒请求hex
      * @return 远程唤醒响应hex
      */
-    public String getRemoteWakeUpResp(String reqString){
+    public String getRemoteWakeUpResp(String reqString,boolean checkVinAndSerNumWake){
+
         //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
         ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
         DataPackage dp=conversionTBox.generate(bb);
@@ -115,7 +116,8 @@ public class RequestHandler {
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
-        resp.setRegisterResult((short) 0);//0唤醒成功 1唤醒失败
+        short registerResult = checkVinAndSerNumWake ? (short)0 : (short)1;
+        resp.setRegisterResult(registerResult);//0唤醒成功 1唤醒失败
 
         DataPackage dpw=new DataPackage("8995_20_2");
         dpw.fillBean(resp);
