@@ -1,5 +1,7 @@
 package com.hp.triclops.entity;
 
+import org.springframework.cache.annotation.CacheEvict;
+
 import javax.persistence.*;
 import java.util.Date;
 

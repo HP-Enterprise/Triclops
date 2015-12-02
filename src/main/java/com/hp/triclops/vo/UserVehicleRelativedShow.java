@@ -51,16 +51,16 @@ import com.hp.triclops.entity.UserVehicleRelatived;
  */
 public class UserVehicleRelativedShow {
 
-    private int id;           // ID
-    private int uid;          // 用户ID
-    private int vid;          // 车辆ID
-    private int vflag;        // 是否为默认车辆
-    private int iflag;        // 是否为车主
-    private int parentuser;   // 共享驾驶人ID
+    private Integer id;           // ID
+    private Integer uid;          // 用户ID
+    private Integer vid;          // 车辆ID
+    private Integer vflag;        // 是否为默认车辆
+    private Integer iflag;        // 是否为车主
+    private Integer parentuser;   // 车主ID
 
     public UserVehicleRelativedShow() {}
 
-    public UserVehicleRelativedShow(int id, int uid, int vid, int vflag, int iflag, int parentuser) {
+    public UserVehicleRelativedShow(Integer id, Integer uid, Integer vid, Integer vflag, Integer iflag, Integer parentuser) {
         this.id = id;
         this.uid = uid;
         this.vid = vid;
@@ -80,51 +80,51 @@ public class UserVehicleRelativedShow {
 
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getUid() {
+    public Integer getUid() {
         return uid;
     }
 
-    public void setUid(int uid) {
+    public void setUid(Integer uid) {
         this.uid = uid;
     }
 
-    public int getVid() {
+    public Integer getVid() {
         return vid;
     }
 
-    public void setVid(int vid) {
+    public void setVid(Integer vid) {
         this.vid = vid;
     }
 
-    public int getVflag() {
+    public Integer getVflag() {
         return vflag;
     }
 
-    public void setVflag(int vflag) {
+    public void setVflag(Integer vflag) {
         this.vflag = vflag;
     }
 
-    public int getIflag() {
+    public Integer getIflag() {
         return iflag;
     }
 
-    public void setIflag(int iflag) {
+    public void setIflag(Integer iflag) {
         this.iflag = iflag;
     }
 
-    public int getParentuser() {
+    public Integer getParentuser() {
         return parentuser;
     }
 
-    public void setParentuser(int parentuser) {
+    public void setParentuser(Integer parentuser) {
         this.parentuser = parentuser;
     }
 }

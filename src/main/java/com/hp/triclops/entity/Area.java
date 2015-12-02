@@ -10,13 +10,13 @@ import javax.persistence.*;
 public class Area {
     private int id;
     private String province;
-    private String location;
+    private String city;
  
     public Area(){}
 
-    public Area(String province,String location){
+    public Area(String province,String city){
         this.province = province;
-        this.location = location;
+        this.city = city;
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,12 +40,12 @@ public class Area {
     }
 
     @Column(name = "location", nullable = false, insertable = true, updatable = true, length = 50)
-    public String getLocation() {
-        return location;
+    public String getCity() {
+        return city;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setCity(String city) {
+        this.city = city;
     }
 
 }

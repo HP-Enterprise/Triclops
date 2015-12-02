@@ -99,10 +99,27 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
                 case 0x14://远程唤醒
                     _logger.info("RemoteWakeUp start...");
+                    //通过byte[] receiveData获取 eventIdWake,vinWake,serialNumWake的map集合
+                    HashMap<String,String> vinAndSerialNumWakeUp=dataTool.getVinDataFromRegBytes(receiveData);
+                    String eventIdWake=vinAndSerialNumWakeUp.get("eventId");
+                    String vinWake=vinAndSerialNumWakeUp.get("vin");
+                    String serialNumWake=vinAndSerialNumWakeUp.get("serialNum");
 
-                    respStr=requestHandler.getRemoteWakeUpResp(receiveDataHexString);
+                    //通过vin和tboxsn验证t_vehicle表中是否存在
+                    boolean checkVinAndSerNumWake= dataTool.checkVinAndSerialNum(vinWake, serialNumWake);
+                    respStr=requestHandler.getRemoteWakeUpResp(receiveDataHexString,checkVinAndSerNumWake);
+
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
+                    //如果远程唤醒成功连接，后续可以通过redis主动发消息，不成功不记录连接
+                    if(checkVinAndSerNumWake){
+                        channels.put(vinWake, ch);
+                        _logger.info("wake up success,Connection" + vinWake + "Save to HashMap");
+                        afterRegisterSuccess(vinWake);
+                    }else{
+                        _logger.info("wake up failed,close Connection");
+                        ch.close();//关闭连接
+                    }
                     break;
                 case 0x21://固定数据上报
                     _logger.info("Regular Data Report Message");
@@ -139,7 +156,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
+                    //outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
                     break;
                 case 0x25://补发报警数据上报
                     _logger.info("Data ReSend Warning Message");
@@ -149,7 +166,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
+                    //outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
                     //补发报警数据是否需要push
                     break;
                 case 0x26://心跳
@@ -182,7 +199,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
+                    //outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
                     break;
                 case 0x29://补发故障数据上报
                     _logger.info("Data ReSend Failure Message");
@@ -192,7 +209,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                         return;
                     }
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
+                    //outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
                     //补发故障数据是否需要push
                     break;
                 case 0x31://远程控制响应(上行)包含mid 2 4 5

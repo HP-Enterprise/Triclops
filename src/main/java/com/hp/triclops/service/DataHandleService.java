@@ -29,6 +29,8 @@ public class DataHandleService {
     WarningMessageDataRespository warningMessageDataRespository;
     @Autowired
     FailureMessageDataRespository failureMessageDataRespository;
+    @Autowired
+    OutputHexService outputHexService;
 
 
     @Autowired
@@ -55,15 +57,19 @@ public class DataHandleService {
                 break;
             case 0x24://报警数据
                 saveWarningMessage(vin, msg);
+                outputHexService.getWarningMessageAndPush(vin, msg);
                 break;
             case 0x25://补发报警数据
                 saveDataResendWarningMessage(vin, msg);
+                outputHexService.getResendWarningMessageAndPush(vin, msg);
                 break;
             case 0x28://故障数据
                 saveFailureMessage(vin, msg);
+                outputHexService.getFailureMessageAndPush(vin, msg);
                 break;
             case 0x29://补发故障数据
                 saveDataResendFailureMessage(vin, msg);
+                outputHexService.getResendFailureMessageAndPush(vin, msg);
                 break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
@@ -109,16 +115,17 @@ public class DataHandleService {
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        rd.setTripId(bean.getTripID());
 
         rd.setFuelOil(bean.getFuelOil() / 2f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(bean.getServiceIntervall());
 
-        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure()*2.8f);
-        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure()*2.8f);
-        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure()*2.8f);
-        rd.setRightRearTirePressure(bean.getRightRearTirePressure()*2.8f);
+        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure() * 2.8f);
+        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure() * 2.8f);
+        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure() * 2.8f);
+        rd.setRightRearTirePressure(bean.getRightRearTirePressure() * 2.8f);
         char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//
         rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
         rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
@@ -129,10 +136,21 @@ public class DataHandleService {
         rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit 大端传输
 
-        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6])+String.valueOf(doors[7])));
-        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4])+String.valueOf(doors[5])));
-        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2])+String.valueOf(doors[3])));
-        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0])+String.valueOf(doors[1])));
+        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6]) + String.valueOf(doors[7])));
+        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4]) + String.valueOf(doors[5])));
+        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2]) + String.valueOf(doors[3])));
+        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0]) + String.valueOf(doors[1])));
+
+
+        // waiting for protocol after 6.1.3
+        rd.setDrivingTime(1);
+        rd.setOilLife((short) 1);
+        rd.setDrivingRange(1);
+        rd.setMileageRange(1);
+        rd.setEngineCoverState("0");
+        rd.setTrunkLidState("0");
+        rd.setSkylightState("0");
+        rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -167,6 +185,8 @@ public class DataHandleService {
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        rd.setTripId(bean.getTripID());
+
         rd.setFuelOil(bean.getFuelOil() / 2f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
@@ -190,6 +210,16 @@ public class DataHandleService {
         rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4])+String.valueOf(doors[5])));
         rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2])+String.valueOf(doors[3])));
         rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0])+String.valueOf(doors[1])));
+
+        // waiting for protocol after 6.1.3
+        rd.setDrivingTime(1);
+        rd.setOilLife((short)1);
+        rd.setDrivingRange(1);
+        rd.setMileageRange(1);
+        rd.setEngineCoverState("0");
+        rd.setTrunkLidState("0");
+        rd.setSkylightState("0");
+        rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储

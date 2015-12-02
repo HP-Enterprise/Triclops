@@ -62,7 +62,7 @@ public class CommandHandler extends Thread{
 
         _logger.info("set status value>statusKey:" + statusKey + "|statusValue:" + statusValue);
         //通过Redis来跟踪消息状态
-        socketRedis.saveValueString(statusKey, statusValue,-1);//此处可以考虑设置一个合适的TTL
+        socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);//此处可以考虑设置一个合适的TTL
         // 记录下这些信息，应答超时时间过后内后如果redis对应的messageID变化了表明已经处理完毕了 本线程自行了断，否则把记录放到redis里面
 
         int timeOutSeconds=dataTool.getTimeOutSeconds(applicationId,messageId);//通过applicatinoId取到应答超时时间
@@ -107,7 +107,7 @@ public class CommandHandler extends Thread{
         String  redisKey=DataTool.msgSendCount_preStr+vin+"-"+applicationId+"-"+eventId+"-"+messageId;
         int currentResendCount=getCurrentSendCount(vin, eventId, messageId);
         String newCountValue=String.valueOf(currentResendCount+1);
-        socketRedis.saveValueString(redisKey,newCountValue,-1);
+        socketRedis.saveValueString(redisKey,newCountValue,DataTool.msgSendCount_ttl);
 
     }
 }

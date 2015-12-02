@@ -71,7 +71,8 @@ public class TBoxMgr {
      * @return tbox对象
      */
     public TBox updateTBox(TBox tbox){
-        TBox tboxtemp = new TBox();
+        TBox tboxtemp = this.tBoxRepository.findById(tbox.getId());
+//        TBox tboxtemp = new TBox();
         if(tbox.getId() != 0) tboxtemp.setId(tbox.getId());
         if(tbox.getVin() != null) tboxtemp.setVin(tbox.getVin());
         if(tbox.getT_sn() != null) tboxtemp.setT_sn(tbox.getT_sn());

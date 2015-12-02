@@ -69,6 +69,7 @@ public class UserShow {
     private int isVerified;
     private String contacts;
     private String contactsPhone;
+    private String icon;
 
     public UserShow() {}
 
@@ -81,6 +82,7 @@ public class UserShow {
         this.isVerified = user.getIsVerified();
         this.contacts = user.getContacts();
         this.contactsPhone = user.getContactsPhone();
+        this.icon = user.getIcon();
     }
 
     public int getId() {
@@ -145,6 +147,14 @@ public class UserShow {
 
     public void setContactsPhone(String contactsPhone) {
         this.contactsPhone = contactsPhone;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
 
