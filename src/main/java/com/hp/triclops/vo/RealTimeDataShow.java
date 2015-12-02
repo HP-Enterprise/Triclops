@@ -309,9 +309,7 @@ public class RealTimeDataShow {
     private Date sendingTime;
 
     private float fuelOil;
-    private float avgOilA;
-    private float avgOilB;
-    private int serviceIntervall;
+    private float avgOil;
     private float leftFrontTirePressure;
     private float leftRearTirePressure;
     private float rightFrontTirePressure;
@@ -409,28 +407,12 @@ public class RealTimeDataShow {
         this.fuelOil = fuelOil;
     }
 
-    public float getAvgOilA() {
-        return avgOilA;
+    public float getAvgOil() {
+        return avgOil;
     }
 
-    public void setAvgOilA(float avgOilA) {
-        this.avgOilA = avgOilA;
-    }
-
-    public float getAvgOilB() {
-        return avgOilB;
-    }
-
-    public void setAvgOilB(float avgOilB) {
-        this.avgOilB = avgOilB;
-    }
-
-    public int getServiceIntervall() {
-        return serviceIntervall;
-    }
-
-    public void setServiceIntervall(int serviceIntervall) {
-        this.serviceIntervall = serviceIntervall;
+    public void setAvgOil(float avgOil) {
+        this.avgOil = avgOil;
     }
 
     public float getLeftFrontTirePressure() {
