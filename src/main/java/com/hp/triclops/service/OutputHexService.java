@@ -300,6 +300,7 @@ public class OutputHexService {
      * 根据报警hex信息生成文本性质的报警提示
      * @param vin vin
      * @param msg 16进制报警信息
+     * @param user user
      * @return 根据报警hex信息生成文本性质的报警提示
      */
     public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user){
@@ -345,6 +346,7 @@ public class OutputHexService {
      * 根据补发报警hex信息生成文本性质的报警提示
      * @param vin vin
      * @param msg 16进制报警信息
+     * @param user user
      * @return 根据报警hex信息生成文本性质的报警提示
      */
     public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user){
@@ -483,6 +485,8 @@ public class OutputHexService {
     /**
      * 根据报警消息类生成报警消息
      * @param wd 报警消息实体类
+     * @param user user
+     * @param realTimeReportData 实时数据实体类
      * @return 便于阅读的报警消息
      */
     public Map<String,Object> buildWarningString(WarningMessageData wd,User user,RealTimeReportData realTimeReportData){
@@ -562,6 +566,7 @@ public class OutputHexService {
     /**
      * 根据故障消息类生成故障告警消息
      * @param wd 故障消息实体类
+     * @param realTimeReportData 实时数据实体类
      * @return 便于阅读的消息
      */
     public Map<String,Object> buildFailureString(FailureMessageData wd,RealTimeReportData realTimeReportData){

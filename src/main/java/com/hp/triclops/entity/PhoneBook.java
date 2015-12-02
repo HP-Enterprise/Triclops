@@ -57,15 +57,17 @@ public class PhoneBook {
     private int uid;
     private String name;
     private String phone;
+    private String username;
     private int isuser;
     
     public PhoneBook(){}
 
-    public PhoneBook(int id, int uid, String name, String phone, int isuser) {
+    public PhoneBook(int id, int uid, String name, String phone, String username, int isuser) {
         this.id = id;
         this.uid = uid;
         this.name = name;
         this.phone = phone;
+        this.username = username;
         this.isuser = isuser;
     }
 
@@ -101,13 +103,23 @@ public class PhoneBook {
     }
 
     @Basic
-    @Column(name = "phone", nullable = true, insertable = true, updatable = true, length = 11)
+    @Column(name = "phone", nullable = true, insertable = true, updatable = true)
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Basic
+    @Column(name = "username", nullable = true, insertable = true, updatable = true)
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Basic

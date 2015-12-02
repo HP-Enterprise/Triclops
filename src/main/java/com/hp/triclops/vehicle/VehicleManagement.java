@@ -24,24 +24,16 @@ public class VehicleManagement {
     UserVehicleRelativedRepository userVehicleRelativedRepository;
     @Autowired
     VehicleRepository vehicleRepository;
-    @Autowired
-    UserRepository userRepository;
 
     /**
-     * 修改用户与车辆的绑定信息
-     * @param userVehicleRelativedShow 用户与车辆绑定信息
-     * @return true：修改成功   fasle:修改失败
+     * 根据id查询车辆信息
+     * @param vid 车辆ID
+     * @return 车辆信息
      */
-    public boolean updateUserVehicleRelatived(UserVehicleRelativedShow userVehicleRelativedShow){
-        UserVehicleRelatived userVehicleRelatived = userVehicleRelativedRepository.findById(userVehicleRelativedShow.getId());
-        if (userVehicleRelatived != null) {
-            User user = userRepository.findById(userVehicleRelativedShow.getUid());
-            Vehicle vehicle = vehicleRepository.findById(userVehicleRelativedShow.getVid());
-            userVehicleRelativedRepository.update(user, vehicle, userVehicleRelativedShow.getVflag(), userVehicleRelativedShow.getIflag(), userVehicleRelativedShow.getId());
-            return true;
-        }
-        return false;
+    public Vehicle findById(int vid){
+        return vehicleRepository.findById(vid);
     }
+
 
     /**
      * 查询用户的默认车辆
