@@ -99,6 +99,7 @@ public class RequestHandler {
     /**
      *
      * @param reqString 远程唤醒请求hex
+     * @param checkVinAndSerNumWake 唤醒校验
      * @return 远程唤醒响应hex
      */
     public String getRemoteWakeUpResp(String reqString,boolean checkVinAndSerNumWake){
