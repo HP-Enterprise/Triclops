@@ -116,8 +116,8 @@ public class RequestHandler {
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
-        short registerResult = checkVinAndSerNumWake ? (short)0 : (short)1;
-        resp.setRegisterResult(registerResult);//0唤醒成功 1唤醒失败
+        short wakeUpResult = checkVinAndSerNumWake ? (short)0 : (short)1;
+        resp.setRegisterResult(wakeUpResult);//0唤醒成功 1唤醒失败
 
         DataPackage dpw=new DataPackage("8995_20_2");
         dpw.fillBean(resp);
