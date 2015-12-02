@@ -103,7 +103,7 @@ public class PhoneBook {
     }
 
     @Basic
-    @Column(name = "phone", nullable = true, insertable = true, updatable = true, length = 11)
+    @Column(name = "phone", nullable = true, insertable = true, updatable = true)
     public String getPhone() {
         return phone;
     }
