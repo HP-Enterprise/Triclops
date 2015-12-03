@@ -41,6 +41,11 @@ import javax.persistence.*;
  *             <td>电话号码</td>
  *         </tr>
  *         <tr>
+ *             <td>userid</td>
+ *             <td>int</td>
+ *             <td>联系人对应用户ID</td>
+ *         </tr>
+ *         <tr>
  *             <td>isuser</td>
  *             <td>int</td>
  *             <td>是否为系统用户</td>
@@ -57,17 +62,17 @@ public class PhoneBook {
     private int uid;
     private String name;
     private String phone;
-    private String username;
+    private int userid;
     private int isuser;
     
     public PhoneBook(){}
 
-    public PhoneBook(int id, int uid, String name, String phone, String username, int isuser) {
+    public PhoneBook(int id, int uid, String name, String phone, int userid, int isuser) {
         this.id = id;
         this.uid = uid;
         this.name = name;
         this.phone = phone;
-        this.username = username;
+        this.userid = userid;
         this.isuser = isuser;
     }
 
@@ -113,13 +118,13 @@ public class PhoneBook {
     }
 
     @Basic
-    @Column(name = "username", nullable = true, insertable = true, updatable = true)
-    public String getUsername() {
-        return username;
+    @Column(name = "userid", nullable = true, insertable = true, updatable = true)
+    public int getUserid() {
+        return userid;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserid(int userid) {
+        this.userid = userid;
     }
 
     @Basic
