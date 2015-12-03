@@ -503,9 +503,9 @@ public class OutputHexService {
             sb.append("纬度").append(wd.getLatitude()).append(wd.getNorthSouth()).append(";");
             sb.append("速度:").append(wd.getSpeed()).append("km/h;");
             sb.append("方向:").append(wd.getHeading()).append(";");*/
-            positionMap.put("longitude", new StringBuilder().append(wd.getLongitude()).append(wd.getEastWest()).toString());
-            positionMap.put("latitude",new StringBuilder().append(wd.getLatitude()).append(wd.getNorthSouth()).toString());
-            positionMap.put("speed",new StringBuilder().append(wd.getSpeed()).append("km/h;").toString());
+            positionMap.put("longitude", new StringBuilder().append(wd.getLongitude()).toString());
+            positionMap.put("latitude",new StringBuilder().append(wd.getLatitude()).toString());
+            positionMap.put("speed",new StringBuilder().append(wd.getSpeed()).toString());
             positionMap.put("heading",new StringBuilder().append(wd.getHeading()).toString());
 
         }else{
