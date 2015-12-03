@@ -38,13 +38,14 @@ public class UserRepositoryDAO<T>  {
      * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param pageSize 每页数据条数 必须大于0
      * @param currentPage 获取指定页码数据 必须大于0
+     * @param vid 车辆id
      * @param vin vin码
      * @param isowner 是否为车主
      * @param fuzzy 1:模糊查询
      * @param oid 组织id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts,String contactsPhone,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer fuzzy,Integer oid){
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts,String contactsPhone,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer vid,Integer isowner,Integer fuzzy,Integer oid){
         String jpql="select u from User u";
         String jpql_count="";
         id=(id==null)?-1:id;
@@ -63,12 +64,13 @@ public class UserRepositoryDAO<T>  {
         currentPage=(currentPage<=0)?1:currentPage;
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
+        vid=(vid==null)?-1:vid;
         vin=(vin==null)?"":vin;
 
         if (oid >= 0) {
             jpql = jpql + " join u.organizationSet O";
         }
-        if(!vin.equals("")) {
+        if(vid>=0||!vin.equals("")) {
             jpql = jpql + " join u.userSet u1 join u.vehicleSet v";
         }
         else {
@@ -92,6 +94,9 @@ public class UserRepositoryDAO<T>  {
         if(!vin.equals(""))
         {
             jpql = jpql + " And v.vin like :vin";
+        }
+        if(vid >=0){
+            jpql = jpql + "And v.id=:vid";
         }
 
         if(id>=0){
@@ -127,6 +132,10 @@ public class UserRepositoryDAO<T>  {
         if(oid != null && oid>=0){
             query.setParameter("oid",oid);
             queryCount.setParameter("oid",oid);
+        }
+        if(vid != null && vid>=0){
+            query.setParameter("vid",vid);
+            queryCount.setParameter("vid",vid);
         }
         if(id>=0){
             query.setParameter("id",id);
@@ -168,6 +177,7 @@ public class UserRepositoryDAO<T>  {
             query.setParameter("vin","%"+vin+"%");
             queryCount.setParameter("vin","%"+vin+"%");
         }
+
         query.setFirstResult((currentPage - 1)* pageSize);
         query.setMaxResults(pageSize);
         List items=query.getResultList();
@@ -191,11 +201,12 @@ public class UserRepositoryDAO<T>  {
      * @param pageSize 每页数据条数 必须大于0
      * @param currentPage 获取指定页码数据 必须大于0
      * @param vin vin码
+     * @param vid 车辆id
      * @param isowner 是否为车主
      * @param oid 组织id
      * @return  封装了数据和页码信息的Page对象
      */
-    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts,String contactsPhone,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer isowner,Integer oid){
+    public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts,String contactsPhone,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer vid,Integer isowner,Integer oid){
         String jpql="select u from User u";
         String jpql_count="";
         id=(id==null)?-1:id;
@@ -215,11 +226,12 @@ public class UserRepositoryDAO<T>  {
         isowner=(isowner==null)?-1:isowner;
         oid=(oid==null)?-1:oid;
         vin=(vin==null)?"":vin;
+        vid=(vid==null)?-1:vid;
 
         if (oid >= 0) {
             jpql = jpql + " join u.organizationSet O";
         }
-        if(!vin.equals("")){
+        if(vid >=0||!vin.equals("")){
             jpql=jpql+" join u.userSet u1 join u.vehicleSet v";
         }
         else
@@ -231,10 +243,14 @@ public class UserRepositoryDAO<T>  {
         }
 
         jpql=jpql+" where 1=1";
+        if(vid >=0){
+            jpql = jpql + "And v.id=:vid";
+        }
 
         if (oid >= 0) {
             jpql = jpql + " And O.id =:oid";
         }
+
         if(isowner == 0 || isowner == 1)
         {
             jpql = jpql + " And u1.iflag=:isowner";
@@ -277,6 +293,10 @@ public class UserRepositoryDAO<T>  {
         if(oid != null && oid>=0){
             query.setParameter("oid",oid);
             queryCount.setParameter("oid",oid);
+        }
+        if(vid != null && vid>=0){
+            query.setParameter("vid",vid);
+            queryCount.setParameter("vid",vid);
         }
         if (id>=0){
             query.setParameter("id",id);
