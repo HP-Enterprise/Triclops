@@ -37,9 +37,9 @@ import com.hp.triclops.entity.PhoneBook;
  *             <td>电话号码</td>
  *         </tr>
  *         <tr>
- *             <td>username</td>
- *             <td>String</td>
- *             <td>联系人用户名</td>
+ *             <td>userid</td>
+ *             <td>int</td>
+ *             <td>联系人对应用户ID</td>
  *         </tr>
  *         <tr>
  *             <td>isuser</td>
@@ -55,18 +55,17 @@ public class PhoneBookShow{
     private int uid;
     private String name;
     private String phone;
-    private String username;
+    private int userid;
     private int isuser;
-    public PhoneBookShow(){
 
-    }
+    public PhoneBookShow(){}
 
-    public PhoneBookShow(int id, int uid, String name, String phone, String username, int isuser) {
+    public PhoneBookShow(int id, int uid, String name, String phone, int userid, int isuser) {
         this.id = id;
         this.uid = uid;
         this.name = name;
         this.phone = phone;
-        this.username = username;
+        this.userid = userid;
         this.isuser = isuser;
     }
 
@@ -75,7 +74,7 @@ public class PhoneBookShow{
         this.uid = phoneBook.getUid();
         this.name = phoneBook.getName();
         this.phone = phoneBook.getPhone();
-        this.username = phoneBook.getUsername();
+        this.userid = phoneBook.getUserid();
         this.isuser = phoneBook.getIsuser();
     }
 
@@ -111,12 +110,12 @@ public class PhoneBookShow{
         this.phone = phone;
     }
 
-    public String getUsername() {
-        return username;
+    public int getUserid() {
+        return userid;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserid(int userid) {
+        this.userid = userid;
     }
 
     public int getIsuser() {
