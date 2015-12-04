@@ -89,7 +89,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
                     if(checkVinAndSerNum){
                         channels.put(vin, ch);
-                        _logger.info("resister success,Connection" + vin + "Save to HashMap");
+                        _logger.info("resister success,Save Connection" + vin+":"+ch.remoteAddress() + " to HashMap");
                         afterRegisterSuccess(vin);
                     }else{
                         _logger.info("resister failed,close Connection");
@@ -114,7 +114,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     //如果远程唤醒成功连接，后续可以通过redis主动发消息，不成功不记录连接
                     if(checkVinAndSerNumWake){
                         channels.put(vinWake, ch);
-                        _logger.info("wake up success,Connection" + vinWake + "Save to HashMap");
+                        _logger.info("wake up success,Save Connection" + vinWake+":"+ch.remoteAddress() + " to HashMap");
                         afterRegisterSuccess(vinWake);
                     }else{
                         _logger.info("wake up failed,close Connection");
