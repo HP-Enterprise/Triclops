@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Discards any incoming data.
@@ -29,14 +31,16 @@ public class NettyServer {
     private RequestHandler requestHandler;
     private OutputHexService outputHexService;
     private Logger _logger;
+    private  ScheduledExecutorService scheduledService;
 
-    public NettyServer(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port) {
+    public NettyServer(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,ScheduledExecutorService scheduledService) {
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
         this.requestHandler=rh;
         this.outputHexService=ohs;
         this.port = port;
+        this.scheduledService=scheduledService;
         this._logger = LoggerFactory.getLogger(NettyServer.class);
     }
     static int connectionCount=0;
@@ -45,6 +49,7 @@ public class NettyServer {
 
             EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
             EventLoopGroup workerGroup = new NioEventLoopGroup();
+
             try {
                 ServerBootstrap b = new ServerBootstrap(); // (2)
                 b.group(bossGroup, workerGroup)
@@ -53,7 +58,7 @@ public class NettyServer {
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024,2,2,2,0));
-                                ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool,requestHandler,outputHexService));
+                                ch.pipeline().addLast(new NettyServerHandler(channels,socketRedis,dataTool,requestHandler,outputHexService,scheduledService));
                                 connectionCount++;
                                // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }

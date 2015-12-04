@@ -14,6 +14,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import static io.netty.buffer.Unpooled.*;
 
 /**
@@ -26,13 +30,15 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     private HashMap<String,Channel> channels;
     private OutputHexService outputHexService;
     private Logger _logger;
+    private ScheduledExecutorService scheduledService;
 
-    public NettyServerHandler(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs){
+    public NettyServerHandler(HashMap<String, Channel> cs,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,ScheduledExecutorService scheduledService ){
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
         this.requestHandler=rh;
         this.outputHexService=ohs;
+        this.scheduledService=scheduledService;
         this._logger = LoggerFactory.getLogger(NettyServerHandler.class);
     }
 
@@ -50,124 +56,39 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
         _logger.info("Receive date from " + ch.remoteAddress() + ">>>:" + receiveDataHexString);
 
+
         if(!dataTool.checkByteArray(receiveData)) {
             _logger.info(">>>>>bytes data is invalid,we will not handle them");
         }else{
-
             byte dataType=dataTool.getApplicationType(receiveData);
             switch(dataType)
             {
                 case 0x11://电检
-                    _logger.info("Diag start...");
-
-                    respStr=requestHandler.getDiagResp(receiveDataHexString);
-                    buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//回发数据直接回消息
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
-
                 case 0x12://激活
-                    _logger.info("Active start...");
-                    respStr=requestHandler.getActiveHandle(receiveDataHexString);
-                    if(respStr!=null){
-                        //如果是激活请求，会有messageId=2的响应，如果是激活结果 没有响应
-                        buf=dataTool.getByteBuf(respStr);
-                        ch.writeAndFlush(buf);//回发数据直接回消息
-                    }
-
+                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x13://注册
-                    _logger.info("Register start...");
-                    HashMap<String,String> vinAndSerialNum=dataTool.getVinDataFromRegBytes(receiveData);
-                    String eventId=vinAndSerialNum.get("eventId");
-                    String vin=vinAndSerialNum.get("vin");
-                    String serialNum=vinAndSerialNum.get("serialNum");
-                    boolean checkVinAndSerNum= dataTool.checkVinAndSerialNum(vin, serialNum);
-                    //发往客户端的注册结果数据，根据验证结果+收到的数据生成
-                    respStr=requestHandler.getRegisterResp(receiveDataHexString, checkVinAndSerNum);
-                    buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//回发数据直接回消息
-                    //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
-                    if(checkVinAndSerNum){
-                        channels.put(vin, ch);
-                        _logger.info("resister success,Save Connection" + vin+":"+ch.remoteAddress() + " to HashMap");
-                        afterRegisterSuccess(vin);
-                    }else{
-                        _logger.info("resister failed,close Connection");
-                        ch.close();//关闭连接
-                    }
+                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
-
                 case 0x14://远程唤醒
-                    _logger.info("RemoteWakeUp start...");
-                    //通过byte[] receiveData获取 eventIdWake,vinWake,serialNumWake的map集合
-                    HashMap<String,String> vinAndSerialNumWakeUp=dataTool.getVinDataFromRegBytes(receiveData);
-                    String eventIdWake=vinAndSerialNumWakeUp.get("eventId");
-                    String vinWake=vinAndSerialNumWakeUp.get("vin");
-                    String serialNumWake=vinAndSerialNumWakeUp.get("serialNum");
-
-                    //通过vin和tboxsn验证t_vehicle表中是否存在
-                    boolean checkVinAndSerNumWake= dataTool.checkVinAndSerialNum(vinWake, serialNumWake);
-                    respStr=requestHandler.getRemoteWakeUpResp(receiveDataHexString,checkVinAndSerNumWake);
-
-                    buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//回发数据直接回消息
-                    //如果远程唤醒成功连接，后续可以通过redis主动发消息，不成功不记录连接
-                    if(checkVinAndSerNumWake){
-                        channels.put(vinWake, ch);
-                        _logger.info("wake up success,Save Connection" + vinWake+":"+ch.remoteAddress() + " to HashMap");
-                        afterRegisterSuccess(vinWake);
-                    }else{
-                        _logger.info("wake up failed,close Connection");
-                        ch.close();//关闭连接
-                    }
+                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x21://固定数据上报
-                    _logger.info("Regular Data Report Message");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x22://实时数据上报
-                    _logger.info("Real Time Report Message");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x23://补发实时数据上报
-                    _logger.info("Data ReSend RealTime Message");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x24://报警数据上报
-                    _logger.info("Warning Message");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    //outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x25://补发报警数据上报
-                    _logger.info("Data ReSend Warning Message");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    //outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
-                    //补发报警数据是否需要push
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x26://心跳
                     _logger.info("Heartbeat request");
@@ -178,7 +99,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     }
                     respStr=requestHandler.getHeartbeatResp(receiveDataHexString);
                     buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//回发数据直接回消息
+                    ch.writeAndFlush(buf);//心跳流程直接回消息
                     break;
                 case 0x27://休眠请求
                     _logger.info("Sleep request");
@@ -192,67 +113,30 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     ch.writeAndFlush(buf);//回发数据直接回消息
                     break;
                 case 0x28://故障数据上报
-                    _logger.info("Failure Message");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    //outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x29://补发故障数据上报
-                    _logger.info("Data ReSend Failure Message");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
-                    //outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
-                    //补发故障数据是否需要push
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x31://远程控制响应(上行)包含mid 2 4 5
-                    _logger.info("RemoteControl resp");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    String _vin=chKey;
-                    requestHandler.handleRemoteControlRequest(receiveDataHexString, _vin);
-                   //远程控制上行处理，无数据下行
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x41://参数查询响应(上行)
                     _logger.info("ParamStatus Ack");
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
                 case 0x42://远程车辆诊断响应(上行)
-                    _logger.info("DiagnosticCommand Ack");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    _vin=chKey;
-                   requestHandler.handleDiagnosticAck(receiveDataHexString, _vin);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                  case 0x51://上报数据设置响应(上行)
                     _logger.info("SignalSetting Ack");
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
                 case 0x52://参数设置响应(上行)
-                    _logger.info("PramSetupAck Ack");
-                    chKey=getKeyByValue(ch);
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    _vin=chKey;
-                    requestHandler.handleParmSetAck(receiveDataHexString, _vin);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 default:
-                    _logger.info(">>other request dave,log to file" + receiveDataHexString);
+                    _logger.info(">>unknown request ,log to log" + receiveDataHexString);
                     //一般数据，判断是否已注册，注册的数据保存
                     saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;

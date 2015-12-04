@@ -14,6 +14,8 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 数据接收端口.<br>
@@ -48,9 +50,10 @@ public class AcquirePort {
     public   void main(){
         //channels=new HashMap<String,io.netty.channel.Channel>();
         //生成数据
+        ScheduledExecutorService  scheduledService = Executors.newScheduledThreadPool(10);
         new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
         new DataHandler(socketRedis,dataHandleService,dataTool).start();    //netty数据处理入库线程，根据需要 可以新建多个
-        new NettyServer(channels,socketRedis,dataTool,requestHandler,outputHexService,_acquirePort).run();    //netty收数据程序
+        new NettyServer(channels,socketRedis,dataTool,requestHandler,outputHexService,_acquirePort,scheduledService).run();    //netty收数据程序
 
     }
     public void init() throws IOException {
