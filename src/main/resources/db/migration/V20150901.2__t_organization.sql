@@ -7,6 +7,5 @@ CREATE TABLE IF NOT EXISTS t_organization (
   available int(1) NOT NULL DEFAULT 1 COMMENT '是否可用，0失效，1可用',
   areaid int(11) COMMENT '地区id',
   PRIMARY KEY (Id),
-  UNIQUE KEY (org_name),
   KEY idx_typekey (type_key)
 ) DEFAULT CHARSET=utf8 COMMENT='组织表';
