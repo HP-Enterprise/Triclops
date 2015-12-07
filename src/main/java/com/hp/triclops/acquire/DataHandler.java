@@ -2,13 +2,14 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.service.DataHandleService;
-import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by luj on 2015/9/28.
@@ -19,10 +20,13 @@ public class DataHandler extends Thread{
     private Logger _logger;
     private DataTool dataTool;
     private DataHandleService dataHandleService;
-    public DataHandler(SocketRedis s,DataHandleService dataHandleService,DataTool dt){
+    private ScheduledExecutorService scheduledService;
+
+    public DataHandler(SocketRedis s,DataHandleService dataHandleService,DataTool dt,ScheduledExecutorService scheduledService){
         this.socketRedis=s;
         this.dataHandleService=dataHandleService;
         this.dataTool=dt;
+        this.scheduledService=scheduledService;
         this._logger = LoggerFactory.getLogger(DataHandler.class);
 
     }
@@ -51,7 +55,7 @@ public class DataHandler extends Thread{
         //将input:{vin}对应的十六进制字符串解析保存入db
         String msg =socketRedis.popSetOneString(k);
         _logger.info("vin>>" + vin + "|receive msg:" + msg);
-        new DataHandlerThread(vin,socketRedis,dataHandleService,dataTool,msg).start();
+        scheduledService.schedule(new DataHandlerTask(vin,socketRedis,dataHandleService,dataTool,msg), 1, TimeUnit.MILLISECONDS);
     }
 
 

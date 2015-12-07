@@ -64,31 +64,31 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
             switch(dataType)
             {
                 case 0x11://电检
-                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x12://激活
-                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x13://注册
-                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x14://远程唤醒
-                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(  new RequestTask(channels,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x21://固定数据上报
-                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x22://实时数据上报
                     scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x23://补发实时数据上报
-                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x24://报警数据上报
-                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x25://补发报警数据上报
-                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x26://心跳
                     _logger.info("Heartbeat request");
@@ -138,7 +138,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 default:
                     _logger.info(">>unknown request ,log to log" + receiveDataHexString);
                     //一般数据，判断是否已注册，注册的数据保存
-                    saveBytesToRedis(getKeyByValue(ch), receiveData);
                     break;
             }
         }
