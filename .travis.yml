@@ -21,5 +21,4 @@ before_script:
     - gradle -Pflyway.url=jdbc:mysql://127.0.0.1:3306/briair flywayMigrate -Pflyway.user=travis
 
 script:
-    - gradle javadoc
     - gradle check -Dspring.profiles.active=travis
