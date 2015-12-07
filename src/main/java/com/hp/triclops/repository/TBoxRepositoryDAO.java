@@ -27,12 +27,13 @@ public class TBoxRepositoryDAO{
      * @param isActivated 是否被激活
      * @param imei IMEI
      * @param mobile SIM卡
+     * @param total 是否查全部，不分页：0分页查询，1为查询全部
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
      * @param pageSize 每页大小
      * @param currentPage 页码
      * @return 分页对象
      */
-    public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile, int fuzzy, int pageSize,int currentPage){
+    public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile,int total, int fuzzy, int pageSize,int currentPage){
         String jpql = "select b from TBox b where 1=1";
         if(id != 0){
             jpql += " and b.id = :id";
@@ -117,12 +118,14 @@ public class TBoxRepositoryDAO{
             }
         }
         Long count= (long) queryCount.getResultList().size();
-        if(pageSize != 0  && currentPage != 0){
-            query.setFirstResult((currentPage - 1)* pageSize);
-            query.setMaxResults(pageSize);
-        }else{
-            currentPage = 1;
-            pageSize = count.intValue();
+        if(total == 0){
+            if(pageSize != 0  && currentPage != 0){
+                query.setFirstResult((currentPage - 1)* pageSize);
+                query.setMaxResults(pageSize);
+            }else{
+                currentPage = 1;
+                pageSize = count.intValue();
+            }
         }
         List items = query.getResultList();
         List<TBox> tBoxList = new ArrayList<TBox>();
