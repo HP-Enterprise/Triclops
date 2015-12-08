@@ -202,20 +202,20 @@ public class DataTool {
         return (short)(a-(short)40);
     }
     public String getWindowStatus(String bita_b){
-        //得到车窗状态 传入两个bit的字符表示
-        //参考0.610
-        //0x0： Open
-        //0x1： Intermediate
-        //0x2： Close
-        //0x3： Signal invalid
+        //得到车窗状态 传入两个bit的字符表示,数据库0关1开2中间3无效
+        //参考0.613
+        //0x0： 00 Open
+        //0x1： 01 Intermediate
+        //0x2： 10 Close
+        //0x3： 11 Signal invalid
         String re="0";
         if(bita_b!=null){
             if(bita_b.equals("00")){
-                re="0";
-            }else if(bita_b.equals("01")){
                 re="1";
-            }else if(bita_b.equals("10")){
+            }else if(bita_b.equals("01")){
                 re="2";
+            }else if(bita_b.equals("10")){
+                re="0";
             }else if(bita_b.equals("11")){
                 re="3";
             }
@@ -223,8 +223,8 @@ public class DataTool {
         return re;
     }
     public String getDoorStatus(String bita_b){
-        //得到车门状态 传入两个bit的字符表示
-        //参考0.610
+        //得到车门状态 传入两个bit的字符表示,数据库0关1开2保留3无效
+        //参考0.613
         //0x0： 00 Close
         //0x1： 01 Open
         //0x2： 10 Reserved
