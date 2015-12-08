@@ -207,7 +207,7 @@ public class UserRepositoryDAO<T>  {
      * @return  封装了数据和页码信息的Page对象
      */
     public Page findUserByKeys(Integer id,String name,Integer gender,String nick,String phone,Integer isVerified,String contacts,String contactsPhone,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage,String vin,Integer vid,Integer isowner,Integer oid){
-        String jpql="select u from User u";
+        String jpql="select DISTINCT u from User u";
         String jpql_count="";
         id=(id==null)?-1:id;
         name=(name==null)?"": EscapeStringUtil.toEscape(name);
