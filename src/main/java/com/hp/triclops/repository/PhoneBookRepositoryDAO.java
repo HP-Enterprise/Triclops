@@ -29,7 +29,7 @@ public class PhoneBookRepositoryDAO {
      * @return 增加的通讯录信息
      */
     public PhoneBookShow add(PhoneBookShow phoneBookShow){
-        PhoneBook phoneBook=new PhoneBook(phoneBookShow.getId(),phoneBookShow.getUid(),phoneBookShow.getName(),phoneBookShow.getPhone(),phoneBookShow.getUsername(),phoneBookShow.getIsuser());
+        PhoneBook phoneBook=new PhoneBook(phoneBookShow.getId(),phoneBookShow.getUid(),phoneBookShow.getName(),phoneBookShow.getPhone(),phoneBookShow.getUserid(),phoneBookShow.getIsuser());
         phoneBookRepository.save(phoneBook);
         phoneBookShow=new PhoneBookShow(phoneBook);
         return phoneBookShow;
@@ -49,7 +49,7 @@ public class PhoneBookRepositoryDAO {
      * @param phoneBookShow 通讯录信息
      */
     public void updata(PhoneBookShow phoneBookShow){
-        PhoneBook phoneBook=new PhoneBook(phoneBookShow.getId(),phoneBookShow.getUid(),phoneBookShow.getName(),phoneBookShow.getPhone(),phoneBookShow.getUsername(),phoneBookShow.getIsuser());
+        PhoneBook phoneBook=new PhoneBook(phoneBookShow.getId(),phoneBookShow.getUid(),phoneBookShow.getName(),phoneBookShow.getPhone(),phoneBookShow.getUserid(),phoneBookShow.getIsuser());
         phoneBookRepository.save(phoneBook);
     }
 

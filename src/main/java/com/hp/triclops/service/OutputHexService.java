@@ -503,9 +503,9 @@ public class OutputHexService {
             sb.append("纬度").append(wd.getLatitude()).append(wd.getNorthSouth()).append(";");
             sb.append("速度:").append(wd.getSpeed()).append("km/h;");
             sb.append("方向:").append(wd.getHeading()).append(";");*/
-            positionMap.put("longitude", new StringBuilder().append(wd.getLongitude()).append(wd.getEastWest()).toString());
-            positionMap.put("latitude",new StringBuilder().append(wd.getLatitude()).append(wd.getNorthSouth()).toString());
-            positionMap.put("speed",new StringBuilder().append(wd.getSpeed()).append("km/h;").toString());
+            positionMap.put("longitude", new StringBuilder().append(wd.getLongitude()).toString());
+            positionMap.put("latitude",new StringBuilder().append(wd.getLatitude()).toString());
+            positionMap.put("speed",new StringBuilder().append(wd.getSpeed()).toString());
             positionMap.put("heading",new StringBuilder().append(wd.getHeading()).toString());
 
         }else{
@@ -519,7 +519,7 @@ public class OutputHexService {
 /*            sb.append("安全气囊报警触发,");
             sb.append("背扣安全带数量:").append(wd.getSafetyBeltCount()).append(",");
             sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");*/
-            jsonMap.put("srs_warning",true);
+            jsonMap.put("srs_warning","1");
             jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
             jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).append("km/h;").toString());
             dataMap.put("pType", 8);
@@ -532,7 +532,7 @@ public class OutputHexService {
         }else if(wd.getAtaWarning()==(short)1){
             //防盗报警 0未触发 1触发
            // sb.append("车辆防盗报警触发");
-            jsonMap.put("ata_warning",true);
+            jsonMap.put("ata_warning","1");
             dataMap.put("pType", 9);
 
             String leftFrontDoorInformation = "";

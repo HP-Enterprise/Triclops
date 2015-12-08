@@ -3,7 +3,6 @@ package com.hp.triclops.repository;
 import com.hp.triclops.entity.User;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -14,11 +13,7 @@ import java.util.List;
 
 
 @Component
-@SuppressWarnings("unchecked")
 public class UserRepositoryDAO<T>  {
-
-    @Autowired
-    UserVehicleRelativedRepositoryDAO userVehicleRelativedRepositoryDAO;
 
     @PersistenceContext
     private EntityManager em;

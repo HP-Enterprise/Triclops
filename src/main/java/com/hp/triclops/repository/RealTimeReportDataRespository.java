@@ -13,4 +13,6 @@ public interface RealTimeReportDataRespository extends CrudRepository<RealTimeRe
 
     @Query("select rd from RealTimeReportData rd where rd.vin = ?1 ORDER BY rd.sendingTime DESC")
     List<RealTimeReportData> findLatestOneByVin(String vin);
+
+    RealTimeReportData findById(Long id);
 }
