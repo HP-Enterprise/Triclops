@@ -340,8 +340,7 @@ public class UserRepositoryDAO<T>  {
 
         return new Page(currentPage,pageSize,count,items);
     }
-
-
+    
 
     /** 调用存储过程查询多个组织用户
      *
