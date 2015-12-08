@@ -202,10 +202,14 @@ public class OutputHexService {
             Iterator<UserVehicleRelatived> iterator = uvr.iterator();
             while (iterator.hasNext()) {
                 //int uid = iterator.next().getUid().getId();
-                User user = iterator.next().getUid();
+               // User user = iterator.next().getUid();
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1){
+                    User user = userVehicleRelatived.getUid();
+                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user);
+                    pushWarningOrFailureMessage(vin,pushMsg);
+                }
 
-                Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user);
-                pushWarningOrFailureMessage(vin,pushMsg);
             }
         }
     }
@@ -222,9 +226,12 @@ public class OutputHexService {
         if(uvr.size()>0) {
             Iterator<UserVehicleRelatived> iterator = uvr.iterator();
             while (iterator.hasNext()) {
-                User user = iterator.next().getUid();
-                Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user);
-                pushWarningOrFailureMessage(vin,pushMsg);
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1){
+                    User user = userVehicleRelatived.getUid();
+                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user);
+                    pushWarningOrFailureMessage(vin,pushMsg);
+                }
             }
         }
 
@@ -236,8 +243,18 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getFailureMessageAndPush(String vin,String msg){
-        Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin, pushMsg);
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
+        if(uvr.size()>0) {
+            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
+            while (iterator.hasNext()) {
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1) {
+                    Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
+                    pushWarningOrFailureMessage(vin, pushMsg);
+                }
+            }
+        }
     }
 
     /**
@@ -246,8 +263,18 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendFailureMessageAndPush(String vin,String msg){
-        Map<String,Object> pushMsg=getResendFailureMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin,pushMsg);
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
+        if(uvr.size()>0) {
+            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
+            while (iterator.hasNext()) {
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1) {
+                    Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
+                    pushWarningOrFailureMessage(vin, pushMsg);
+                }
+            }
+        }
     }
 
 
@@ -264,7 +291,10 @@ public class OutputHexService {
         if(uvr.size()>0){
             Iterator<UserVehicleRelatived> iterator=uvr.iterator();
             while (iterator.hasNext()){
-                int uid=iterator.next().getUid().getId();
+                UserVehicleRelatived userVehicleRelatived = iterator.next();
+                if(userVehicleRelatived.getVflag()==1){
+                int uid = userVehicleRelatived.getUid().getId();
+                //int uid=iterator.next().getUid().getId();
                 _logger.info("push to:"+uid+":"+pushMsg);
                 try {
                     //this.mqService.pushToUser(uid, pushMsg);
@@ -289,6 +319,7 @@ public class OutputHexService {
 
                 }catch (RuntimeException e){_logger.info(e.getMessage());} catch (Exception e) {
                     _logger.info(e.getMessage());
+                }
                 }
             }
         }else{
