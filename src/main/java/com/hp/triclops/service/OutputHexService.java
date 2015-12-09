@@ -56,8 +56,7 @@ public class OutputHexService {
     RealTimeReportDataRespository realTimeReportDataRespository;
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    SimpleSMS simpleSMS;
+
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
@@ -231,8 +230,8 @@ public class OutputHexService {
         User u=userRepository.findById(uvr.get(0).getId());
             if(u!=null&&u.getContactsPhone()!=null){
                 //取到紧急联系人电话
-
-
+                //发送短信
+                _logger.info("send srs waring sms to"+u.getContactsPhone());
             }
 
         }

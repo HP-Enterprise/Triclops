@@ -35,4 +35,14 @@ public class GpsToolTest {
         System.out.println(">>>>>>"+g.getLongitude()+","+g.getLatitude());
 
     }
+
+    @Test
+    public void test_convertTBaidu(){
+        GpsData gpsData=new GpsData();
+        gpsData.setLatitude(36.6310687);
+        gpsData.setLongitude(111.7540428);
+        GpsData g=gpsTool.convertToBaiDuGps(gpsData);
+        System.out.println(">>>>>>"+g.getLongitude()+","+g.getLatitude());
+
+    }
 }
