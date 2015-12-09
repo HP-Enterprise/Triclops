@@ -789,7 +789,10 @@ public class OutputHexService {
      */
     public void handleRemoteControlRst(String vin,long eventId,Short result){
         String sessionId=49+"-"+eventId;
-        Short dbResult=(short)(result+(short)3);//参考建表sql  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败,  Rst 0：成功 1：失败
+        Short dbResult=4;//参考建表sql  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败,  Rst 0：成功 1：失败
+        if(result==(short)0){
+            dbResult=3;
+        }
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
