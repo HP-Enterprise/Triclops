@@ -34,9 +34,7 @@ public class DataHandler extends Thread{
     public  synchronized void run()
     {
         while (true){
-            try{
-                Thread.sleep(10);//开发调试用
-            }catch (InterruptedException e){e.printStackTrace(); }
+
             Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
             //读取数据库中所有的数据集合
             Set<String> setKey = socketRedis.getKeysSet("input:*");
