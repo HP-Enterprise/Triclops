@@ -54,6 +54,10 @@ public class OutputHexService {
     HttpRequestTool httpRequestTool;
     @Autowired
     RealTimeReportDataRespository realTimeReportDataRespository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    SimpleSMS simpleSMS;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
@@ -211,6 +215,26 @@ public class OutputHexService {
                 }
 
             }
+        }
+    }
+
+    /**
+     * 根据报警hex信息生成文本性质的短信提示 并短信到对应手机
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getWarningMessageAndSms(String vin,String msg){
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
+        //一个车对应多个uid
+        if(uvr.size()>0) {
+        User u=userRepository.findById(uvr.get(0).getId());
+            if(u!=null&&u.getContactsPhone()!=null){
+                //取到紧急联系人电话
+
+
+            }
+
         }
     }
 
