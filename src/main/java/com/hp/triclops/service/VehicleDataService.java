@@ -337,8 +337,9 @@ public class VehicleDataService {
         List<RemoteControlShow> remoteControlAndVehicle=new ArrayList<>();
         for(int i=0;i<remoteControllList.size();i++){
             RemoteControlShow remoteControlShow = new RemoteControlShow();
-            remoteControlShow.setLicensePlate(vehicle.getLicense_plate());
-
+           if (vehicle!=null) {
+               remoteControlShow.setLicensePlate(vehicle.getLicense_plate());
+           }
             remoteControlShow.setId(remoteControllList.get(i).getId());
             remoteControlShow.setSessionId(remoteControllList.get(i).getSessionId());
             remoteControlShow.setSendingTime(remoteControllList.get(i).getSendingTime());

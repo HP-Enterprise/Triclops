@@ -16,7 +16,7 @@ public class RemoteControlShow {
 
     private Short controlType;
     /*
-         ¿ØÖÆÀà±ð  0£ºÔ¶³ÌÆô¶¯·¢¶¯»ú  1£ºÔ¶³Ì¹Ø±Õ·¢¶¯»ú  2£º³µÃÅÉÏËø  3£º³µÃÅ½âËø  4£º¿Õµ÷¿ªÆô  5£º¿Õµ÷¹Ø±Õ  6£º×ùÒÎ¼ÓÈÈ  7£º×ùÒÎÍ£Ö¹¼ÓÈÈ  8£ºÔ¶³Ì·¢¶¯»úÏÞÖÆ  9£ºÔ¶³Ì·¢¶¯»úÏÞÖÆ¹Ø±Õ  10£ºÔ¶³ÌÑ°³µ
+         æŽ§åˆ¶ç±»åˆ«  0ï¼šè¿œç¨‹å¯åŠ¨å‘åŠ¨æœº  1ï¼šè¿œç¨‹å…³é—­å‘åŠ¨æœº  2ï¼šè½¦é—¨ä¸Šé”  3ï¼šè½¦é—¨è§£é”  4ï¼šç©ºè°ƒå¼€å¯  5ï¼šç©ºè°ƒå…³é—­  6ï¼šåº§æ¤…åŠ çƒ­  7ï¼šåº§æ¤…åœæ­¢åŠ çƒ­  8ï¼šè¿œç¨‹å‘åŠ¨æœºé™åˆ¶  9ï¼šè¿œç¨‹å‘åŠ¨æœºé™åˆ¶å…³é—­  10ï¼šè¿œç¨‹å¯»è½¦
      */
     private Short acTemperature;
     private Short status;
