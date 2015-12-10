@@ -30,9 +30,8 @@ public class SMSHttpTool {
             sb.append(phone);
             sb.append("&message=");
             sb.append(message);
-
-            //String params=java.net.URLEncoder.encode(sb.toString());
             URL url = new URL(sb.toString());
+
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setDoOutput(true);
             conn.setDoInput(true);

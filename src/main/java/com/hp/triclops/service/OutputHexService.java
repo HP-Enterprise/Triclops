@@ -445,18 +445,29 @@ public class OutputHexService {
             gpsData.setLatitude(wd.getLatitude());
             gpsData.setLongitude(wd.getLongitude());
             GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
-            StringBuilder sb=new StringBuilder();
-            sb.append("气囊弹出,位置");
-            sb.append("http://");
-            sb.append(webserverHost);
-            sb.append("/baiduMap.html?lon=");
-            sb.append(baiduGpsData.getLongitude());
-            sb.append("&lat=");
-            sb.append(baiduGpsData.getLatitude());
-            String smsStr=sb.toString();
-            _logger.info("send sms:"+phone+":"+smsStr);
-            //调用工具类发起 http请求
-            smsHttpTool.doHttp(phone,smsStr);
+
+                StringBuilder sb = new StringBuilder();
+                String srs = "SRS Warning ,Location ";
+                try{
+                    srs="气囊弹出,位置";
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                 }catch(Exception e){
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+                sb.append("http://");
+                sb.append(webserverHost);
+                sb.append("/baiduMap.html?lon=");
+                sb.append(baiduGpsData.getLongitude());
+                sb.append("%26");
+               //sb.append("&");
+                sb.append("lat=");
+                sb.append(baiduGpsData.getLatitude());
+                String smsStr = sb.toString();
+                _logger.info("send sms:" + phone + ":" + smsStr);
+                //调用工具类发起 http请求
+                smsHttpTool.doHttp(phone, smsStr);
+
         }
     }
 
