@@ -15,6 +15,7 @@ import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.HttpRequestTool;
+import com.hp.triclops.utils.SMSHttpTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,8 @@ public class OutputHexService {
     UserRepository userRepository;
     @Autowired
     GpsTool  gpsTool;
+    @Autowired
+    SMSHttpTool smsHttpTool;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
@@ -452,6 +455,8 @@ public class OutputHexService {
             sb.append(baiduGpsData.getLatitude());
             String smsStr=sb.toString();
             _logger.info("send sms:"+phone+":"+smsStr);
+            //调用工具类发起 http请求
+            smsHttpTool.doHttp(phone,smsStr);
         }
     }
 
