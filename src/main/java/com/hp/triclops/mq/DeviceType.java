@@ -4,5 +4,5 @@ package com.hp.triclops.mq;
  * 客户端类型
  */
 public enum DeviceType {
-    ANDROID,IOS
+    ANDROID,IOS,tBox,CarEngine
 }
