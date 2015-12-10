@@ -1,7 +1,9 @@
 package com.hp.triclops.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.hp.triclops.entity.GpsData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,12 +134,17 @@ public class GpsTool {
                 re.append(lines);
             }
             String result=re.toString();
-            System.out.println(result);
-            Gson gs=new Gson();
-            Map<String,String> resultMap = gs.fromJson(sb.toString(), new TypeToken<Map<String, String>>(){}.getType());
-            String status=resultMap.get("status");
-            this._logger.info("status:" + status);
-            reader.close();
+            JSONObject json = JSON.parseObject(result);
+            String status=json.get("status").toString();
+            if(status.equals("0")){
+                JSONArray aa=json.getJSONArray("result");
+                JSONObject gps =JSON.parseObject(aa.get(0).toString());
+                String x=gps.get("x").toString();
+                String y=gps.get("y").toString();
+                gpsData.setLongitude((Double.parseDouble(x)));
+                gpsData.setLatitude(Double.parseDouble(y));
+            }
+             reader.close();
             // 断开连接
             connection.disconnect();
 

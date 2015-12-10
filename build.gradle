@@ -39,7 +39,6 @@ dependencies {
     compile("com.rabbitmq:amqp-client:3.5.+")
     compile("commons-lang:commons-lang:2.+")
     compile("joda-time:joda-time:2.9.+")
-    compile ("com.google.code.gson:gson:2.2.+")
     runtime("mysql:mysql-connector-java:5.1.+")
     testCompile("org.springframework.boot:spring-boot-starter-test:1.2+")
 }
