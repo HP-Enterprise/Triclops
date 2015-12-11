@@ -270,6 +270,27 @@ public class OutputHexService {
     }
 
     /**
+     * 根据报警hex信息生成文本性质的短信提示 并短信到对应手机
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getResendWarningMessageAndSms(String vin,String msg){
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
+        //一个车对应多个uid
+        if(uvr.size()>0) {
+            User u=userRepository.findById(uvr.get(0).getId());
+            if(u!=null&&u.getContactsPhone()!=null){
+                //取到紧急联系人电话
+                //发送短信
+                _logger.info("send srs waring sms to"+u.getContactsPhone());
+                sendResendWarningMessageSms(vin, msg, u.getContactsPhone());
+            }
+
+        }
+    }
+
+    /**
      * 根据故障hex信息生成文本性质的故障提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
@@ -447,6 +468,7 @@ public class OutputHexService {
             GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
 
                 StringBuilder sb = new StringBuilder();
+                StringBuilder longU = new StringBuilder();
                 String srs = "SRS Warning ,Location ";
                 try{
                     srs="气囊弹出,位置";
@@ -455,18 +477,97 @@ public class OutputHexService {
                     _logger.info(e.getMessage());
                 }
                 sb.append(srs);
-                sb.append("http://");
-                sb.append(webserverHost);
-                sb.append("/baiduMap.html?lon=");
-                sb.append(baiduGpsData.getLongitude());
-                sb.append("%26");
-               //sb.append("&");
-                sb.append("lat=");
-                sb.append(baiduGpsData.getLatitude());
+
+                longU.append("http://");
+                longU.append(webserverHost);
+                longU.append("/baiduMap.html?lon=");
+                longU.append(baiduGpsData.getLongitude());
+                longU.append("%26");
+                    //sb.append("&");
+                longU.append("lat=");
+                longU.append(baiduGpsData.getLatitude());
+                String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+                sb.append(shortUrl);
                 String smsStr = sb.toString();
+
                 _logger.info("send sms:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
+
+        }
+    }
+
+    /**
+     * 根据报警hex信息生成文本性质的报警短信
+     * @param vin vin
+     * @param msg 16进制报警信息
+     * @param phone 接收短信号码
+     * @return 根据报警hex信息生成文本性质的报警短信
+     */
+    public void sendResendWarningMessageSms(String vin,String msg,String phone){
+        //报警数据保存
+        _logger.info(">>get WarningMessage For SMS:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+
+        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        WarningMessageData wd=new WarningMessageData();
+
+/*        WarningMessage bean=dp.loadBean(WarningMessage.class);
+          WarningMessageData wd=new WarningMessageData();*/
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+
+        wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
+
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
+        if(wd.getSrsWarning()==(short)1){
+            GpsData gpsData=new GpsData();
+            gpsData.setLatitude(wd.getLatitude());
+            gpsData.setLongitude(wd.getLongitude());
+            GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+
+            StringBuilder sb = new StringBuilder();
+            StringBuilder longU = new StringBuilder();
+            String srs = "SRS Warning ,Location ";
+            try{
+                srs="气囊弹出,位置";
+                srs = java.net.URLEncoder.encode(srs, "UTF-8");
+            }catch(Exception e){
+                _logger.info(e.getMessage());
+            }
+            sb.append(srs);
+
+            longU.append("http://");
+            longU.append(webserverHost);
+            longU.append("/baiduMap.html?lon=");
+            longU.append(baiduGpsData.getLongitude());
+            longU.append("%26");
+            //sb.append("&");
+            longU.append("lat=");
+            longU.append(baiduGpsData.getLatitude());
+            String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+            sb.append(shortUrl);
+            String smsStr = sb.toString();
+
+            _logger.info("send sms:" + phone + ":" + smsStr);
+            //调用工具类发起 http请求
+            smsHttpTool.doHttp(phone, smsStr);
 
         }
     }
