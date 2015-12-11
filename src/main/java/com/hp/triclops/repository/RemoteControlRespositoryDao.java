@@ -3,11 +3,14 @@ package com.hp.triclops.repository;
 import com.hp.triclops.entity.RemoteControl;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -19,6 +22,9 @@ public class RemoteControlRespositoryDao {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired
+    RemoteControlRepository remoteControlRepository;
+
     /**
      * @param vin vin
      * @param orderByProperty 排序条件
@@ -28,7 +34,7 @@ public class RemoteControlRespositoryDao {
      * @return  page 封装好的分页远程控制数据
      */
     public Page findRemoteControlByVin(String vin,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
-        String jpql="select rc FROM RemoteControl rc where 1=1 ";
+        String jpql="select rc FROM RemoteControl rc where 1=1 And rc.available = 1 ";
         String jpql_count="";
         vin=(vin==null)?"": EscapeStringUtil.toEscape(vin);
         pageSize=(pageSize==null)?10:pageSize;
@@ -58,6 +64,42 @@ public class RemoteControlRespositoryDao {
         List items=query.getResultList();
         Long count= (long) queryCount.getResultList().size();
         return new Page(currentPage,pageSize,count,items);
+    }
+
+
+    /**
+     * remotecontrol修改
+     * ids 消息ID字符串<br>
+     * @param ids 远程控制ID
+     * @return satae -1远程控制删除失败，1删除成功
+     */
+    public int modifyRemoteControl(String ids){
+        int state = 0;
+        List<String> list = new ArrayList<String>();
+        String jpql = "select rc from RemoteControl rc where rc.id in ("+ids+") and rc.available = 1";
+        System.out.println(jpql);
+        TypedQuery query=em.createQuery(jpql,RemoteControl.class);
+        List queryList = query.getResultList();
+        List<RemoteControl> remoteList = new ArrayList<RemoteControl>();
+        Iterator iterator = queryList.iterator();
+        while (iterator.hasNext()) {
+            remoteList.add((RemoteControl) iterator.next());
+            System.out.println(remoteList);
+        }
+        if(remoteList.size()==0){
+            state = -1;
+        }else{
+            try{
+                remoteList.forEach(rc -> {
+                    rc.setAvailable((short)0);
+                    remoteControlRepository.save(rc);
+                });
+                state = 1;
+            }catch (Exception e){
+                state = -1;
+            }
+        }
+        return state;
     }
 
 }

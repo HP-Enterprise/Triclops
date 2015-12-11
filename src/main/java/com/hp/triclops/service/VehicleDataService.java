@@ -75,6 +75,7 @@ public class VehicleDataService {
             rc.setAcTemperature(acTmp);
             rc.setStatus((short) 0);
             rc.setRemark("");
+            rc.setAvailable((short)1);
             remoteControlRepository.save(rc);
             _logger.info("save RemoteControl to db");
             //保存到数据库
@@ -354,5 +355,11 @@ public class VehicleDataService {
         return remoteControlAndVehicle;
     }
 
+    /**
+     * 修改远程控制
+     * */
+    public int modifyRemoteControl(String ids){
+        return remoteControlRespositoryDao.modifyRemoteControl(ids);
+    }
 
 }

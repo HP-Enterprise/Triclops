@@ -24,6 +24,8 @@ public class RemoteControl {
     private Short status;
     private String remark;
 
+    private Short available;// 0 失效 1 有效 默认为1
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -115,5 +117,13 @@ public class RemoteControl {
         this.remark = remark;
     }
 
+    @Basic
+    @Column(name = "available", nullable = false, insertable = true, updatable = true)
+    public Short getAvailable() {
+        return available;
+    }
 
+    public void setAvailable(Short available) {
+        this.available = available;
+    }
 }
