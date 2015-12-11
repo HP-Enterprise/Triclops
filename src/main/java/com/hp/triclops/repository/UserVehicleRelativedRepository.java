@@ -21,6 +21,9 @@ import java.util.Set;
 public interface UserVehicleRelativedRepository extends CrudRepository<UserVehicleRelatived, Integer> {
     List<UserVehicleRelatived> findByVid(Vehicle vid);
 
+    @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.iflag=1  and Uvr.vid = ?1")
+    List<UserVehicleRelatived> findOwnerByVid(Vehicle vid);
+
     UserVehicleRelatived findById(int id);
 
     List<UserVehicleRelatived> findByUid(User user);
