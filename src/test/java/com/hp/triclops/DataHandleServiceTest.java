@@ -9,6 +9,7 @@ import com.hp.triclops.service.DataHandleService;
 import com.hp.triclops.utils.DateUtil;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,7 @@ public class DataHandleServiceTest {
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
 
+    @Ignore
     @Test
     public void test_saveRealTime_Gps_data(){
 
