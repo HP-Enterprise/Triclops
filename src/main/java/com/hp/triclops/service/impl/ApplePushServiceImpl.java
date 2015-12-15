@@ -80,8 +80,9 @@ public class ApplePushServiceImpl implements ApplePushService {
                 deviceTokens.add(pushToken);
             }*/
             ApnsService service = APNS.newService().withCert(p12Path,pwd).withSandboxDestination().build();
-            String payLoad = APNS.newPayload().alertBody(content).badge(1).sound("default").build();
-            service.push(deviceTokens, payLoad);
+           /* String payLoad = APNS.newPayload().alertBody("您有一条新消息").badge(1).sound("default").build();
+            System.out.println(payLoad);*/
+            service.push(deviceTokens, content);
             service.stop();
 
         } catch (Exception e) {
