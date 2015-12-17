@@ -197,8 +197,12 @@ public class DataTool {
         String  avgOil=a/10+"."+a%10;
         return Float.valueOf(avgOil);
     }
-    public Short getTrueTmp(short a){
-        //得到真实温度
+    public Short getInternTrueTmp(short a){
+        //得到车内真实温度
+        return a;
+    }
+    public Short getOuterTrueTmp(short a){
+        //得到车外真实温度
         return (short)(a-(short)40);
     }
     public String getWindowStatus(String bita_b){
