@@ -36,11 +36,21 @@ public class MQServiceImpl implements MQService{
      */
     @Override
     public UserDevice deviceRegister(int userId, String deviceId, DeviceType deviceType) {
+        List<UserDevice> userDevices = deviceRepository.findByUserId(userId);
+        if(userDevices.size()>0&&(deviceType.equals(DeviceType.IOS)||deviceType.equals(DeviceType.ANDROID))){
+            for(UserDevice u:userDevices){
+                if(u.getDeviceType().equals(DeviceType.IOS)||u.getDeviceType().equals(DeviceType.ANDROID)){
+                    u.setActive(0);
+                    deviceRepository.save(u);
+                }
+            }
+        }
         User user=this.userRepository.findById(userId);
         List<UserDevice> udList=this.deviceRepository.findByDeviceId(deviceId);
         for(UserDevice ud:udList){
             if(ud.getUser().getId()==user.getId()){
-                return ud;
+                ud.setActive(1);
+                return deviceRepository.save(ud);
             }
         }
         UserDevice userDevice=new UserDevice();
