@@ -22,6 +22,7 @@ public class Message {
     private int messageNums;
     private int cleanFlag;
     private int available;
+    private String playTime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -135,5 +136,13 @@ public class Message {
 
     public void setAvailable(int available) {
         this.available = available;
+    }
+
+    public String getPlayTime() {
+        return playTime;
+    }
+
+    public void setPlayTime(String playTime) {
+        this.playTime = playTime;
     }
 }
