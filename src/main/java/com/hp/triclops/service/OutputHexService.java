@@ -751,7 +751,7 @@ public class OutputHexService {
             sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");*/
             jsonMap.put("srs_warning","1");
             jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
-            jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).append("km/h;").toString());
+            jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
             dataMap.put("pType", 8);
 
             String contactsPhone ="";
