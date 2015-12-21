@@ -19,7 +19,8 @@ public class VehicleManagement {
      * @param vid 车辆ID
      * @return 车辆信息
      */
-    public Vehicle findById(int vid){
+    public Vehicle findById(int vid)
+    {
         return vehicleRepository.findById(vid);
     }
 }
