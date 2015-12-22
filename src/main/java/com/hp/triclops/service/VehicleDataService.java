@@ -327,7 +327,7 @@ public class VehicleDataService {
         Page remoteControlPage = remoteControlRespositoryDao.findRemoteControlByVin(vin, orderByProperty, ascOrDesc, pageSize, currentPage);
 
         Vehicle vehicle=vehicleRepository.findByVin(vin);
-        remoteControlPage.setItems(transFormRemoteControl(remoteControlPage.getItems(),vehicle));
+        remoteControlPage.setItems(transFormRemoteControl((List<RemoteControl>)remoteControlPage.getItems(),vehicle));
         return remoteControlPage;
     }
 
