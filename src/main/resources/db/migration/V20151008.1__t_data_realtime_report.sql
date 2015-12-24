@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   trunk_lid_state varchar(1) NOT NULL COMMENT '后备箱盖状态1开0关',
   skylight_state varchar(1) NOT NULL COMMENT '天窗状态1开0关',
   parking_state varchar(1) NOT NULL COMMENT '驻车状态',
-
   PRIMARY KEY (id),
   INDEX idx_vin(vin),
   INDEX idx_imei(imei),
