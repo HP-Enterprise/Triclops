@@ -13,7 +13,9 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
+import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.HttpRequestTool;
+import com.hp.triclops.utils.SMSHttpTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class OutputHexService {
 
     @Value("${com.hp.push.url}")
     private String urlLink;
+
+    @Value("${com.hp.web.server.host}")
+    private String webserverHost;
 
     @Autowired
     Conversion conversionTBox;
@@ -54,6 +59,12 @@ public class OutputHexService {
     HttpRequestTool httpRequestTool;
     @Autowired
     RealTimeReportDataRespository realTimeReportDataRespository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    GpsTool  gpsTool;
+    @Autowired
+    SMSHttpTool smsHttpTool;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
@@ -202,11 +213,36 @@ public class OutputHexService {
             Iterator<UserVehicleRelatived> iterator = uvr.iterator();
             while (iterator.hasNext()) {
                 //int uid = iterator.next().getUid().getId();
-                User user = iterator.next().getUid();
+               // User user = iterator.next().getUid();
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1){
+                    User user = userVehicleRelatived.getUid();
+                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user);
+                    pushWarningOrFailureMessage(vin,pushMsg);
+                }
 
-                Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user);
-                pushWarningOrFailureMessage(vin,pushMsg);
             }
+        }
+    }
+
+    /**
+     * 根据报警hex信息生成文本性质的短信提示 并短信到对应手机
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getWarningMessageAndSms(String vin,String msg){
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
+        //一个车对应多个uid
+        if(uvr.size()>0) {
+        User u=userRepository.findById(uvr.get(0).getId());
+            if(u!=null&&u.getContactsPhone()!=null){
+                //取到紧急联系人电话
+                //发送短信
+                _logger.info("send srs waring sms to"+u.getContactsPhone());
+                sendWarningMessageSms(vin, msg, u.getContactsPhone());
+            }
+
         }
     }
 
@@ -222,12 +258,36 @@ public class OutputHexService {
         if(uvr.size()>0) {
             Iterator<UserVehicleRelatived> iterator = uvr.iterator();
             while (iterator.hasNext()) {
-                User user = iterator.next().getUid();
-                Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user);
-                pushWarningOrFailureMessage(vin,pushMsg);
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1){
+                    User user = userVehicleRelatived.getUid();
+                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user);
+                    pushWarningOrFailureMessage(vin,pushMsg);
+                }
             }
         }
 
+    }
+
+    /**
+     * 根据报警hex信息生成文本性质的短信提示 并短信到对应手机
+     * @param vin vin
+     * @param msg 16进制报警信息
+     */
+    public void getResendWarningMessageAndSms(String vin,String msg){
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
+        //一个车对应多个uid
+        if(uvr.size()>0) {
+            User u=userRepository.findById(uvr.get(0).getId());
+            if(u!=null&&u.getContactsPhone()!=null){
+                //取到紧急联系人电话
+                //发送短信
+                _logger.info("send srs waring sms to"+u.getContactsPhone());
+                sendResendWarningMessageSms(vin, msg, u.getContactsPhone());
+            }
+
+        }
     }
 
     /**
@@ -236,8 +296,18 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getFailureMessageAndPush(String vin,String msg){
-        Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin, pushMsg);
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
+        if(uvr.size()>0) {
+            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
+            while (iterator.hasNext()) {
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1) {
+                    Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
+                    pushWarningOrFailureMessage(vin, pushMsg);
+                }
+            }
+        }
     }
 
     /**
@@ -246,8 +316,18 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendFailureMessageAndPush(String vin,String msg){
-        Map<String,Object> pushMsg=getResendFailureMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin,pushMsg);
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
+        if(uvr.size()>0) {
+            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
+            while (iterator.hasNext()) {
+                UserVehicleRelatived userVehicleRelatived =  iterator.next();
+                if(userVehicleRelatived.getVflag()==1) {
+                    Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
+                    pushWarningOrFailureMessage(vin, pushMsg);
+                }
+            }
+        }
     }
 
 
@@ -264,7 +344,10 @@ public class OutputHexService {
         if(uvr.size()>0){
             Iterator<UserVehicleRelatived> iterator=uvr.iterator();
             while (iterator.hasNext()){
-                int uid=iterator.next().getUid().getId();
+                UserVehicleRelatived userVehicleRelatived = iterator.next();
+                if(userVehicleRelatived.getVflag()==1){
+                int uid = userVehicleRelatived.getUid().getId();
+                //int uid=iterator.next().getUid().getId();
                 _logger.info("push to:"+uid+":"+pushMsg);
                 try {
                     //this.mqService.pushToUser(uid, pushMsg);
@@ -289,6 +372,7 @@ public class OutputHexService {
 
                 }catch (RuntimeException e){_logger.info(e.getMessage());} catch (Exception e) {
                     _logger.info(e.getMessage());
+                }
                 }
             }
         }else{
@@ -340,6 +424,152 @@ public class OutputHexService {
         //生成报警信息
         Map<String,Object> warningMessage=buildWarningString(wd,user,rd);
         return warningMessage;
+    }
+
+    /**
+     * 根据报警hex信息生成文本性质的报警短信
+     * @param vin vin
+     * @param msg 16进制报警信息
+     * @param phone 接收短信号码
+     * @return 根据报警hex信息生成文本性质的报警短信
+     */
+    public void sendWarningMessageSms(String vin,String msg,String phone){
+        //报警数据保存
+        _logger.info(">>get WarningMessage For SMS:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        WarningMessage bean=dp.loadBean(WarningMessage.class);
+        WarningMessageData wd=new WarningMessageData();
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+
+        wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
+
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
+        if(wd.getSrsWarning()==(short)1){
+            GpsData gpsData=new GpsData();
+            gpsData.setLatitude(wd.getLatitude());
+            gpsData.setLongitude(wd.getLongitude());
+            GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+
+                StringBuilder sb = new StringBuilder();
+                StringBuilder longU = new StringBuilder();
+                String srs = "SRS Warning ,Location ";
+                try{
+                    srs="气囊弹出,位置";
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                 }catch(Exception e){
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+
+                longU.append("http://");
+                longU.append(webserverHost);
+                longU.append("/baiduMap.html?lon=");
+                longU.append(baiduGpsData.getLongitude());
+                longU.append("%26");
+                    //sb.append("&");
+                longU.append("lat=");
+                longU.append(baiduGpsData.getLatitude());
+                String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+                sb.append(shortUrl);
+                String smsStr = sb.toString();
+
+                _logger.info("send sms:" + phone + ":" + smsStr);
+                //调用工具类发起 http请求
+                smsHttpTool.doHttp(phone, smsStr);
+
+        }
+    }
+
+    /**
+     * 根据报警hex信息生成文本性质的报警短信
+     * @param vin vin
+     * @param msg 16进制报警信息
+     * @param phone 接收短信号码
+     * @return 根据报警hex信息生成文本性质的报警短信
+     */
+    public void sendResendWarningMessageSms(String vin,String msg,String phone){
+        //报警数据保存
+        _logger.info(">>get WarningMessage For SMS:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+
+        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        WarningMessageData wd=new WarningMessageData();
+
+/*        WarningMessage bean=dp.loadBean(WarningMessage.class);
+          WarningMessageData wd=new WarningMessageData();*/
+        wd.setVin(vin);
+        wd.setImei(bean.getImei());
+        wd.setApplicationId(bean.getApplicationID());
+        wd.setMessageId(bean.getMessageID());
+        wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
+        wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
+        wd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        wd.setHeading(bean.getHeading());
+
+        wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
+
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
+        if(wd.getSrsWarning()==(short)1){
+            GpsData gpsData=new GpsData();
+            gpsData.setLatitude(wd.getLatitude());
+            gpsData.setLongitude(wd.getLongitude());
+            GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+
+            StringBuilder sb = new StringBuilder();
+            StringBuilder longU = new StringBuilder();
+            String srs = "SRS Warning ,Location ";
+            try{
+                srs="气囊弹出,位置";
+                srs = java.net.URLEncoder.encode(srs, "UTF-8");
+            }catch(Exception e){
+                _logger.info(e.getMessage());
+            }
+            sb.append(srs);
+
+            longU.append("http://");
+            longU.append(webserverHost);
+            longU.append("/baiduMap.html?lon=");
+            longU.append(baiduGpsData.getLongitude());
+            longU.append("%26");
+            //sb.append("&");
+            longU.append("lat=");
+            longU.append(baiduGpsData.getLatitude());
+            String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+            sb.append(shortUrl);
+            String smsStr = sb.toString();
+
+            _logger.info("send sms:" + phone + ":" + smsStr);
+            //调用工具类发起 http请求
+            smsHttpTool.doHttp(phone, smsStr);
+
+        }
     }
 
     /**
@@ -521,7 +751,7 @@ public class OutputHexService {
             sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");*/
             jsonMap.put("srs_warning","1");
             jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
-            jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).append("km/h;").toString());
+            jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
             dataMap.put("pType", 8);
 
             String contactsPhone ="";
@@ -758,7 +988,10 @@ public class OutputHexService {
      */
     public void handleRemoteControlRst(String vin,long eventId,Short result){
         String sessionId=49+"-"+eventId;
-        Short dbResult=(short)(result+(short)3);//参考建表sql  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败,  Rst 0：成功 1：失败
+        Short dbResult=4;//参考建表sql  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败,  Rst 0：成功 1：失败
+        if(result==(short)0){
+            dbResult=3;
+        }
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);

@@ -7,6 +7,7 @@ import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class APNSTest {
         return path;
     }
 
-
+    @Ignore
     @Test
     public void test01(){
 
@@ -91,13 +92,13 @@ public class APNSTest {
             System.out.println("出错了：" + e.getMessage());
         }
     }
-
+    @Ignore
     @Test
     public void test02(){
 
         this.applePushService.pushToUser("hello test",1,"ed86d51d 1a3ffe75 f7f27b5b 8d98160e 0c962f90 c7ddaf04 3eb85403 7cdeb81f");
     }
-
+    @Ignore
     @Test
     public void test03(){
         //String keyPath = "/data/tmp/proj.apns.p12";

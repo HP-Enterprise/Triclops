@@ -20,6 +20,12 @@ com.hp.apns.p12:
 # com.hp.push.url
 com.hp.push.url:
 
+# com.hp.web.server.host
+com.hp.web.server.host: 127.0.0.1
+
+# com.hp.web.server.baiduKey
+com.hp.web.server.baiduKey:
+
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:
     level:

@@ -11,3 +11,4 @@ CREATE TABLE IF NOT EXISTS t_sysdict
 INSERT INTO t_sysdict(dictid, type, dictname) VALUES (1,1, "华晨汽车");
 INSERT INTO t_sysdict(dictid, type, dictname) VALUES (2,1, "经销商");
 INSERT INTO t_sysdict(dictid, type, dictname) VALUES (3,1, "车友群");
+INSERT INTO t_sysdict(dictid, type, dictname) VALUES (4,1, "公共群");

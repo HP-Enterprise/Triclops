@@ -78,7 +78,7 @@ public class DataToolTest {
     @Test
     public void test_getTrueTmp(){
         short a=110;
-        System.out.println(dataTool.getTrueTmp(a));
+        System.out.println(dataTool.getOuterTrueTmp(a));
     }
     @Test
     public void test_getTrueAvgOil(){

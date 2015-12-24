@@ -197,25 +197,30 @@ public class DataTool {
         String  avgOil=a/10+"."+a%10;
         return Float.valueOf(avgOil);
     }
-    public Short getTrueTmp(short a){
-        //得到真实温度
+    public Short getInternTrueTmp(short a){
+        //得到车内真实温度
+        return a;
+    }
+    public Short getOuterTrueTmp(short a){
+        //得到车外真实温度
         return (short)(a-(short)40);
     }
     public String getWindowStatus(String bita_b){
-        //得到车窗状态 传入两个bit的字符表示,数据库0关1开2中间3无效
+        //得到车窗状态 传入两个bit的字符表示,
+        // 数据库 车窗信息 0开1半开2关3信号异常
         //参考0.613
         //0x0： 00 Open
         //0x1： 01 Intermediate
         //0x2： 10 Close
         //0x3： 11 Signal invalid
-        String re="0";
+        String re="2";
         if(bita_b!=null){
             if(bita_b.equals("00")){
-                re="1";
-            }else if(bita_b.equals("01")){
-                re="2";
-            }else if(bita_b.equals("10")){
                 re="0";
+            }else if(bita_b.equals("01")){
+                re="1";
+            }else if(bita_b.equals("10")){
+                re="2";
             }else if(bita_b.equals("11")){
                 re="3";
             }
@@ -223,18 +228,19 @@ public class DataTool {
         return re;
     }
     public String getDoorStatus(String bita_b){
-        //得到车门状态 传入两个bit的字符表示,数据库0关1开2保留3无效
+        //得到车门状态 传入两个bit的字符表示,
+        // 数据库 车门信息 0开1关2保留3信号异常
         //参考0.613
         //0x0： 00 Close
         //0x1： 01 Open
         //0x2： 10 Reserved
         //0x3： 11 Signal invalid
-        String re="0";
+        String re="1";
         if(bita_b!=null){
             if(bita_b.equals("00")){
-                re="0";
-            }else if(bita_b.equals("01")){
                 re="1";
+            }else if(bita_b.equals("01")){
+                re="0";
             }else if(bita_b.equals("10")){
                 re="2";
             }else if(bita_b.equals("11")){

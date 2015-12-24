@@ -1,14 +1,12 @@
 package com.hp.triclops.entity;
 
-import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by luj on 2015/10/10.
+ * Created by Administrator on 2015/12/10.
  */
-@Entity
-@Table(name = "t_remote_control")
-public class RemoteControl {
+public class RemoteControlShow {
+
     private Long id;
     private int uid;
     private String sessionId;
@@ -23,12 +21,15 @@ public class RemoteControl {
     private Short acTemperature;
     private Short status;
     private String remark;
+    private  String licensePlate;
+    public String getLicensePlate() {
+        return licensePlate;
+    }
 
-    private Short available;// 0 失效 1 有效 默认为1
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, insertable = true, updatable = true)
     public Long getId() {
         return id;
     }
@@ -37,8 +38,6 @@ public class RemoteControl {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "uid", nullable = false, insertable = true, updatable = true)
     public int getUid() {
         return uid;
     }
@@ -47,8 +46,6 @@ public class RemoteControl {
         this.uid = uid;
     }
 
-    @Basic
-    @Column(name = "session_id", nullable = false, insertable = true, updatable = true, length = 15)
     public String getSessionId() {
         return sessionId;
     }
@@ -57,8 +54,6 @@ public class RemoteControl {
         this.sessionId = sessionId;
     }
 
-    @Basic
-    @Column(name = "vin", nullable = false, insertable = true, updatable = true, length = 50)
     public String getVin() {
         return vin;
     }
@@ -67,8 +62,6 @@ public class RemoteControl {
         this.vin = vin;
     }
 
-    @Basic
-    @Column(name = "sending_time", nullable = false, insertable = true, updatable = true)
     public Date getSendingTime() {
         return sendingTime;
     }
@@ -77,8 +70,6 @@ public class RemoteControl {
         this.sendingTime = sendingTime;
     }
 
-    @Basic
-    @Column(name = "control_type", nullable = false, insertable = true, updatable = true)
     public Short getControlType() {
         return controlType;
     }
@@ -87,8 +78,6 @@ public class RemoteControl {
         this.controlType = controlType;
     }
 
-    @Basic
-    @Column(name = "ac_temperature", nullable = false, insertable = true, updatable = true)
     public Short getAcTemperature() {
         return acTemperature;
     }
@@ -97,8 +86,6 @@ public class RemoteControl {
         this.acTemperature = acTemperature;
     }
 
-    @Basic
-    @Column(name = "status", nullable = false, insertable = true, updatable = true)
     public Short getStatus() {
         return status;
     }
@@ -107,23 +94,11 @@ public class RemoteControl {
         this.status = status;
     }
 
-    @Basic
-    @Column(name = "remark", nullable = false, insertable = true, updatable = true, length = 200)
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    @Basic
-    @Column(name = "available", nullable = false, insertable = true, updatable = true)
-    public Short getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Short available) {
-        this.available = available;
     }
 }

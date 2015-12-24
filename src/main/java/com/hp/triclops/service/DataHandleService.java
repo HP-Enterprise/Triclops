@@ -58,10 +58,12 @@ public class DataHandleService {
             case 0x24://报警数据
                 saveWarningMessage(vin, msg);
                 outputHexService.getWarningMessageAndPush(vin, msg);
+                outputHexService.getWarningMessageAndSms(vin, msg);
                 break;
             case 0x25://补发报警数据
                 saveDataResendWarningMessage(vin, msg);
                 outputHexService.getResendWarningMessageAndPush(vin, msg);
+                outputHexService.getResendWarningMessageAndSms(vin, msg);
                 break;
             case 0x28://故障数据
                 saveFailureMessage(vin, msg);
@@ -132,8 +134,8 @@ public class DataHandleService {
         rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
         rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
-        rd.setVehicleTemperature(dataTool.getTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
-        rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
+        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
+        rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit 大端传输
 
         rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6]) + String.valueOf(doors[7])));
@@ -202,8 +204,8 @@ public class DataHandleService {
         rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
         rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
-        rd.setVehicleTemperature(dataTool.getTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
-        rd.setVehicleOuterTemperature(dataTool.getTrueTmp(bean.getVehicleOuterTemperature()));
+        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
+        rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 bit位置按照大端传输原则
         //
         rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6])+String.valueOf(doors[7])));

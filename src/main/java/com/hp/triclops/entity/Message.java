@@ -21,6 +21,8 @@ public class Message {
     private String fileName;
     private int messageNums;
     private int cleanFlag;
+    private int available;
+    private String playTime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -126,5 +128,21 @@ public class Message {
 
     public void setCleanFlag(int cleanFlag) {
         this.cleanFlag = cleanFlag;
+    }
+
+    public int getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(int available) {
+        this.available = available;
+    }
+
+    public String getPlayTime() {
+        return playTime;
+    }
+
+    public void setPlayTime(String playTime) {
+        this.playTime = playTime;
     }
 }

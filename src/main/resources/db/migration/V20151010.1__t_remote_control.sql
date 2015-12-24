@@ -8,6 +8,7 @@ control_type smallint(1) NOT NULL COMMENT '控制类别  0：远程启动发动�
 ac_temperature smallint(6) NOT NULL COMMENT '空调温度(配合type=4)',
 status smallint(1)  COMMENT '状态变化 0已发预命令  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败',
 remark varchar(200) COMMENT '备注',
+available smallint(1) NOT NULL DEFAULT 1 COMMENT '是否存在, 0 失效 1 有效 默认为1',
 PRIMARY KEY (id),
  FOREIGN KEY (uid) REFERENCES t_user(Id)
 ) DEFAULT CHARSET=utf8 COMMENT='远程控制指令表';

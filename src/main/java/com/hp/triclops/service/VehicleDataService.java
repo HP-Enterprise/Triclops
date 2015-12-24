@@ -9,6 +9,7 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.repository.*;
 import com.hp.triclops.utils.GpsTool;
+import com.hp.triclops.utils.Page;
 import com.hp.triclops.vo.RealTimeDataShow;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +46,8 @@ public class VehicleDataService {
     GpsTool gpsTool;
     private Logger _logger = LoggerFactory.getLogger(VehicleDataService.class);
 
-
+    @Autowired
+    RemoteControlRespositoryDao remoteControlRespositoryDao;
     /**
      * 下发参数设置命令
      * @param uid user id
@@ -72,6 +75,7 @@ public class VehicleDataService {
             rc.setAcTemperature(acTmp);
             rc.setStatus((short) 0);
             rc.setRemark("");
+            rc.setAvailable((short)1);
             remoteControlRepository.save(rc);
             _logger.info("save RemoteControl to db");
             //保存到数据库
@@ -316,4 +320,46 @@ public class VehicleDataService {
         }
         return gd;
     }
+
+
+
+    public Page getRemoteControlShowList(String vin,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
+        Page remoteControlPage = remoteControlRespositoryDao.findRemoteControlByVin(vin, orderByProperty, ascOrDesc, pageSize, currentPage);
+
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        remoteControlPage.setItems(transFormRemoteControl((List<RemoteControl>)remoteControlPage.getItems(),vehicle));
+        return remoteControlPage;
+    }
+
+    /**
+     * 获取remotecontrol表的全部属性，并添加Vehicle的车牌属性，组成一个新的集合
+     * */
+    public List<RemoteControlShow> transFormRemoteControl(List <RemoteControl>remoteControllList,Vehicle vehicle ){
+        List<RemoteControlShow> remoteControlAndVehicle=new ArrayList<>();
+        for(int i=0;i<remoteControllList.size();i++){
+            RemoteControlShow remoteControlShow = new RemoteControlShow();
+           if (vehicle!=null) {
+               remoteControlShow.setLicensePlate(vehicle.getLicense_plate());
+           }
+            remoteControlShow.setId(remoteControllList.get(i).getId());
+            remoteControlShow.setSessionId(remoteControllList.get(i).getSessionId());
+            remoteControlShow.setSendingTime(remoteControllList.get(i).getSendingTime());
+            remoteControlShow.setRemark(remoteControllList.get(i).getRemark());
+            remoteControlShow.setStatus(remoteControllList.get(i).getStatus());
+            remoteControlShow.setUid(remoteControllList.get(i).getUid());
+            remoteControlShow.setControlType(remoteControllList.get(i).getControlType());
+            remoteControlShow.setAcTemperature(remoteControllList.get(i).getAcTemperature());
+            remoteControlShow.setVin(remoteControllList.get(i).getVin());
+            remoteControlAndVehicle.add(remoteControlShow);
+        }
+        return remoteControlAndVehicle;
+    }
+
+    /**
+     * 修改远程控制
+     * */
+    public int modifyRemoteControl(String ids){
+        return remoteControlRespositoryDao.modifyRemoteControl(ids);
+    }
+
 }
