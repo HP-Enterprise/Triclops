@@ -33,6 +33,10 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   skylight_state varchar(1) NOT NULL COMMENT '天窗状态1开0关',
   parking_state varchar(1) NOT NULL COMMENT '驻车状态',
 
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX idx_vin(vin),
+  INDEX idx_imei(imei),
+  INDEX idx_sending_time(sending_time),
+  INDEX idx_trip_id(trip_id)
 ) DEFAULT CHARSET=utf8 COMMENT='实时数据表';
 
