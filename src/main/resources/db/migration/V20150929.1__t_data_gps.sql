@@ -15,5 +15,6 @@ CREATE TABLE IF NOT EXISTS t_data_gps (
   PRIMARY KEY (id),
   INDEX idx_vin(vin),
   INDEX idx_imei(imei),
-  INDEX idx_sending_time(sending_time)
+  INDEX idx_sending_time(sending_time),
+  INDEX idx_speed(speed)
 ) DEFAULT CHARSET=utf8 COMMENT='GPS数据表';
