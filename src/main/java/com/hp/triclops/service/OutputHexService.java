@@ -796,9 +796,43 @@ public class OutputHexService {
         }else if(wd.getSrsWarning()==(short)0 && srsWarning==1){//srs1--0
             //推srs解除
             jsonMap.put("srs_warning","0");
+
+            jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
+            jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
+            dataMap.put("pType", 8);
+
+            String contactsPhone ="";
+            if(user!=null){
+                contactsPhone =  user.getContactsPhone();
+            }
+            jsonMap.put("contacts_phone",contactsPhone);
+
         }else if(wd.getAtaWarning()==(short)0 && ataWarning==1 ){//atr1---0
             //推ata解除
             jsonMap.put("ata_warning","0");
+            dataMap.put("pType", 9);
+
+            String leftFrontDoorInformation = "";
+            String leftRearDoorInformation = "";
+            String rightFrontDoorInformation = "";
+            String rightRearDoorInformation = "";
+            String engineCoverState = "";
+            String trunkLidState = "";
+            if(realTimeReportData!=null){
+                leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
+                leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
+                rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
+                rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
+                engineCoverState = realTimeReportData.getEngineCoverState();
+                trunkLidState = realTimeReportData.getTrunkLidState();
+            }
+            jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
+            jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
+            jsonMap.put("rightFrontDoorInformation",rightFrontDoorInformation);
+            jsonMap.put("rightRearDoorInformation",rightRearDoorInformation);
+            jsonMap.put("engineCoverState",engineCoverState);
+            jsonMap.put("trunkLidState",trunkLidState);
+
         }
         jsonMap.put("position", positionMap);
         String contextJson= JSON.toJSONString(jsonMap);
