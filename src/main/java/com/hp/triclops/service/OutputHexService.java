@@ -795,8 +795,10 @@ public class OutputHexService {
             jsonMap.put("trunkLidState",trunkLidState);
         }else if(wd.getSrsWarning()==(short)0 && srsWarning==1){//srs1--0
             //推srs解除
+            jsonMap.put("srs_warning","0");
         }else if(wd.getAtaWarning()==(short)0 && ataWarning==1 ){//atr1---0
             //推ata解除
+            jsonMap.put("ata_warning","0");
         }
         jsonMap.put("position", positionMap);
         String contextJson= JSON.toJSONString(jsonMap);
@@ -806,7 +808,8 @@ public class OutputHexService {
     }
 
     public WarningMessageData getWarningMessageData(String vin){
-        return warningMessageDataRespository.findTop1ByVinOrderBySendingTimeDesc(vin);
+        List<WarningMessageData> list = warningMessageDataRespository.findTop1ByVinOrderBySendingTimeDesc(vin);
+        return list.get(0);
     }
 
     /**
