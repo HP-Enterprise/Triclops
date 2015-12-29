@@ -65,6 +65,8 @@ public class OutputHexService {
     GpsTool  gpsTool;
     @Autowired
     SMSHttpTool smsHttpTool;
+    @Autowired
+    WarningMessageDataRespository warningMessageDataRespository;
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
@@ -725,6 +727,12 @@ public class OutputHexService {
         Map<String,Object> jsonMap = new HashMap<String,Object>();
         Map<String,String> positionMap = new HashMap<String,String>();
 
+        //获取上一条报警消息
+        String vin = wd.getVin();
+        WarningMessageData wmd = this.getWarningMessageData(vin);
+        Short srsWarning = wmd.getSrsWarning();
+        Short ataWarning = wmd.getAtaWarning();
+
         //sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
             //0有效 1无效
@@ -785,12 +793,20 @@ public class OutputHexService {
             jsonMap.put("rightRearDoorInformation",rightRearDoorInformation);
             jsonMap.put("engineCoverState",engineCoverState);
             jsonMap.put("trunkLidState",trunkLidState);
+        }else if(wd.getSrsWarning()==(short)0 && srsWarning==1){//srs1--0
+            //推srs解除
+        }else if(wd.getAtaWarning()==(short)0 && ataWarning==1 ){//atr1---0
+            //推ata解除
         }
         jsonMap.put("position", positionMap);
         String contextJson= JSON.toJSONString(jsonMap);
 
         dataMap.put("textContent",contextJson);
         return dataMap;
+    }
+
+    public WarningMessageData getWarningMessageData(String vin){
+        return warningMessageDataRespository.findTop1ByVinOrderBySendingTimeDesc(vin);
     }
 
     /**
