@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   INDEX idx_avg_oil_b(avg_oil_b),
   INDEX idx_driving_range(driving_range),
   INDEX idx_mileage_range(mileage_range),
-  INDEX idx_service_intervall(service_intervall)
+  INDEX idx_service_intervall(service_intervall),
+  INDEX idx_vin_sendingtime(vin,sending_time)
 ) DEFAULT CHARSET=utf8 COMMENT='实时数据表';
 
