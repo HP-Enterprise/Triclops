@@ -13,9 +13,7 @@ CREATE TABLE IF NOT EXISTS t_data_gps (
   speed float NOT NULL COMMENT '速度',
   heading int(3) NOT NULL COMMENT '方向',
   PRIMARY KEY (id),
-  INDEX idx_vin(vin),
   INDEX idx_imei(imei),
-  INDEX idx_sending_time(sending_time),
   INDEX idx_speed(speed),
   INDEX idx_vin_sendingtime(vin,sending_time)
 ) DEFAULT CHARSET=utf8 COMMENT='GPS数据表';
