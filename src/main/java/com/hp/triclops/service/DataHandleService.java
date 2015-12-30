@@ -56,14 +56,14 @@ public class DataHandleService {
                 saveDataResendRealTimeMes(vin, msg);
                 break;
             case 0x24://报警数据
-                saveWarningMessage(vin, msg);
                 outputHexService.getWarningMessageAndPush(vin, msg);
                 outputHexService.getWarningMessageAndSms(vin, msg);
+                saveWarningMessage(vin, msg);
                 break;
             case 0x25://补发报警数据
-                saveDataResendWarningMessage(vin, msg);
                 outputHexService.getResendWarningMessageAndPush(vin, msg);
                 outputHexService.getResendWarningMessageAndSms(vin, msg);
+                saveDataResendWarningMessage(vin, msg);
                 break;
             case 0x28://故障数据
                 saveFailureMessage(vin, msg);

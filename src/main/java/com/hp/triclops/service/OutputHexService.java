@@ -733,6 +733,9 @@ public class OutputHexService {
         Short srsWarning = wmd.getSrsWarning();
         Short ataWarning = wmd.getAtaWarning();
 
+        srsWarning=(srsWarning==null)?-1:srsWarning;
+        ataWarning=(ataWarning==null)?-1:ataWarning;
+
         //sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
             //0有效 1无效
