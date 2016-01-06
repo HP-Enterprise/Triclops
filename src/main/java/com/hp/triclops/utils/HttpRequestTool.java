@@ -3,8 +3,7 @@ package com.hp.triclops.utils;
 import org.springframework.stereotype.Component;
 
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -15,6 +14,8 @@ import java.util.Map;
 @Component
 public class HttpRequestTool {
     public  void doHttp(String urlLink,Map dataMap){
+
+        DataOutputStream dos = null;
         try{
             String boundary = "Boundary-b1ed-4060-99b9-fca7ff59c113"; //Could be any string
             String Enter = "\r\n";
@@ -53,7 +54,7 @@ public class HttpRequestTool {
             conn.setInstanceFollowRedirects(true);
             conn.setRequestProperty("Content-Type","multipart/form-data;boundary=" + boundary);
             conn.connect();
-            DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
+            dos = new DataOutputStream(conn.getOutputStream());
             //part 1
             String part1 =  "--" + boundary + Enter
                     + "Content-Type: application/octet-stream" + Enter
@@ -74,7 +75,13 @@ public class HttpRequestTool {
 
         }catch(Exception e){
             e.printStackTrace();
+        } finally {
+            if(dos!=null)
+                try {
+                    dos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
-
     }
 }
