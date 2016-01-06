@@ -109,6 +109,7 @@ public class GpsTool {
         sb.append("&ak=").append(baiduKey);
         String ADD_URL=sb.toString();
 
+        BufferedReader reader = null;
         try {
             //建立连接
             URL url = new URL(ADD_URL);
@@ -122,11 +123,10 @@ public class GpsTool {
             connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
             connection.connect();
             //POST请求
-            OutputStreamWriter out = new  OutputStreamWriter(connection.getOutputStream(), "UTF-8");
+//            OutputStreamWriter out = new  OutputStreamWriter(connection.getOutputStream(), "UTF-8");
 
-                     //读取响应
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
+            //读取响应
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String lines;
             StringBuffer re = new StringBuffer();
             while ((lines = reader.readLine()) != null) {
@@ -157,6 +157,13 @@ public class GpsTool {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            if(reader!=null)
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
         return gpsData;//success返回1 faild返回0
     }

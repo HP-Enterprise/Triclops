@@ -112,8 +112,9 @@ public class APNSTest {
         String serverHost = "gateway.push.apple.com";
         int serverPort = 2195;
 
+        InputStream certInput = null;
         try {
-            InputStream certInput = new FileInputStream(keyPath);
+            certInput = new FileInputStream(keyPath);
             KeyStore keyStore = KeyStore.getInstance(ksType);
             keyStore.load(certInput, ksPassword.toCharArray());
 
@@ -151,6 +152,13 @@ public class APNSTest {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(certInput!=null)
+                try {
+                    certInput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
 
     }
