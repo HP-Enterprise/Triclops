@@ -23,6 +23,7 @@ public class Message {
     private int cleanFlag;
     private int available;
     private String playTime;
+    private String locationName;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -144,5 +145,13 @@ public class Message {
 
     public void setPlayTime(String playTime) {
         this.playTime = playTime;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 }
