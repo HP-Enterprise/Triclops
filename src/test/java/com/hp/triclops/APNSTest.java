@@ -113,6 +113,7 @@ public class APNSTest {
         int serverPort = 2195;
 
         InputStream certInput = null;
+        Socket socket = null;
         try {
             certInput = new FileInputStream(keyPath);
             KeyStore keyStore = KeyStore.getInstance(ksType);
@@ -126,7 +127,7 @@ public class APNSTest {
 
             SSLSocketFactory socketFactory = sslContext.getSocketFactory();
 
-            Socket socket = socketFactory.createSocket(serverHost, serverPort);
+            socket = socketFactory.createSocket(serverHost, serverPort);
 
             StringBuilder content = new StringBuilder();
 
@@ -156,6 +157,12 @@ public class APNSTest {
             if(certInput!=null)
                 try {
                     certInput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            if (socket != null && !socket.isClosed())
+                try {
+                    socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

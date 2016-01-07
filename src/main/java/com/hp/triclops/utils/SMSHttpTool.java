@@ -141,7 +141,10 @@ public class SMSHttpTool {
         } catch (Exception e) {
             System.out.println("send post request error!" + e);
         } finally {
-            httpURLConnection.disconnect();
+            if(httpURLConnection!=null)
+            {
+                httpURLConnection.disconnect();
+            }
             try {
                 if (printWriter != null) {
                     printWriter.close();
