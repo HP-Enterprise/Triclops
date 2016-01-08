@@ -2,6 +2,7 @@ package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.TBox;
 import com.hp.triclops.utils.Page2;
+import org.hibernate.annotations.SourceType;
 import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.persistence.PersistenceContext;
@@ -35,45 +36,47 @@ public class TBoxRepositoryDAO{
      */
     public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile,int total, int fuzzy, int pageSize,int currentPage){
         String jpql = "select b from TBox b where 1=1";
+        String jpqlSum = "select count(*) as count from t_tbox b where 1=1";
+        String tempSql = "";
         if(id != 0){
-            jpql += " and b.id = :id";
+            tempSql += " and b.id = :id";
         }
         if(isActivated != 0){
-            jpql += " and b.is_activated = :is_activated";
+            tempSql += " and b.is_activated = :is_activated";
         }
         if(isbind == 1){
-            jpql += " and b.vehicle is null";
+            tempSql += " and b.vehicle is null";
         }
         if(fuzzy == 0){ //精确查询
             if(t_sn != null){
-                jpql += " and b.t_sn = :t_sn";
+                tempSql += " and b.t_sn = :t_sn";
             }
             if(vin != null){
-                jpql += " and b.vin = :vin";
+                tempSql += " and b.vin = :vin";
             }
             if(imei != null){
-                jpql += " and b.imei = :imei";
+                tempSql += " and b.imei = :imei";
             }
             if(mobile != null){
-                jpql += " and b.mobile = :mobile";
+                tempSql += " and b.mobile = :mobile";
             }
         }else{
             if(t_sn != null){
-                jpql += " and b.t_sn like :t_sn";
+                tempSql += " and b.t_sn like :t_sn";
             }
             if(vin != null){
-                jpql += " and b.vin like :vin";
+                tempSql += " and b.vin like :vin";
             }
             if(imei != null){
-                jpql += " and b.imei like :imei";
+                tempSql += " and b.imei like :imei";
             }
             if(mobile != null){
-                jpql += " and b.mobile like :mobile";
+                tempSql += " and b.mobile like :mobile";
             }
         }
 
-        TypedQuery query = em.createQuery(jpql, TBox.class);
-        TypedQuery queryCount = em.createQuery(jpql, TBox.class);//EntityManager id closed
+        TypedQuery query = em.createQuery(jpql.concat(tempSql), TBox.class);
+        Query queryCount = em.createNativeQuery(jpqlSum.concat(tempSql));//EntityManager id closed
         if(id != 0){
             query.setParameter("id",id);
             queryCount.setParameter("id",id);
@@ -117,14 +120,15 @@ public class TBoxRepositoryDAO{
                 queryCount.setParameter("mobile","%"+mobile+"%");
             }
         }
-        Long count= (long) queryCount.getResultList().size();
+        List items_sum =  queryCount.getResultList();
+        String count = items_sum.get(0).toString();
         if(total == 0){
             if(pageSize != 0  && currentPage != 0){
                 query.setFirstResult((currentPage - 1)* pageSize);
                 query.setMaxResults(pageSize);
             }else{
                 currentPage = 1;
-                pageSize = count.intValue();
+                pageSize = Integer.valueOf(count);
             }
         }
         List items = query.getResultList();
@@ -137,7 +141,7 @@ public class TBoxRepositoryDAO{
         Page2<TBox> page2 = new Page2<TBox>();
         page2.setCurrentPage(currentPage);
         page2.setPageSize(pageSize);
-        page2.setRecordCount(count);
+        page2.setRecordCount(Long.parseLong(count));
         page2.setItems(tBoxList);
 
         return page2;
