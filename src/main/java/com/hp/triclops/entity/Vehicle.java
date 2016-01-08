@@ -334,7 +334,7 @@ public class Vehicle implements Serializable {
         this.organizationSet = organizationSet;
     }
 
-    @OneToMany(mappedBy = "vehicle", cascade ={CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "vehicle", cascade ={CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     public Set<TBox> getTboxSet() {
         return tboxSet;
     }
