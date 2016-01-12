@@ -95,12 +95,14 @@ public class TBoxMgr {
      * @param imei IMEI
      * @param mobile SIM卡
      * @param total 是否查全部，不分页：0分页查询，1为查询全部
+     * @param orderByProperty 排序条件 TBox类的某一个属性,默认id
+     * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
      * @param pageSize 每页大小
      * @param currentPage 页码
      * @return 分页对象
      */
-    public Page2<TBox> findTboxByKeys(Integer id, String t_sn, Integer isbind, String vin, Integer isActivated, String imei, String mobile,Integer total, Integer fuzzy, Integer pageSize,Integer currentPage){
+    public Page2<TBox> findTboxByKeys(Integer id, String t_sn, Integer isbind, String vin, Integer isActivated, String imei, String mobile,Integer total,String orderByProperty,String ascOrDesc, Integer fuzzy, Integer pageSize,Integer currentPage){
         currentPage = currentPage == null ? 1 : currentPage;
         pageSize = pageSize == null ? 10 : pageSize;
         id = id == null ? 0 : id;
@@ -108,7 +110,9 @@ public class TBoxMgr {
         total = total == null ? 0 :total;
         fuzzy = fuzzy == null ? 0 : fuzzy;
         isbind = isbind == null ? 0 : isbind;
-        return this.tBoxRepositoryDao.findTboxByKeys(id,t_sn, isbind, vin,isActivated,imei,mobile,total,fuzzy,pageSize,currentPage);
+        orderByProperty=(orderByProperty==null)?"id":orderByProperty;
+        ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
+        return this.tBoxRepositoryDao.findTboxByKeys(id,t_sn, isbind, vin,isActivated,imei,mobile,total,orderByProperty,ascOrDesc,fuzzy,pageSize,currentPage);
     }
 
 
