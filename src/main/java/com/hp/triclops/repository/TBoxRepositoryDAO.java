@@ -29,12 +29,14 @@ public class TBoxRepositoryDAO{
      * @param imei IMEI
      * @param mobile SIM卡
      * @param total 是否查全部，不分页：0分页查询，1为查询全部
+     * @param orderByProperty 排序条件 TBox类的某一个属性,默认id
+     * @param ascOrDesc 排序顺序接受字符串 "ASC"或"DESC"  大小写均可,默认ASC
      * @param fuzzy 查询类型标志 0 精确查询 1 模糊查询
      * @param pageSize 每页大小
      * @param currentPage 页码
      * @return 分页对象
      */
-    public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile,int total, int fuzzy, int pageSize,int currentPage){
+    public Page2<TBox> findTboxByKeys(int id, String t_sn,int isbind, String vin, int isActivated, String imei, String mobile,int total,String orderByProperty,String ascOrDesc, int fuzzy, int pageSize,int currentPage){
         String jpql = "select b from TBox b where 1=1";
         String jpqlSum = "select count(*) as count from t_tbox b where 1=1";
         if(id != 0){
@@ -85,6 +87,7 @@ public class TBoxRepositoryDAO{
             }
         }
 
+        jpql=jpql+" Order by b."+orderByProperty+" "+ascOrDesc;
         TypedQuery query = em.createQuery(jpql, TBox.class);
         Query queryCount = em.createNativeQuery(jpqlSum);//EntityManager id closed
         if(id != 0){
