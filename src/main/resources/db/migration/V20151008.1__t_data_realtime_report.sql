@@ -32,7 +32,17 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   trunk_lid_state varchar(1) NOT NULL COMMENT '后备箱盖状态1开0关',
   skylight_state varchar(1) NOT NULL COMMENT '天窗状态1开0关',
   parking_state varchar(1) NOT NULL COMMENT '驻车状态',
-
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX idx_vin(vin),
+  INDEX idx_imei(imei),
+  INDEX idx_sending_time(sending_time),
+  INDEX idx_trip_id(trip_id),
+  INDEX idx_driving_time(driving_time),
+  INDEX idx_fuel_oil(fuel_oil),
+  INDEX idx_avg_oil_a(avg_oil_a),
+  INDEX idx_avg_oil_b(avg_oil_b),
+  INDEX idx_driving_range(driving_range),
+  INDEX idx_mileage_range(mileage_range),
+  INDEX idx_service_intervall(service_intervall)
 ) DEFAULT CHARSET=utf8 COMMENT='实时数据表';
 

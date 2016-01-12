@@ -85,7 +85,6 @@ public class SessionRedis {
             return null;
         }
         return valOpts.get(sessionKey);
-
     }
 
     /**
@@ -99,7 +98,6 @@ public class SessionRedis {
         long expireSeconds = this.stringRedisTemplate.getExpire(sessionKey);
         this.delSessionOfVal(sessionId);
         this.saveSessionOfVal(sessionId,sessionValue,expireSeconds);
-
     }
 
     /**
@@ -120,6 +118,24 @@ public class SessionRedis {
         return ret;
     }
 
+    /**
+     * 键值加1
+     * @param sessionId 键
+     */
+    public void increment(String sessionId,int seconds) {
+
+        String val = getSessionOfVal(sessionId);
+        if(val==null)
+        {
+            saveSessionOfVal(sessionId,"1",seconds);
+        }
+        else
+        {
+            int valTemp = Integer.valueOf(val) + 1;
+            val = String.valueOf(valTemp);
+            updateSessionOfVal(sessionId,val);
+        }
+    }
 
     /**
      * 存储对象类型数据
