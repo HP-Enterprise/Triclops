@@ -53,7 +53,10 @@ public class AcquirePort {
     private Selector selector = null;
 
     public static HashMap<String,io.netty.channel.Channel> channels=new HashMap<String,io.netty.channel.Channel>();
-    //用于保存连接的哈希表
+    //用于保存连接的哈希表<remoteAddress,Channel>
+    public static HashMap<String,String> connectionAddress=new HashMap<String,String>();
+    //用于保存连接的哈希表<remoteAddress,vin>
+
     public   void main(){
 
         //生成数据
@@ -61,8 +64,8 @@ public class AcquirePort {
         ScheduledExecutorService  dataHandlerScheduledService = Executors.newScheduledThreadPool(_dataHandlerThreadPoolSize);
 
         new NettySender(channels,socketRedis,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
-        new DataHandler(socketRedis,dataHandleService,dataTool,dataHandlerScheduledService).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
-        new NettyServer(channels,socketRedis,dataTool,requestHandler,outputHexService,_acquirePort,nettyServerScheduledService).run();    //netty收数据程序，收到消息后可能导致阻塞的业务全部交由线程池处理
+        //new DataHandler(socketRedis,dataHandleService,dataTool,dataHandlerScheduledService).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
+        new NettyServer(channels,connectionAddress,socketRedis,dataTool,requestHandler,outputHexService,_acquirePort,nettyServerScheduledService).run();    //netty收数据程序，收到消息后可能导致阻塞的业务全部交由线程池处理
 
     }
 

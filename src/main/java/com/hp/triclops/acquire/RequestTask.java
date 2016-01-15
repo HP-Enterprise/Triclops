@@ -18,13 +18,15 @@ public class RequestTask  implements Runnable{
     private RequestHandler requestHandler;
     private DataTool dataTool;
     private HashMap<String,Channel> channels;
+    private HashMap<String,String> connections;
     private Channel ch;
     private OutputHexService outputHexService;
     private Logger _logger;
 
-    public RequestTask(HashMap<String, Channel> cs,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String receiveDataHexString){
+    public RequestTask(HashMap<String, Channel> cs,HashMap<String,String> connections,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String receiveDataHexString){
         super();
         this.channels=cs;
+        this.connections=connections;
         this.ch=ch;
         this.socketRedis=s;
         this.dataTool=dt;
@@ -74,13 +76,15 @@ public class RequestTask  implements Runnable{
                 //发往客户端的注册结果数据，根据验证结果+收到的数据生成
                 respStr=requestHandler.getRegisterResp(receiveDataHexString, checkVinAndSerNum);
                 buf=dataTool.getByteBuf(respStr);
-                ch.writeAndFlush(buf);//回发数据直接回消息
                 //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
                 if(checkVinAndSerNum){
                     channels.put(vin, ch);
+                    connections.put(ch.remoteAddress().toString(),vin);
+                    ch.writeAndFlush(buf);//回发数据直接回消息,此处2016.1.15修改，客户端发起数据之前确定已有连接注册记录
                     _logger.info("resister success,Save Connection" + vin+":"+ch.remoteAddress() + " to HashMap");
                     afterRegisterSuccess(vin);
                 }else{
+                    ch.writeAndFlush(buf);//回发数据直接回消息
                     _logger.info("resister failed,close Connection");
                     ch.close();//关闭连接
                 }
@@ -103,6 +107,7 @@ public class RequestTask  implements Runnable{
                 //如果远程唤醒成功连接，后续可以通过redis主动发消息，不成功不记录连接
                 if(checkVinAndSerNumWake){
                     channels.put(vinWake, ch);
+                    connections.put(ch.remoteAddress().toString(),vinWake);
                     _logger.info("wake up success,Save Connection" + vinWake+":"+ch.remoteAddress() + " to HashMap");
                     afterRegisterSuccess(vinWake);
                 }else{
@@ -112,55 +117,55 @@ public class RequestTask  implements Runnable{
                 break;
             case 0x21://固定数据上报
                 _logger.info("Regular Data Report Message");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x22://实时数据上报
                 _logger.info("Real Time Report Message");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x23://补发实时数据上报
                 _logger.info("Data ReSend RealTime Message");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x24://报警数据上报
                 _logger.info("Warning Message");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
                 break;
             case 0x25://补发报警数据上报
                 _logger.info("Data ReSend Warning Message");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
                 //补发报警数据是否需要push
                 break;
             case 0x26://心跳
                 _logger.info("Heartbeat request");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
@@ -171,7 +176,7 @@ public class RequestTask  implements Runnable{
                 break;
             case 0x27://休眠请求
                 _logger.info("Sleep request");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
@@ -182,28 +187,28 @@ public class RequestTask  implements Runnable{
                 break;
             case 0x28://故障数据上报
                 _logger.info("Failure Message");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
                 break;
             case 0x29://补发故障数据上报
                 _logger.info("Data ReSend Failure Message");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
                 //补发故障数据是否需要push
                 break;
             case 0x31://远程控制响应(上行)包含mid 2 4 5
                 _logger.info("RemoteControl resp");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
@@ -214,11 +219,11 @@ public class RequestTask  implements Runnable{
                 break;
             case 0x41://参数查询响应(上行)
                 _logger.info("ParamStatus Ack");
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x42://远程车辆诊断响应(上行)
                 _logger.info("DiagnosticCommand Ack");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
@@ -228,11 +233,11 @@ public class RequestTask  implements Runnable{
                 break;
             case 0x51://上报数据设置响应(上行)
                 _logger.info("SignalSetting Ack");
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x52://参数设置响应(上行)
                 _logger.info("PramSetupAck Ack");
-                chKey=getKeyByValue(ch);
+                chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
                     _logger.info("Connection is not registered,no response");
                     return;
@@ -243,34 +248,57 @@ public class RequestTask  implements Runnable{
             default:
                 _logger.info(">>other request dave,log to file" + receiveDataHexString);
                 //一般数据，判断是否已注册，注册的数据保存
-                saveBytesToRedis(getKeyByValue(ch), receiveData);
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
     }
     }
     public void saveBytesToRedis(String scKey,byte[] bytes){
         //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
+        try{
+            _logger.info("saveBytesToRedis:method");
         if(dataTool.checkByteArray(bytes)){
-            if(scKey!=null){
+            _logger.info("checkByteArray:true");
+             if(scKey!=null){
                 String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
                 socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
                 _logger.info("Save data to Redis:" + inputKey);
             }else{
-                _logger.info("can not find the scKey,data is invalid，do not save!");
+                _logger.info("invalid scKey,do not save!"+scKey);
             }
+        }else{
+            _logger.info("saveBytesToRedis:false");
+            _logger.info("invalid data:"+bytes.toString());
         }
+
+        }catch (Exception e){   _logger.info("saveBytesToRedis exception:"+e.getMessage());}
     }
 
-    //根据SocketChannel得到对应的sc在HashMap中的key,为{vin}
-    public  String getKeyByValue(Channel sc)
+
+    //根据SocketChannel得到对应的vin
+    public  String geVinByAddress(String remoteAddress)
     {
-        Iterator<String> it= channels.keySet().iterator();
-        while(it.hasNext())
-        {
-            String keyString=it.next();
-            if(channels.get(keyString).equals(sc))
-                return keyString;
+        String vin=connections.get(remoteAddress);
+        return vin;
+    }
+    //根据SocketChannel得到对应的sc在HashMap中的key,为{vin}
+    public  String getKeyByValue_(Channel sc)
+    {
+        try{
+            Iterator<String> it= channels.keySet().iterator();
+            while(it.hasNext())
+            {
+                String keyString=it.next();
+                if(channels.get(keyString).equals(sc))
+                    return keyString;
+            }
+            _logger.info("can not find the scKey,sc:"+sc.remoteAddress());
+            return null;
+        }catch (Exception e){
+            e.printStackTrace();
+            _logger.info("getKeyByValue exception:"+e.getLocalizedMessage());
         }
+
         return null;
     }
     private void afterRegisterSuccess(String vin){
