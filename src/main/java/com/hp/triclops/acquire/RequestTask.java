@@ -128,7 +128,7 @@ public class RequestTask  implements Runnable{
                 _logger.info("Real Time Report Message");
                 chKey=geVinByAddress(ch.remoteAddress().toString());
                 if(chKey==null){
-                    _logger.info("Connection is not registered,no response");
+                    _logger.info(ch.remoteAddress().toString()+" is not registered,do not save realTime data");
                     return;
                 }
                 saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
@@ -254,24 +254,16 @@ public class RequestTask  implements Runnable{
     }
     public void saveBytesToRedis(String scKey,byte[] bytes){
         //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
-        try{
-            _logger.info("saveBytesToRedis:method");
         if(dataTool.checkByteArray(bytes)){
-            _logger.info("checkByteArray:true");
-             if(scKey!=null){
+            if(scKey!=null){
                 String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
                 socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
                 _logger.info("Save data to Redis:" + inputKey);
             }else{
-                _logger.info("invalid scKey,do not save!"+scKey);
+                _logger.info("can not find the scKey,data is invalid，do not save!");
             }
-        }else{
-            _logger.info("saveBytesToRedis:false");
-            _logger.info("invalid data:"+bytes.toString());
         }
-
-        }catch (Exception e){   _logger.info("saveBytesToRedis exception:"+e.getMessage());}
     }
 
 

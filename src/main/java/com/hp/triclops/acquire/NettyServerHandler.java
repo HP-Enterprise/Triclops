@@ -153,9 +153,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         Channel ch=ctx.channel();
         _logger.info("UnRegister" + ch.remoteAddress());
         //连接断开 从map移除连接
-        String chKey = geVinByAddress(ch.remoteAddress().toString());
-        channels.remove(chKey);
-
+        String vin=connections.get(ch.remoteAddress().toString());
+        connections.remove(ch.remoteAddress().toString());
+        channels.remove(vin);
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
@@ -199,8 +199,4 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         return null;
     }
 
-    private void afterRegisterSuccess(String vin){
-        //注册成功并返回数据包后的流程
-        outputHexService.sendParmSetAfterRegister(vin);
-    }
 }
