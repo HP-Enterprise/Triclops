@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by luj on 2015/12/4.
@@ -17,13 +18,13 @@ public class RequestTask  implements Runnable{
     private SocketRedis socketRedis;
     private RequestHandler requestHandler;
     private DataTool dataTool;
-    private HashMap<String,Channel> channels;
-    private HashMap<String,String> connections;
+    private ConcurrentHashMap<String,Channel> channels;
+    private ConcurrentHashMap<String,String> connections;
     private Channel ch;
     private OutputHexService outputHexService;
     private Logger _logger;
 
-    public RequestTask(HashMap<String, Channel> cs,HashMap<String,String> connections,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String receiveDataHexString){
+    public RequestTask(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String receiveDataHexString){
         super();
         this.channels=cs;
         this.connections=connections;

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -27,16 +28,18 @@ public class NettyServer {
     private int port;
     private SocketRedis socketRedis;
     private DataTool dataTool;
-    private HashMap<String,Channel> channels;
-    private HashMap<String,String> connections;
+    private ConcurrentHashMap<String,Channel> channels;
+    private ConcurrentHashMap<String,String> connections;
     private RequestHandler requestHandler;
     private OutputHexService outputHexService;
     private Logger _logger;
     private  ScheduledExecutorService scheduledService;
+    private int backlog;
 
-    public NettyServer(HashMap<String, Channel> cs,HashMap<String, String> connections,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,ScheduledExecutorService scheduledService) {
+    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,ScheduledExecutorService scheduledService) {
         this.channels=cs;
         this.connections=connections;
+        this.backlog=_backlog;
         this.socketRedis=s;
         this.dataTool=dt;
         this.requestHandler=rh;
@@ -59,13 +62,13 @@ public class NettyServer {
                         .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
-                                ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024,2,2,2,0));
-                                ch.pipeline().addLast(new NettyServerHandler(channels,connections,socketRedis,dataTool,requestHandler,outputHexService,scheduledService));
+                                ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024, 2, 2, 2, 0));
+                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, socketRedis, dataTool, requestHandler, outputHexService, scheduledService));
                                 connectionCount++;
-                               // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
+                                // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }
                         })
-                        .option(ChannelOption.SO_BACKLOG, 1024)          // (5)
+                        .option(ChannelOption.SO_BACKLOG, backlog)          // (5)
                         .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
                 // Bind and start to accept incoming connections.
@@ -80,7 +83,8 @@ public class NettyServer {
                 bossGroup.shutdownGracefully();
             }
 
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){e.printStackTrace();_logger.info("exception:"+e);
+        }
     }
 
 

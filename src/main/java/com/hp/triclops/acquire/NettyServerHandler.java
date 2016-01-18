@@ -3,22 +3,18 @@ import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.service.OutputHexService;
 import io.netty.buffer.ByteBuf;
 
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.util.HashMap;
+import javax.xml.bind.SchemaOutputResolver;
 import java.util.Iterator;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static io.netty.buffer.Unpooled.*;
 
 /**
  * Handles a server-side channel.
@@ -27,13 +23,13 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     private SocketRedis socketRedis;
     private RequestHandler requestHandler;
     private DataTool dataTool;
-    private HashMap<String,Channel> channels;
-    private HashMap<String,String> connections;
+    private ConcurrentHashMap<String,Channel> channels;
+    private ConcurrentHashMap<String,String> connections;
     private OutputHexService outputHexService;
     private Logger _logger;
     private ScheduledExecutorService scheduledService;
 
-    public NettyServerHandler(HashMap<String, Channel> cs,HashMap<String,String> connections,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,ScheduledExecutorService scheduledService ){
+    public NettyServerHandler(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,ScheduledExecutorService scheduledService ){
         this.channels=cs;
         this.connections=connections;
         this.socketRedis=s;
@@ -81,7 +77,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     scheduledService.schedule(new RequestTask(channels, connections,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x22://实时数据上报
-                    scheduledService.schedule(new RequestTask(channels,connections, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels,connections, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x23://补发实时数据上报
                     scheduledService.schedule(new RequestTask(channels, connections,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
@@ -155,8 +151,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         //连接断开 从map移除连接
         String vin=connections.get(ch.remoteAddress().toString());
         connections.remove(ch.remoteAddress().toString());
-        channels.remove(vin);
-    }
+        if(vin!=null){
+            channels.remove(vin);
+        }
+       }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
         // Close the connection when an exception is raised.

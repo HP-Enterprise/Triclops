@@ -5,10 +5,10 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by luj on 2015/9/22.
@@ -20,8 +20,8 @@ public class NettySender extends Thread{
 
     private DataTool dataTool;
 
-    private HashMap<String,Channel> channels;
-    public NettySender(HashMap<String,Channel> cs,SocketRedis s,DataTool dt){
+    private ConcurrentHashMap<String,Channel> channels;
+    public NettySender(ConcurrentHashMap<String,Channel> cs,SocketRedis s,DataTool dt){
         this.channels=cs;
         this.socketRedis=s;
         this.dataTool=dt;
