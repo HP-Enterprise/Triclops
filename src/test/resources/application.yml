@@ -3,6 +3,7 @@ com.hp.acquire:
     disabled: true
     port: 9000
     nettyServerThreadPoolSize: 10
+    nettyServerTcpBacklog: 10
     dataHandlerThreadPoolSize: 10
 
 com.hp.mqtt:
