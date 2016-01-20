@@ -1,6 +1,5 @@
 package com.hp.triclops.utils;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -311,6 +310,14 @@ public class MD5 {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		} finally {
+			if(in!=null){
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		BigInteger bigInt = new BigInteger(1, digest.digest());
 		return bigInt.toString(16).toUpperCase();
@@ -335,6 +342,14 @@ public class MD5 {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		} finally {
+			if(in!=null){
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		BigInteger bigInt = new BigInteger(1, digest.digest());
 		return bigInt.toString(16).toUpperCase();
@@ -343,19 +358,26 @@ public class MD5 {
 
 	public static String getFileCRC32(File file) {
 		FileInputStream fileinputstream;
+        CheckedInputStream checkedinputstream = null;
 		try {
 			fileinputstream = new FileInputStream(file);
 			CRC32 crc32 = new CRC32();
-			for (CheckedInputStream checkedinputstream = new CheckedInputStream(
-					fileinputstream, crc32); checkedinputstream.read() != -1;) {
+			for (checkedinputstream = new CheckedInputStream(fileinputstream, crc32); checkedinputstream.read() != -1;) {
 			}
 			return Long.toHexString(crc32.getValue());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		return null;
+		} finally {
+            if(checkedinputstream!=null)
+                try {
+                    checkedinputstream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+        return null;
 	}
 
 	
