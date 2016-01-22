@@ -1,10 +1,7 @@
 package com.hp.triclops.management;
 
 import com.hp.triclops.entity.Vehicle;
-import com.hp.triclops.repository.VehicleExRepository;
 import com.hp.triclops.repository.VehicleRepository;
-import com.hp.triclops.vo.OrganisationVehicleRelativeExShow;
-import com.hp.triclops.vo.OrganizationUserRelativeShow;
 import com.hp.triclops.vo.VehicleShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +26,7 @@ public class VehicleManagement {
     OrganizationVehicleManagement organizationVehicleManagement;
 
     @Autowired
-    VehicleExRepository vehicleExRepository;
+    UserVehicleManagement userVehicleManagement;
 
     /**
      * 根据id查询车辆信息
@@ -42,29 +39,31 @@ public class VehicleManagement {
         return new VehicleShow(vehicle);
     }
 
+    /**
+     * 查询用户有全选查看的车辆ID集合
+     * @param uid 用户ID
+     * @return 车辆ID集合
+     */
     public List<Integer> selectVehicle(int uid)
     {
-        List<Integer> vids = new ArrayList<>();
+        List<Integer> orgVids = new ArrayList<>();
 
         List<Integer> oids = organizationUserManagement.findOidByUid(uid);
         if(oids.size()>0)
         {
-            vids = organizationVehicleManagement.findVidByOids(oids);
+            orgVids = organizationVehicleManagement.findVidByOids(oids);
         }
-//
-//
-//
-//
-//        //List<VehicleEx> list = vehicleExRepository.findByIdIn(null,vids);
-//
-//        //return list.stream().map(VehicleExShow::new).collect(Collectors.toList());
-//
-//        List<Integer> oids = new ArrayList<>();
-//        oids.add(1);
-//        oids.add(2);
-//        List<Integer> list = organizationVehicleManagement.findVidByOids(oids);
-//
-//        return list;
-        return null;
+
+        List<Integer> ownerVids = userVehicleManagement.findVidByUid(uid);
+
+        for(Integer vid:ownerVids) {
+            if(!orgVids.contains(vid)){
+                orgVids.add(vid);
+            }
+        }
+
+        return orgVids;
     }
+
+
 }
