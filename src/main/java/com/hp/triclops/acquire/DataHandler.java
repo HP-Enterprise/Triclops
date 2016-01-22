@@ -39,6 +39,9 @@ public class DataHandler extends Thread{
 
             //读取数据库中所有的数据集合
             String redisKeyFilter="input"+keySuffix+":*";
+            if(keySuffix.equals("")){ //handle all input data
+                redisKeyFilter="input*";
+            }
             Set<String> setKey = socketRedis.getKeysSet(redisKeyFilter);
             if(setKey.size()>0){   _logger.info(redisKeyFilter+" size:" + setKey.size()); }
             Iterator keys = setKey.iterator();

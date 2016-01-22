@@ -257,7 +257,7 @@ public class RequestTask  implements Runnable{
         //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
         if(dataTool.checkByteArray(bytes)){
             if(scKey!=null){
-                String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
+                String inputKey="input"+dataTool.getRandomRealTimeDataSuffix()+":"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
                 socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
                 _logger.info("Save data to Redis:" + inputKey);

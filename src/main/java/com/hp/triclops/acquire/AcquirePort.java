@@ -79,7 +79,8 @@ public class AcquirePort {
             if(HandleSuffixes.size()==0){
                 new DataHandler(socketRedis,dataHandleService,"",dataTool,dataHandlerScheduledService).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
             }else if(HandleSuffixes.size()==1&&HandleSuffixes.get(0).equalsIgnoreCase("ALL")){
-                new DataHandler(socketRedis,dataHandleService,"",dataTool,dataHandlerScheduledService).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(socketRedis,dataHandleService,dataTool.getWarningDataSuffix(),dataTool,dataHandlerScheduledService).start();    //netty报警数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(socketRedis,dataHandleService,"",dataTool,dataHandlerScheduledService).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
             }else{
                 for(String k:HandleSuffixes)  {
                     new DataHandler(socketRedis,dataHandleService,k,dataTool,dataHandlerScheduledService).start();
