@@ -32,14 +32,14 @@ public class OrganizationUserManagement {
     }
 
     /**
-     * 根据uid查询组织用户关系集合
+     * 根据uid查询用户所属组织集合
      * @param uid 用户ID
-     * @return 组织用户关系列表
+     * @return 组织ID集合
      */
-    public List<OrganizationUserRelativeShow> getByUid(int uid)
+    public List<Integer> findOidByUid(int uid)
     {
-        List<OrganizationUserRelative> list = organizationUserRelativeRepository.findByUid(uid);
+        List<Integer> list = organizationUserRelativeRepository.findOidByUid(uid);
 
-        return list.stream().map(OrganizationUserRelativeShow::new).collect(Collectors.toList());
+        return list;
     }
 }
