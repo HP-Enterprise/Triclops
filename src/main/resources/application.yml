@@ -10,7 +10,7 @@ com.hp.acquire:
     dataserver-realTimeDataSuffix: 1,2,3,4,5,6,7,8,9,10
     # save the warningData with specified suffix in redis,eg.value wr  the redis keys: inputwr:vin
     dataserver-warningDataSuffix: wr
-    # if this server work as a data handler,it will only handle the data with the specified suffix in redis.eg.value 1,2 or ALL
+    # if this server work as a data handler,it will only handle the data with the specified suffix in redis.eg.value 1,2 or ALL（handle all "input*" datas）
     datahandler-handleSuffix: ALL
     #data server listen on this port
     port: 9000
