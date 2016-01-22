@@ -1,6 +1,18 @@
 # Acquire port
 com.hp.acquire:
+    #disable  dataServer and dataHandler .if set this value true,neither dataServer nor dataHandler will work
     disabled: true
+    #disable  dataServer.if set this value true,dataServer will not work
+    dataserver-disabled: true
+    #disable  dataHandler.if set this value true,dataHandler will not work
+    datahandler-disabled: true
+    # if this server work as a dataserver,it will only save the data with the specified suffix in redis,eg.value 1,2  the redis keys: input1:vin  input2:vin
+    dataserver-realTimeDataSuffix: 1,2,3,4,5,6,7,8,9,10
+    # save the warningData with specified suffix in redis,eg.value wr  the redis keys: inputwr:vin
+    dataserver-warningDataSuffix: wr
+    # if this server work as a data handler,it will only handle the data with the specified suffix in redis.eg.value 1,2 or ALL
+    datahandler-handleSuffix: ALL
+    #data server listen on this port
     port: 9000
     nettyServerThreadPoolSize: 10
     nettyServerTcpBacklog: 10

@@ -12,6 +12,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by luj on 2015/9/28.
@@ -119,5 +120,34 @@ public class DataToolTest {
 //       float[] speeds = {100.f};
         float max = dataTool.getHitSpeedFromSpeeds(speeds);
         System.out.println("******************max=" + max);
+    }
+
+
+    @Test
+    public void test_getDataServerParms(){
+        System.out.println(">>>>>>>>>实时数据后缀");
+        List<String> a=dataTool.getRealTimeDataSuffixes();
+        for(String tmp:a)
+        {
+            System.out.println(tmp);
+        }
+        System.out.println(">>>>>>>>>报警数据后缀");
+        System.out.println(dataTool.getWarningDataSuffix());
+        System.out.println(">>>>>>>>>处理数据后缀");
+        List<String> b=dataTool.getHandleSuffix();
+        for(String tmp:b)
+        {
+            System.out.println(tmp);
+        }
+
+    }
+
+    @Test
+    public void test_getVinFromkey(){
+        //System.out.println(dataTool.getVinFromkey("input1:123456789"));
+        for (int i = 0; i <100 ; i++) {
+            System.out.println(dataTool.getRandomRealTimeDataSuffix());
+        }
+
     }
 }

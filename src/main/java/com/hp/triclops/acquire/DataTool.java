@@ -11,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.hp.triclops.repository.VehicleRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import static io.netty.buffer.Unpooled.*;
 /**
@@ -615,5 +613,85 @@ public class DataTool {
             messages.put(warningMessageConversion.getMessageId(),warningMessageConversion.getMessageZh());
         }
         return messages;
+    }
+
+    @Value("${com.hp.acquire.dataserver-realTimeDataSuffix}")
+    private String realTimeDataSuffix;
+
+    @Value("${com.hp.acquire.dataserver-warningDataSuffix}")
+    private String warningDataSuffix;
+
+    @Value("${com.hp.acquire.datahandler-handleSuffix}")
+    private String handleSuffix;
+
+
+    /**
+     * 实时数据存储后缀
+     * @return
+     */
+    public List<String> getRealTimeDataSuffixes(){
+        List<String> re=new ArrayList<String>();
+        if(realTimeDataSuffix!=null){
+            String[] array=realTimeDataSuffix.split(",");
+            for(int i=0;i<array.length;i++){
+                re.add(array[i]);
+            }
+        }
+        return re;
+    }
+
+    /**
+     * 报警数据存储后缀
+     * @return
+     */
+    public String getWarningDataSuffix(){
+           return warningDataSuffix;
+    }
+
+    /**
+     * 处理的目标数据后缀
+     * @return
+     */
+    public List<String> getHandleSuffix(){
+        List<String> re=new ArrayList<String>();
+        if(handleSuffix!=null){
+            String[] array=handleSuffix.split(",");
+            for(int i=0;i<array.length;i++){
+                re.add(array[i]);
+            }
+        }
+        return re;
+    }
+
+    /**
+     * 从rediskey 拿到vin  key=input1:123456  vin=123456
+     * @param key
+     * @return
+     */
+    public String getVinFromkey(String key){
+      String vin=null;
+        try{
+        if(key!=null){
+            String[] arry=key.split(":");
+            if(arry.length==2){
+              vin=arry[1];
+          }
+        }
+        }catch (Exception e){e.printStackTrace();}
+    return vin;
+    }
+
+
+    public String getRandomRealTimeDataSuffix(){
+        String suffix="";
+        List<String> suffixes=getRealTimeDataSuffixes();
+        if(suffixes.size()>0){
+            int max=suffixes.size();
+            int min=0;
+            Random random = new Random();
+            int index = random.nextInt(max)%(max-min+1) + min;
+            suffix=suffixes.get(index);
+        }
+        return suffix;
     }
 }

@@ -20,30 +20,32 @@ public class DataHandler extends Thread{
     private Logger _logger;
     private DataTool dataTool;
     private DataHandleService dataHandleService;
+    private String keySuffix;
     private ScheduledExecutorService scheduledService;
 
-    public DataHandler(SocketRedis s,DataHandleService dataHandleService,DataTool dt,ScheduledExecutorService scheduledService){
+    public DataHandler(SocketRedis s,DataHandleService dataHandleService,String keySuffix,DataTool dt,ScheduledExecutorService scheduledService){
         this.socketRedis=s;
         this.dataHandleService=dataHandleService;
+        this.keySuffix=keySuffix;
         this.dataTool=dt;
         this.scheduledService=scheduledService;
         this._logger = LoggerFactory.getLogger(DataHandler.class);
-
+        _logger.info(">>>>>>>>>>start data Handler handle key->:input" + keySuffix);
     }
 
     public  synchronized void run()
     {
         while (true){
 
-            Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
             //读取数据库中所有的数据集合
-            Set<String> setKey = socketRedis.getKeysSet("input:*");
-            if(setKey.size()>0){   _logger.info("size:" + setKey.size()); }
+            String redisKeyFilter="input"+keySuffix+":*";
+            Set<String> setKey = socketRedis.getKeysSet(redisKeyFilter);
+            if(setKey.size()>0){   _logger.info(redisKeyFilter+" size:" + setKey.size()); }
             Iterator keys = setKey.iterator();
             while (keys.hasNext()){
                 //遍历待发数据,处理
                 String k=(String)keys.next();
-                String vin=k.replace("input:", "");
+                String vin=dataTool.getVinFromkey(k);
                 handleInputData(vin, k);
             }
         }
