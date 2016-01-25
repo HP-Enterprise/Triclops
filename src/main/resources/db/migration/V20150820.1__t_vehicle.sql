@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS t_vehicle
   vendor varchar(100) COMMENT '厂家',
   model varchar(100) COMMENT '型号',
   displacement varchar(20) COMMENT '排量',
-  product_date datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '生产日期',
+  product_date DATE NOT NULL DEFAULT '1970-01-01' COMMENT '生产日期',
   vcolor varchar(20) COMMENT '颜色',
   buystore varchar(100) COMMENT '购买4S店',
   buydate date COMMENT '购买时间',

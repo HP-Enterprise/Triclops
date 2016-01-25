@@ -4,6 +4,7 @@ import com.hp.triclops.repository.OrganisationVehicleRelativeExRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,12 @@ public class OrganizationVehicleManagement {
      */
     public List<Integer> findVidByOids(List<Integer> oids)
     {
-        List<Integer> list = organisationVehicleRelativeExRepository.findVidByOids(oids);
+        List<Integer> list = new ArrayList<>();
+        if(oids==null || oids.size()==0)
+        {
+            return list;
+        }
+        list = organisationVehicleRelativeExRepository.findVidByOids(oids);
 
         return list;
     }
