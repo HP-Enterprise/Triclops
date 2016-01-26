@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 @EnableJpaRepositories
 public interface UserRepository extends CrudRepository<User, Long> {
-    List<User> findByNick(String nick);
 
     User findByName(String name);
 

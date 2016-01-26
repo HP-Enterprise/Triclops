@@ -6,6 +6,7 @@ import com.hp.triclops.vo.OrganizationUserRelativeShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,23 @@ public class OrganizationUserManagement {
         List<OrganizationUserRelative> list = organizationUserRelativeRepository.findByOid(oid);
 
         return list.stream().map(OrganizationUserRelativeShow::new).collect(Collectors.toList());
+    }
+
+    /**
+     * 查询组织集合中的成员ID
+     * @param oids 组织ID集合
+     * @return 用户ID集合
+     */
+    public List<Integer> findVidByOids(List<Integer> oids)
+    {
+        List<Integer> list = new ArrayList<>();
+        if(oids==null || oids.size()==0)
+        {
+            return list;
+        }
+        list = organizationUserRelativeRepository.findUidByOids(oids);
+
+        return list;
     }
 
     /**

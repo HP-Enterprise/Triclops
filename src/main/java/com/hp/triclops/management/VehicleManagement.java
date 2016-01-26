@@ -45,7 +45,7 @@ public class VehicleManagement {
     }
 
     /**
-     * 查询用户有全选查看的车辆ID集合
+     * 查询用户有权查看的车辆ID集合
      * @param uid 用户ID
      * @return 车辆ID集合
      */
