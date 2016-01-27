@@ -1,10 +1,12 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.Vehicle;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Date;
 import java.util.List;
 
 /**

@@ -3,8 +3,14 @@ package com.hp.triclops.repository;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
+import com.hp.triclops.vo.VehicleShow;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,8 +19,31 @@ import java.util.List;
  */
 @Component
 public class VehicleRepositoryDAO {
+
+    @Autowired
+    VehicleRepository vehicleRepository;
+
     @PersistenceContext
     private EntityManager em;
+
+//    public List<VehicleShow> selectVehicle(String vin,String tboxsn,String vendor,String model,Date start_date,Date end_date,String license_plate,int t_flag,String orderByProperty,Integer currentPage,Integer pageSize){
+//
+//        currentPage = currentPage==null?1:currentPage;
+//        currentPage = currentPage<=0?1:currentPage;
+//        pageSize = pageSize==null?10:pageSize;
+//        pageSize = pageSize<=0?10:pageSize;
+//
+//        //Sort sort = new Sort();
+//        Pageable p = new PageRequest(currentPage-1,pageSize);
+//        List<Vehicle> list = vehicleRepository.selectVehicle(vin,tboxsn,vendor,model,start_date,end_date,license_plate,t_flag,orderByProperty,p);
+//        List<VehicleShow> returnList = new ArrayList<>();
+//        for(Vehicle vehicle:list)
+//        {
+//            returnList.add(new VehicleShow(vehicle));
+//        }
+//
+//        return returnList;
+//    }
 
 
     /**
