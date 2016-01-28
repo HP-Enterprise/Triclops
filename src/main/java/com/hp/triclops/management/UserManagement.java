@@ -26,21 +26,34 @@ public class UserManagement {
 
     /**
      * 查询用户有权查看的用户ID集合
+     * @param oid 组织ID
      * @param uid 用户ID
      * @return 用户ID集合
      */
-    public List<Integer> selectUserByUid(int uid)
+    private List<Integer> selectUserByUid(Integer oid,int uid)
     {
+        List<Integer> oids = new ArrayList<>();
         List<Integer> orgUids = new ArrayList<>();
 
-        List<Integer> oids = organizationUserManagement.findOidByUid(uid);
-        if(oids.size()>0)
+        if(oid == null)
         {
-            orgUids = organizationUserManagement.findVidByOids(oids);
+            oids = organizationUserManagement.findOidsByUid(uid);
+        }
+        else
+        {
+            oids.add(oid);
         }
 
-        if(!orgUids.contains(uid)){
-            orgUids.add(uid);
+        if(oids.size()>0)
+        {
+            orgUids = organizationUserManagement.findUidByOids(oids);
+        }
+
+        if(oid == null)
+        {
+            if(!orgUids.contains(uid)){
+                orgUids.add(uid);
+            }
         }
 
         return orgUids;
@@ -58,7 +71,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserEx> selectUser(int uid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserEx> selectUser(Integer oid,int uid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         if(name!=null) name = "%" + name + "%";
         if(nick!=null) nick = "%" + nick + "%";
@@ -70,7 +83,7 @@ public class UserManagement {
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
         Page<UserEx> userPage = new PageImpl<>(new ArrayList<>(),p,0);
-        List<Integer> uids = selectUserByUid(uid);
+        List<Integer> uids = selectUserByUid(oid,uid);
         if(uids == null || uids.size()==0)
         {
             return userPage;
