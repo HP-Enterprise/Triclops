@@ -35,13 +35,17 @@ public class UserManagement {
         List<Integer> oids = new ArrayList<>();
         List<Integer> orgUids = new ArrayList<>();
 
-        if(oid == null)
+        if(oid != null)
         {
-            oids = organizationUserManagement.findOidsByUid(uid);
-        }
-        else
-        {
-            oids.add(oid);
+            if(oids.contains(oid))
+            {
+                oids.clear();
+                oids.add(oid);
+            }
+            else
+            {
+                oids.clear();
+            }
         }
 
         if(oids.size()>0)
