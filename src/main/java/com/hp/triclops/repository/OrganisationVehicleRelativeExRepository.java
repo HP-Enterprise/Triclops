@@ -19,4 +19,7 @@ public interface OrganisationVehicleRelativeExRepository extends CrudRepository<
 
     @Query("select ov.vid from OrganisationVehicleRelativeEx ov where ov.oid = ?1 ")
     List<Integer> findVidByOid(int oid);
+
+    @Query("select count(*) from OrganisationVehicleRelativeEx ov where ov.oid = ?1 ")
+    int getOrgVehicleNum(int oid);
 }

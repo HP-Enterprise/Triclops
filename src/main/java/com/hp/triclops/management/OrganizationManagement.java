@@ -24,6 +24,9 @@ public class OrganizationManagement {
     @Autowired
     OrganizationExRepository organizationExRepository;
 
+    @Autowired
+    OrganizationVehicleManagement organizationVehicleManagement;
+
     /**
      * 组织查询
      * @param uid 用户ID
@@ -75,5 +78,39 @@ public class OrganizationManagement {
 
         Page<OrganizationEx> orgPage = organizationExRepository.select(orgName,breCode,type_key,p);
         return orgPage;
+    }
+
+    /**
+     * 查询组织中的车辆数目
+     * @param uid 用户ID
+     * @param oid 组织ID
+     * @return 车辆数目
+     */
+    public int getOrgVehicleNum(int uid, int oid)
+    {
+        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);  // 用户权限鉴定
+        if(oids.contains(oid))
+        {
+            return organizationVehicleManagement.getOrgVehicleNum(oid);
+        }
+
+        return 0;
+    }
+
+    /**
+     * 查询组织中的车辆数目
+     * @param uid 用户ID
+     * @param oid 组织ID
+     * @return 车辆数目
+     */
+    public int getOrgUserNum(int uid, int oid)
+    {
+        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);  // 用户权限鉴定
+        if(oids.contains(oid))
+        {
+            return organizationUserManagement.getOrgUserNum(oid);
+        }
+
+        return 0;
     }
 }

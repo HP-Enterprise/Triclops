@@ -54,7 +54,7 @@ public class OrganizationUserManagement {
      * @param oid 组织ID
      * @return 用户ID集合
      */
-    public List<Integer> findUidByOid(int oid)
+    public List<Integer> findUidByOid(int oid,Integer currentPage,Integer pageSize)
     {
         return organizationUserRelativeRepository.findUidByOid(oid);
     }
@@ -69,5 +69,15 @@ public class OrganizationUserManagement {
         List<Integer> list = organizationUserRelativeRepository.findOidByUid(uid);
 
         return list;
+    }
+
+    /**
+     * 查询组织中的成员数目
+     * @param oid 组织ID
+     * @return 成员数目
+     */
+    public int getOrgUserNum(int oid)
+    {
+        return organizationUserRelativeRepository.getOrgUserNum(oid);
     }
 }
