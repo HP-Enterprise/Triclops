@@ -2,6 +2,8 @@ package com.hp.triclops.management;
 
 import com.hp.triclops.entity.UserEx;
 import com.hp.triclops.repository.UserExRepository;
+import com.hp.triclops.vo.UserExPartShow;
+import com.hp.triclops.vo.VehicleExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Teemol on 2016/1/26.
@@ -64,7 +67,7 @@ public class UserManagement {
     }
 
     /**
-     * 条件查询用户
+     * 条件查询用户(组织管理员)
      * @param uid 用户ID
      * @param name 用户名
      * @param gender 性别
@@ -123,4 +126,32 @@ public class UserManagement {
 
         return userPage;
     }
+
+    /**
+     * 条件查询用户（用户注册查询）
+     * @param name 用户名
+     * @param gender 性别
+     * @param nick 昵称
+     * @param phone 电话号码
+     * @param isVerified 是否已验证 0：未验证 1：已验证
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 车辆信息集合
+     */
+    public Page<UserExPartShow> registSelect(String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    {
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        Page<UserEx> userPage =  selectUser(name,gender,nick,phone,isVerified,currentPage,pageSize);
+
+        List<UserEx> list = userPage.getContent();
+        List<UserExPartShow> userList = list.stream().map(UserExPartShow::new).collect(Collectors.toList());
+
+        return  new PageImpl<>(userList,p,userPage.getTotalPages());
+    }
+
 }
