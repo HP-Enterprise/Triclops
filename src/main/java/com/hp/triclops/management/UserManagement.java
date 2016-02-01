@@ -27,44 +27,6 @@ public class UserManagement {
     @Autowired
     UserExRepository userExRepository;
 
-    /**
-     * 查询用户有权查看的用户ID集合
-     * @param oid 组织ID
-     * @param uid 用户ID
-     * @return 用户ID集合
-     */
-    private List<Integer> selectUserByUid(Integer oid,int uid)
-    {
-        List<Integer> orgUids = new ArrayList<>();
-        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);
-
-        if(oid != null)
-        {
-            if(oids.contains(oid))
-            {
-                oids.clear();
-                oids.add(oid);
-            }
-            else
-            {
-                oids.clear();
-            }
-        }
-
-        if(oids.size()>0)
-        {
-            orgUids = organizationUserManagement.findUidByOids(oids);
-        }
-
-        if(oid == null)
-        {
-            if(!orgUids.contains(uid)){
-                orgUids.add(uid);
-            }
-        }
-
-        return orgUids;
-    }
 
     /**
      * 条件查询用户(组织管理员查询)
@@ -103,7 +65,7 @@ public class UserManagement {
     }
 
     /**
-     * 条件查询用户(具有Read权限的组织成员查询)
+     * 条件查询用户(具有Read权限的组织成员)
      * @param name 用户名
      * @param gender 性别
      * @param nick 昵称
@@ -113,7 +75,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserExPartShow> orgReadSelect(Integer oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExPartShow> orgReadSelect(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         if(name!=null) name = "%" + name + "%";
         if(nick!=null) nick = "%" + nick + "%";
@@ -220,5 +182,45 @@ public class UserManagement {
 //
 //        return userPage;
 //    }
+
+    /**
+     * 查询用户有权查看的用户ID集合
+     * @param oid 组织ID
+     * @param uid 用户ID
+     * @return 用户ID集合
+     */
+    private List<Integer> selectUserByUid(Integer oid,int uid)
+    {
+        List<Integer> orgUids = new ArrayList<>();
+        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);
+
+        if(oid != null)
+        {
+            if(oids.contains(oid))
+            {
+                oids.clear();
+                oids.add(oid);
+            }
+            else
+            {
+                oids.clear();
+            }
+        }
+
+        if(oids.size()>0)
+        {
+            orgUids = organizationUserManagement.findUidByOids(oids);
+        }
+
+        if(oid == null)
+        {
+            if(!orgUids.contains(uid)){
+                orgUids.add(uid);
+            }
+        }
+
+        return orgUids;
+    }
+
 
 }
