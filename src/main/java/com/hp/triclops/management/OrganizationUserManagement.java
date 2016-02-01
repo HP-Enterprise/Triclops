@@ -37,7 +37,7 @@ public class OrganizationUserManagement {
      * @param oids 组织ID集合
      * @return 用户ID集合
      */
-    public List<Integer> findVidByOids(List<Integer> oids)
+    public List<Integer> findUidByOids(List<Integer> oids)
     {
         List<Integer> list = new ArrayList<>();
         if(oids==null || oids.size()==0)
@@ -50,14 +50,34 @@ public class OrganizationUserManagement {
     }
 
     /**
+     * 查询组织中的成员ID
+     * @param oid 组织ID
+     * @return 用户ID集合
+     */
+    public List<Integer> findUidByOid(int oid,Integer currentPage,Integer pageSize)
+    {
+        return organizationUserRelativeRepository.findUidByOid(oid);
+    }
+
+    /**
      * 根据uid查询用户所属组织集合
      * @param uid 用户ID
      * @return 组织ID集合
      */
-    public List<Integer> findOidByUid(int uid)
+    public List<Integer> findOidsByUid(int uid)
     {
         List<Integer> list = organizationUserRelativeRepository.findOidByUid(uid);
 
         return list;
+    }
+
+    /**
+     * 查询组织中的成员数目
+     * @param oid 组织ID
+     * @return 成员数目
+     */
+    public int getOrgUserNum(int oid)
+    {
+        return organizationUserRelativeRepository.getOrgUserNum(oid);
     }
 }

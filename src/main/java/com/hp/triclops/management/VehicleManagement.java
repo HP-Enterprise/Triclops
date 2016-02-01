@@ -46,24 +46,41 @@ public class VehicleManagement {
 
     /**
      * 查询用户有权查看的车辆ID集合
+     * @param oid 组织ID
      * @param uid 用户ID
      * @return 车辆ID集合
      */
-    public List<Integer> selectVehicleByUid(int uid)
+    private List<Integer> selectVehicleByUid(Integer oid,int uid)
     {
         List<Integer> orgVids = new ArrayList<>();
+        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);
 
-        List<Integer> oids = organizationUserManagement.findOidByUid(uid);
+        if( oid!= null)
+        {
+            if(oids.contains(oid))
+            {
+                oids.clear();
+                oids.add(oid);
+            }
+            else
+            {
+                oids.clear();
+            }
+        }
+
         if(oids.size()>0)
         {
             orgVids = organizationVehicleManagement.findVidByOids(oids);
         }
 
-        List<Integer> ownerVids = userVehicleManagement.findVidByUid(uid);
+        if(oid == null)
+        {
+            List<Integer> ownerVids = userVehicleManagement.findVidByUid(uid);
 
-        for(Integer vid:ownerVids) {
-            if(!orgVids.contains(vid)){
-                orgVids.add(vid);
+            for(Integer vid:ownerVids) {
+                if(!orgVids.contains(vid)){
+                    orgVids.add(vid);
+                }
             }
         }
 
@@ -72,6 +89,7 @@ public class VehicleManagement {
 
     /**
      * 条件查询车辆
+     * @param oid 组织ID
      * @param uid 用户ID
      * @param vin 车架号
      * @param tboxsn tbox码
@@ -85,7 +103,7 @@ public class VehicleManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<VehicleEx> selectVehicle(int uid, String vin, String tboxsn, String vendor, String model, Date start_date,Date end_date,String license_plate,Integer t_flag, Integer currentPage,Integer pageSize)
+    public Page<VehicleEx> selectVehicle(Integer oid,int uid, String vin, String tboxsn, String vendor, String model, Date start_date,Date end_date,String license_plate,Integer t_flag, Integer currentPage,Integer pageSize)
     {
         if(vin!=null) vin = "%" + vin + "%";
         if(tboxsn!=null) tboxsn = "%" + tboxsn + "%";
@@ -99,7 +117,7 @@ public class VehicleManagement {
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
         Page<VehicleEx> vehiclePage = new PageImpl<>(new ArrayList<>(),p,0);
-        List<Integer> vids = selectVehicleByUid(uid);
+        List<Integer> vids = selectVehicleByUid(oid,uid);  // 查询用户有权查看的车辆ID集合
         if(vids == null || vids.size()==0)
         {
             return vehiclePage;
