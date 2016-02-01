@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by luj on 2015/9/28.
@@ -126,7 +127,7 @@ public class DataToolTest {
     @Test
     public void test_getDataServerParms(){
         System.out.println(">>>>>>>>>实时数据后缀");
-        List<String> a=dataTool.getRealTimeDataSuffixes();
+        Set<String> a=dataTool.getRealTimeDataSuffixesFromRedis();
         for(String tmp:a)
         {
             System.out.println(tmp);
