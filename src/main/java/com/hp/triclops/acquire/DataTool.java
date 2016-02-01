@@ -3,6 +3,7 @@ package com.hp.triclops.acquire;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
+import com.hp.triclops.redis.SocketRedis;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ public class DataTool {
     private Logger _logger = LoggerFactory.getLogger(DataTool.class);
     @Autowired
     VehicleRepository vehicleRepository;
+    @Autowired
+    SocketRedis socketRedis;
     public  boolean checkReg(byte[] bytes){
         //校验注册数据
         return true;
@@ -615,8 +618,6 @@ public class DataTool {
         return messages;
     }
 
-    @Value("${com.hp.acquire.dataserver-realTimeDataSuffix}")
-    private String realTimeDataSuffix;
 
     @Value("${com.hp.acquire.dataserver-warningDataSuffix}")
     private String warningDataSuffix;
@@ -625,20 +626,6 @@ public class DataTool {
     private String handleSuffix;
 
 
-    /**
-     * 实时数据存储后缀
-     * @return
-     */
-    public List<String> getRealTimeDataSuffixes(){
-        List<String> re=new ArrayList<String>();
-        if(realTimeDataSuffix!=null){
-            String[] array=realTimeDataSuffix.split(",");
-            for(int i=0;i<array.length;i++){
-                re.add(array[i]);
-            }
-        }
-        return re;
-    }
 
     /**
      * 报警数据存储后缀
@@ -662,6 +649,13 @@ public class DataTool {
         }
         return re;
     }
+    /**
+     * 从redis获取可用data-handler节点
+     * @return
+     */
+    public  Set<String> getRealTimeDataSuffixesFromRedis(){
+        return socketRedis.getSmembers("available-data-handler");
+    }
 
     /**
      * 从rediskey 拿到vin  key=input1:123456  vin=123456
@@ -682,15 +676,27 @@ public class DataTool {
     }
 
 
-    public String getRandomRealTimeDataSuffix(){
+
+    /**
+     * 基于redis的可用节点返回数据写group
+     * @return random group suffix（from redis available cluster node）
+     */
+    public  String getRandomRealTimeDataSuffix(){
         String suffix="";
-        List<String> suffixes=getRealTimeDataSuffixes();
-        if(suffixes.size()>0){
-            int max=suffixes.size();
+        Set<String> suffixes=getRealTimeDataSuffixesFromRedis();
+        String _warningDataSuffix=getWarningDataSuffix();
+        //排除warningDataHandle节点
+        if(suffixes.contains(_warningDataSuffix)){
+            suffixes.remove(_warningDataSuffix);
+        }
+        int _suffixes_size=suffixes.size();
+        if(_suffixes_size>0){
+            String[] suffixesArray = suffixes.toArray(new String[_suffixes_size-1]);
+            int max=_suffixes_size;
             int min=0;
             Random random = new Random();
             int index = random.nextInt(max)%(max-min+1) + min;
-            suffix=suffixes.get(index);
+            suffix=suffixesArray[index];
         }
         return suffix;
     }

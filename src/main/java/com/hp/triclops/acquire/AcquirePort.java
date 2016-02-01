@@ -46,6 +46,14 @@ public class AcquirePort {
     @Value("${com.hp.acquire.datahandler-disabled}")
     private boolean _datahandlerDisabled;
 
+    //数据处理服务器心跳周期
+    @Value("${com.hp.acquire.datahandler-heartbeat-interval}")
+    private int _datahandlerHeartbeatInterval;
+
+    //数据处理服务器心跳信号ttl
+    @Value("${com.hp.acquire.datahandler-heartbeat-ttl}")
+    private int _datahandlerHeartbeatTTL;
+
     @Autowired
     SocketRedis socketRedis;
     @Autowired
@@ -77,12 +85,12 @@ public class AcquirePort {
         if(!_datahandlerDisabled){
             List<String> HandleSuffixes=dataTool.getHandleSuffix();
             if(HandleSuffixes.size()==0){
-                new DataHandler(socketRedis,dataHandleService,"",dataTool,dataHandlerScheduledService).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
             }else if(HandleSuffixes.size()==1&&HandleSuffixes.get(0).equalsIgnoreCase("ALL")){
-                new DataHandler(socketRedis,dataHandleService,"",dataTool,dataHandlerScheduledService).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
             }else{
                 for(String k:HandleSuffixes)  {
-                    new DataHandler(socketRedis,dataHandleService,k,dataTool,dataHandlerScheduledService).start();
+                    new DataHandler(socketRedis,dataHandleService,k,_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService).start();
                 }
                  //netty数据处理入库线程，内部采用线程池处理数据入库
             }

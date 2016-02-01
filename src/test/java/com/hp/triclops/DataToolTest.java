@@ -145,9 +145,10 @@ public class DataToolTest {
     @Test
     public void test_getVinFromkey(){
         //System.out.println(dataTool.getVinFromkey("input1:123456789"));
-        for (int i = 0; i <100 ; i++) {
+        for (int i = 0; i <20 ; i++) {
             System.out.println(dataTool.getRandomRealTimeDataSuffix());
         }
 
     }
+
 }
