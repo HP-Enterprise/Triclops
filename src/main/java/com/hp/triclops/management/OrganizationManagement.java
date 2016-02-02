@@ -2,6 +2,7 @@ package com.hp.triclops.management;
 
 import com.hp.triclops.entity.OrganizationEx;
 import com.hp.triclops.repository.OrganizationExRepository;
+import com.hp.triclops.vo.OrganizationShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,13 +20,26 @@ import java.util.List;
 public class OrganizationManagement {
 
     @Autowired
-    OrganizationUserManagement organizationUserManagement;
-
-    @Autowired
     OrganizationExRepository organizationExRepository;
 
     @Autowired
+    OrganizationUserManagement organizationUserManagement;
+
+    @Autowired
     OrganizationVehicleManagement organizationVehicleManagement;
+
+    /**
+     * 根据ID查询组织信息
+     * @param id 组织ID
+     * @return 组织信息
+     */
+    public OrganizationShow getById(int id)
+    {
+        OrganizationEx organizationEx = organizationExRepository.findById(id);
+        if(organizationEx == null)
+            return null;
+        return new OrganizationShow(organizationEx);
+    }
 
     /**
      * 组织查询
