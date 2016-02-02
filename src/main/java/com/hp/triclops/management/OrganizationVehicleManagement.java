@@ -1,6 +1,9 @@
 package com.hp.triclops.management;
 
+import com.hp.triclops.entity.OrganisationVehicleRelativeEx;
 import com.hp.triclops.repository.OrganisationVehicleRelativeExRepository;
+import com.hp.triclops.vo.OrganizationShow;
+import com.hp.triclops.vo.VehicleExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,5 +55,17 @@ public class OrganizationVehicleManagement {
     public int getOrgVehicleNum(int oid)
     {
         return organisationVehicleRelativeExRepository.getOrgVehicleNum(oid);
+    }
+
+    /**
+     * 向组织中增加车辆
+     * @param uid 用户ID
+     * @param oid 组织ID
+     * @param vid 车辆ID
+     */
+    public void addVehicle(int uid,int oid,int vid)
+    {
+        OrganisationVehicleRelativeEx organisationVehicleRelativeEx = new OrganisationVehicleRelativeEx(oid,vid);
+        organisationVehicleRelativeExRepository.save(organisationVehicleRelativeEx);
     }
 }

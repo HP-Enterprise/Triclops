@@ -14,6 +14,11 @@ public class OrganisationVehicleRelativeEx {
     private int oid;
     private int vid;
 
+    public OrganisationVehicleRelativeEx(int oid, int vid) {
+        this.oid = oid;
+        this.vid = vid;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id",nullable = false)
