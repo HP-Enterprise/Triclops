@@ -2,8 +2,7 @@ package com.hp.triclops.management;
 
 import com.hp.triclops.entity.OrganisationVehicleRelativeEx;
 import com.hp.triclops.repository.OrganisationVehicleRelativeExRepository;
-import com.hp.triclops.vo.OrganizationShow;
-import com.hp.triclops.vo.VehicleExShow;
+import com.hp.triclops.vo.OrganisationVehicleRelativeExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,14 +57,37 @@ public class OrganizationVehicleManagement {
     }
 
     /**
+     * 查询组织车辆关系
+     * @param oid 组织ID
+     * @param vid 车辆ID
+     * @return 组织车辆关系
+     */
+    public OrganisationVehicleRelativeExShow findByOidAndvid(int oid, int vid)
+    {
+        OrganisationVehicleRelativeEx relative = organisationVehicleRelativeExRepository.findByOidAndvid(oid,vid);
+        if(relative == null)
+            return null;
+        return new OrganisationVehicleRelativeExShow(relative);
+    }
+
+    /**
      * 向组织中增加车辆
-     * @param uid 用户ID
      * @param oid 组织ID
      * @param vid 车辆ID
      */
-    public void addVehicle(int uid,int oid,int vid)
+    public void addVehicle(int oid,int vid)
     {
         OrganisationVehicleRelativeEx organisationVehicleRelativeEx = new OrganisationVehicleRelativeEx(oid,vid);
         organisationVehicleRelativeExRepository.save(organisationVehicleRelativeEx);
+    }
+
+    /**
+     * 从组织移除车辆
+     * @param id 组织车辆关系ID
+     * @return 移除状态  0：车辆不在组织中  1：移除成功
+     */
+    public void deleteVehicle(int id)
+    {
+        organisationVehicleRelativeExRepository.delete(id);
     }
 }
