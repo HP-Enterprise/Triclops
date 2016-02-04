@@ -29,6 +29,43 @@ public class OrganizationManagement {
     OrganizationVehicleManagement organizationVehicleManagement;
 
     /**
+     * 新增组织信息
+     * @param organizationShow
+     * @return
+     */
+    public OrganizationShow createOrganization(OrganizationShow organizationShow)
+    {
+        OrganizationEx returnOrg = organizationExRepository.save(new OrganizationEx(organizationShow));
+        return new OrganizationShow(returnOrg);
+    }
+
+    /**
+     * 根据组织名查询
+     * @param orgName 组织名
+     * @return 组织信息
+     */
+    public OrganizationShow findByOrgName(String orgName)
+    {
+        OrganizationEx organizationEx = organizationExRepository.findByOrgName(orgName);
+        return new OrganizationShow(organizationEx);
+    }
+
+    /**
+     * 根据组织简码查询
+     * @param breCode 组织简码
+     * @return 组织信息
+     */
+    public OrganizationShow findByBreCode(String breCode)
+    {
+        OrganizationEx organizationEx = organizationExRepository.findByBreCode(breCode);
+        if(organizationEx == null)
+        {
+            return null;
+        }
+        return new OrganizationShow(organizationEx);
+    }
+
+    /**
      * 根据ID查询组织信息
      * @param id 组织ID
      * @return 组织信息
