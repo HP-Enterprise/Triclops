@@ -27,4 +27,8 @@ public interface OrganizationExRepository extends CrudRepository<OrganizationEx,
     Page<OrganizationEx> select(List<Integer> oids, String orgName, String breCode, Integer type_key, Pageable p);
 
     OrganizationEx findById(int id);
+
+    OrganizationEx findByOrgName(String orgName);
+
+    OrganizationEx findByBreCode(String breCode);
 }

@@ -1,5 +1,7 @@
 package com.hp.triclops.entity;
 
+import com.hp.triclops.vo.OrganizationShow;
+
 import javax.persistence.*;
 
 /**
@@ -17,6 +19,15 @@ public class OrganizationEx {
     private String descript;
     private int areaid;
     private int available;
+
+    public OrganizationEx(OrganizationShow organizationShow) {
+        this.orgName = organizationShow.getOrgName();
+        this.breCode = organizationShow.getBreCode();
+        this.typeKey = organizationShow.getTypeKey();
+        this.descript = organizationShow.getDescript();
+        this.areaid = organizationShow.getAreaid();
+        this.available = organizationShow.getAvailable();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
