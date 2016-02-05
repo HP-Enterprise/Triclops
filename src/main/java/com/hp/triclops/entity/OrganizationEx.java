@@ -20,6 +20,9 @@ public class OrganizationEx {
     private int areaid;
     private int available;
 
+    public OrganizationEx() {
+    }
+
     public OrganizationEx(OrganizationShow organizationShow) {
         this.orgName = organizationShow.getOrgName();
         this.breCode = organizationShow.getBreCode();
