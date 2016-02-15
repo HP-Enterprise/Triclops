@@ -16,6 +16,8 @@ import java.util.List;
 @EnableJpaRepositories
 public interface UserExRepository extends CrudRepository<UserEx, String> {
 
+    UserEx findById(int id);
+
     @Query("select ue from UserEx ue " +
             "where ue.id in ?1 " +
             "and (?2 is null or ue.name like ?2) " +
