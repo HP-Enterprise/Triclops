@@ -133,35 +133,21 @@ public class OrganizationManagement {
 
     /**
      * 查询组织中的车辆数目
-     * @param uid 用户ID
      * @param oid 组织ID
      * @return 车辆数目
      */
-    public int getOrgVehicleNum(int uid, int oid)
+    public int getOrgVehicleNum(int oid)
     {
-        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);  // 用户权限鉴定
-        if(oids.contains(oid))
-        {
-            return organizationVehicleManagement.getOrgVehicleNum(oid);
-        }
-
-        return 0;
+        return organizationVehicleManagement.getOrgVehicleNum(oid);
     }
 
     /**
      * 查询组织中的用户数目
-     * @param uid 用户ID
      * @param oid 组织ID
      * @return 车辆数目
      */
-    public int getOrgUserNum(int uid, int oid)
+    public int getOrgUserNum(int oid)
     {
-        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);  // 用户权限鉴定
-        if(oids.contains(oid))
-        {
-            return organizationUserManagement.getOrgUserNum(oid);
-        }
-
-        return 0;
+        return organizationUserManagement.getOrgUserNum(oid);
     }
 }
