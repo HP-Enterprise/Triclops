@@ -86,12 +86,37 @@ public class OrganizationUserManagement {
      * 查询用户与组织的关系
      * @param oid 组织ID
      * @param uid 用户ID
-     * @return 组织用户关系集合
+     * @return 组织用户关系
      */
-    public List<OrganizationUserRelativeShow> findByOidAndUid(int oid,int uid)
+    public OrganizationUserRelativeShow findByOidAndUid(int oid,int uid)
     {
-        List<OrganizationUserRelative> list = organizationUserRelativeRepository.findByOidAndUid(oid,uid);
+        OrganizationUserRelative relative = organizationUserRelativeRepository.findByOidAndUid(oid,uid);
 
-        return list.stream().map(OrganizationUserRelativeShow::new).collect(Collectors.toList());
+        if(relative == null)
+        {
+            return null;
+        }
+
+        return new OrganizationUserRelativeShow(relative);
+    }
+
+    /**
+     * 向组织中增加用户
+     * @param oid 组织ID
+     * @param uid 用户ID
+     */
+    public void addUser(int oid, int uid)
+    {
+        OrganizationUserRelative organizationUserRelative = new OrganizationUserRelative(oid,uid);
+        organizationUserRelativeRepository.save(organizationUserRelative);
+    }
+
+    /**
+     * 从组织移除用户
+     * @param id 组织用户关系ID
+     */
+    public void deleteUser(int id)
+    {
+        organizationUserRelativeRepository.delete(id);
     }
 }

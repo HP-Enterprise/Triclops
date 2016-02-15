@@ -13,6 +13,9 @@ public class OrganizationUserRelative {
     private int oid;
     private int uid;
 
+    public OrganizationUserRelative() {
+    }
+
     public OrganizationUserRelative(int oid, int uid) {
         this.oid = oid;
         this.uid = uid;

@@ -74,7 +74,6 @@ public class OrganizationVehicleManagement {
     /**
      * 从组织移除车辆
      * @param id 组织车辆关系ID
-     * @return 移除状态  0：车辆不在组织中  1：移除成功
      */
     public void deleteVehicle(int id)
     {
