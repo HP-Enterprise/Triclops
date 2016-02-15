@@ -3,7 +3,6 @@ package com.hp.triclops.management;
 import com.hp.triclops.entity.UserEx;
 import com.hp.triclops.repository.UserExRepository;
 import com.hp.triclops.vo.UserExPartShow;
-import com.hp.triclops.vo.VehicleExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,6 +25,17 @@ public class UserManagement {
 
     @Autowired
     UserExRepository userExRepository;
+
+
+    /**
+     * 根据ID查询用户信息
+     * @param id 用户ID
+     * @return 用户信息
+     */
+    public UserEx findById(int id)
+    {
+        return userExRepository.findById(id);
+    }
 
 
     /**
@@ -148,41 +158,6 @@ public class UserManagement {
         return  new PageImpl<>(userList,p,userPage.getTotalPages());
     }
 
-//    /**
-//     * 条件查询用户()
-//     * @param uid 用户ID
-//     * @param name 用户名
-//     * @param gender 性别
-//     * @param nick 昵称
-//     * @param phone 电话号码
-//     * @param isVerified 是否已验证 0：未验证 1：已验证
-//     * @param currentPage 当前页
-//     * @param pageSize 页面大小
-//     * @return 车辆信息集合
-//     */
-//    public Page<UserEx> select(Integer oid,int uid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
-//    {
-//        if(name!=null) name = "%" + name + "%";
-//        if(nick!=null) nick = "%" + nick + "%";
-//        if(phone!=null) phone = "%" + phone + "%";
-//        currentPage = currentPage==null?1:currentPage;
-//        currentPage = currentPage<=0?1:currentPage;
-//        pageSize = pageSize==null?10:pageSize;
-//        pageSize = pageSize<=0?10:pageSize;
-//        Pageable p = new PageRequest(currentPage-1,pageSize);
-//
-//        Page<UserEx> userPage = new PageImpl<>(new ArrayList<>(),p,0);
-//
-//        List<Integer> uids = selectUserByUid(oid,uid);
-//        if(uids == null || uids.size()==0)
-//        {
-//            return userPage;
-//        }
-//        userPage = userExRepository.selectUser(uids,name,gender,nick,phone,isVerified,p);
-//
-//        return userPage;
-//    }
-
     /**
      * 查询用户有权查看的用户ID集合
      * @param oid 组织ID
@@ -221,6 +196,5 @@ public class UserManagement {
 
         return orgUids;
     }
-
 
 }

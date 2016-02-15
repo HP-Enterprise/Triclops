@@ -21,6 +21,17 @@ public class OrganizationUserManagement {
     OrganizationUserRelativeRepository organizationUserRelativeRepository;
 
     /**
+     * 建立用户与组织的关系
+     * @param oid 组织ID
+     * @param uid 用户ID
+     */
+    public void saveRelative(int oid,int uid)
+    {
+        OrganizationUserRelative relative = new OrganizationUserRelative(oid,uid);
+        organizationUserRelativeRepository.save(relative);
+    }
+
+    /**
      * 根据oid查询组织用户关系集合
      * @param oid 组织ID
      * @return 组织用户关系列表

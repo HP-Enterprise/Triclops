@@ -30,8 +30,8 @@ public class OrganizationManagement {
 
     /**
      * 新增组织信息
-     * @param organizationShow
-     * @return
+     * @param organizationShow 组织信息
+     * @return 新增的组织对象
      */
     public OrganizationShow createOrganization(OrganizationShow organizationShow)
     {
@@ -70,7 +70,7 @@ public class OrganizationManagement {
      * @param id 组织ID
      * @return 组织信息
      */
-    public OrganizationShow getById(int id)
+    public OrganizationShow findById(int id)
     {
         OrganizationEx organizationEx = organizationExRepository.findById(id);
         if(organizationEx == null)
@@ -149,5 +149,15 @@ public class OrganizationManagement {
     public int getOrgUserNum(int oid)
     {
         return organizationUserManagement.getOrgUserNum(oid);
+    }
+
+    /**
+     * 将用户加入组织
+     * @param oid 组织ID
+     * @param uid 用户ID
+     */
+    public void addUserToOrg(int oid,int uid)
+    {
+        organizationUserManagement.saveRelative(oid,uid);
     }
 }
