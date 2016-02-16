@@ -304,8 +304,6 @@ public class VehicleDataService {
         return 1;
     }
 
-
-
     /**
      * 获取车辆实时位置数据
      * @param vin vin
@@ -321,13 +319,18 @@ public class VehicleDataService {
         return gd;
     }
 
-
-
     public Page getRemoteControlShowList(String vin,String orderByProperty,String ascOrDesc,Integer pageSize,Integer currentPage){
         Page remoteControlPage = remoteControlRespositoryDao.findRemoteControlByVin(vin, orderByProperty, ascOrDesc, pageSize, currentPage);
 
         Vehicle vehicle=vehicleRepository.findByVin(vin);
-        remoteControlPage.setItems(transFormRemoteControl((List<RemoteControl>)remoteControlPage.getItems(),vehicle));
+        List list = remoteControlPage.getItems();
+        List<RemoteControl> newList = new ArrayList<>();
+        for(Object obj:list)
+        {
+            newList.add((RemoteControl)obj);
+        }
+
+        remoteControlPage.setItems(transFormRemoteControl(newList,vehicle));
         return remoteControlPage;
     }
 
