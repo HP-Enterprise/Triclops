@@ -25,4 +25,10 @@ public interface OrganizationExRepository extends CrudRepository<OrganizationEx,
             "and (?3 is null or o.breCode like ?3) " +
             "and (?4 is null or o.typeKey = ?4) " )
     Page<OrganizationEx> select(List<Integer> oids, String orgName, String breCode, Integer type_key, Pageable p);
+
+    OrganizationEx findById(int id);
+
+    OrganizationEx findByOrgName(String orgName);
+
+    OrganizationEx findByBreCode(String breCode);
 }

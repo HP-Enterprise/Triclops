@@ -1,6 +1,7 @@
 package com.hp.triclops.vo;
 
 import com.hp.triclops.entity.Organization;
+import com.hp.triclops.entity.OrganizationEx;
 
 /**
  * <table summary="OrganizationShow" class="typeSummary">
@@ -69,6 +70,16 @@ public class OrganizationShow{
         this.orgName = orgOne.getOrgName();
         this.breCode = orgOne.getBreCode();
         this.typeKey = orgOne.getTypeKey().getDictid();
+        this.descript = orgOne.getDescript();
+        this.available = orgOne.getAvailable();
+        this.areaid = orgOne.getAreaid();
+    }
+
+    public OrganizationShow(OrganizationEx orgOne) {
+        this.id = orgOne.getId();
+        this.orgName = orgOne.getOrgName();
+        this.breCode = orgOne.getBreCode();
+        this.typeKey = orgOne.getTypeKey();
         this.descript = orgOne.getDescript();
         this.available = orgOne.getAvailable();
         this.areaid = orgOne.getAreaid();
