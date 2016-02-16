@@ -3,6 +3,7 @@ package com.hp.triclops.acquire;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
+import com.hp.triclops.redis.SocketRedis;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.hp.triclops.repository.VehicleRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import static io.netty.buffer.Unpooled.*;
 /**
@@ -40,6 +39,8 @@ public class DataTool {
     private Logger _logger = LoggerFactory.getLogger(DataTool.class);
     @Autowired
     VehicleRepository vehicleRepository;
+    @Autowired
+    SocketRedis socketRedis;
     public  boolean checkReg(byte[] bytes){
         //校验注册数据
         return true;
@@ -615,5 +616,88 @@ public class DataTool {
             messages.put(warningMessageConversion.getMessageId(),warningMessageConversion.getMessageZh());
         }
         return messages;
+    }
+
+
+    @Value("${com.hp.acquire.dataserver-warningDataSuffix}")
+    private String warningDataSuffix;
+
+    @Value("${com.hp.acquire.datahandler-handleSuffix}")
+    private String handleSuffix;
+
+
+
+    /**
+     * 报警数据存储后缀
+     * @return
+     */
+    public String getWarningDataSuffix(){
+           return warningDataSuffix;
+    }
+
+    /**
+     * 处理的目标数据后缀
+     * @return
+     */
+    public List<String> getHandleSuffix(){
+        List<String> re=new ArrayList<String>();
+        if(handleSuffix!=null){
+            String[] array=handleSuffix.split(",");
+            for(int i=0;i<array.length;i++){
+                re.add(array[i]);
+            }
+        }
+        return re;
+    }
+    /**
+     * 从redis获取可用data-handler节点
+     * @return
+     */
+    public  Set<String> getRealTimeDataSuffixesFromRedis(){
+        return socketRedis.getSmembers("available-data-handler");
+    }
+
+    /**
+     * 从rediskey 拿到vin  key=input1:123456  vin=123456
+     * @param key
+     * @return
+     */
+    public String getVinFromkey(String key){
+      String vin=null;
+        try{
+        if(key!=null){
+            String[] arry=key.split(":");
+            if(arry.length==2){
+              vin=arry[1];
+          }
+        }
+        }catch (Exception e){e.printStackTrace();}
+    return vin;
+    }
+
+
+
+    /**
+     * 基于redis的可用节点返回数据写group
+     * @return random group suffix（from redis available cluster node）
+     */
+    public  String getRandomRealTimeDataSuffix(){
+        String suffix="";
+        Set<String> suffixes=getRealTimeDataSuffixesFromRedis();
+        String _warningDataSuffix=getWarningDataSuffix();
+        //排除warningDataHandle节点
+        if(suffixes.contains(_warningDataSuffix)){
+            suffixes.remove(_warningDataSuffix);
+        }
+        int _suffixes_size=suffixes.size();
+        if(_suffixes_size>0){
+            String[] suffixesArray = suffixes.toArray(new String[_suffixes_size-1]);
+            int max=_suffixes_size;
+            int min=0;
+            Random random = new Random();
+            int index = random.nextInt(max)%(max-min+1) + min;
+            suffix=suffixesArray[index];
+        }
+        return suffix;
     }
 }

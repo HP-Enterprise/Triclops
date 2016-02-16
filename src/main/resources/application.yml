@@ -1,10 +1,24 @@
 # Acquire port
 com.hp.acquire:
-    disabled: false
+    #disable  dataServer and dataHandler .if set this value true,neither dataServer nor dataHandler will work
+    disabled: true
+    #disable  dataServer.if set this value true,dataServer will not work
+    dataserver-disabled: true
+    #disable  dataHandler.if set this value true,dataHandler will not work
+    datahandler-disabled: true
+    #datahandler-heartbeat-interval  (seconds) by default 10s ,the data handler will loop sent heartbeat signal.by this, the data server will sent data to these groups
+    datahandler-heartbeat-interval: 10
+    #datahandler-heartbeat-ttl  the ttl for key in redis,if a server suspend,after ttl,no data will be send to this group
+    datahandler-heartbeat-ttl: 12
+    # save the warningData with specified suffix in redis,eg.value wr  the redis keys: inputwr:<vin>
+    dataserver-warningDataSuffix: wr
+    # if this server work as a data handler,it will only handle the data with the specified suffix in redis.eg.value 1,2 or ALL
+    datahandler-handleSuffix: ALL
+    #data server listen on this port
     port: 9000
-    nettyServerThreadPoolSize: 10
-    nettyServerTcpBacklog: 1024
-    dataHandlerThreadPoolSize: 10
+    nettyServerThreadPoolSize: 20
+    nettyServerTcpBacklog: 100000
+    dataHandlerThreadPoolSize: 20
 
 com.hp.mqtt:
     queueName: queue
@@ -37,6 +51,9 @@ logging:
 spring:
     profiles.active: dev
     datasource:
+        max-active: 100
+        max-idle: 40
+        min-idle: 35
         url: jdbc:mysql://127.0.0.1:3306/briair?characterEncoding=utf8
         username: javapp
         password:

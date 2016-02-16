@@ -150,7 +150,7 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
                 break;
             case 0x25://补发报警数据上报
@@ -160,7 +160,7 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
                 //补发报警数据是否需要push
                 break;
@@ -193,7 +193,7 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
                 break;
             case 0x29://补发故障数据上报
@@ -203,7 +203,7 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
                 //补发故障数据是否需要push
                 break;
@@ -257,7 +257,20 @@ public class RequestTask  implements Runnable{
         //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
         if(dataTool.checkByteArray(bytes)){
             if(scKey!=null){
-                String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
+                String inputKey="input"+dataTool.getRandomRealTimeDataSuffix()+":"+scKey;//保存数据包到redis里面的key，格式input:{vin}
+                String receiveDataHexString=dataTool.bytes2hex(bytes);
+                socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
+                _logger.info("Save data to Redis:" + inputKey);
+            }else{
+                _logger.info("can not find the scKey,data is invalid，do not save!");
+            }
+        }
+    }
+    public void saveSpecialBytesToRedis(String scKey,byte[] bytes){
+        //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
+        if(dataTool.checkByteArray(bytes)){
+            if(scKey!=null){
+                String inputKey="input"+dataTool.getWarningDataSuffix()+":"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
                 socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
                 _logger.info("Save data to Redis:" + inputKey);

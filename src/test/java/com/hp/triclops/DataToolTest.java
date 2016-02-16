@@ -12,6 +12,8 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by luj on 2015/9/28.
@@ -120,4 +122,10 @@ public class DataToolTest {
         float max = dataTool.getHitSpeedFromSpeeds(speeds);
         System.out.println("******************max=" + max);
     }
+
+
+
+
+   
+
 }

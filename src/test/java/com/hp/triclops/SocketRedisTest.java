@@ -1,5 +1,6 @@
 package com.hp.triclops;
 
+import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.redis.SessionRedis;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.UserRepository;
@@ -12,13 +13,16 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Date;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @ComponentScan(basePackages = { "org.springframework.data.redis.core","org.springframework.data.redis.serializer" })
 public class SocketRedisTest {
     @Autowired
     private SocketRedis socketRedis;
-
+    @Autowired
+    DataTool dataTool;
 
     @Before
     public void setUp() {
@@ -51,4 +55,5 @@ public class SocketRedisTest {
         System.out.println("k>>:" + key + "|v>>:" + value);
 
     }
+
 }
