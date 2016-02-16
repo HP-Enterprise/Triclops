@@ -124,32 +124,8 @@ public class DataToolTest {
     }
 
 
-    @Test
-    public void test_getDataServerParms(){
-        System.out.println(">>>>>>>>>实时数据后缀");
-        Set<String> a=dataTool.getRealTimeDataSuffixesFromRedis();
-        for(String tmp:a)
-        {
-            System.out.println(tmp);
-        }
-        System.out.println(">>>>>>>>>报警数据后缀");
-        System.out.println(dataTool.getWarningDataSuffix());
-        System.out.println(">>>>>>>>>处理数据后缀");
-        List<String> b=dataTool.getHandleSuffix();
-        for(String tmp:b)
-        {
-            System.out.println(tmp);
-        }
 
-    }
 
-    @Test
-    public void test_getVinFromkey(){
-        //System.out.println(dataTool.getVinFromkey("input1:123456789"));
-        for (int i = 0; i <20 ; i++) {
-            System.out.println(dataTool.getRandomRealTimeDataSuffix());
-        }
-
-    }
+   
 
 }
