@@ -24,6 +24,7 @@ public class OrganizationEx {
     }
 
     public OrganizationEx(OrganizationShow organizationShow) {
+        this.id = organizationShow.getId();
         this.orgName = organizationShow.getOrgName();
         this.breCode = organizationShow.getBreCode();
         this.typeKey = organizationShow.getTypeKey();
