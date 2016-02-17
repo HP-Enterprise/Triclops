@@ -87,9 +87,6 @@ public class UserManagement {
      */
     public Page<UserExPartShow> orgReadSelect(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
-        if(name!=null) name = "%" + name + "%";
-        if(nick!=null) nick = "%" + nick + "%";
-        if(phone!=null) phone = "%" + phone + "%";
         currentPage = currentPage==null?1:currentPage;
         currentPage = currentPage<=0?1:currentPage;
         pageSize = pageSize==null?10:pageSize;
@@ -101,7 +98,7 @@ public class UserManagement {
         List<UserEx> list = userPage.getContent();
         List<UserExPartShow> userList = list.stream().map(UserExPartShow::new).collect(Collectors.toList());
 
-        return  new PageImpl<>(userList,p,userPage.getTotalPages());
+        return  new PageImpl<>(userList,p,userPage.getTotalElements());
     }
 
     /**
@@ -155,46 +152,7 @@ public class UserManagement {
         List<UserEx> list = userPage.getContent();
         List<UserExPartShow> userList = list.stream().map(UserExPartShow::new).collect(Collectors.toList());
 
-        return  new PageImpl<>(userList,p,userPage.getTotalPages());
-    }
-
-    /**
-     * 查询用户有权查看的用户ID集合
-     * @param oid 组织ID
-     * @param uid 用户ID
-     * @return 用户ID集合
-     */
-    private List<Integer> selectUserByUid(Integer oid,int uid)
-    {
-        List<Integer> orgUids = new ArrayList<>();
-        List<Integer> oids = organizationUserManagement.findOidsByUid(uid);
-
-        if(oid != null)
-        {
-            if(oids.contains(oid))
-            {
-                oids.clear();
-                oids.add(oid);
-            }
-            else
-            {
-                oids.clear();
-            }
-        }
-
-        if(oids.size()>0)
-        {
-            orgUids = organizationUserManagement.findUidByOids(oids);
-        }
-
-        if(oid == null)
-        {
-            if(!orgUids.contains(uid)){
-                orgUids.add(uid);
-            }
-        }
-
-        return orgUids;
+        return  new PageImpl<>(userList,p,userPage.getTotalElements());
     }
 
 }

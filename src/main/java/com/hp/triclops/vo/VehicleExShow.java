@@ -45,7 +45,10 @@ public class VehicleExShow {
         this.security_salt = vehicleEx.getSecurity_salt();
     }
 
-    public void blur()
+    /**
+     * 组织中具有read权限用户信息过滤
+     */
+    public void readBlur()
     {
         if(vin!=null && vin.length()>6)
         {
@@ -76,6 +79,16 @@ public class VehicleExShow {
 
         this.security_pwd = "****";
         this.security_salt = "****";
+    }
+
+    /**
+     * 组织外的用户查询过滤
+     */
+    public void generalBlur()
+    {
+        readBlur();
+        this.buystore = null;
+        this.buydate = null;
     }
 
     public int getId() {
