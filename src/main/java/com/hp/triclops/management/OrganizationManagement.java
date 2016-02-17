@@ -40,6 +40,31 @@ public class OrganizationManagement {
     }
 
     /**
+     * 根据ID查询组织信息
+     * @param id 组织ID
+     * @return 组织信息
+     */
+    public OrganizationShow findById(int id)
+    {
+        OrganizationEx organizationEx = organizationExRepository.findById(id);
+        if(organizationEx == null)
+            return null;
+        return new OrganizationShow(organizationEx);
+    }
+
+    /**
+     * 修改组织信息
+     * @param org 组组信息类
+     * @return 修改后的组织信息
+     */
+    public OrganizationShow modifyOrg(OrganizationShow org)
+    {
+        OrganizationEx organizationEx = new OrganizationEx(org);
+        OrganizationEx returnOrg = organizationExRepository.save(organizationEx);
+        return new OrganizationShow(returnOrg);
+    }
+
+    /**
      * 根据组织名查询
      * @param orgName 组织名
      * @return 组织信息
@@ -62,19 +87,6 @@ public class OrganizationManagement {
         {
             return null;
         }
-        return new OrganizationShow(organizationEx);
-    }
-
-    /**
-     * 根据ID查询组织信息
-     * @param id 组织ID
-     * @return 组织信息
-     */
-    public OrganizationShow findById(int id)
-    {
-        OrganizationEx organizationEx = organizationExRepository.findById(id);
-        if(organizationEx == null)
-            return null;
         return new OrganizationShow(organizationEx);
     }
 
