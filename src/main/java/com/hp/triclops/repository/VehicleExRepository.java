@@ -19,6 +19,10 @@ public interface VehicleExRepository extends CrudRepository<VehicleEx, String> {
 
     VehicleEx findById(int id);
 
+    VehicleEx findByVin(String vin);
+
+    VehicleEx findByTboxsn(String tboxsn);
+
     @Query("select Ve from VehicleEx Ve " +
            "where Ve.id in ?1 " +
            "and (?2 is null or Ve.vin like ?2) " +

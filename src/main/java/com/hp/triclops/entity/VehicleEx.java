@@ -1,5 +1,7 @@
 package com.hp.triclops.entity;
 
+import com.hp.triclops.vo.VehicleExShow;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -27,6 +29,28 @@ public class VehicleEx {
     private Integer t_flag;
     private String security_pwd;
     private String security_salt;
+
+    public VehicleEx() {
+    }
+
+    public VehicleEx(VehicleExShow vehicleExShow) {
+        this.id = vehicleExShow.getId();
+        this.vin = vehicleExShow.getVin();
+        this.tboxsn = vehicleExShow.getTboxsn();
+        this.vendor = vehicleExShow.getVendor();
+        this.model = vehicleExShow.getModel();
+        this.displacement = vehicleExShow.getDisplacement();
+        this.product_date = vehicleExShow.getProduct_date();
+        this.vcolor = vehicleExShow.getVcolor();
+        this.buystore = vehicleExShow.getBuystore();
+        this.buydate = vehicleExShow.getBuydate();
+        this.vpurl = vehicleExShow.getVpurl();
+        this.vtype = vehicleExShow.getVtype();
+        this.license_plate = vehicleExShow.getLicense_plate();
+        this.t_flag = vehicleExShow.getT_flag();
+        this.security_pwd = vehicleExShow.getSecurity_pwd();
+        this.security_salt = vehicleExShow.getSecurity_salt();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
