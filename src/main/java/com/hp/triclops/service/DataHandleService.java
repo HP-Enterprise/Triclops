@@ -323,14 +323,8 @@ public class DataHandleService {
         wd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
-        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
-        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
-        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
-        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
-        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
-        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
-        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
-        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+        wd.setInfo(dataTool.getFailureMesId(bean));
+
         failureMessageDataRespository.save(wd);
     }
 
@@ -356,14 +350,8 @@ public class DataHandleService {
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
 
-        wd.setInfo1((short)(bean.getInfo1().shortValue()&0xFF));
-        wd.setInfo2((short)(bean.getInfo2().shortValue()&0xFF));
-        wd.setInfo3((short)(bean.getInfo3().shortValue()&0xFF));
-        wd.setInfo4((short)(bean.getInfo4().shortValue()&0xFF));
-        wd.setInfo5((short)(bean.getInfo5().shortValue()&0xFF));
-        wd.setInfo6((short)(bean.getInfo6().shortValue()&0xFF));
-        wd.setInfo7((short)(bean.getInfo7().shortValue()&0xFF));
-        wd.setInfo8((short)(bean.getInfo8().shortValue()&0xFF));
+        wd.setInfo(dataTool.getDataResendFailureMesId(bean));
+
 
         failureMessageDataRespository.save(wd);
     }

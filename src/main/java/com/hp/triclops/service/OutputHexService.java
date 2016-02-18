@@ -647,14 +647,8 @@ public class OutputHexService {
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
 
-        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
-        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
-        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
-        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
-        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
-        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
-        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
-        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+        wd.setInfo(dataTool.getFailureMesId(bean));
+
 
         List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
         RealTimeReportData rd=null;
@@ -695,14 +689,8 @@ public class OutputHexService {
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
 
-        wd.setInfo1((short) (bean.getInfo1().shortValue() & 0xFF));
-        wd.setInfo2((short) (bean.getInfo2().shortValue() & 0xFF));
-        wd.setInfo3((short) (bean.getInfo3().shortValue() & 0xFF));
-        wd.setInfo4((short) (bean.getInfo4().shortValue() & 0xFF));
-        wd.setInfo5((short) (bean.getInfo5().shortValue() & 0xFF));
-        wd.setInfo6((short) (bean.getInfo6().shortValue() & 0xFF));
-        wd.setInfo7((short) (bean.getInfo7().shortValue() & 0xFF));
-        wd.setInfo8((short) (bean.getInfo8().shortValue() & 0xFF));
+        wd.setInfo(dataTool.getDataResendFailureMesId(bean));
+
 
         List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
         RealTimeReportData rd=null;
@@ -891,55 +879,18 @@ public class OutputHexService {
             positionMap.put("heading", new StringBuilder().append(wd.getHeading()).toString());
         }*/
         Iterator<WarningMessageConversion> iterator=warningMessageConversionRepository.findAll().iterator();
-        HashMap<Short,String> messages=dataTool.messageIteratorToMap(iterator);
-        String info1=messages.get(wd.getInfo1());
-        if(info1!=null){
-            //sb.append(info1+";");
-            failInfo.add(info1);
-            count++;
+        HashMap<String,String> messages=dataTool.messageIteratorToMap(iterator);
+
+        String[] failureId=wd.getIdArray();//包含故障信息ID的数组
+
+        for (int i = 0; i <failureId.length ; i++) {
+            String _info=messages.get(failureId[i]);
+            if(_info!=null){
+                failInfo.add(_info);
+                count++;
+            }
         }
-        String info2=messages.get(wd.getInfo2());
-        if(info2!=null){
-            //sb.append(info2+";");
-            failInfo.add(info2);
-            count++;
-        }
-        String info3=messages.get(wd.getInfo3());
-        if(info3!=null){
-            //sb.append(info3+";");
-            failInfo.add(info3);
-            count++;
-        }
-        String info4=messages.get(wd.getInfo4());
-        if(info4!=null){
-           // sb.append(info4+";");
-            failInfo.add(info4);
-            count++;
-        }
-        String info5=messages.get(wd.getInfo5());
-        if(info5!=null){
-            //sb.append(info5+";");
-            failInfo.add(info5);
-            count++;
-        }
-        String info6=messages.get(wd.getInfo6());
-        if(info6!=null){
-            //sb.append(info6+";");
-            failInfo.add(info6);
-            count++;
-        }
-        String info7=messages.get(wd.getInfo7());
-        if(info7!=null){
-            //sb.append(info7+";");
-            failInfo.add(info7);
-            count++;
-        }
-        String info8=messages.get(wd.getInfo8());
-        if(info8!=null){
-            //sb.append(info8+";");
-            failInfo.add(info8);
-            count++;
-        }
+
         //jsonMap.put("position",positionMap);
         jsonMap.put("failure_info",failInfo);
         jsonMap.put("failure_num",count);
