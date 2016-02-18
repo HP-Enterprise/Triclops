@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS t_vehicle
 (
   id int(11) NOT NULL AUTO_INCREMENT COMMENT '车辆ID',
   vin varchar(50) NOT NULL COMMENT '车架号',
-  tboxsn varchar(50) NOT NULL  COMMENT 'tbox码',
+  tboxsn varchar(50) COMMENT 'tbox码',
   vendor varchar(100) COMMENT '厂家',
   model varchar(100) COMMENT '型号',
   displacement varchar(20) COMMENT '排量',

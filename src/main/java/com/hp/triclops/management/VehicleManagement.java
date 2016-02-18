@@ -41,6 +41,32 @@ public class VehicleManagement {
     }
 
     /**
+     * 根据vin查询车辆信息
+     * @param vin 车架号
+     * @return 车辆信息
+     */
+    public VehicleExShow findByVin(String vin)
+    {
+        VehicleEx vehicle = vehicleExRepository.findByVin(vin);
+        if(vehicle == null)
+            return null;
+        return new VehicleExShow(vehicle);
+    }
+
+    /**
+     * 根据tbox码查询车辆信息
+     * @param tboxsn Tbox码
+     * @return 车辆信息
+     */
+    public VehicleExShow findByTboxsn(String tboxsn)
+    {
+        VehicleEx vehicle = vehicleExRepository.findByTboxsn(tboxsn);
+        if(vehicle == null)
+            return null;
+        return new VehicleExShow(vehicle);
+    }
+
+    /**
      * 条件查询车辆(组织管理员)
      * @param oid 组织ID
      * @param vin 车架号
@@ -198,5 +224,18 @@ public class VehicleManagement {
 
         return new PageImpl<>(returnList,p,vehiclePage.getTotalElements());
     }
+
+    /**
+     * 新增车辆信息
+     * @param vehicleExShow 车辆信息
+     * @return 新增的车辆信息
+     */
+    public VehicleExShow addVehicle(VehicleExShow vehicleExShow)
+    {
+        VehicleEx vehicleEx = new VehicleEx(vehicleExShow);
+        VehicleEx returnVehicle = vehicleExRepository.save(vehicleEx);
+        return new VehicleExShow(returnVehicle);
+    }
+
 
 }

@@ -26,6 +26,9 @@ public class VehicleExShow {
     private String security_pwd;
     private String security_salt;
 
+    public VehicleExShow() {
+    }
+
     public VehicleExShow(VehicleEx vehicleEx) {
 
         this.id = vehicleEx.getId();
@@ -39,6 +42,7 @@ public class VehicleExShow {
         this.buystore = vehicleEx.getBuystore();
         this.buydate = vehicleEx.getBuydate();
         this.vpurl = vehicleEx.getVpurl();
+        this.vtype = vehicleEx.getVtype();
         this.license_plate = vehicleEx.getLicense_plate();
         this.t_flag = vehicleEx.getT_flag();
         this.security_pwd = vehicleEx.getSecurity_pwd();

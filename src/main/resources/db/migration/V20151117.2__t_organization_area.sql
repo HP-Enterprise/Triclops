@@ -6,3 +6,5 @@ CREATE TABLE IF NOT EXISTS t_organization_area(
   FOREIGN KEY (oid) REFERENCES t_organization(Id),
   FOREIGN KEY (areaid) REFERENCES t_administrative_division(id)
 ) DEFAULT CHARSET=utf8 COMMENT='组织地区关系表';
+
+INSERT INTO  t_organization_area(oid,areaid) VALUES (1,1);
