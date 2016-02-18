@@ -92,7 +92,7 @@ public class DataHandleServiceTest {
     @Rollback
     public void test_saveFailureMessage(){
         //测试故障数据保存
-        String byteString="23 23 00 31 00 56 04 BF DA 28 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 34 35 36 39 AA AA AA AA E4 ";
+        String byteString="23 23 00 3C 00 56 04 BF DA 28 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 34 00 35 36 00 00 00 37 00 38 39 00 3A 3B 3C 00 3D 3E 3F D3 ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
 
@@ -101,7 +101,7 @@ public class DataHandleServiceTest {
     @Rollback
     public void test_saveDataResendFailureMessage(){
         //测试补发故障数据保存
-        String byteString="23 23 00 31 00 56 04 BF DA 29 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA AA AA AA AA 51 52 53 54 EF ";
+        String byteString="23 23 00 3C 00 56 04 BF DA 29 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 34 00 35 36 00 00 00 37 00 38 39 00 3A 3B 3C 00 3D 3E 3F D2 ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
 
