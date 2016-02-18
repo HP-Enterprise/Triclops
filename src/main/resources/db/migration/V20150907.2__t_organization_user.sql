@@ -6,3 +6,6 @@ CREATE TABLE IF NOT EXISTS t_organization_user (
   FOREIGN KEY (oid) REFERENCES t_organization(Id),
   FOREIGN KEY (uid) REFERENCES t_user(Id)
 ) DEFAULT CHARSET=utf8 COMMENT='组织用户关系表';
+
+INSERT INTO t_organization_user VALUES(1,1,1);
+INSERT INTO t_organization_user VALUES(2,2,1);
