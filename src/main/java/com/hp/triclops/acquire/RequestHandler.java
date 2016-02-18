@@ -318,10 +318,11 @@ public class RequestHandler {
      * @return 是否通过
      */
     public boolean verifyRemoteControlPreconditionResp(RemoteControlPreconditionResp remoteControlPreconditionResp){
-        //目前逻辑 车速低于5km/h=上传数据500
+        //目前逻辑 车速低于5km/h
         boolean re=false;
         if(remoteControlPreconditionResp!=null){
-            if(remoteControlPreconditionResp.getVehicleSpeed()<500){
+            //根据0617协议 车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
+            if(remoteControlPreconditionResp.getVehicleSpeed()<320){
                 re=true;
             }
         }

@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "t_warning_message_conversion")
 public class WarningMessageConversion {
     private int id;
-    private Short messageId;
+    private String messageId;
     private String messageZh;
     private String messageEn;
 
@@ -25,12 +25,12 @@ public class WarningMessageConversion {
     }
 
     @Basic
-    @Column(name = "message_id", nullable = false, insertable = true, updatable = true)
-    public Short getMessageId() {
+    @Column(name = "message_id", nullable = false, insertable = true, updatable = true, length = 5)
+    public String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(Short messageId) {
+    public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 
