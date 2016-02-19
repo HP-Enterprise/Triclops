@@ -18,7 +18,7 @@ cache:
 
 before_script:
     - mysql -e 'CREATE DATABASE briair CHARACTER SET = utf8;'
-    - gradle -Pflyway.url=jdbc:mysql://127.0.0.1:3306/briair flywayMigrate -Pflyway.user=travis
+    - gradle -Pflyway.url=jdbc:mysql://127.0.0.1:3306/briair flywayMigrate -Pflyway.user=travis -x testClasses
 
 script:
-    - gradle check -Dspring.profiles.active=travis
+    - gradle check -Dspring.profiles.active=travis -m
