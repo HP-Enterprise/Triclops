@@ -19,14 +19,14 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('57','Immobilizer key acceptance failed','防盗钥匙接受失败');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('58','Immobilizer communication failure','防盗器通信故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('3','steering lock defect, steering wheel is not able to be moved','转向锁缺陷，转向盘不能移动');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('59','steering lock defect, steering wheel lock is not possible','转向锁缺陷，转向盘不能被锁上');
+insert into t_warning_message_conversion(message_id,message_en,message_zh) values('59','BCM lost communication with PDC','BCM与PDC失去连接');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('60','Steering lock failed to unlock because of blocking','转向锁因为阻塞未能解锁');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('61','engine start / stop button defect','发动机起动/停止按钮缺陷');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('62','Press Brake padel for engine start','发动机启动机制动踏板');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('63','Gear not in position P or N so engine start not possible','发动机不能启动，因为齿轮不在P或N位置');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('64','Press Clutch padel for engine start','发动机启动机离合器踏板');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('65',"Clamp is in 'ACC' or 'IGN' or 'Running' state , vehicle speed is less than 3km/h and all door closed, when user open the any door, SESAM shall","夹在'ACC'或'点火'或'运行'状态时，车速低于3km/h和所有门关闭，当用户打开任何门，它应启动报警");
+insert into t_warning_message_conversion(message_id,message_en,message_zh) values('65',"No valid key found","没有检测到有效的钥匙");
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('121','Identified Smart Key has a low battery status','确定了智能钥匙具有低的电池状态');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('122','Feedback sound of Seat memory setting activation','座椅记忆激活的反馈声音');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('123','Feedback sound of Seat memory storage','座椅记忆存储的反馈声音');
@@ -98,7 +98,7 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('93','Start Stop System did not stop the engine because of not fulfilled criteria','启动停止系统没有启动发动机，因为不符合标准');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('94','Start Stop system deactivated for EOL Testing','启停系统停用EOL测试');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('143','T- Box Batterie for emergency call is empty and needs to be replaced','T-Box电池是空的，需要更换');
+insert into t_warning_message_conversion(message_id,message_en,message_zh) values('143','T- Box Batterie for emergency call is empty and needs to be replaced','T-Box电量耗尽，需要更换');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('20','Low Oil Pressure','低油压力');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('21','Coolant temperature too high Engine overheated','冷却液温度过高发动机过热');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('95','Coolant temperature high','冷却液温度高');
@@ -110,7 +110,7 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('99','Low fuel warning','低燃油警告');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('100','Icy Road warning at temperatures <= +3°C','道路低温警告< = 3°C');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('101','Speed Limit set up in IPC exceeded','在IPC限速设置');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('144','Driver mode-ECO','节能模式');
+insert into t_warning_message_conversion(message_id,message_en,message_zh) values('144','T- Box Batterie for emergency call is empty and needs to be replaced','T-Box电量耗尽，需要更换');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('145','Driver mode-Sport','运动模式');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('146','Driver mode-Winter','冬季模式');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('147','Symbol shows that one or more Warnings are active','符号显示一个或多个警告是活动的');
