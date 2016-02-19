@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS t_organization (
   KEY idx_typekey (type_key)
 ) DEFAULT CHARSET=utf8 COMMENT='组织表';
 
-INSERT INTO  t_organization(org_name, bre_code, type_key , descript ,areaid) VALUES ("华晨汽车","BriAir",1,"华晨汽车根组织(不可删除)",1);
-INSERT INTO  t_organization(org_name, bre_code, type_key , descript ,areaid) VALUES ("生产辅助","Support",1,"生产辅助根组织(不可删除)",1);
+INSERT INTO  t_organization(id,org_name, bre_code, type_key , descript ,areaid) VALUES (1,"华晨汽车","BriAir",1,"华晨汽车根组织(不可删除)",1);
+INSERT INTO  t_organization(id,org_name, bre_code, type_key , descript ,areaid) VALUES (2,"生产辅助","Support",1,"生产辅助根组织(不可删除)",1);
