@@ -58,7 +58,7 @@ public class DataHandleServiceTest {
     @Rollback
     public void test_saveRealTimeMessage(){
         //测试实时数据保存
-        String byteString="23 23 00 39 00 56 04 BF DA 22 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 00 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F A2";
+        String byteString="23 23 00 3F 00 56 04 BF DA 22 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F 64 65 66 00 00 1E 28 C1 ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
     @Test
@@ -66,7 +66,7 @@ public class DataHandleServiceTest {
     @Rollback
     public void test_saveDataResendRealTimeMes(){
         //测试补发数据保存
-        String byteString="23 23 00 39 00 56 04 BF DA 23 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 01 CD AD 0E 06 CD 62 C0 06 1F 00 EA 00 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F A3 ";
+        String byteString="23 23 00 3F 00 56 04 BF DA 23 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F 64 65 66 00 00 1E 28 C0 ";
         dataHandleService.saveMessage("12345678919991234",byteString);
     }
     @Test

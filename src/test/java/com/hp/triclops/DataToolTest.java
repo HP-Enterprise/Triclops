@@ -123,6 +123,10 @@ public class DataToolTest {
         System.out.println("******************max=" + max);
     }
 
+    @Test
+    public void test_getDriveRangeFrom3Bytes(){
+        System.out.println(">>>>>|"+dataTool.getDriveRangeFrom3Bytes(new byte[]{(byte)31,(byte)32,(byte)33})+"|");
+    }
 
 
 

@@ -119,7 +119,7 @@ public class DataHandleService {
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil(bean.getFuelOil() / 2f);
+        rd.setFuelOil(bean.getFuelOil() *1f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(bean.getServiceIntervall());
@@ -144,14 +144,16 @@ public class DataHandleService {
         rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0]) + String.valueOf(doors[1])));
 
 
-        // waiting for protocol after 6.1.3
+        // waiting for protocol after 6.1.7
         rd.setDrivingTime(1);
         rd.setOilLife((short) 1);
-        rd.setDrivingRange(1);
+        rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
         rd.setMileageRange(1);
-        rd.setEngineCoverState("0");
-        rd.setTrunkLidState("0");
-        rd.setSkylightState("0");
+        char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
+        rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
+        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[5]) + String.valueOf(bonnetAndTrunk[4])));
+        char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
+        rd.setSkylightState(dataTool.getWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);
@@ -189,7 +191,7 @@ public class DataHandleService {
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil(bean.getFuelOil() / 2f);
+        rd.setFuelOil(bean.getFuelOil()*1f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(bean.getServiceIntervall());
@@ -213,14 +215,16 @@ public class DataHandleService {
         rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2])+String.valueOf(doors[3])));
         rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0])+String.valueOf(doors[1])));
 
-        // waiting for protocol after 6.1.3
+        // waiting for protocol after 6.1.7
         rd.setDrivingTime(1);
-        rd.setOilLife((short)1);
-        rd.setDrivingRange(1);
+        rd.setOilLife((short) 1);
+        rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
         rd.setMileageRange(1);
-        rd.setEngineCoverState("0");
-        rd.setTrunkLidState("0");
-        rd.setSkylightState("0");
+        char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
+        rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
+        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[5]) + String.valueOf(bonnetAndTrunk[4])));
+        char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
+        rd.setSkylightState(dataTool.getWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);

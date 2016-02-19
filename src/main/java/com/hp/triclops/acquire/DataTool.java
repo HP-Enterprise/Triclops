@@ -252,6 +252,13 @@ public class DataTool {
         }
         return re;
     }
+    public int getDriveRangeFrom3Bytes(byte[] bytes){
+        //从3个字节读出数字
+        int km=0;
+        ByteBuf buf=getByteBuf(bytes2hex(bytes));
+        km=buf.readUnsignedMedium();
+        return km;
+    }
     public String getLengthString(String str,int length){
         //将给定字符串右补空格为定长字符串
         if(str==null){
@@ -953,295 +960,21 @@ public class DataTool {
      * @return 故障ID字符串 ""  "1"  "1,2"
      */
      public String getDataResendFailureMesId(DataResendFailureData bean){
-            StringBuilder sb=new StringBuilder();
 
-            char[] _acm=getBitsFromShort(bean.getWarnMsg_acm());
-            if(_acm[7]== '0'){//bit0 0 warning MID=1
-                sb.append(",1");
-            }
-            if(_acm[6]== '0'){//bit0 0 warning MID=52
-                sb.append(",52");
-            }
-            if(_acm[5]== '0'){//bit0 0 warning MID=53
-                sb.append(",53");
-            }
-            if(_acm[4]== '0'){//bit0 0 warning MID=54
-                sb.append(",54");
-            }
-            if(_acm[3]== '0'){//bit0 0 warning MID=55
-                sb.append(",55");
-            }
-            if(_acm[2]== '0'){//bit0 0 warning MID=120
-                sb.append(",120");
-            }
-
-            char[] _ic=getBitsFromInteger(bean.getWarnMsg_ic());
-            if(_ic[15]== '0'){//bit0 0 warning MID=2
-                sb.append(",2");
-            }
-            if(_ic[14]== '0'){//bit0 0 warning MID=5
-                sb.append(",5");
-            }
-            if(_ic[13]== '0'){//bit0 0 warning MID=7
-                sb.append(",7");
-            }
-            if(_ic[12]== '0'){//bit0 0 warning MID=10
-                sb.append(",10");
-            }
-            if(_ic[11]== '0'){//bit0 0 warning MID=13
-                sb.append(",13");
-            }
-            if(_ic[10]== '0'){//bit0 0 warning MID=56
-                sb.append(",56");
-            }
-            if(_ic[9]== '0'){//bit0 0 warning MID=99
-                sb.append(",99");
-            }
-            if(_ic[8]== '0'){//bit0 0 warning MID=100
-                sb.append(",100");
-            }
-            if(_ic[7]== '0'){//bit0 0 warning MID=101
-                sb.append(",101");
-            }
-            if(_ic[6]== '0'){//bit0 0 warning MID=147
-                sb.append(",147");
-            }
-            if(_ic[5]== '0'){//bit0 0 warning MID=149
-                sb.append(",149");
-            }
-
-
-            char[] _escl=getBitsFromShort(bean.getWarnMsg_escl());
-            if(_escl[7]== '0'){//bit0 0 warning MID=3
-                sb.append(",3");
-            }
-            if(_escl[6]== '0'){//bit0 0 warning MID=60
-                sb.append(",60");
-            }
-
-
-            char[] _bcm=getBitsFromLong(bean.getWarnMsg_bcm());
-            if(_bcm[31]== '0'){//bit0 0 warning MID=4
-                sb.append(",4");
-            }
-            if(_bcm[30]== '0'){//bit0 0 warning MID=73
-                sb.append(",73");
-            }
-            if(_bcm[29]== '0'){//bit0 0 warning MID=76
-                sb.append(",76");
-            }
-            if(_bcm[28]== '0'){//bit0 0 warning MID=124
-                sb.append(",124");
-            }
-            if(_bcm[27]== '0'){//bit0 0 warning MID=125
-                sb.append(",125");
-            }
-            if(_bcm[26]== '0'){//bit0 0 warning MID=126
-                sb.append(",126");
-            }
-            if(_bcm[25]== '0'){//bit0 0 warning MID=127
-                sb.append(",127");
-            }
-            if(_bcm[24]== '0'){//bit0 0 warning MID=128
-                sb.append(",128");
-            }
-            if(_bcm[23]== '0'){//bit0 0 warning MID=129
-                sb.append(",129");
-            }
-            if(_bcm[22]== '0'){//bit0 0 warning MID=130
-                sb.append(",130");
-            }
-            if(_bcm[21]== '0'){//bit0 0 warning MID=131
-                sb.append(",131");
-            }
-            if(_bcm[20]== '0'){//bit0 0 warning MID=132
-                sb.append(",132");
-            }
-            if(_bcm[19]== '0'){//bit0 0 warning MID=133
-                sb.append(",133");
-            }
-            if(_bcm[18]== '0'){//bit0 0 warning MID=134
-                sb.append(",134");
-            }
-            if(_bcm[17]== '0'){//bit0 0 warning MID=135
-                sb.append(",135");
-            }
-            if(_bcm[16]== '0'){//bit0 0 warning MID=136
-                sb.append(",136");
-            }
-            if(_bcm[15]== '0'){//bit0 0 warning MID=137
-                sb.append(",137");
-            }
-            if(_bcm[14]== '0'){//bit0 0 warning MID=138
-                sb.append(",138");
-            }
-            if(_bcm[13]== '0'){//bit0 0 warning MID=139
-                sb.append(",139");
-            }
-
-
-            char[] _esc=getBitsFromInteger(bean.getWarnMsg_esc());
-            if(_esc[15]== '0'){//bit0 0 warning MID=6
-                sb.append(",6");
-            }
-            if(_esc[14]== '0'){//bit0 0 warning MID=9
-                sb.append(",9");
-            }
-            if(_esc[13]== '0'){//bit0 0 warning MID=11
-                sb.append(",11");
-            }
-            if(_esc[12]== '0'){//bit0 0 warning MID=12
-                sb.append(",12");
-            }
-            if(_esc[11]== '0'){//bit0 0 warning MID=81
-                sb.append(",81");
-            }
-            if(_esc[10]== '0'){//bit0 0 warning MID=83
-                sb.append(",83");
-            }
-            if(_esc[9]== '0'){//bit0 0 warning MID=85
-                sb.append(",85");
-            }
-            if(_esc[8]== '0'){//bit0 0 warning MID=86
-                sb.append(",86");
-            }
-            if(_esc[7]== '0'){//bit0 0 warning MID=87
-                sb.append(",87");
-            }
-
-            char[] _tpms=getBitsFromShort(bean.getWarnMsg_tpms());
-            if(_tpms[7]== '0'){//bit0 0 warning MID=14
-                sb.append(",14");
-            }
-            if(_tpms[6]== '0'){//bit0 0 warning MID=15
-                sb.append(",15");
-            }
-            if(_tpms[5]== '0'){//bit0 0 warning MID=16
-                sb.append(",16");
-            }
-            if(_tpms[4]== '0'){//bit0 0 warning MID=17
-                sb.append(",17");
-            }
-            if(_tpms[3]== '0'){//bit0 0 warning MID=78
-                sb.append(",78");
-            }
-            if(_tpms[2]== '0'){//bit0 0 warning MID=79
-                sb.append(",79");
-            }
-            if(_tpms[1]== '0'){//bit0 0 warning MID=140
-                sb.append(",140");
-            }
-
-            char[] _dme=getBitsFromInteger(bean.getWarnMsg_dme());
-            if(_dme[15]== '0'){//bit0 0 warning MID=20
-                sb.append(",20");
-            }
-            if(_dme[14]== '0'){//bit0 0 warning MID=21
-                sb.append(",21");
-            }
-            if(_dme[13]== '0'){//bit0 0 warning MID=23
-                sb.append(",23");
-            }
-            if(_dme[12]== '0'){//bit0 0 warning MID=89
-                sb.append(",89");
-            }
-            if(_dme[11]== '0'){//bit0 0 warning MID=90
-                sb.append(",90");
-            }
-            if(_dme[10]== '0'){//bit0 0 warning MID=95
-                sb.append(",95");
-            }
-            if(_dme[9]== '0'){//bit0 0 warning MID=97
-                sb.append(",97");
-            }
-            if(_dme[8]== '0'){//bit0 0 warning MID=98
-                sb.append(",98");
-            }
-            if(_dme[7]== '0'){//bit0 0 warning MID=141
-                sb.append(",141");
-            }
-
-            char[] _tcu=getBitsFromShort(bean.getWarnMsg_tcu());
-            if(_tcu[7]== '0'){//bit0 0 warning MID=22
-                sb.append(",22");
-            }
-            if(_tcu[6]== '0'){//bit0 0 warning MID=96
-                sb.append(",96");
-            }
-            if(_tcu[5]== '0'){//bit0 0 warning MID=148
-                sb.append(",148");
-            }
-
-            char[] _pdc_bsw=getBitsFromShort(bean.getWarnMsg_pdc_bsw());
-            if(_pdc_bsw[7]== '0'){//bit0 0 warning MID=50
-                sb.append(",50");
-            }
-            if(_pdc_bsw[6]== '0'){//bit0 0 warning MID=51
-                sb.append(",51");
-            }
-            if(_pdc_bsw[5]== '0'){//bit0 0 warning MID=59
-                sb.append(",59");
-            }
-
-            char[] _sesam=getBitsFromInteger(bean.getWarnMsg_sesam());
-            if(_sesam[15]== '0'){//bit0 0 warning MID=57
-                sb.append(",57");
-            }
-            if(_sesam[14]== '0'){//bit0 0 warning MID=58
-                sb.append(",58");
-            }
-            if(_sesam[13]== '0'){//bit0 0 warning MID=61
-                sb.append(",61");
-            }
-            if(_sesam[12]== '0'){//bit0 0 warning MID=62
-                sb.append(",62");
-            }
-            if(_sesam[11]== '0'){//bit0 0 warning MID=63
-                sb.append(",63");
-            }
-            if(_sesam[10]== '0'){//bit0 0 warning MID=64
-                sb.append(",64");
-            }
-            if(_sesam[9]== '0'){//bit0 0 warning MID=65
-                sb.append(",65");
-            }
-            if(_sesam[8]== '0'){//bit0 0 warning MID=91
-                sb.append(",91");
-            }
-            if(_sesam[7]== '0'){//bit0 0 warning MID=92
-                sb.append(",92");
-            }
-            if(_sesam[6]== '0'){//bit0 0 warning MID=93
-                sb.append(",93");
-            }
-            if(_sesam[5]== '0'){//bit0 0 warning MID=94
-                sb.append(",94");
-            }
-            if(_sesam[4]== '0'){//bit0 0 warning MID=121
-                sb.append(",121");
-            }
-            if(_sesam[3]== '0'){//bit0 0 warning MID=142
-                sb.append(",142");
-            }
-
-            char[] _scu=getBitsFromShort(bean.getWarnMsg_scu());
-            if(_scu[7]== '0'){//bit0 0 warning MID=123
-                sb.append(",123");
-            }
-
-            char[] _tbox=getBitsFromShort(bean.getWarnMsg_tbox());
-            if(_tbox[7]== '0'){//bit0 0 warning MID=143
-                sb.append(",143");
-            }
-            if(_tbox[6]== '0'){//bit0 0 warning MID=144
-                sb.append(",144");
-            }
-
-            String str=sb.toString();
-            if(str.startsWith(",")){
-                str=str.substring(1);
-            }
-            return str;
+         FailureMessage failureMessage=new FailureMessage();
+         failureMessage.setWarnMsg_acm(bean.getWarnMsg_acm());
+         failureMessage.setWarnMsg_ic(bean.getWarnMsg_ic());
+         failureMessage.setWarnMsg_escl(bean.getWarnMsg_escl());
+         failureMessage.setWarnMsg_bcm(bean.getWarnMsg_bcm());
+         failureMessage.setWarnMsg_esc(bean.getWarnMsg_esc());
+         failureMessage.setWarnMsg_tpms(bean.getWarnMsg_tpms());
+         failureMessage.setWarnMsg_dme(bean.getWarnMsg_dme());
+         failureMessage.setWarnMsg_tcu(bean.getWarnMsg_tcu());
+         failureMessage.setWarnMsg_pdc_bsw(bean.getWarnMsg_pdc_bsw());
+         failureMessage.setWarnMsg_sesam(bean.getWarnMsg_sesam());
+         failureMessage.setWarnMsg_scu(bean.getWarnMsg_scu());
+         failureMessage.setWarnMsg_tbox(bean.getWarnMsg_tbox());
+         return getFailureMesId(failureMessage);
         }
 
     @Value("${com.hp.acquire.dataserver-warningDataSuffix}")
