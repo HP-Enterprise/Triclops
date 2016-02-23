@@ -2,7 +2,7 @@ package com.hp.triclops.management;
 
 import com.hp.triclops.entity.UserEx;
 import com.hp.triclops.repository.UserExRepository;
-import com.hp.triclops.vo.UserExPartShow;
+import com.hp.triclops.vo.UserExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Teemol on 2016/1/26.
@@ -49,7 +48,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserEx> orgAdminSelect(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExShow> orgAdminSelect(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         if(name!=null) name = "%" + name + "%";
         if(nick!=null) nick = "%" + nick + "%";
@@ -60,18 +59,24 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserEx> userPage = new PageImpl<>(new ArrayList<>(),p,0);
-
         List<Integer> oids = new ArrayList<>();
         oids.add(oid);
         List<Integer> uids = organizationUserManagement.findUidByOids(oids);
         if(uids == null || uids.size()==0)
         {
-            return userPage;
+            return new PageImpl<>(new ArrayList<>(),p,0);
         }
-        userPage = userExRepository.selectUser(uids,name,gender,nick,phone,isVerified,p);
+        Page<UserEx> userPage = userExRepository.selectUser(uids,name,gender,nick,phone,isVerified,p);
 
-        return userPage;
+        List<UserEx> list = userPage.getContent();
+        List<UserExShow> returnList = new ArrayList<>();
+        for(UserEx user:list)
+        {
+            UserExShow userExShow = new UserExShow(user);
+            returnList.add(userExShow);
+        }
+
+        return new PageImpl<>(returnList,p,userPage.getTotalElements());
     }
 
     /**
@@ -85,7 +90,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserExPartShow> orgReadSelect(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExShow> orgReadSelect(int oid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         currentPage = currentPage==null?1:currentPage;
         currentPage = currentPage<=0?1:currentPage;
@@ -93,12 +98,17 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserEx> userPage =  orgAdminSelect(oid,name,gender,nick,phone,isVerified,currentPage,pageSize);
+        Page<UserExShow> userPage =  orgAdminSelect(oid,name,gender,nick,phone,isVerified,currentPage,pageSize);
 
-        List<UserEx> list = userPage.getContent();
-        List<UserExPartShow> userList = list.stream().map(UserExPartShow::new).collect(Collectors.toList());
+        List<UserExShow> list = userPage.getContent();
+        List<UserExShow> returnList = new ArrayList<>();
+        for(UserExShow user:list)
+        {
+            user.blur();   // 信息过滤
+            returnList.add(user);
+        }
 
-        return  new PageImpl<>(userList,p,userPage.getTotalElements());
+        return  new PageImpl<>(returnList,p,userPage.getTotalElements());
     }
 
     /**
@@ -112,7 +122,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserEx> adminSelect(String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExShow> adminSelect(String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         if(name!=null) name = "%" + name + "%";
         if(nick!=null) nick = "%" + nick + "%";
@@ -125,7 +135,15 @@ public class UserManagement {
 
         Page<UserEx> userPage =  userExRepository.selectUser(name,gender,nick,phone,isVerified,p);
 
-        return userPage;
+        List<UserEx> list = userPage.getContent();
+        List<UserExShow> returnList = new ArrayList<>();
+        for(UserEx user:list)
+        {
+            UserExShow userExShow = new UserExShow(user);
+            returnList.add(userExShow);
+        }
+
+        return new PageImpl<>(returnList,p,userPage.getTotalElements());
     }
 
     /**
@@ -139,7 +157,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserExPartShow> registSelect(String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExShow> registSelect(String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         currentPage = currentPage==null?1:currentPage;
         currentPage = currentPage<=0?1:currentPage;
@@ -147,12 +165,17 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserEx> userPage =  adminSelect(name,gender,nick,phone,isVerified,currentPage,pageSize);
+        Page<UserExShow> userPage =  adminSelect(name,gender,nick,phone,isVerified,currentPage,pageSize);
 
-        List<UserEx> list = userPage.getContent();
-        List<UserExPartShow> userList = list.stream().map(UserExPartShow::new).collect(Collectors.toList());
+        List<UserExShow> list = userPage.getContent();
+        List<UserExShow> returnList = new ArrayList<>();
+        for(UserExShow user:list)
+        {
+            user.blur();   // 信息过滤
+            returnList.add(user);
+        }
 
-        return  new PageImpl<>(userList,p,userPage.getTotalElements());
+        return  new PageImpl<>(returnList,p,userPage.getTotalElements());
     }
 
 }
