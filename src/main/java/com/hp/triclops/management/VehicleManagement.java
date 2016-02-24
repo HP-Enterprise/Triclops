@@ -237,5 +237,17 @@ public class VehicleManagement {
         return new VehicleExShow(returnVehicle);
     }
 
+    /**
+     * 修改车辆信息
+     * @param vehicleExShow 车辆信息
+     * @return 修改后的车辆信息
+     */
+    public VehicleExShow modifyVehicle(VehicleExShow vehicleExShow)
+    {
+        VehicleEx vehicleEx = new VehicleEx(vehicleExShow);
+        VehicleEx returnVehicle = vehicleExRepository.save(vehicleEx);
+        return new VehicleExShow(returnVehicle);
+    }
+
 
 }
