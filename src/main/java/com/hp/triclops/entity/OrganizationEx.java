@@ -17,8 +17,8 @@ public class OrganizationEx {
     private String breCode;
     private int typeKey;
     private String descript;
-    private int areaid;
     private int available;
+    private Integer areaid;
 
     public OrganizationEx() {
     }
@@ -86,11 +86,11 @@ public class OrganizationEx {
 
     @Basic
     @Column(name = "areaid", nullable = true, insertable = true, updatable = true)
-    public int getAreaid() {
+    public Integer getAreaid() {
         return areaid;
     }
 
-    public void setAreaid(int areaid) {
+    public void setAreaid(Integer areaid) {
         this.areaid = areaid;
     }
 
