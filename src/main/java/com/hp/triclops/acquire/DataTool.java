@@ -230,6 +230,30 @@ public class DataTool {
         }
         return re;
     }
+
+    public String getSkyWindowStatus(String bita_b){
+        //得到天窗状态 传入两个bit的字符表示,
+        // 数据库 天窗信息 0停止1关2开3预留
+        //参考0.613
+        //0x0： Stopped
+        //0x1： closed
+        //0x2： opened
+        //0x3： reserved
+
+        String re="1";
+        if(bita_b!=null){
+            if(bita_b.equals("00")){
+                re="0";
+            }else if(bita_b.equals("01")){
+                re="1";
+            }else if(bita_b.equals("10")){
+                re="2";
+            }else if(bita_b.equals("11")){
+                re="3";
+            }
+        }
+        return re;
+    }
     public String getDoorStatus(String bita_b){
         //得到车门状态 传入两个bit的字符表示,
         // 数据库 车门信息 0开1关2保留3信号异常
@@ -790,34 +814,8 @@ public class DataTool {
             sb.append(",139");
         }
 
-        char[] _esc=getBitsFromInteger(bean.getWarnMsg_esc());
-        if(_esc[15]== '0'){//bit0 0 warning MID=6
-            sb.append(",6");
-        }
-        if(_esc[14]== '0'){//bit0 0 warning MID=9
-            sb.append(",9");
-        }
-        if(_esc[13]== '0'){//bit0 0 warning MID=11
-            sb.append(",11");
-        }
-        if(_esc[12]== '0'){//bit0 0 warning MID=12
-            sb.append(",12");
-        }
-        if(_esc[11]== '0'){//bit0 0 warning MID=81
-            sb.append(",81");
-        }
-        if(_esc[10]== '0'){//bit0 0 warning MID=83
-            sb.append(",83");
-        }
-        if(_esc[9]== '0'){//bit0 0 warning MID=85
-            sb.append(",85");
-        }
-        if(_esc[8]== '0'){//bit0 0 warning MID=86
-            sb.append(",86");
-        }
-        if(_esc[7]== '0'){//bit0 0 warning MID=87
-            sb.append(",87");
-        }
+
+
 
         char[] _tpms=getBitsFromShort(bean.getWarnMsg_tpms());
         if(_tpms[7]== '0'){//bit0 0 warning MID=14
@@ -934,10 +932,8 @@ public class DataTool {
             sb.append(",142");
         }
 
-        char[] _scu=getBitsFromShort(bean.getWarnMsg_scu());
-        if(_scu[7]== '0'){//bit0 0 warning MID=123
-            sb.append(",123");
-        }
+
+
 
         char[] _tbox=getBitsFromShort(bean.getWarnMsg_tbox());
         if(_tbox[7]== '0'){//bit0 0 warning MID=143
@@ -966,13 +962,11 @@ public class DataTool {
          failureMessage.setWarnMsg_ic(bean.getWarnMsg_ic());
          failureMessage.setWarnMsg_escl(bean.getWarnMsg_escl());
          failureMessage.setWarnMsg_bcm(bean.getWarnMsg_bcm());
-         failureMessage.setWarnMsg_esc(bean.getWarnMsg_esc());
          failureMessage.setWarnMsg_tpms(bean.getWarnMsg_tpms());
          failureMessage.setWarnMsg_dme(bean.getWarnMsg_dme());
          failureMessage.setWarnMsg_tcu(bean.getWarnMsg_tcu());
          failureMessage.setWarnMsg_pdc_bsw(bean.getWarnMsg_pdc_bsw());
          failureMessage.setWarnMsg_sesam(bean.getWarnMsg_sesam());
-         failureMessage.setWarnMsg_scu(bean.getWarnMsg_scu());
          failureMessage.setWarnMsg_tbox(bean.getWarnMsg_tbox());
          return getFailureMesId(failureMessage);
         }

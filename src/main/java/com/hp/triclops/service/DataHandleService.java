@@ -119,7 +119,7 @@ public class DataHandleService {
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil(bean.getFuelOil() *1f);
+        rd.setFuelOil(bean.getFuelOil() * 1f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(bean.getServiceIntervall());
@@ -134,7 +134,7 @@ public class DataHandleService {
         rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
         rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
-        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
+        rd.setVehicleTemperature((short) 0);//温度按照上报数值-40
         rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit 大端传输
 
@@ -151,9 +151,9 @@ public class DataHandleService {
         rd.setMileageRange(1);
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
-        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[5]) + String.valueOf(bonnetAndTrunk[4])));
+        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
         char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
-        rd.setSkylightState(dataTool.getWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+        rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);
@@ -191,7 +191,7 @@ public class DataHandleService {
         rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil(bean.getFuelOil()*1f);
+        rd.setFuelOil(bean.getFuelOil() * 1f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(bean.getServiceIntervall());
@@ -206,7 +206,7 @@ public class DataHandleService {
         rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
         rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
-        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//温度按照上报数值-40
+        rd.setVehicleTemperature((short) 0);//温度按照上报数值-40
         rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 bit位置按照大端传输原则
         //
@@ -222,9 +222,9 @@ public class DataHandleService {
         rd.setMileageRange(1);
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
-        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[5]) + String.valueOf(bonnetAndTrunk[4])));
+        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
         char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
-        rd.setSkylightState(dataTool.getWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+        rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
 
         realTimeReportDataRespository.save(rd);
