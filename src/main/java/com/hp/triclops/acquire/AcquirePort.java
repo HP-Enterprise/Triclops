@@ -39,7 +39,7 @@ public class AcquirePort {
     //消息处理线程池，封装receive Msg为Task,处理入库
 
     //设置在执行测试类的时候不执行数据接收服务器的标示
-    @Value("${com.hp.acquire.dataserver-disabled:}")
+    @Value("${com.hp.acquire.dataserver-disabled}")
     private boolean _dataserverDisabled;
 
     //设置在执行测试类的时候不执行回声服务器的标示
