@@ -59,7 +59,7 @@ public class OrganizationShow{
     private int typeKey;
     private String descript;
     private int available;
-    private int areaid;
+    private Integer areaid;
 
 
     public OrganizationShow() {
@@ -83,15 +83,6 @@ public class OrganizationShow{
         this.descript = orgOne.getDescript();
         this.available = orgOne.getAvailable();
         this.areaid = orgOne.getAreaid();
-    }
-
-    public OrganizationShow(String orgName, String breCode, String descript, int typeKey, int available,int areaid) {
-        this.orgName = orgName;
-        this.breCode = breCode;
-        this.descript = descript;
-        this.typeKey = typeKey;
-        this.available = available;
-        this.areaid = areaid;
     }
 
     public int getId() {
@@ -118,9 +109,21 @@ public class OrganizationShow{
         this.breCode = breCode;
     }
 
-    public String getDescript() {return descript;}
+    public int getTypeKey() {
+        return typeKey;
+    }
 
-    public void setDescript(String descript) {this.descript = descript;}
+    public void setTypeKey(int typeKey) {
+        this.typeKey = typeKey;
+    }
+
+    public String getDescript() {
+        return descript;
+    }
+
+    public void setDescript(String descript) {
+        this.descript = descript;
+    }
 
     public int getAvailable() {
         return available;
@@ -130,17 +133,11 @@ public class OrganizationShow{
         this.available = available;
     }
 
-    public int getTypeKey() {
-        return typeKey;
+    public Integer getAreaid() {
+        return areaid;
     }
 
-    public void setTypeKey(int typeKey) {
-        this.typeKey = typeKey;
+    public void setAreaid(Integer areaid) {
+        this.areaid = areaid;
     }
-
-    public int getAreaid(){return areaid;}
-
-    public  void setAreaid(int areaid) {this.areaid = areaid;}
-
-
 }
