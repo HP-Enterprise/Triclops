@@ -50,9 +50,9 @@ public class VehicleExShow {
     }
 
     /**
-     * 组织中具有read权限用户查询车辆信息时的过滤
+     * 车辆信息模糊化
      */
-    public void readBlur()
+    public void blur()
     {
         if(vin!=null && vin.length()>6)
         {
@@ -81,18 +81,10 @@ public class VehicleExShow {
             this.license_plate = "******";
         }
 
-        this.security_pwd = "****";
-        this.security_salt = "****";
-    }
-
-    /**
-     * 组织外的用户查询过滤
-     */
-    public void blur()
-    {
-        readBlur();
         this.buystore = null;
         this.buydate = null;
+        this.security_pwd = "****";
+        this.security_salt = "****";
     }
 
     public int getId() {
