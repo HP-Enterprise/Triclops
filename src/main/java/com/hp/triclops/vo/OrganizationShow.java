@@ -58,9 +58,8 @@ public class OrganizationShow{
     private String breCode;
     private int typeKey;
     private String descript;
-    private int available;
+    private Integer available;
     private Integer areaid;
-
 
     public OrganizationShow() {
     }
@@ -125,11 +124,11 @@ public class OrganizationShow{
         this.descript = descript;
     }
 
-    public int getAvailable() {
+    public Integer getAvailable() {
         return available;
     }
 
-    public void setAvailable(int available) {
+    public void setAvailable(Integer available) {
         this.available = available;
     }
 

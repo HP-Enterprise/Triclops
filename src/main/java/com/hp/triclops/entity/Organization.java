@@ -16,7 +16,7 @@ public class Organization implements Serializable {
     private String breCode;
     private Sysdict typeKey;
     private String descript;
-    private int areaid;
+    private Integer areaid;
     private int available;
     private Set<Organization> organizationSet;
     private Set<Vehicle> vehicleSet;
@@ -143,11 +143,11 @@ public class Organization implements Serializable {
 
     @Basic
     @Column(name = "areaid", nullable = false, insertable = true, updatable = true)
-    public int getAreaid() {
+    public Integer getAreaid() {
         return areaid;
     }
 
-    public void setAreaid(int areaid) {
+    public void setAreaid(Integer areaid) {
         this.areaid = areaid;
     }
 
