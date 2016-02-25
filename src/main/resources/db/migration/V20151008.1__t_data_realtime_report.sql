@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS t_data_realtime_report (
   right_rear_door_information varchar(1) NOT NULL COMMENT '右后车门信息 0开1关2保留3信号异常',
   engine_cover_state varchar(1) NOT NULL COMMENT '发动机盖状态 0开1关2保留3信号异常',
   trunk_lid_state varchar(1) NOT NULL COMMENT '后备箱盖状态 0开1关2保留3信号异常',
-  skylight_state varchar(1) NOT NULL COMMENT '天窗信息 0停止1关2开3预留',
+  skylight_state varchar(1) NOT NULL COMMENT '天窗信息 0开 1半开 2关 3信号异常',
   parking_state varchar(1) NOT NULL COMMENT '驻车状态',
   PRIMARY KEY (id),
   INDEX idx_vin(vin),
