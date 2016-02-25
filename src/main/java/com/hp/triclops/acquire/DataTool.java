@@ -212,10 +212,10 @@ public class DataTool {
         //得到车窗状态 传入两个bit的字符表示,
         // 数据库 车窗信息 0开1半开2关3信号异常
         //参考0.613
-        //0x0： 00 Open
-        //0x1： 01 Intermediate
-        //0x2： 10 Close
-        //0x3： 11 Signal invalid
+        //0x0： 00 Open--0
+        //0x1： 01 Intermediate--1
+        //0x2： 10 Close--2
+        //0x3： 11 Signal invalid--3
         String re="2";
         if(bita_b!=null){
             if(bita_b.equals("00")){
@@ -233,21 +233,21 @@ public class DataTool {
 
     public String getSkyWindowStatus(String bita_b){
         //得到天窗状态 传入两个bit的字符表示,
-        // 数据库 天窗信息 0停止1关2开3预留
+        // 数据库 天窗信息 0开 1半开 2关 3信号异常
         //参考0.613
-        //0x0： Stopped
-        //0x1： closed
-        //0x2： opened
-        //0x3： reserved
+        //0x0： Stopped--1
+        //0x1： closed--2
+        //0x2： opened--0
+        //0x3： reserved--3
 
         String re="1";
         if(bita_b!=null){
             if(bita_b.equals("00")){
-                re="0";
-            }else if(bita_b.equals("01")){
                 re="1";
-            }else if(bita_b.equals("10")){
+            }else if(bita_b.equals("01")){
                 re="2";
+            }else if(bita_b.equals("10")){
+                re="0";
             }else if(bita_b.equals("11")){
                 re="3";
             }
@@ -258,10 +258,10 @@ public class DataTool {
         //得到车门状态 传入两个bit的字符表示,
         // 数据库 车门信息 0开1关2保留3信号异常
         //参考0.613
-        //0x0： 00 Close
-        //0x1： 01 Open
-        //0x2： 10 Reserved
-        //0x3： 11 Signal invalid
+        //0x0： 00 Close--1
+        //0x1： 01 Open--0
+        //0x2： 10 Reserved-2
+        //0x3： 11 Signal invalid--3
         String re="1";
         if(bita_b!=null){
             if(bita_b.equals("00")){
