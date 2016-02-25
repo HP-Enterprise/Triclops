@@ -50,7 +50,7 @@ public class VehicleExShow {
     }
 
     /**
-     * 组织中具有read权限用户信息过滤
+     * 组织中具有read权限用户查询车辆信息时的过滤
      */
     public void readBlur()
     {
@@ -88,7 +88,7 @@ public class VehicleExShow {
     /**
      * 组织外的用户查询过滤
      */
-    public void generalBlur()
+    public void blur()
     {
         readBlur();
         this.buystore = null;
