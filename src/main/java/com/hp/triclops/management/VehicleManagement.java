@@ -218,7 +218,7 @@ public class VehicleManagement {
         List<VehicleExShow> returnList = new ArrayList<>();
         for(VehicleExShow vehicle:list)
         {
-            vehicle.generalBlur();
+            vehicle.blur();
             returnList.add(vehicle);
         }
 
