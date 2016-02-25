@@ -752,6 +752,7 @@ public class OutputHexService {
             jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
             jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
             dataMap.put("pType", 8);
+            dataMap.put("cleanFlag", "0");
 
             String contactsPhone ="";
             if(user!=null){
@@ -763,6 +764,7 @@ public class OutputHexService {
            // sb.append("车辆防盗报警触发");
             jsonMap.put("ata_warning","1");
             dataMap.put("pType", 9);
+            dataMap.put("cleanFlag", "0");
 
             String leftFrontDoorInformation = "";
             String leftRearDoorInformation = "";
@@ -791,6 +793,7 @@ public class OutputHexService {
             jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
             jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
             dataMap.put("pType", 8);
+            dataMap.put("cleanFlag", "1");
 
             String contactsPhone ="";
             if(user!=null){
@@ -802,6 +805,7 @@ public class OutputHexService {
             //推ata解除
             jsonMap.put("ata_warning","0");
             dataMap.put("pType", 9);
+            dataMap.put("cleanFlag", "1");
 
             String leftFrontDoorInformation = "";
             String leftRearDoorInformation = "";
