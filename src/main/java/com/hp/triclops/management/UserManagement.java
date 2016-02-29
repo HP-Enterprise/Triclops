@@ -31,11 +31,28 @@ public class UserManagement {
      * @param id 用户ID
      * @return 用户信息
      */
-    public UserEx findById(int id)
+    public UserExShow findById(int id)
     {
-        return userExRepository.findById(id);
+        UserEx userEx = userExRepository.findById(id);
+        if(userEx == null)
+        {
+            return null;
+        }
+
+        return new UserExShow(userEx);
     }
 
+    /**
+     * 修改用户信息
+     * @param user 用户信息类
+     * @return 修改后的的用户信息
+     */
+    public UserExShow modifyUser(UserExShow user)
+    {
+        UserEx userEx = new UserEx(user);
+        UserEx returnUser = userExRepository.save(userEx);
+        return new UserExShow(returnUser);
+    }
 
     /**
      * 条件查询用户(组织管理员查询)
