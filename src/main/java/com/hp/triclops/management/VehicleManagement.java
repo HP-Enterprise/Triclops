@@ -81,7 +81,7 @@ public class VehicleManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<VehicleExShow> vehicleSelect(int oid, String vin, String tboxsn, String vendor, String model, Date start_date, Date end_date, String license_plate, Integer t_flag, Integer currentPage, Integer pageSize)
+    public Page<VehicleExShow> readSelect(int oid, String vin, String tboxsn, String vendor, String model, Date start_date, Date end_date, String license_plate, Integer t_flag, Integer currentPage, Integer pageSize)
     {
         if(vin!=null) vin = "%" + vin + "%";
         if(tboxsn!=null) tboxsn = "%" + tboxsn + "%";
@@ -129,7 +129,7 @@ public class VehicleManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<VehicleExShow> vehicleSelectBlur(int oid, String vin, String tboxsn, String vendor, String model, Date start_date, Date end_date, String license_plate, Integer t_flag, Integer currentPage, Integer pageSize)
+    public Page<VehicleExShow> select(int oid, String vin, String tboxsn, String vendor, String model, Date start_date, Date end_date, String license_plate, Integer t_flag, Integer currentPage, Integer pageSize)
     {
         currentPage = currentPage==null?1:currentPage;
         currentPage = currentPage<=0?1:currentPage;
@@ -137,7 +137,7 @@ public class VehicleManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<VehicleExShow> vehiclePage = vehicleSelect(oid, vin, tboxsn, vendor, model, start_date, end_date, license_plate, t_flag, currentPage, pageSize);
+        Page<VehicleExShow> vehiclePage = readSelect(oid, vin, tboxsn, vendor, model, start_date, end_date, license_plate, t_flag, currentPage, pageSize);
 
         List<VehicleExShow> list = vehiclePage.getContent();
         List<VehicleExShow> returnList = new ArrayList<>();
