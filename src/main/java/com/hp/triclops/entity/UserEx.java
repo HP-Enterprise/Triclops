@@ -1,5 +1,7 @@
 package com.hp.triclops.entity;
 
+import com.hp.triclops.vo.UserExShow;
+
 import javax.persistence.*;
 
 /**
@@ -19,6 +21,20 @@ public class UserEx {
     private String contacts;
     private String contactsPhone;
     private String icon;
+
+    public UserEx() {}
+
+    public UserEx(UserExShow userExShow) {
+        this.id = userExShow.getId();
+        this.name = userExShow.getName();
+        this.gender = userExShow.getGender();
+        this.nick = userExShow.getNick();
+        this.phone = userExShow.getPhone();
+        this.isVerified = userExShow.getIsVerified();
+        this.contacts = userExShow.getContacts();
+        this.contactsPhone = userExShow.getContactsPhone();
+        this.icon = userExShow.getIcon();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
