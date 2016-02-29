@@ -30,21 +30,22 @@ public class UserExShow {
     }
 
     /**
-     * 组织外的用户查询过滤
+     * 用户信息过滤
      */
     public void blur()
     {
-        if(phone!=null && phone.length()>5)
+        if(phone!=null && phone.length()>4)
         {
-            this.phone = phone.substring(0,phone.length()-5) + "*****";
+            this.phone = phone.substring(0,phone.length()-4) + "****";
         }
-        else if(phone!=null)
+        if(contacts!=null && contacts.length()>1)
         {
-            this.phone = "*****";
+            this.contacts = contacts.substring(0,1) + "**";
         }
-
-        this.contacts = null;
-        this.contactsPhone = null;
+        if(contactsPhone!=null && contactsPhone.length()>4)
+        {
+            this.contactsPhone = contactsPhone.substring(0,contactsPhone.length()-4) + "****";
+        }
     }
 
     public int getId() {

@@ -55,7 +55,7 @@ public class UserManagement {
     }
 
     /**
-     * 条件查询用户(组织管理员查询)
+     * 条件查询用户(具有Read权限的组织用户)
      * @param name 用户名
      * @param gender 性别
      * @param nick 昵称
@@ -65,7 +65,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserExShow> orgAdminSelect(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExShow> readSelect(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         if(name!=null) name = "%" + name + "%";
         if(nick!=null) nick = "%" + nick + "%";
@@ -97,7 +97,7 @@ public class UserManagement {
     }
 
     /**
-     * 条件查询用户(具有Read权限的组织成员)
+     * 条件查询用户(不具有Read权限的组织成员)
      * @param name 用户名
      * @param gender 性别
      * @param nick 昵称
@@ -107,7 +107,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserExShow> orgReadSelect(int oid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExShow> select(int oid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         currentPage = currentPage==null?1:currentPage;
         currentPage = currentPage<=0?1:currentPage;
@@ -115,7 +115,7 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserExShow> userPage =  orgAdminSelect(oid,name,gender,nick,phone,isVerified,currentPage,pageSize);
+        Page<UserExShow> userPage =  readSelect(oid,name,gender,nick,phone,isVerified,currentPage,pageSize);
 
         List<UserExShow> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
