@@ -17,6 +17,8 @@ public class UserExShow {
     private String contactsPhone;
     private String icon;
 
+    public UserExShow() {}
+
     public UserExShow(UserEx userEx) {
         this.id = userEx.getId();
         this.name = userEx.getName();
