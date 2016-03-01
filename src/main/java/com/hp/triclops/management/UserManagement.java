@@ -25,6 +25,17 @@ public class UserManagement {
     @Autowired
     UserExRepository userExRepository;
 
+    /**
+     * 新增用户
+     * @param userExShow 用户信息
+     * @return 新增后的用户信息
+     */
+    public UserExShow save(UserExShow userExShow)
+    {
+        UserEx userEx = new UserEx(userExShow);
+        UserEx returnUser = userExRepository.save(userEx);
+        return new UserExShow(returnUser);
+    }
 
     /**
      * 根据ID查询用户信息
@@ -34,6 +45,22 @@ public class UserManagement {
     public UserExShow findById(int id)
     {
         UserEx userEx = userExRepository.findById(id);
+        if(userEx == null)
+        {
+            return null;
+        }
+
+        return new UserExShow(userEx);
+    }
+
+    /**
+     * 根据用户名查询用户信息
+     * @param name 用户名
+     * @return 用户信息
+     */
+    public UserExShow findByName(String name)
+    {
+        UserEx userEx = userExRepository.findByName(name);
         if(userEx == null)
         {
             return null;
