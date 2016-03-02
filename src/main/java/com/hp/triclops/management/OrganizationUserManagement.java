@@ -21,14 +21,32 @@ public class OrganizationUserManagement {
     OrganizationUserRelativeRepository organizationUserRelativeRepository;
 
     /**
-     * 建立用户与组织的关系
+     * 向组织中增加用户
      * @param oid 组织ID
      * @param uid 用户ID
      */
-    public void saveRelative(int oid,int uid)
+    public void addUser(int oid, int uid)
     {
         OrganizationUserRelative relative = new OrganizationUserRelative(oid,uid);
         organizationUserRelativeRepository.save(relative);
+    }
+
+    /**
+     * 从组织移除用户
+     * @param id 组织用户关系ID
+     */
+    public void removeUser(int id)
+    {
+        organizationUserRelativeRepository.delete(id);
+    }
+
+    /**
+     * 移除组织中所有用户
+     * @param oid 组织ID
+     */
+    public void removeAllUser(int oid)
+    {
+        organizationUserRelativeRepository.deleteByOid(oid);
     }
 
     /**
@@ -41,6 +59,24 @@ public class OrganizationUserManagement {
         List<OrganizationUserRelative> list = organizationUserRelativeRepository.findByOid(oid);
 
         return list.stream().map(OrganizationUserRelativeShow::new).collect(Collectors.toList());
+    }
+
+    /**
+     * 查询用户与组织的关系
+     * @param oid 组织ID
+     * @param uid 用户ID
+     * @return 组织用户关系
+     */
+    public OrganizationUserRelativeShow findByOidAndUid(int oid,int uid)
+    {
+        OrganizationUserRelative relative = organizationUserRelativeRepository.findByOidAndUid(oid,uid);
+
+        if(relative == null)
+        {
+            return null;
+        }
+
+        return new OrganizationUserRelativeShow(relative);
     }
 
     /**
@@ -82,41 +118,4 @@ public class OrganizationUserManagement {
         return organizationUserRelativeRepository.getOrgUserNum(oid);
     }
 
-    /**
-     * 查询用户与组织的关系
-     * @param oid 组织ID
-     * @param uid 用户ID
-     * @return 组织用户关系
-     */
-    public OrganizationUserRelativeShow findByOidAndUid(int oid,int uid)
-    {
-        OrganizationUserRelative relative = organizationUserRelativeRepository.findByOidAndUid(oid,uid);
-
-        if(relative == null)
-        {
-            return null;
-        }
-
-        return new OrganizationUserRelativeShow(relative);
-    }
-
-    /**
-     * 向组织中增加用户
-     * @param oid 组织ID
-     * @param uid 用户ID
-     */
-    public void addUser(int oid, int uid)
-    {
-        OrganizationUserRelative organizationUserRelative = new OrganizationUserRelative(oid,uid);
-        organizationUserRelativeRepository.save(organizationUserRelative);
-    }
-
-    /**
-     * 从组织移除用户
-     * @param id 组织用户关系ID
-     */
-    public void deleteUser(int id)
-    {
-        organizationUserRelativeRepository.delete(id);
-    }
 }
