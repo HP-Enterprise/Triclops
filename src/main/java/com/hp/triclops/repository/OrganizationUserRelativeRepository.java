@@ -26,4 +26,6 @@ public interface OrganizationUserRelativeRepository extends CrudRepository<Organ
 
     @Query("select count(*) from OrganizationUserRelative ou where ou.oid = ?1 ")
     int getOrgUserNum(int oid);
+
+    Long deleteByOid(int oid);
 }

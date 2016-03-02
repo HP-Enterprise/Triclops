@@ -23,4 +23,5 @@ public interface OrganisationVehicleRelativeExRepository extends CrudRepository<
     @Query("select ov from OrganisationVehicleRelativeEx ov where ov.oid = ?1 and ov.vid = ?2 ")
     OrganisationVehicleRelativeEx findByOidAndvid(int oid,int vid);
 
+    Long deleteByOid(int oid);
 }

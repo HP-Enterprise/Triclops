@@ -40,6 +40,27 @@ public class OrganizationManagement {
     }
 
     /**
+     * 根据组织ID删除组织
+     * @param oid 组织ID
+     */
+    public void deleteOrganization(int oid)
+    {
+        organizationExRepository.delete(oid);
+    }
+
+    /**
+     * 修改组织信息
+     * @param org 组组信息类
+     * @return 修改后的组织信息
+     */
+    public OrganizationShow modifyOrganization(OrganizationShow org)
+    {
+        OrganizationEx organizationEx = new OrganizationEx(org);
+        OrganizationEx returnOrg = organizationExRepository.save(organizationEx);
+        return new OrganizationShow(returnOrg);
+    }
+
+    /**
      * 根据ID查询组织信息
      * @param id 组织ID
      * @return 组织信息
@@ -49,29 +70,6 @@ public class OrganizationManagement {
         OrganizationEx organizationEx = organizationExRepository.findById(id);
         if(organizationEx == null)
             return null;
-        return new OrganizationShow(organizationEx);
-    }
-
-    /**
-     * 修改组织信息
-     * @param org 组组信息类
-     * @return 修改后的组织信息
-     */
-    public OrganizationShow modifyOrg(OrganizationShow org)
-    {
-        OrganizationEx organizationEx = new OrganizationEx(org);
-        OrganizationEx returnOrg = organizationExRepository.save(organizationEx);
-        return new OrganizationShow(returnOrg);
-    }
-
-    /**
-     * 根据组织名查询
-     * @param orgName 组织名
-     * @return 组织信息
-     */
-    public OrganizationShow findByOrgName(String orgName)
-    {
-        OrganizationEx organizationEx = organizationExRepository.findByOrgName(orgName);
         return new OrganizationShow(organizationEx);
     }
 
@@ -170,6 +168,6 @@ public class OrganizationManagement {
      */
     public void addUserToOrg(int oid,int uid)
     {
-        organizationUserManagement.saveRelative(oid,uid);
+        organizationUserManagement.addUser(oid,uid);
     }
 }
