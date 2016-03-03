@@ -231,7 +231,8 @@ public class VehicleDataService {
                 data.setSendingTime(rd.getSendingTime());
 
                 data.setFuelOil(rd.getFuelOil());
-                data.setAvgOil(rd.getAvgOilA());
+                data.setAvgOilA(rd.getAvgOilA());
+                data.setAvgOilB(rd.getAvgOilB());
                 data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
                 data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
                 data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
