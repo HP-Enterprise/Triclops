@@ -54,6 +54,9 @@ public class AcquirePort {
     @Value("${com.hp.acquire.datahandler-heartbeat-ttl}")
     private int _datahandlerHeartbeatTTL;
 
+    @Value("${com.hp.remoteControl.maxDistance}")
+    private int _maxDistance;//远程控制最大距离
+
     @Autowired
     SocketRedis socketRedis;
     @Autowired
@@ -96,7 +99,7 @@ public class AcquirePort {
             }
         }
         if(!_dataserverDisabled) {
-            new NettyServer(channels, connectionAddress, _nettyServerTcpBacklog, socketRedis, dataTool, requestHandler, outputHexService, _acquirePort, nettyServerScheduledService).run();    //netty收数据程序，收到消息后可能导致阻塞的业务全部交由线程池处理
+            new NettyServer(channels, connectionAddress,_maxDistance, _nettyServerTcpBacklog, socketRedis, dataTool, requestHandler, outputHexService, _acquirePort, nettyServerScheduledService).run();    //netty收数据程序，收到消息后可能导致阻塞的业务全部交由线程池处理
         }
     }
 

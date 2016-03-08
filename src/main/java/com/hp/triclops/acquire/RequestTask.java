@@ -23,11 +23,13 @@ public class RequestTask  implements Runnable{
     private Channel ch;
     private OutputHexService outputHexService;
     private Logger _logger;
+    private int maxDistance;
 
-    public RequestTask(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String receiveDataHexString){
+    public RequestTask(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,int maxDistance,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String receiveDataHexString){
         super();
         this.channels=cs;
         this.connections=connections;
+        this.maxDistance=maxDistance;
         this.ch=ch;
         this.socketRedis=s;
         this.dataTool=dt;
@@ -215,7 +217,7 @@ public class RequestTask  implements Runnable{
                     return;
                 }
                 String _vin=chKey;
-                requestHandler.handleRemoteControlRequest(receiveDataHexString, _vin);
+                requestHandler.handleRemoteControlRequest(receiveDataHexString, _vin,maxDistance);
                 //远程控制上行处理，无数据下行
                 break;
             case 0x41://参数查询响应(上行)

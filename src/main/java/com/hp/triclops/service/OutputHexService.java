@@ -996,6 +996,18 @@ public class OutputHexService {
     }
 
     /**
+     * 返回远程控制记录
+     * @param vin vin
+     * @param eventId eventId
+     */
+    public RemoteControl getRemoteControlRecord(String vin,long eventId){
+        String sessionId=49+"-"+eventId;
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        return rc;
+    }
+
+
+    /**
      * 处理远程控制结果上行（持久化 push）
      * @param vin vin
      * @param eventId eventId

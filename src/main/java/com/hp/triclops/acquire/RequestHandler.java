@@ -4,14 +4,15 @@ import com.hp.data.bean.tbox.*;
 import com.hp.data.core.Conversion;
 import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
-import com.hp.triclops.entity.DiagnosticData;
-import com.hp.triclops.entity.RemoteControl;
-import com.hp.triclops.entity.TBoxParmSet;
+import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.DiagnosticDataRepository;
+import com.hp.triclops.repository.GpsDataRepository;
+import com.hp.triclops.repository.RealTimeReportDataRespository;
 import com.hp.triclops.repository.TBoxParmSetRepository;
 import com.hp.triclops.service.OutputHexService;
 import com.hp.triclops.service.TboxService;
+import com.hp.triclops.utils.GpsTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,10 @@ public class RequestHandler {
     TBoxParmSetRepository tBoxParmSetRepository;
     @Autowired
     DiagnosticDataRepository diagnosticDataRepository;
+    @Autowired
+    GpsDataRepository gpsDataRepository;
+    @Autowired
+    GpsTool gpsTool;
 
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -243,7 +248,7 @@ public class RequestHandler {
      * @param reqString 远程控制上行hex mid=2,4,5
      * @param vin vin码
      */
-    public void handleRemoteControlRequest(String reqString,String vin){
+    public void handleRemoteControlRequest(String reqString,String vin,int maxDistance){
         //处理远程控制上行的16进制字符串
         byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
         byte messageId=dataTool.getMessageId(bytes);
@@ -259,7 +264,7 @@ public class RequestHandler {
             String statusValue=String.valueOf(bean.getMessageID());
             socketRedis.saveValueString(statusKey, statusValue, -1);
             _logger.info("update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
-            if(verifyRemoteControlPreconditionResp(bean)){
+            if(verifyRemoteControlPreconditionResp(vin,bean)&&verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance)){
                 //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
                 long eventId=bean.getEventID();
                 RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
@@ -314,18 +319,79 @@ public class RequestHandler {
 
     /**
      * 校验,是否发送远程指令
+     * @param vin
      * @param remoteControlPreconditionResp 数据bean
      * @return 是否通过
      */
-    public boolean verifyRemoteControlPreconditionResp(RemoteControlPreconditionResp remoteControlPreconditionResp){
-        //目前逻辑 车速低于5km/h
+    public boolean verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp){
+        //目前逻辑 根据0619协议
         boolean re=false;
-        if(remoteControlPreconditionResp!=null){
-            //根据0617协议 车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
-            if(remoteControlPreconditionResp.getVehicleSpeed()<320){
+        boolean tmpCheck=false;
+        boolean clampCheck=false;
+        boolean remoteKeyCheck=false;
+        boolean hazardLightsCheck=false;
+        boolean vehicleSpeedCheck=false;
+        boolean transmissionGearPositionCheck=false;
+        boolean handBrakeCheck=false;
+        boolean sunroofCheck=false;
+        boolean windowsCheck=false;
+        boolean doorsCheck=false;
+        boolean trunkCheck=false;
+        boolean bonnetCheck=false;
+        boolean centralLockCheck=false;
+        boolean crashStatusCheck=false;
+        boolean remainingFuelCheck=false;
+
+        RemoteControl rc=outputHexService.getRemoteControlRecord(vin, remoteControlPreconditionResp.getEventID());
+        if(rc!=null&&remoteControlPreconditionResp!=null){
+            //根据0619协议
+            short ambientAirTemperature=dataTool.getOuterTrueTmp(remoteControlPreconditionResp.getAmbientAirTemperature());//偏移40
+            if(ambientAirTemperature>-10&&ambientAirTemperature<40){        //温度 -10~40
+                tmpCheck=true;
+            }
+            byte clampStatus=remoteControlPreconditionResp.getSesam_clamp_stat();
+            if(clampStatus==0){
+                clampCheck=true;
+            }
+            //根据0619协议 车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
+            if(remoteControlPreconditionResp.getVehicleSpeed()==0){
+                vehicleSpeedCheck=true;
+            }
+
+
+           re=tmpCheck && clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+           && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
+           && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
+           && remainingFuelCheck;
+        }
+
+        _logger.info("status:"+tmpCheck +"-"+ clampCheck +"-"+ remoteKeyCheck +"-"+ hazardLightsCheck +"-"+ vehicleSpeedCheck
+                +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
+                +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
+                +"-"+ remainingFuelCheck);
+        _logger.info("verifyRemoteControlPreconditionResp result:"+re);
+        return re;
+    }
+    /**
+     * 校验发起指令APP与车之间的距离
+     * @param vin
+     * @param eventId
+     * @return 是否通过
+     */
+    public boolean verifyRemoteControlDistance(String vin,long eventId,int maxDistance){
+        //目前逻辑 app与car距离小于配置的2000m
+        boolean re=false;
+        RemoteControl rc=outputHexService.getRemoteControlRecord(vin, eventId);
+        GpsData gpsData=gpsDataRepository.findTopByVinOrderBySendingTimeDesc(vin);
+
+        if(rc!=null&&gpsData!=null){
+            double distance=gpsTool.getDistance(gpsData.getLatitude(),gpsData.getLongitude(),rc.getLatitude(),rc.getLongitude());
+            _logger.info("app-car distance:"+distance+"   >gpsData.id"+gpsData.getId()+"|>rc.id"+rc.getId());
+            if(distance<=maxDistance){
                 re=true;
             }
         }
+        _logger.info("verifyRemoteControlDistance result:"+re);
         return re;
     }
 
