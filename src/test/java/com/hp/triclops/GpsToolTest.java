@@ -48,4 +48,20 @@ public class GpsToolTest {
         GpsData g=gpsTool.convertToBaiDuGps(gpsData);
         System.out.println(">>>>>>"+g.getLongitude()+","+g.getLatitude());
     }
+    @Test
+    public void test_getDistance(){
+        //济南国际会展中心经纬度：117.11811  36.68484
+        //趵突泉：117.00999000000002  36.66123
+
+        //30.4792684,114.3959237
+
+        //--
+        //30.4579801,114.3266128
+
+        //30.4612779,114.3904393
+
+        System.out.println(gpsTool.getDistance(114.3266128,30.4579801,114.3904393,30.4612779));
+    }
+
+
 }

@@ -185,8 +185,8 @@ public class DataTool {
       /*  //经纬度除以1000000得到真实值
         String  num = a/1000000+"."+a%1000000;
         return Double.valueOf(num);*/
-        //按照0.610协议变更经纬度取值方式
-        double  num = a * 0.00390625;
+        //按照0.619协议变更经纬度取值方式
+        double  num = a * 0.00390625*3600;
         return num;
 
     }

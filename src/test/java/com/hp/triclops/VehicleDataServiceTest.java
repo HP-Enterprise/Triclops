@@ -3,6 +3,7 @@ package com.hp.triclops;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.GpsData;
+import com.hp.triclops.entity.Position;
 import com.hp.triclops.entity.TBoxParmSet;
 import com.hp.triclops.service.VehicleDataService;
 import com.hp.triclops.vo.RealTimeDataShow;
@@ -52,7 +53,10 @@ public class VehicleDataServiceTest {
     @Transactional
     @Rollback
     public void test_handleRemoteControl() {
-        System.out.println("handleRemoteControl return:" + vehicleDataService.handleRemoteControl(1, "1443151834l", (short) 15, (short) 22));
+        Position p=new Position();
+        p.setLatitude(30.123555);
+        p.setLongitude(117.123456);
+        System.out.println("handleRemoteControl return:" + vehicleDataService.handleRemoteControl(1, "1443151834l", (short) 15, (short) 22, p));
         //单元测试无法唤醒 总是null
     }
 

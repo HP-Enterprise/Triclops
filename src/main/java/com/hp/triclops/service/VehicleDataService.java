@@ -56,7 +56,7 @@ public class VehicleDataService {
      * @param acTmp 空调温度 cType=4时有效
      * @return 持久化后的RemoteControl对象
      */
-    public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp){
+    public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp,Position position){
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         if(!hasConnection(vin)){
             _logger.info("vin:"+vin+" have not connection,do wake up...");
