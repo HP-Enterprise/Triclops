@@ -351,6 +351,10 @@ public class DataTool {
         return Double.valueOf(v);
     }
 
+    public  char[] getBitsFrom2Byte(byte[]  bytes){
+        String a=new String(getBitsFromByte(bytes[0]))+new String(getBitsFromByte(bytes[1]));
+        return a.toCharArray();
+    }
     public  char[] getBitsFromInteger(int value){
         //双字节转二进制
         char[] array=new char[16];

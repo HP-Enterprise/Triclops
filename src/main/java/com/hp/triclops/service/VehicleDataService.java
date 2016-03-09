@@ -68,15 +68,14 @@ public class VehicleDataService {
      * @return 持久化后的RemoteControl对象
      */
     public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp,Position position){
-        RealTimeReportData realTimeReportData=realTimeReportDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
-        GpsData gpsData=gpsDataRepository.findTopByVinOrderBySendingTimeDesc(vin);
+
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
         if(isRemoteMaxCountReached(vin)){
             _logger.info("vin:"+vin+" remote started max count reached,abort remote Control");
           return null;
         }
-        if(initCheck(vin)){
+        if(!initCheck(vin,cType)){
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
             return null;
         }
@@ -233,21 +232,45 @@ public class VehicleDataService {
      * @param vin vin
      * @return 校验
      */
-    private boolean initCheck(String vin){
+    private boolean initCheck(String vin,short cType){
         //initCheck
-
-        boolean re=false;
+        if(cType!=(short)0){//只有远程启动发动机才需要做initCheck
+            return true;
+        }
         boolean vehicleSpeedCheck=false;
         boolean sunroofCheck=false;
         boolean windowsCheck=false;
         boolean doorsCheck=false;
         boolean trunkCheck=false;
         boolean bonnetCheck=false;
-        RealTimeReportData realTimeReportData=realTimeReportDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
-
-
-        
-        re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
+        RealTimeReportData realData=realTimeReportDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        GpsData gpsData=gpsDataRepository.findTopByVinOrderBySendingTimeDesc(vin);
+        if(realData!=null&&gpsData!=null) {
+            if (realData.getLeftFrontDoorInformation().equals("1") && realData.getLeftRearDoorInformation().equals("1") &&
+                    realData.getRightFrontDoorInformation().equals("1") && realData.getRightRearDoorInformation().equals("1")) {
+                doorsCheck = true;
+            }//左前车门信息 0开1关2保留3信号异常
+            if (realData.getLeftFrontWindowInformation().equals("2") && realData.getLeftRearWindowInformation().equals("2")
+                    && realData.getRightFrontWindowInformation().equals("2") && realData.getRightRearWindowInformation().equals("2")) {
+                windowsCheck = true;
+            }
+            if (realData.getSkylightState().equals("2")) {
+                sunroofCheck = true;
+            }
+            if (realData.getTrunkLidState().equals("1")) {
+                trunkCheck = true;
+            }
+            if (realData.getEngineCoverState().equals("1")) {
+                bonnetCheck = true;
+            }
+            if (gpsData.getSpeed() == 0) {
+                vehicleSpeedCheck = true;
+            }
+        }
+        //右后车窗信息 0开1半开2关3信号异常
+        _logger.info("initCheck:"+vehicleSpeedCheck +"-"+ sunroofCheck +"-"+ windowsCheck +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck);
+        boolean re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
+        _logger.info("initCheck result:"+re);
         return re;
     }
 
@@ -261,7 +284,7 @@ public class VehicleDataService {
         boolean re=false;
         Vehicle v=vehicleRepository.findByVin(vin);
         if(v!=null){
-            if(v.getRemoteCount()>_maxCount)
+            if(v.getRemoteCount()>=_maxCount)
                 re=true;
         }
         return re;

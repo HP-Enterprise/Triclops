@@ -264,16 +264,23 @@ public class RequestHandler {
             String statusValue=String.valueOf(bean.getMessageID());
             socketRedis.saveValueString(statusKey, statusValue, -1);
             _logger.info("update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
-            if(verifyRemoteControlPreconditionResp(vin,bean)&&verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance)){
+            RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
+            //取出redis暂存的控制参数 生成指令
+            if(dbRc==null){
+                _logger.info("get RemoteCmd Value From db return null...");
+                return;
+            }
+            if(verifyRemoteControlPreconditionResp(vin,bean,dbRc)&&verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance)){
                 //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
                 long eventId=bean.getEventID();
-                RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
+                //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                 //取出redis暂存的控制参数 生成指令
-                if(_valueRc==null){
+                RemoteControl rc=outputHexService.getRemoteCmdValueFromRedis(vin,bean.getEventID());
+                if(rc==null){
                     _logger.info("get RemoteCmd Value From Redis return null...");
                     return;
                 }
-                String cmdByteString=outputHexService.getRemoteControlCmdHex(_valueRc,eventId);
+                String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,eventId);
                 _logger.info("verify RemoteControl PreconditionResp success,we will send RemoteCommand:"+cmdByteString);
                 outputHexService.saveCmdToRedis(vin, cmdByteString);
             }else{
@@ -323,7 +330,7 @@ public class RequestHandler {
      * @param remoteControlPreconditionResp 数据bean
      * @return 是否通过
      */
-    public boolean verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp){
+    public boolean verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp,RemoteControl remoteControl){
         //目前逻辑 根据0619协议
         boolean re=false;
         boolean tmpCheck=false;
@@ -350,21 +357,101 @@ public class RequestHandler {
                 tmpCheck=true;
             }
             byte clampStatus=remoteControlPreconditionResp.getSesam_clamp_stat();
-            if(clampStatus==0){
+            char[] clampStatus_char=dataTool.getBitsFromByte(clampStatus);
+            if(clampStatus_char[6]=='0'&&clampStatus_char[7]=='1' && clampStatus_char[4]=='0'&&clampStatus_char[5]=='1' && clampStatus_char[2]=='0'&&clampStatus_char[3]=='1'){
                 clampCheck=true;
+            }
+            byte remoteKey=remoteControlPreconditionResp.getSesam_hw_status();
+            char[] remoteKey_char=dataTool.getBitsFromByte(remoteKey);
+            if(remoteKey_char[5]=='0' && remoteKey_char[6]=='0' && remoteKey_char[7]=='1'){
+                remoteKeyCheck=true;//0x1 Key outside Vehicle
+            }
+            if(remoteKey_char[5]=='0' && remoteKey_char[6]=='1' && remoteKey_char[7]=='0'){
+                remoteKeyCheck=true;//0x2 Key out of range
+            }
+            byte hazardLight=remoteControlPreconditionResp.getBcm_Stat_Central_Lock2();
+            char[] hazardLight_char=dataTool.getBitsFromByte(hazardLight);
+            if(hazardLight_char[5]=='0' && hazardLight_char[6]=='0' && hazardLight_char[7]=='0'){
+                hazardLightsCheck=true;
             }
             //根据0619协议 车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
             if(remoteControlPreconditionResp.getVehicleSpeed()==0){
                 vehicleSpeedCheck=true;
             }
-
-
-           re=tmpCheck && clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
-           && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
-           && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
-           && remainingFuelCheck;
+            byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();
+            char[] transmissionGearPosition_char=dataTool.getBitsFromByte(transmissionGearPosition);
+            if(transmissionGearPosition_char[6]=='0'&&transmissionGearPosition_char[7]=='1'){
+                transmissionGearPositionCheck=true;
+            }
+            byte handBrake=remoteControlPreconditionResp.getEpb_status();
+            char[] shandBrake_char=dataTool.getBitsFromByte(handBrake);
+            if(shandBrake_char[6]=='0'&&shandBrake_char[7]=='1'){
+                handBrakeCheck=true;
+            }
+            byte sunroof=remoteControlPreconditionResp.getBcm_Stat_window2();
+            char[] sunroof_char=dataTool.getBitsFromByte(sunroof);
+            if(sunroof_char[6]=='0'&&sunroof_char[7]=='1'){
+                sunroofCheck=true;
+            }
+            byte windows=remoteControlPreconditionResp.getBcm_Stat_window();
+            char[] windows_char=dataTool.getBitsFromByte(windows);
+            if(windows_char[6]=='1'&&windows_char[7]=='1' && windows_char[4]=='1'&&windows_char[5]=='1' && windows_char[2]=='1'&&windows_char[3]=='1' && windows_char[0]=='1'&&windows_char[1]=='1'){
+                windowsCheck=true;
+            }
+            byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
+            char[] doors_char=dataTool.getBitsFrom2Byte(doors);
+            if(doors_char[14]=='0'&&doors_char[15]=='0' && doors_char[12]=='0'&&doors_char[13]=='0' && doors_char[10]=='0'&&doors_char[11]=='0' && doors_char[8]=='0'&&doors_char[9]=='0'){
+                doorsCheck=true;
+            }
+            if(doors_char[6]=='0'&&doors_char[7]=='0' ){
+                bonnetCheck=true;
+            }
+            if(doors_char[4]=='0'&&doors_char[5]=='0'){
+                trunkCheck=true;
+            }
+            byte centralLock=remoteControlPreconditionResp.getBcm_Stat_Central_Lock();
+            char[] centralLock_char=dataTool.getBitsFromByte(centralLock);
+            if(centralLock_char[6]=='0'&&centralLock_char[7]=='1'){
+                centralLockCheck=true;
+            }
+            byte crashStatus=remoteControlPreconditionResp.getAcm_crash_status();
+            char[] crashStatus_char=dataTool.getBitsFromByte(crashStatus);
+            if(crashStatus_char[6]=='0'&&crashStatus_char[7]=='0'&& crashStatus_char[4]=='0'&&crashStatus_char[5]=='0'){
+                crashStatusCheck=true;
+            }
+            short remainingFuel=remoteControlPreconditionResp.getFuelLevel();
+            if(remainingFuel>15){
+                remainingFuelCheck=true;
+            }
+            byte remoteStartestatus=remoteControlPreconditionResp.getStat_remote_start();
+            char[] remoteStartStatus_char=dataTool.getBitsFromByte(remoteStartestatus);
+            short contorlType=remoteControl.getControlType();
+            /*
+            控制类别  0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：远程寻车
+            */
+            if(contorlType==(short)0){//0：远程启动发动机
+                re=tmpCheck && clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+                        && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
+                        && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
+                        && remainingFuelCheck;
+            }else if(contorlType==(short)1){//1：远程关闭发动机
+                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能远程关闭
+                    re=true;
+                }
+            }else if(contorlType==(short)10){//10：远程寻车
+                re=doorsCheck && clampCheck && hazardLightsCheck;
+            }else if(contorlType==(short)2||contorlType==(short)3){//2：车门上锁  3：车门解锁
+                re=doorsCheck && clampCheck ;
+            }else if(contorlType==(short)4){//4：空调开启
+                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启空调
+                    re=true;
+                }
+            }else if(contorlType==(short)6){//6：座椅加热
+                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启座椅加热
+                    re=true;
+                }
+            }
         }
-
         _logger.info("status:"+tmpCheck +"-"+ clampCheck +"-"+ remoteKeyCheck +"-"+ hazardLightsCheck +"-"+ vehicleSpeedCheck
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
@@ -379,13 +466,13 @@ public class RequestHandler {
      * @return 是否通过
      */
     public boolean verifyRemoteControlDistance(String vin,long eventId,int maxDistance){
-        //目前逻辑 app与car距离小于配置的2000m
+        //目前逻辑 app与car距离小于配置的maxDistance 单位m
         boolean re=false;
         RemoteControl rc=outputHexService.getRemoteControlRecord(vin, eventId);
         GpsData gpsData=gpsDataRepository.findTopByVinOrderBySendingTimeDesc(vin);
 
         if(rc!=null&&gpsData!=null){
-            double distance=gpsTool.getDistance(gpsData.getLatitude(),gpsData.getLongitude(),rc.getLatitude(),rc.getLongitude());
+            double distance=gpsTool.getDistance(gpsData.getLongitude(),gpsData.getLatitude(),rc.getLongitude(),rc.getLatitude());
             _logger.info("app-car distance:"+distance+"   >gpsData.id"+gpsData.getId()+"|>rc.id"+rc.getId());
             if(distance<=maxDistance){
                 re=true;
