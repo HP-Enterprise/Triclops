@@ -170,7 +170,7 @@ public class GpsTool {
 
 
 
-    private static double EARTH_RADIUS = 6378.137;
+    private static double EARTH_RADIUS = 6378137;
 
     private static double rad(double d) {
         return d * Math.PI / 180.0;
@@ -185,6 +185,9 @@ public class GpsTool {
      * @return
      */
     public static double getDistance(double lng1, double lat1, double lng2, double lat2){
+        if(lng1==lng2&&lat1==lat2){
+            return 0;
+        }
         double f = rad((lat1 + lat2) / 2);
         double g = rad((lat1 - lat2) / 2);
         double l = rad((lng1 - lng2) / 2);
