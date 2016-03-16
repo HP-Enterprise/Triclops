@@ -1,5 +1,7 @@
 package com.hp.triclops.entity;
 
+import com.hp.triclops.vo.UserVehicleRelativeExShow;
+
 import javax.persistence.*;
 
 /**
@@ -16,6 +18,18 @@ public class UserVehicleRelativeEx {
     private int vflag;
     private int iflag;
     private int puid;
+
+    public UserVehicleRelativeEx() {
+    }
+
+    public UserVehicleRelativeEx(UserVehicleRelativeExShow userVehicleRelativeExShow) {
+        this.id = userVehicleRelativeExShow.getId();
+        this.uid = userVehicleRelativeExShow.getUid();
+        this.vid = userVehicleRelativeExShow.getVid();
+        this.vflag = userVehicleRelativeExShow.getVflag();
+        this.iflag = userVehicleRelativeExShow.getIflag();
+        this.puid = userVehicleRelativeExShow.getPuid();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
