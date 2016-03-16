@@ -11,6 +11,7 @@ import java.util.List;
  */
 public interface UserVehicleRelativeExRepository extends CrudRepository<UserVehicleRelativeEx,Integer> {
 
+    List<UserVehicleRelativeEx> findByVid(int vid);
 
     @Query("select uv from UserVehicleRelativeEx uv where uv.uid = ?1 and uv.vid = ?2 and uv.iflag = ?3")
     UserVehicleRelativeEx findOneReative(int uid, int vid, int iflag);
