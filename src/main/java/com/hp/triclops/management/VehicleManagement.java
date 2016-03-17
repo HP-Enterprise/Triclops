@@ -41,6 +41,39 @@ public class VehicleManagement {
     }
 
     /**
+     * 根据车辆ID集合查询车辆信息
+     * @param vids 车辆ID集合
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 车辆信息
+     */
+    public Page<VehicleExShow> findByVids(List<Integer> vids, Integer currentPage, Integer pageSize)
+    {
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        if(vids == null || vids.size()==0)
+        {
+            return new PageImpl<>(new ArrayList<>(),p,0);
+        }
+
+        Page<VehicleEx> vehiclePage = vehicleExRepository.findByVids(vids,p);
+
+        List<VehicleEx> list = vehiclePage.getContent();
+        List<VehicleExShow> returnList = new ArrayList<>();
+        for(VehicleEx vehicle:list)
+        {
+            VehicleExShow vehicleExShow = new VehicleExShow(vehicle);
+            returnList.add(vehicleExShow);
+        }
+
+        return new PageImpl<>(returnList,p,vehiclePage.getTotalElements());
+    }
+
+    /**
      * 根据vin查询车辆信息
      * @param vin 车架号
      * @return 车辆信息

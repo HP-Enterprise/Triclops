@@ -23,6 +23,9 @@ public interface VehicleExRepository extends CrudRepository<VehicleEx, String> {
 
     VehicleEx findByTboxsn(String tboxsn);
 
+    @Query("select Ve from VehicleEx Ve where Ve.id in ?1" )
+    Page<VehicleEx> findByVids(List<Integer> vids,Pageable p);
+
     @Query("select Ve from VehicleEx Ve " +
            "where Ve.id in ?1 " +
            "and (?2 is null or Ve.vin like ?2) " +
@@ -45,7 +48,4 @@ public interface VehicleExRepository extends CrudRepository<VehicleEx, String> {
             "and (?7 is null or Ve.license_plate like ?7) " +
             "and (?8 is null or Ve.t_flag=?8) " )
     Page<VehicleEx> selectVehicle(String vin, String tboxsn, String vendor, String model, Date start_date, Date end_date, String license_plate, Integer t_flag, Pageable p);
-
-
-
 }
