@@ -2,6 +2,7 @@ package com.hp.triclops.management;
 
 import com.hp.triclops.entity.VehicleEx;
 import com.hp.triclops.repository.VehicleExRepository;
+import com.hp.triclops.utils.MD5;
 import com.hp.triclops.vo.VehicleExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -282,5 +283,36 @@ public class VehicleManagement {
         return new VehicleExShow(returnVehicle);
     }
 
+    /**
+     * 安防密码校验
+     * @param vid 车辆ID
+     * @param securityPwd 安防密码
+     * @return 校验状态  -2：车辆不存在  -1：未设置安防密码  0：安防密码错误  1：校验成功
+     */
+    public int verifySecurityPwd(int vid,String securityPwd)
+    {
+        MD5 md5 = new MD5();
+        VehicleExShow vehicle = findById(vid);
+
+        if(vehicle == null)
+        {
+            return -2;
+        }
+
+        String security_pwd = vehicle.getSecurity_pwd();
+        if(security_pwd == null)
+        {
+            return -1;
+        }
+
+        String security_salt = vehicle.getSecurity_salt();
+        String pwdVerify = md5.getMD5ofStr(securityPwd + security_salt);
+        if(security_pwd.equals(pwdVerify))
+        {
+            return 1;
+        }
+
+        return 0;
+    }
 
 }
