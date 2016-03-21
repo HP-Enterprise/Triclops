@@ -23,6 +23,9 @@ public interface VehicleExRepository extends CrudRepository<VehicleEx, String> {
 
     VehicleEx findByTboxsn(String tboxsn);
 
+    @Query("select Ve from VehicleEx Ve where Ve.vin = ?1 and Ve.tboxsn = ?2")
+    VehicleEx findByVinAndTbox(String vin, String tboxsn);
+
     @Query("select Ve from VehicleEx Ve where Ve.id in ?1" )
     Page<VehicleEx> findByVids(List<Integer> vids,Pageable p);
 
