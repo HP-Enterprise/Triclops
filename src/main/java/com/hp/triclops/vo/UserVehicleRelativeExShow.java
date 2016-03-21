@@ -16,6 +16,14 @@ public class UserVehicleRelativeExShow {
 
     public UserVehicleRelativeExShow() {}
 
+    public UserVehicleRelativeExShow(int uid, int vid, int vflag, int iflag, int puid) {
+        this.uid = uid;
+        this.vid = vid;
+        this.vflag = vflag;
+        this.iflag = iflag;
+        this.puid = puid;
+    }
+
     public UserVehicleRelativeExShow(UserVehicleRelativeEx userVehicleRelativeEx) {
         this.id = userVehicleRelativeEx.getId();
         this.uid = userVehicleRelativeEx.getUid();
