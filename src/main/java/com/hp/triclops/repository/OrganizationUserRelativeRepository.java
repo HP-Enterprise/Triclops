@@ -21,8 +21,8 @@ public interface OrganizationUserRelativeRepository extends CrudRepository<Organ
     @Query("select distinct ou.oid from OrganizationUserRelative ou where ou.uid = ?1 ")
     List<Integer> findOidByUid(int uid);
 
-    @Query("select distinct ou.uid from OrganizationUserRelative ou where ou.oid in ?1 ")
-    List<Integer> findUidByOids(List<Integer> oids);
+    @Query("select distinct ou.uid from OrganizationUserRelative ou where ou.oid = ?1 ")
+    List<Integer> findUidByOids(int oid);
 
     @Query("select count(*) from OrganizationUserRelative ou where ou.oid = ?1 ")
     int getOrgUserNum(int oid);
