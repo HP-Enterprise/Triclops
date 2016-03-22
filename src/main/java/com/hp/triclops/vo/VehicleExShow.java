@@ -25,9 +25,9 @@ public class VehicleExShow {
     private Integer t_flag;
     private String security_pwd;
     private String security_salt;
+    private Integer vflag;
 
-    public VehicleExShow() {
-    }
+    public VehicleExShow() {}
 
     public VehicleExShow(VehicleEx vehicleEx) {
 
@@ -201,5 +201,13 @@ public class VehicleExShow {
 
     public void setSecurity_salt(String security_salt) {
         this.security_salt = security_salt;
+    }
+
+    public Integer getVflag() {
+        return vflag;
+    }
+
+    public void setVflag(Integer vflag) {
+        this.vflag = vflag;
     }
 }
