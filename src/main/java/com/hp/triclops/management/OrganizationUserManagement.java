@@ -4,6 +4,9 @@ import com.hp.triclops.entity.OrganizationUserRelative;
 import com.hp.triclops.repository.OrganizationUserRelativeRepository;
 import com.hp.triclops.vo.OrganizationUserRelativeShow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -89,6 +92,28 @@ public class OrganizationUserManagement {
         List<Integer> uids = organizationUserRelativeRepository.findUidByOids(oid);
 
         return uids;
+    }
+
+    /**
+     * 查询特定用户集合外的组织成员
+     * @param oid 组织ID
+     * @param uids 特定用户ID集合
+     * @return 组织成员ID集合
+     */
+    public Page<Integer> findUidsByOid(int oid, List<Integer> uids, Integer currentPage, Integer pageSize)
+    {
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        if(uids.size()==0)
+        {
+            uids.add(0);
+        }
+
+        return organizationUserRelativeRepository.findUidByOids(oid,uids,p);
     }
 
     /**
