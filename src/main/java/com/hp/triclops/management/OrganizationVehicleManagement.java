@@ -49,18 +49,13 @@ public class OrganizationVehicleManagement {
     }
 
     /**
-     * 查询组织集合中的车辆
-     * @param oids 组织ID集合
+     * 查询组织中的车辆
+     * @param oid 组织ID
      * @return 车辆ID集合
      */
-    public List<Integer> findVidByOids(List<Integer> oids)
+    public List<Integer> findVidsByOid(int oid)
     {
-        List<Integer> list = new ArrayList<>();
-        if(oids==null || oids.size()==0)
-        {
-            return list;
-        }
-        list = organisationVehicleRelativeExRepository.findVidByOids(oids);
+        List<Integer> list = organisationVehicleRelativeExRepository.findVidsByOid(oid);
 
         return list;
     }
