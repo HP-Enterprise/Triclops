@@ -142,9 +142,7 @@ public class VehicleManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        List<Integer> oids = new ArrayList<>();
-        oids.add(oid);
-        List<Integer> vids = organizationVehicleManagement.findVidByOids(oids);
+        List<Integer> vids = organizationVehicleManagement.findVidsByOid(oid);
         if(vids == null || vids.size()==0)
         {
             return new PageImpl<>(new ArrayList<>(),p,0);
@@ -268,6 +266,53 @@ public class VehicleManagement {
         {
             vehicle.blur();
             returnList.add(vehicle);
+        }
+
+        return new PageImpl<>(returnList,p,vehiclePage.getTotalElements());
+    }
+
+    /**
+     * 条件查询组织外的车辆
+     * @param oid 组织ID
+     * @param vin 车架号
+     * @param tboxsn tbox码
+     * @param vendor 厂家
+     * @param model 型号
+     * @param start_date 生产日期开始范围
+     * @param end_date 生产日期结束范围
+     * @param license_plate 车牌号
+     * @param t_flag 是否可用 0：车辆未禁用 1：已禁用'
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 车辆信息集合
+     */
+    public Page<VehicleExShow> selectVehicleNotInOrg(int oid, String vin, String tboxsn, String vendor, String model, Date start_date, Date end_date, String license_plate, Integer t_flag, Integer currentPage, Integer pageSize)
+    {
+        if(vin!=null) vin = "%" + vin + "%";
+        if(tboxsn!=null) tboxsn = "%" + tboxsn + "%";
+        if(vendor!=null) vendor = "%" + vendor + "%";
+        if(model!=null) model = "%" + model + "%";
+        if(license_plate!=null) license_plate = "%" + license_plate + "%";
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        List<Integer> vids = organizationVehicleManagement.findVidsByOid(oid);
+        if(vids.size()==0)
+        {
+            vids.add(0);
+        }
+        Page<VehicleEx> vehiclePage = vehicleExRepository.selectVehicleAbsent(vids,vin,tboxsn,vendor,model,start_date,end_date,license_plate,t_flag,p);
+
+        List<VehicleEx> list = vehiclePage.getContent();
+        List<VehicleExShow> returnList = new ArrayList<>();
+        for(VehicleEx vehicle:list)
+        {
+            VehicleExShow vehicleExShow = new VehicleExShow(vehicle);
+            vehicleExShow.blur();
+            returnList.add(vehicleExShow);
         }
 
         return new PageImpl<>(returnList,p,vehiclePage.getTotalElements());
