@@ -103,9 +103,7 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        List<Integer> oids = new ArrayList<>();
-        oids.add(oid);
-        List<Integer> uids = organizationUserManagement.findUidByOids(oids);
+        List<Integer> uids = organizationUserManagement.findUidsByOid(oid);
         if(uids == null || uids.size()==0)
         {
             return new PageImpl<>(new ArrayList<>(),p,0);
@@ -191,6 +189,47 @@ public class UserManagement {
     }
 
     /**
+     * 条件查询组织外的用户
+     * @param name 用户名
+     * @param gender 性别
+     * @param nick 昵称
+     * @param phone 电话号码
+     * @param isVerified 是否已验证 0：未验证 1：已验证
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 车辆信息集合
+     */
+    public Page<UserExShow> selectUserNotInOrg(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    {
+        if(name!=null) name = "%" + name + "%";
+        if(nick!=null) nick = "%" + nick + "%";
+        if(phone!=null) phone = "%" + phone + "%";
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        List<Integer> uids = organizationUserManagement.findUidsByOid(oid);
+        if(uids.size()==0)
+        {
+            uids.add(0);
+        }
+        Page<UserEx> userPage = userExRepository.selectUserAbsent(uids,name,gender,nick,phone,isVerified,p);
+
+        List<UserEx> list = userPage.getContent();
+        List<UserExShow> returnList = new ArrayList<>();
+        for(UserEx user:list)
+        {
+            UserExShow userExShow = new UserExShow(user);
+            userExShow.blur();
+            returnList.add(userExShow);
+        }
+
+        return new PageImpl<>(returnList,p,userPage.getTotalElements());
+    }
+
+    /**
      * 条件查询用户（用户注册查询）
      * @param name 用户名
      * @param gender 性别
@@ -221,5 +260,7 @@ public class UserManagement {
 
         return  new PageImpl<>(returnList,p,userPage.getTotalElements());
     }
+
+
 
 }

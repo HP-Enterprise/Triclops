@@ -80,20 +80,15 @@ public class OrganizationUserManagement {
     }
 
     /**
-     * 查询组织集合中的成员ID
-     * @param oids 组织ID集合
+     * 查询组织中的成员ID
+     * @param oid 组织ID
      * @return 用户ID集合
      */
-    public List<Integer> findUidByOids(List<Integer> oids)
+    public List<Integer> findUidsByOid(int oid)
     {
-        List<Integer> list = new ArrayList<>();
-        if(oids==null || oids.size()==0)
-        {
-            return list;
-        }
-        list = organizationUserRelativeRepository.findUidByOids(oids);
+        List<Integer> uids = organizationUserRelativeRepository.findUidByOids(oid);
 
-        return list;
+        return uids;
     }
 
     /**
