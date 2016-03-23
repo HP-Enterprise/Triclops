@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Teemol on 2016/1/22.
@@ -72,6 +73,19 @@ public class OrganizationManagement {
             return null;
         return new OrganizationShow(organizationEx);
     }
+
+    public List<OrganizationShow> findByIds(List<Integer> oids)
+    {
+        if(oids==null || oids.size()==1)
+        {
+            oids.add(0);
+        }
+        List<OrganizationEx> organizationExs = organizationExRepository.findByIds(oids);
+        List<OrganizationShow> returnList = organizationExs.stream().map(OrganizationShow::new).collect(Collectors.toList());
+
+        return returnList;
+    }
+
 
     /**
      * 根据组织简码查询
