@@ -248,14 +248,15 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserExShow> userPage =  adminSelect(name,gender,nick,phone,isVerified,currentPage,pageSize);
+        Page<UserEx> userPage =  userExRepository.registSelect(name,gender,nick,phone,isVerified,p);
 
-        List<UserExShow> list = userPage.getContent();
+        List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
-        for(UserExShow user:list)
+        for(UserEx user:list)
         {
-            user.blur();   // 信息过滤
-            returnList.add(user);
+            UserExShow userExShow = new UserExShow(user);
+            userExShow.blur();
+            returnList.add(userExShow);
         }
 
         return  new PageImpl<>(returnList,p,userPage.getTotalElements());
