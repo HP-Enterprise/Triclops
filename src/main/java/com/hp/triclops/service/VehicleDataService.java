@@ -10,6 +10,7 @@ import com.hp.triclops.entity.*;
 import com.hp.triclops.repository.*;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.Page;
+import com.hp.triclops.utils.SMSHttpTool;
 import com.hp.triclops.vo.RealTimeDataShow;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -48,6 +49,10 @@ public class VehicleDataService {
 
     @Autowired
     RemoteControlRespositoryDao remoteControlRespositoryDao;
+    @Autowired
+    TBoxRepository tBoxRepository;
+    @Autowired
+    SMSHttpTool smsHttpTool;
     /**
      * 下发参数设置命令
      * @param uid user id
@@ -187,6 +192,11 @@ public class VehicleDataService {
     private void wakeup(String vin){
         //本部分代码为调用外部唤醒接口
         _logger.info(" wake up tbox"+vin);
+        TBox tBox=tBoxRepository.findByVin(vin);
+        if(tBox!=null){
+            String tboxMobile=tBox.getMobile();
+            smsHttpTool.doHttp(tboxMobile,"WAKEUP");
+        }
     }
 
     /**
