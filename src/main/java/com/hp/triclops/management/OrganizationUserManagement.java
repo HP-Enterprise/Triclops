@@ -89,7 +89,7 @@ public class OrganizationUserManagement {
      */
     public List<Integer> findUidsByOid(int oid)
     {
-        List<Integer> uids = organizationUserRelativeRepository.findUidByOids(oid);
+        List<Integer> uids = organizationUserRelativeRepository.findUidsByOid(oid);
 
         return uids;
     }
@@ -100,20 +100,14 @@ public class OrganizationUserManagement {
      * @param uids 特定用户ID集合
      * @return 组织成员ID集合
      */
-    public Page<Integer> findUidsByOid(int oid, List<Integer> uids, Integer currentPage, Integer pageSize)
+    public List<Integer> findUidsByOid(int oid, List<Integer> uids)
     {
-        currentPage = currentPage==null?1:currentPage;
-        currentPage = currentPage<=0?1:currentPage;
-        pageSize = pageSize==null?10:pageSize;
-        pageSize = pageSize<=0?10:pageSize;
-        Pageable p = new PageRequest(currentPage-1,pageSize);
-
         if(uids.size()==0)
         {
             uids.add(0);
         }
 
-        return organizationUserRelativeRepository.findUidByOids(oid,uids,p);
+        return organizationUserRelativeRepository.findUidsByOid(oid,uids);
     }
 
     /**

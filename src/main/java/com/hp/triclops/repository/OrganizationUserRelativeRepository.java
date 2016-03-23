@@ -1,9 +1,6 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.OrganizationUserRelative;
-import com.hp.triclops.entity.UserEx;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.CrudRepository;
@@ -25,10 +22,10 @@ public interface OrganizationUserRelativeRepository extends CrudRepository<Organ
     List<Integer> findOidByUid(int uid);
 
     @Query("select distinct ou.uid from OrganizationUserRelative ou where ou.oid = ?1 ")
-    List<Integer> findUidByOids(int oid);
+    List<Integer> findUidsByOid(int oid);
 
     @Query("select distinct ou.uid from OrganizationUserRelative ou where ou.oid = ?1 and ou.uid not in ?2 ")
-    Page<Integer> findUidByOids(int oid, List<Integer> uids, Pageable p);
+    List<Integer> findUidsByOid(int oid, List<Integer> uids);
 
     @Query("select count(*) from OrganizationUserRelative ou where ou.oid = ?1 ")
     int getOrgUserNum(int oid);
