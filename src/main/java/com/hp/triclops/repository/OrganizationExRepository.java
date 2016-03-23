@@ -28,5 +28,8 @@ public interface OrganizationExRepository extends CrudRepository<OrganizationEx,
 
     OrganizationEx findById(int id);
 
+    @Query("select o from OrganizationEx o where o.id in ?1 " )
+    List<OrganizationEx> findByIds(List<Integer> oids);
+
     OrganizationEx findByBreCode(String breCode);
 }
