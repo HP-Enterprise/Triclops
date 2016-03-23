@@ -54,6 +54,27 @@ public class UserManagement {
     }
 
     /**
+     * 查询用户信息
+     * @param uids 用户ID集合
+     * @return 用户信息
+     */
+    public List<UserExShow> findByIds(List<Integer> uids)
+    {
+        if(uids==null || uids.size()==0)
+        {
+            uids.add(0);
+        }
+        List<UserEx> users = userExRepository.findByIds(uids);
+        List<UserExShow> returnUsers = new ArrayList<>();
+        for(UserEx user:users)
+        {
+            returnUsers.add(new UserExShow(user));
+        }
+
+        return returnUsers;
+    }
+
+    /**
      * 根据用户名查询用户信息
      * @param name 用户名
      * @return 用户信息
