@@ -47,6 +47,7 @@ public class TBoxManagement {
         if(vid!=null)
         {
             tBoxExShow.setVid(null);
+            tBoxExShow.setVin(null);
             saveTBox(tBoxExShow);
         }
     }

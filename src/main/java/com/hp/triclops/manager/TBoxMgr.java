@@ -56,16 +56,6 @@ public class TBoxMgr {
     }
 
     /**
-     * 删除Tbox
-     * @param tbox tbox对象
-     */
-    public void deleteTbox(TBox tbox){
-        if(this.findTboxById(tbox.getId()) != null){
-            this.tBoxRepository.delete(tbox);
-        }
-    }
-
-    /**
      * 修改TBox
      * @param tbox tobx对象
      * @return tbox对象

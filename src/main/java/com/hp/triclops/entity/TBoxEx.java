@@ -23,6 +23,8 @@ public class TBoxEx {
     private String mobile;
     private String remark;
 
+    public TBoxEx() {}
+
     public TBoxEx(TBoxExShow tBoxExShow) {
         this.id = tBoxExShow.getId();
         this.vid = tBoxExShow.getVid();
