@@ -75,26 +75,6 @@ public class TboxTest {
     }
 
     /**
-     * 删除TBox
-     */
-    @Test
-    public void deleteTBox(){
-        TBoxMgr tBoxMgr = new TBoxMgr();
-        tBoxMgr.setAppCtxAndInit(this.appContext);
-
-       //先新增一条tbox信息
-        TBox insertTbox = new TBox();
-        insertTbox.setT_sn("FG099111");
-        insertTbox.setVin("VIN00111");
-        tBoxMgr.addTBox(insertTbox);
-
-        //删除tbox信息
-        TBox deleteTbox = tBoxMgr.fingTboxByVin("VIN00111");
-        tBoxMgr.deleteTbox(deleteTbox);
-
-    }
-
-    /**
      * 查找TBox
      */
     @Test

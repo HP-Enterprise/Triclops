@@ -349,7 +349,7 @@ public class VehicleManagement {
     public void unbindTbox(int id)
     {
         VehicleExShow vehicleExShow = findById(id);
-        vehicleExShow.setTboxsn("");
+        vehicleExShow.setTboxsn(null);
         modifyVehicle(vehicleExShow);
     }
 
