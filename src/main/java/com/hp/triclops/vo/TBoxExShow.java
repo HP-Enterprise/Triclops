@@ -1,5 +1,7 @@
 package com.hp.triclops.vo;
 
+import com.hp.triclops.entity.TBoxEx;
+
 import java.util.Date;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Date;
 public class TBoxExShow {
 
     private int id;
-    private String vid;
+    private Integer vid;
     private String t_sn;
     private String vin;
     private int is_activated;
@@ -16,6 +18,18 @@ public class TBoxExShow {
     private String imei;
     private String mobile;
     private String remark;
+
+    public TBoxExShow(TBoxEx tBoxEx) {
+        this.id = tBoxEx.getId();
+        this.vid = tBoxEx.getVid();
+        this.t_sn = tBoxEx.getT_sn();
+        this.vin = tBoxEx.getVin();
+        this.is_activated = tBoxEx.getIs_activated();
+        this.activation_time = tBoxEx.getActivation_time();
+        this.imei = tBoxEx.getImei();
+        this.mobile = tBoxEx.getMobile();
+        this.remark = tBoxEx.getRemark();
+    }
 
     public int getId() {
         return id;
@@ -25,11 +39,11 @@ public class TBoxExShow {
         this.id = id;
     }
 
-    public String getVid() {
+    public Integer getVid() {
         return vid;
     }
 
-    public void setVid(String vid) {
+    public void setVid(Integer vid) {
         this.vid = vid;
     }
 

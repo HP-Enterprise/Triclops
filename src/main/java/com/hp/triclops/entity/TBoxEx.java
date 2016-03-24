@@ -1,5 +1,7 @@
 package com.hp.triclops.entity;
 
+import com.hp.triclops.vo.TBoxExShow;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -12,7 +14,7 @@ import java.util.Date;
 public class TBoxEx {
 
     private int id;
-    private int vid;
+    private Integer vid;
     private String t_sn;
     private String vin;
     private int is_activated;
@@ -20,6 +22,18 @@ public class TBoxEx {
     private String imei;
     private String mobile;
     private String remark;
+
+    public TBoxEx(TBoxExShow tBoxExShow) {
+        this.id = tBoxExShow.getId();
+        this.vid = tBoxExShow.getVid();
+        this.t_sn = tBoxExShow.getT_sn();
+        this.vin = tBoxExShow.getVin();
+        this.is_activated = tBoxExShow.getIs_activated();
+        this.activation_time = tBoxExShow.getActivation_time();
+        this.imei = tBoxExShow.getImei();
+        this.mobile = tBoxExShow.getMobile();
+        this.remark = tBoxExShow.getRemark();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +48,11 @@ public class TBoxEx {
 
     @Basic
     @Column(name = "vid", nullable = true, insertable = true, updatable = true)
-    public int getVid() {
+    public Integer getVid() {
         return vid;
     }
 
-    public void setVid(int vid) {
+    public void setVid(Integer vid) {
         this.vid = vid;
     }
 

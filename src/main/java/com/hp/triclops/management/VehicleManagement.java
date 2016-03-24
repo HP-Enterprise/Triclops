@@ -343,6 +343,17 @@ public class VehicleManagement {
     }
 
     /**
+     * 解绑TBox
+     * @param id 车辆ID
+     */
+    public void unbindTbox(int id)
+    {
+        VehicleExShow vehicleExShow = findById(id);
+        vehicleExShow.setTboxsn("");
+        modifyVehicle(vehicleExShow);
+    }
+
+    /**
      * 安防密码校验
      * @param vid 车辆ID
      * @param securityPwd 安防密码
