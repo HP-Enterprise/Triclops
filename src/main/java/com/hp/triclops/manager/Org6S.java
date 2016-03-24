@@ -18,9 +18,6 @@ public class Org6S {
 
     private int oid;
 
-
-
-
     public ApplicationContext appContext;
 
     public Org6S() {
@@ -69,19 +66,6 @@ public class Org6S {
         Set<Vehicle> vehicleSet = this.organization.getVehicleSet();
         if(vehicleSet.contains(v.getVehicle())) return true;//true为已经绑定，fasle为没有绑定
         return false;
-    }
-
-    /**
-     * 组织里面删除一辆车
-     * @param v 被删除车辆
-     * @return 执行完后的Vehicle6S
-     */
-    public Vehicle6S deleteVehicle(Vehicle6S v){
-        if(isBinding(v)){
-            organization.getVehicleSet().remove(v.getVehicle());
-            organizationRepository.save(organization);
-        }
-        return v;
     }
 
     /**
