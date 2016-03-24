@@ -62,4 +62,19 @@ public class TBoxManagement {
         TBoxEx tBoxEx = tBoxExRepository.findById(id);
         return new TBoxExShow(tBoxEx);
     }
+
+    /**
+     * 根据TBox码查询TBox信息
+     * @param t_sn TBox码
+     * @return TBox信息
+     */
+    public TBoxExShow findByT_sn(String t_sn)
+    {
+        TBoxEx tBoxEx = tBoxExRepository.findByT_sn(t_sn);
+        if(tBoxEx == null)
+        {
+            return null;
+        }
+        return new TBoxExShow(tBoxEx);
+    }
 }
