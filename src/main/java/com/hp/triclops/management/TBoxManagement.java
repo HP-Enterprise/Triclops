@@ -37,6 +37,18 @@ public class TBoxManagement {
     }
 
     /**
+     * 修改TBox信息
+     * @param tBoxExShow TBox信息
+     * @return 修改后的TBox信息
+     */
+    public TBoxExShow modifyTBox(TBoxExShow tBoxExShow)
+    {
+        TBoxEx tBoxEx = new TBoxEx(tBoxExShow);
+        TBoxEx returnTBoxEx = tBoxExRepository.save(tBoxEx);
+        return new TBoxExShow(returnTBoxEx);
+    }
+
+    /**
      * 解绑TBox
      * @param id TBox ID
      */
@@ -60,6 +72,10 @@ public class TBoxManagement {
     public TBoxExShow findById(int id)
     {
         TBoxEx tBoxEx = tBoxExRepository.findById(id);
+        if(tBoxEx == null)
+        {
+            return new TBoxExShow();
+        }
         return new TBoxExShow(tBoxEx);
     }
 

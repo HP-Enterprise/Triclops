@@ -1,6 +1,5 @@
 package com.hp.triclops.manager;
 
-import com.hp.triclops.repository.OrganizationRepository;
 import com.hp.triclops.repository.TBoxRepository;
 
 /**
