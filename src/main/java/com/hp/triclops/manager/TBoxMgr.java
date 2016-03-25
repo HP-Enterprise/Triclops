@@ -39,43 +39,6 @@ public class TBoxMgr {
     }
 
     /**
-     * 添加Tbox
-     * @param tbox tbox对象
-     * @return 执行后的TBox
-     */
-    public TBox addTBox(TBox tbox){
-        if(tbox.getT_sn() != null) {
-            TBox _box_1 = this.tBoxRepository.findByT_sn(tbox.getT_sn());
-            if(_box_1 == null){
-               TBox _tbox = this.tBoxRepository.save(tbox);
-                return _tbox;
-            }
-            return _box_1;
-        }
-        return null;
-    }
-
-    /**
-     * 修改TBox
-     * @param tbox tobx对象
-     * @return tbox对象
-     */
-    public TBox updateTBox(TBox tbox){
-        TBox tboxtemp = this.tBoxRepository.findById(tbox.getId());
-//        TBox tboxtemp = new TBox();
-        if(tbox.getId() != 0) tboxtemp.setId(tbox.getId());
-        if(tbox.getVin() != null) tboxtemp.setVin(tbox.getVin());
-        if(tbox.getT_sn() != null) tboxtemp.setT_sn(tbox.getT_sn());
-        if(tbox.getIs_activated() != 0) tboxtemp.setIs_activated(tbox.getIs_activated());
-        if(tbox.getActivation_time() != null) tboxtemp.setActivation_time(tbox.getActivation_time());
-        if(tbox.getImei() != null) tboxtemp.setImei(tbox.getImei());
-        if(tbox.getMobile() != null) tboxtemp.setMobile(tbox.getMobile());
-        if(tbox.getRemark() != null) tboxtemp.setRemark(tbox.getRemark());
-        TBox _tbox = this.tBoxRepository.save(tboxtemp);
-        return _tbox;
-    }
-
-    /**
      * 根据条件查询TBox列表
      * @param id ID
      * @param t_sn tobx码
@@ -130,10 +93,4 @@ public class TBoxMgr {
     public void setId(int id) {
         this.id = id;
     }
-
-    public TBox fingTboxByVin(String vin){
-        return this.tBoxRepository.findByVin(vin);
-    }
-
-
 }
