@@ -31,18 +31,6 @@ public class Vehicle7 extends Vehicle6S {
         }
     }
 
-    /**
-     * 解绑TBox
-     * @param tbox TBox
-     */
-    public void unbindTbox(TBoxMgr tbox){
-        this.tBoxRepository = this.appContext.getBean(TBoxRepository.class);
-        if(this.isBinding(tbox)){
-            tbox.getTbox().setVehicle(null);
-            this.tBoxRepository.save(tbox.getTbox());
-            this.getVehicle().getTboxSet().remove(tbox.getTbox());
-        }
-    }
 
     /**
      * 判断是否已经绑定

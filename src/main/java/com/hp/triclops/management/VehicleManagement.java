@@ -349,8 +349,11 @@ public class VehicleManagement {
     public void unbindTbox(int id)
     {
         VehicleExShow vehicleExShow = findById(id);
-        vehicleExShow.setTboxsn(null);
-        modifyVehicle(vehicleExShow);
+        if(vehicleExShow!=null)
+        {
+            vehicleExShow.setTboxsn(null);
+            modifyVehicle(vehicleExShow);
+        }
     }
 
     /**
