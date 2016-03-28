@@ -357,6 +357,15 @@ public class VehicleManagement {
     }
 
     /**
+     * 绑定TBox
+     * @param vehicleExShow 车辆信息
+     */
+    public VehicleExShow bindTbox(VehicleExShow vehicleExShow)
+    {
+        return modifyVehicle(vehicleExShow);
+    }
+
+    /**
      * 安防密码校验
      * @param vid 车辆ID
      * @param securityPwd 安防密码
