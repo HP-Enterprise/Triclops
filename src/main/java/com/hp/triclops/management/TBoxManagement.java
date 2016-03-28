@@ -55,12 +55,15 @@ public class TBoxManagement {
     public void unbindTBox(int id)
     {
         TBoxExShow tBoxExShow = findById(id);
-        Integer vid = tBoxExShow.getVid();
-        if(vid!=null)
+        if(tBoxExShow!=null)
         {
-            tBoxExShow.setVid(null);
-            tBoxExShow.setVin(null);
-            saveTBox(tBoxExShow);
+            Integer vid = tBoxExShow.getVid();
+            if(vid!=null)
+            {
+                tBoxExShow.setVid(null);
+                tBoxExShow.setVin(null);
+                saveTBox(tBoxExShow);
+            }
         }
     }
 
@@ -88,6 +91,22 @@ public class TBoxManagement {
     {
         TBoxEx tBoxEx = tBoxExRepository.findByT_sn(t_sn);
         if(tBoxEx == null)
+        {
+            return null;
+        }
+        return new TBoxExShow(tBoxEx);
+    }
+
+    /**
+     * 根据TBox ID和车辆ID查询TBox信息
+     * @param id TBox ID
+     * @param vid 车辆ID
+     * @return TBox信息
+     */
+    public TBoxExShow findByIdAndVid(int id, int vid)
+    {
+        TBoxEx tBoxEx = tBoxExRepository.findByIdAndVid(id,vid);
+        if(tBoxEx==null)
         {
             return null;
         }

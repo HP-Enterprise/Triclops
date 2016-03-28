@@ -54,46 +54,6 @@ public class Vehicle6S{
         this.setVehicle(this.findVehicleById(this.getVid()));
     }
 
-    /**
-     * 设置车辆安防密码
-     * @param securityPwd 安防密码
-     * @return 执行完后的Vehicle
-     */
-    public Vehicle setSecurityPwd(String securityPwd){
-        MD5 md5 = new MD5();
-        String saltStr = SaltStringUtil.getSaltString(4);
-        String pwdWithSaltOfMD5 = md5.getMD5ofStr(securityPwd + saltStr);
-
-        Vehicle vehicle = new Vehicle();
-        vehicle.setSecurity_pwd(pwdWithSaltOfMD5);
-        vehicle.setSecurity_salt(saltStr);
-        return vehicle;
-
-    }
-
-    /**
-     * 检验车辆安防密码
-     * @param vid 车辆id
-     * @param securityPwd 安防密码
-     * @return 检测安防密码成功返回true,失败为false
-     */
-    public boolean verifySecurityPwd(int vid,String securityPwd){
-        boolean flag = false;
-        MD5 md5 = new MD5();
-        Vehicle vehicle=this.vehicleRepository.findById(vid);
-        if(vehicle != null){
-            String pwdVerify = md5.getMD5ofStr(securityPwd + vehicle.getSecurity_salt());
-            if(vehicle.getSecurity_pwd().equals(pwdVerify)){
-                flag = true;
-            }else {
-                flag = false;
-            }
-        }
-        return flag;
-    }
-
-
-
     public Vehicle getVehicle() {
         return vehicle;
     }
