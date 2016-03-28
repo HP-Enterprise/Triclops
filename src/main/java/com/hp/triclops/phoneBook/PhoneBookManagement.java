@@ -16,10 +16,10 @@ import java.util.List;
 public class PhoneBookManagement {
 
     @Autowired
-    private PhoneBookRepositoryDAO phoneBookRepositoryDAO;
+    PhoneBookRepositoryDAO phoneBookRepositoryDAO;
 
     @Autowired
-    private PhoneBookRepository phoneBookRepository;
+    PhoneBookRepository phoneBookRepository;
 
 
     /**
