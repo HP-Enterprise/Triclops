@@ -142,14 +142,14 @@ public class VehicleManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<Integer> vidsPage = organizationVehicleManagement.findVidsByOid(oid,currentPage,pageSize);
-        List<Integer> vids = vidsPage.getContent();
-        if(vids == null || vids.size()==0)
+        List<Integer> vids = organizationVehicleManagement.findVidsByOid(oid);   // 组织中车辆ID集合
+        if(vids.size()==0)
         {
-            return new PageImpl<>(new ArrayList<>(),p,0);
+            vids.add(0);
         }
 
-        List<VehicleEx> list = vehicleExRepository.selectVehicle(vids,vin,tboxsn,vendor,model,start_date,end_date,license_plate,t_flag);
+        Page<VehicleEx> vehiclePage = vehicleExRepository.selectVehicle(vids,vin,tboxsn,vendor,model,start_date,end_date,license_plate,t_flag,p);
+        List<VehicleEx> list= vehiclePage.getContent();
         List<VehicleExShow> returnList = new ArrayList<>();
         for(VehicleEx vehicle:list)
         {
@@ -157,7 +157,7 @@ public class VehicleManagement {
             returnList.add(vehicleExShow);
         }
 
-        return new PageImpl<>(returnList,p,vidsPage.getTotalElements());
+        return new PageImpl<>(returnList,p,vehiclePage.getTotalElements());
     }
 
     /**
