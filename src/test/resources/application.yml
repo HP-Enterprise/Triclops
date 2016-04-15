@@ -19,6 +19,8 @@ com.hp.acquire:
     nettyServerThreadPoolSize: 20
     nettyServerTcpBacklog: 100000
     dataHandlerThreadPoolSize: 20
+#remoteControl maxDistance
+com.hp.remoteControl.maxDistance: 2000
 
 com.hp.mqtt:
     queueName: queue

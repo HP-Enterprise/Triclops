@@ -657,9 +657,9 @@ public class DataTool {
         //某一消息的下发超时时间（秒） 参考文档
         int re=60;
         if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
-            re=60;
+            re=30;
         }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
-            re=60;
+            re=30;
         }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
             re=60;
         }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
