@@ -1,7 +1,9 @@
 package com.hp.triclops.acquire;
 
+import com.hp.data.bean.tbox.DataResendWarningMes;
 import com.hp.data.bean.tbox.FailureMessage;
 import com.hp.data.bean.tbox.DataResendFailureData;
+import com.hp.data.bean.tbox.WarningMessage;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
@@ -1061,5 +1063,95 @@ public class DataTool {
             suffix=suffixesArray[index];
         }
         return suffix;
+    }
+
+    /**
+     * 解码报警数据包
+     * @param msg
+     * @return
+     */
+    public WarningMessage decodeWarningMessage(String msg){
+        WarningMessage warningMessage=new WarningMessage();
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        ByteBuf buf=getByteBuf(bytes2hex(data));
+        warningMessage.setHead((int) buf.readShort());
+        warningMessage.setLength((int) buf.readShort());
+        warningMessage.setTestFlag((short) buf.readByte());
+        warningMessage.setSendingTime((long) buf.readInt());
+        warningMessage.setApplicationID((short) buf.readByte());
+        warningMessage.setMessageID((short) buf.readByte());
+        byte[] imeiBytes=new byte[15];
+        buf.readBytes(imeiBytes);
+        warningMessage.setImei(new String(imeiBytes));
+        warningMessage.setProtocolVersionNumber((short) buf.readByte());
+        byte[] vehicleIDBytes=new byte[2];
+        buf.readBytes(vehicleIDBytes);
+        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setTripID((int) buf.readShort());
+        warningMessage.setReserved((int) buf.readShort());
+        warningMessage.setIsLocation((short) buf.readByte());
+        warningMessage.setLatitude((long) buf.readInt());
+        warningMessage.setLongitude((long) buf.readInt());
+        warningMessage.setSpeed((int) buf.readShort());
+        warningMessage.setHeading((int) buf.readShort());
+        warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setAtaWarning(buf.readByte());
+        if(warningMessage.getSrsWarning()==(byte)1) {
+            warningMessage.setSafetyBeltCount((short) buf.readByte());
+            byte[] speedLastBytes = new byte[300];
+            Integer[] speeds = new Integer[150];
+            buf.readBytes(speedLastBytes);
+            ByteBuf bu=getByteBuf(bytes2hex(speedLastBytes));
+            for(int i=0;i<150;i++){
+                speeds[i]=(int)bu.readShort();
+            }
+            warningMessage.setVehicleSpeedLast(speeds);
+        }
+        return warningMessage;
+    }
+
+    /**
+     * 解码补发报警数据包
+     * @param msg
+     * @return
+     */
+    public DataResendWarningMes decodeResendWarningMessage(String msg){
+        DataResendWarningMes warningMessage=new DataResendWarningMes();
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        ByteBuf buf=getByteBuf(bytes2hex(data));
+        warningMessage.setHead((int) buf.readShort());
+        warningMessage.setLength((int) buf.readShort());
+        warningMessage.setTestFlag((short) buf.readByte());
+        warningMessage.setSendingTime((long) buf.readInt());
+        warningMessage.setApplicationID((short) buf.readByte());
+        warningMessage.setMessageID((short) buf.readByte());
+        byte[] imeiBytes=new byte[15];
+        buf.readBytes(imeiBytes);
+        warningMessage.setImei(new String(imeiBytes));
+        warningMessage.setProtocolVersionNumber((short) buf.readByte());
+        byte[] vehicleIDBytes=new byte[2];
+        buf.readBytes(vehicleIDBytes);
+        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setTripID((int) buf.readShort());
+        warningMessage.setReserved((int) buf.readShort());
+        warningMessage.setIsLocation((short) buf.readByte());
+        warningMessage.setLatitude((long) buf.readInt());
+        warningMessage.setLongitude((long) buf.readInt());
+        warningMessage.setSpeed((int) buf.readShort());
+        warningMessage.setHeading((int) buf.readShort());
+        warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setAtaWarning(buf.readByte());
+        if(warningMessage.getSrsWarning()==(byte)1) {
+            warningMessage.setSafetyBeltCount((short) buf.readByte());
+            byte[] speedLastBytes = new byte[300];
+            Integer[] speeds = new Integer[150];
+            buf.readBytes(speedLastBytes);
+            ByteBuf bu=getByteBuf(bytes2hex(speedLastBytes));
+            for(int i=0;i<150;i++){
+                speeds[i]=(int)bu.readShort();
+            }
+            warningMessage.setVehicleSpeedLast(speeds);
+        }
+        return warningMessage;
     }
 }

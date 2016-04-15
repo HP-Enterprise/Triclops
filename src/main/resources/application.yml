@@ -23,6 +23,9 @@ com.hp.acquire:
 #remoteControl maxDistance
 com.hp.remoteControl.maxDistance: 2000
 
+#remoteControl maxDistance
+com.hp.remoteControl.maxCount: 3
+
 com.hp.mqtt:
     queueName: queue
     host: 127.0.0.1

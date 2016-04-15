@@ -249,9 +249,7 @@ public class DataHandleService {
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
         _logger.info(">>save WarningMessage:" + msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        WarningMessage bean=dp.loadBean(WarningMessage.class);
+        WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
@@ -278,9 +276,7 @@ public class DataHandleService {
     public void saveDataResendWarningMessage(String vin,String msg){
         //报警数据保存
         _logger.info(">>save DataResend WarningMessage:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());

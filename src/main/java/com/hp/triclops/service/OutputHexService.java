@@ -392,9 +392,7 @@ public class OutputHexService {
     public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user){
         //报警数据保存
         _logger.info(">>get WarningMessage For Push:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        WarningMessage bean=dp.loadBean(WarningMessage.class);
+        WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
@@ -438,9 +436,7 @@ public class OutputHexService {
     public void sendWarningMessageSms(String vin,String msg,String phone){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        WarningMessage bean=dp.loadBean(WarningMessage.class);
+        WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
@@ -509,10 +505,7 @@ public class OutputHexService {
     public void sendResendWarningMessageSms(String vin,String msg,String phone){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-
-        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
 
 /*        WarningMessage bean=dp.loadBean(WarningMessage.class);
@@ -584,9 +577,7 @@ public class OutputHexService {
     public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user){
         //报警数据保存
         _logger.info(">>get Resend WarningMessage For Push:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());

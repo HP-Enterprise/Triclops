@@ -314,8 +314,8 @@ public class RealTimeDataShow {
     private String leftRearWindowInformation;
     private String rightFrontWindowInformation;
     private String rightRearWindowInformation;
-    private Short vehicleTemperature;
-    private Short vehicleOuterTemperature;
+    private float vehicleTemperature;
+    private float vehicleOuterTemperature;
     private String leftFrontDoorInformation;
     private String leftRearDoorInformation;
     private String rightFrontDoorInformation;
@@ -483,16 +483,20 @@ public class RealTimeDataShow {
         this.rightRearWindowInformation = rightRearWindowInformation;
     }
 
-    public Short getVehicleTemperature() {
+    public float getVehicleTemperature() {
         return vehicleTemperature;
     }
 
-    public void setVehicleTemperature(Short vehicleTemperature) {
+    public void setVehicleTemperature(float vehicleTemperature) {
         this.vehicleTemperature = vehicleTemperature;
     }
 
-    public Short getVehicleOuterTemperature() {
+    public float getVehicleOuterTemperature() {
         return vehicleOuterTemperature;
+    }
+
+    public void setVehicleOuterTemperature(float vehicleOuterTemperature) {
+        this.vehicleOuterTemperature = vehicleOuterTemperature;
     }
 
     public void setVehicleOuterTemperature(Short vehicleOuterTemperature) {
