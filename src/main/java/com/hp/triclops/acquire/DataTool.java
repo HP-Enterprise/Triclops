@@ -200,13 +200,20 @@ public class DataTool {
         String  avgOil=a/10+"."+a%10;
         return Float.valueOf(avgOil);
     }
-    public Short getInternTrueTmp(short a){
+    public float getInternTrueTmp(short a){
         //得到车内真实温度
-        return a;
+        //分辨率 0.5A，偏移量40，
+        //显示范围： -40°C ~+80°C
+        //上报数据范围： 0~240
+        short t=(short)(a-(short)80);
+        return t*0.5f;
     }
-    public Short getOuterTrueTmp(short a){
-        //得到车外真实温度
-        return (short)(a-(short)40);
+    public float getOuterTrueTmp(short a){
+        //分辨率 0.5A，偏移量40，
+        //显示范围： -40°C ~+80°C
+        //上报数据范围： 0~240
+        short t=(short)(a-(short)80);
+        return t*0.5f;
     }
     public String getWindowStatus(String bita_b){
         //得到车窗状态 传入两个bit的字符表示,
@@ -712,9 +719,7 @@ public class DataTool {
         if(_acm[3]== '0'){//bit0 0 warning MID=55
             sb.append(",55");
         }
-        if(_acm[2]== '0'){//bit0 0 warning MID=120
-            sb.append(",120");
-        }
+
 
         char[] _ic=getBitsFromInteger(bean.getWarnMsg_ic());
         if(_ic[15]== '0'){//bit0 0 warning MID=2
@@ -749,6 +754,9 @@ public class DataTool {
         }
         if(_ic[5]== '0'){//bit0 0 warning MID=149
             sb.append(",149");
+        }
+        if(_ic[4]== '0'){//bit0 0 warning MID=149
+            sb.append(",145");
         }
 
         char[] _escl=getBitsFromShort(bean.getWarnMsg_escl());
@@ -817,6 +825,9 @@ public class DataTool {
         if(_bcm[13]== '0'){//bit0 0 warning MID=139
             sb.append(",139");
         }
+        if(_bcm[12]== '0'){//bit0 0 warning MID=139
+            sb.append(",159");
+        }
 
 
 
@@ -846,10 +857,10 @@ public class DataTool {
 
         char[] _dme=getBitsFromInteger(bean.getWarnMsg_dme());
         if(_dme[15]== '0'){//bit0 0 warning MID=20
-            sb.append(",20");
+            sb.append(",212");
         }
         if(_dme[14]== '0'){//bit0 0 warning MID=21
-            sb.append(",21");
+            sb.append(",39");
         }
         if(_dme[13]== '0'){//bit0 0 warning MID=23
             sb.append(",23");
@@ -864,10 +875,10 @@ public class DataTool {
             sb.append(",95");
         }
         if(_dme[9]== '0'){//bit0 0 warning MID=97
-            sb.append(",97");
+            sb.append(",213");
         }
         if(_dme[8]== '0'){//bit0 0 warning MID=98
-            sb.append(",98");
+            sb.append(",34");
         }
         if(_dme[7]== '0'){//bit0 0 warning MID=141
             sb.append(",141");
@@ -890,9 +901,6 @@ public class DataTool {
         }
         if(_pdc_bsw[6]== '0'){//bit0 0 warning MID=51
             sb.append(",51");
-        }
-        if(_pdc_bsw[5]== '0'){//bit0 0 warning MID=59
-            sb.append(",59");
         }
 
         char[] _sesam=getBitsFromInteger(bean.getWarnMsg_sesam());
@@ -935,8 +943,6 @@ public class DataTool {
         if(_sesam[3]== '0'){//bit0 0 warning MID=142
             sb.append(",142");
         }
-
-
 
 
         char[] _tbox=getBitsFromShort(bean.getWarnMsg_tbox());

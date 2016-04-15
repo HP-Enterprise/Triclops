@@ -198,7 +198,7 @@ public class VehicleDataService {
             wakeup(vin);
             count++;
             try{
-                Thread.sleep(10*1000);//唤醒后等待10s
+                Thread.sleep(30*1000);//唤醒后等待10s
             }catch (InterruptedException e){e.printStackTrace(); }
             //检测连接是否已经建立
             if(hasConnection(vin)){

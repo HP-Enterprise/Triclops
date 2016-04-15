@@ -351,8 +351,8 @@ public class RequestHandler {
 
         RemoteControl rc=outputHexService.getRemoteControlRecord(vin, remoteControlPreconditionResp.getEventID());
         if(rc!=null&&remoteControlPreconditionResp!=null){
-            //根据0619协议
-            short ambientAirTemperature=dataTool.getOuterTrueTmp(remoteControlPreconditionResp.getAmbientAirTemperature());//偏移40
+            //根据0621协议
+            float ambientAirTemperature=dataTool.getInternTrueTmp(remoteControlPreconditionResp.getTempIntern());//偏移40
             if(ambientAirTemperature>-10&&ambientAirTemperature<40){        //温度 -10~40
                 tmpCheck=true;
             }

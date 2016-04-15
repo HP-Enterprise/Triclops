@@ -122,7 +122,7 @@ public class DataHandleService {
         rd.setFuelOil(bean.getFuelOil() * 1f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
-        rd.setServiceIntervall(bean.getServiceIntervall());
+        rd.setServiceIntervall(bean.getServiceIntervall()-32768);//分辨率1KM， 偏移量-32768， 显示范围： -32768 KM-32767KM  上报数据范围：0-65535
 
         rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure() * 2.8f);
         rd.setLeftRearTirePressure(bean.getLeftRearTirePressure() * 2.8f);
@@ -134,7 +134,7 @@ public class DataHandleService {
         rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
         rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
-        rd.setVehicleTemperature((short) 0);//温度按照上报数值-40
+        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//
         rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit 大端传输
 
@@ -148,7 +148,7 @@ public class DataHandleService {
         rd.setDrivingTime(1);
         rd.setOilLife((short) 1);
         rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
-        rd.setMileageRange(1);
+        rd.setMileageRange(bean.getDrivingRange());
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
@@ -194,7 +194,7 @@ public class DataHandleService {
         rd.setFuelOil(bean.getFuelOil() * 1f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
-        rd.setServiceIntervall(bean.getServiceIntervall());
+        rd.setServiceIntervall(bean.getServiceIntervall()-32768);
 
         rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure()*2.8f);
         rd.setLeftRearTirePressure(bean.getLeftRearTirePressure()*2.8f);
@@ -206,7 +206,7 @@ public class DataHandleService {
         rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[2]) + String.valueOf(windows[3])));
         rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[0]) + String.valueOf(windows[1])));
 
-        rd.setVehicleTemperature((short) 0);//温度按照上报数值-40
+        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//
         rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
         char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 bit位置按照大端传输原则
         //
@@ -219,7 +219,7 @@ public class DataHandleService {
         rd.setDrivingTime(1);
         rd.setOilLife((short) 1);
         rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
-        rd.setMileageRange(1);
+        rd.setMileageRange(bean.getDrivingRange());
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
