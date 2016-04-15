@@ -1018,6 +1018,11 @@ public class OutputHexService {
             _logger.info("RemoteControl Rst persistence and push start");
             rc.setStatus(dbResult);
             remoteControlRepository.save(rc);
+            Vehicle vehicle=vehicleRepository.findByVin(vin);
+            if(vehicle!=null){
+                vehicle.setRemoteCount(vehicle.getRemoteCount()+1);
+                vehicleRepository.save(vehicle);
+            }
             String pushMsg=(result==(short)0)?"远程命令执行成功:":"远程命令执行失败:";
             pushMsg=pushMsg+sessionId;
             try{
