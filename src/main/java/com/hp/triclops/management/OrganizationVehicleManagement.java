@@ -4,9 +4,11 @@ import com.hp.triclops.entity.OrganisationVehicleRelativeEx;
 import com.hp.triclops.repository.OrganisationVehicleRelativeExRepository;
 import com.hp.triclops.vo.OrganisationVehicleRelativeExShow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,20 +51,35 @@ public class OrganizationVehicleManagement {
     }
 
     /**
-     * 查询组织集合中的车辆
-     * @param oids 组织ID集合
+     * 查询组织中的车辆
+     * @param oid 组织ID
      * @return 车辆ID集合
      */
-    public List<Integer> findVidByOids(List<Integer> oids)
+    public List<Integer> findVidsByOid(int oid)
     {
-        List<Integer> list = new ArrayList<>();
-        if(oids==null || oids.size()==0)
-        {
-            return list;
-        }
-        list = organisationVehicleRelativeExRepository.findVidByOids(oids);
+        List<Integer> list = organisationVehicleRelativeExRepository.findVidsByOid(oid);
 
         return list;
+    }
+
+    /**
+     * 分页查询组织中的车辆
+     * @param oid 组织ID
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 车辆ID集合
+     */
+    public Page<Integer> findVidsByOid(int oid, Integer currentPage, Integer pageSize)
+    {
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        Page<Integer> vidsPage = organisationVehicleRelativeExRepository.findVidsByOid(oid,p);
+
+        return vidsPage;
     }
 
     /**

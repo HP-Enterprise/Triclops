@@ -4,6 +4,9 @@ import com.hp.triclops.entity.OrganizationUserRelative;
 import com.hp.triclops.repository.OrganizationUserRelativeRepository;
 import com.hp.triclops.vo.OrganizationUserRelativeShow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -80,20 +83,31 @@ public class OrganizationUserManagement {
     }
 
     /**
-     * 查询组织集合中的成员ID
-     * @param oids 组织ID集合
+     * 查询组织中的成员ID
+     * @param oid 组织ID
      * @return 用户ID集合
      */
-    public List<Integer> findUidByOids(List<Integer> oids)
+    public List<Integer> findUidsByOid(int oid)
     {
-        List<Integer> list = new ArrayList<>();
-        if(oids==null || oids.size()==0)
-        {
-            return list;
-        }
-        list = organizationUserRelativeRepository.findUidByOids(oids);
+        List<Integer> uids = organizationUserRelativeRepository.findUidsByOid(oid);
 
-        return list;
+        return uids;
+    }
+
+    /**
+     * 查询特定用户集合外的组织成员
+     * @param oid 组织ID
+     * @param uids 特定用户ID集合
+     * @return 组织成员ID集合
+     */
+    public List<Integer> findUidsByOid(int oid, List<Integer> uids)
+    {
+        if(uids.size()==0)
+        {
+            uids.add(0);
+        }
+
+        return organizationUserRelativeRepository.findUidsByOid(oid,uids);
     }
 
     /**

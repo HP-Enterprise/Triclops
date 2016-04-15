@@ -54,6 +54,27 @@ public class UserManagement {
     }
 
     /**
+     * 查询用户信息
+     * @param uids 用户ID集合
+     * @return 用户信息
+     */
+    public List<UserExShow> findByIds(List<Integer> uids)
+    {
+        if(uids==null || uids.size()==0)
+        {
+            uids.add(0);
+        }
+        List<UserEx> users = userExRepository.findByIds(uids);
+        List<UserExShow> returnUsers = new ArrayList<>();
+        for(UserEx user:users)
+        {
+            returnUsers.add(new UserExShow(user));
+        }
+
+        return returnUsers;
+    }
+
+    /**
      * 根据用户名查询用户信息
      * @param name 用户名
      * @return 用户信息
@@ -103,14 +124,12 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        List<Integer> oids = new ArrayList<>();
-        oids.add(oid);
-        List<Integer> uids = organizationUserManagement.findUidByOids(oids);
+        List<Integer> uids = organizationUserManagement.findUidsByOid(oid);
         if(uids == null || uids.size()==0)
         {
             return new PageImpl<>(new ArrayList<>(),p,0);
         }
-        Page<UserEx> userPage = userExRepository.selectUser(uids,name,gender,nick,phone,isVerified,p);
+        Page<UserEx> userPage = userExRepository.readSelect(uids,name,gender,nick,phone,isVerified,p);
 
         List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
@@ -134,7 +153,7 @@ public class UserManagement {
      * @param pageSize 页面大小
      * @return 车辆信息集合
      */
-    public Page<UserExShow> select(int oid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    public Page<UserExShow> generalSelect(int oid, String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
     {
         currentPage = currentPage==null?1:currentPage;
         currentPage = currentPage<=0?1:currentPage;
@@ -177,7 +196,7 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserEx> userPage =  userExRepository.selectUser(name,gender,nick,phone,isVerified,p);
+        Page<UserEx> userPage =  userExRepository.adminSelect(name,gender,nick,phone,isVerified,p);
 
         List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
@@ -209,17 +228,100 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserExShow> userPage =  adminSelect(name,gender,nick,phone,isVerified,currentPage,pageSize);
+        Page<UserEx> userPage =  userExRepository.registSelect(name,gender,nick,phone,isVerified,p);
 
-        List<UserExShow> list = userPage.getContent();
+        List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
-        for(UserExShow user:list)
+        for(UserEx user:list)
         {
-            user.blur();   // 信息过滤
-            returnList.add(user);
+            UserExShow userExShow = new UserExShow(user);
+            userExShow.blur();
+            returnList.add(userExShow);
         }
 
         return  new PageImpl<>(returnList,p,userPage.getTotalElements());
+    }
+
+    /**
+     * 条件查询特定集合中的用户
+     * @param uids 特定用户ID集合
+     * @param name 用户名
+     * @param gender 性别
+     * @param nick 昵称
+     * @param phone 电话号码
+     * @param isVerified 是否已验证 0：未验证 1：已验证
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 车辆信息集合
+     */
+    public Page<UserExShow> particularSelect(List<Integer> uids,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    {
+        if(name!=null) name = "%" + name + "%";
+        if(nick!=null) nick = "%" + nick + "%";
+        if(phone!=null) phone = "%" + phone + "%";
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        if(uids.size()==0)
+        {
+            uids.add(0);
+        }
+        Page<UserEx> userPage =  userExRepository.particularSelect(uids,name,gender,nick,phone,isVerified,p);
+
+        List<UserEx> list = userPage.getContent();
+        List<UserExShow> returnList = new ArrayList<>();
+        for(UserEx user:list)
+        {
+            UserExShow userExShow = new UserExShow(user);
+            userExShow.blur();
+            returnList.add(userExShow);
+        }
+
+        return  new PageImpl<>(returnList,p,userPage.getTotalElements());
+    }
+
+    /**
+     * 条件查询组织外的用户
+     * @param name 用户名
+     * @param gender 性别
+     * @param nick 昵称
+     * @param phone 电话号码
+     * @param isVerified 是否已验证 0：未验证 1：已验证
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 车辆信息集合
+     */
+    public Page<UserExShow> selectUserNotInOrg(int oid,String name, Integer gender, String nick, String phone, Integer isVerified, Integer currentPage, Integer pageSize)
+    {
+        if(name!=null) name = "%" + name + "%";
+        if(nick!=null) nick = "%" + nick + "%";
+        if(phone!=null) phone = "%" + phone + "%";
+        currentPage = currentPage==null?1:currentPage;
+        currentPage = currentPage<=0?1:currentPage;
+        pageSize = pageSize==null?10:pageSize;
+        pageSize = pageSize<=0?10:pageSize;
+        Pageable p = new PageRequest(currentPage-1,pageSize);
+
+        List<Integer> uids = organizationUserManagement.findUidsByOid(oid);
+        if(uids.size()==0)
+        {
+            uids.add(0);
+        }
+        Page<UserEx> userPage = userExRepository.selectUserAbsent(uids,name,gender,nick,phone,isVerified,p);
+
+        List<UserEx> list = userPage.getContent();
+        List<UserExShow> returnList = new ArrayList<>();
+        for(UserEx user:list)
+        {
+            UserExShow userExShow = new UserExShow(user);
+            userExShow.blur();
+            returnList.add(userExShow);
+        }
+
+        return new PageImpl<>(returnList,p,userPage.getTotalElements());
     }
 
 }

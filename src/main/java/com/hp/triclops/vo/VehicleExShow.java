@@ -25,9 +25,9 @@ public class VehicleExShow {
     private Integer t_flag;
     private String security_pwd;
     private String security_salt;
+    private Integer vflag;
 
-    public VehicleExShow() {
-    }
+    public VehicleExShow() {}
 
     public VehicleExShow(VehicleEx vehicleEx) {
 
@@ -56,29 +56,17 @@ public class VehicleExShow {
     {
         if(vin!=null && vin.length()>6)
         {
-            this.vin = vin.substring(0,vin.length()-6) + "******";
-        }
-        else if(vin!=null)
-        {
-            this.vin = "******";
+            this.vin = vin.substring(0,vin.length()-4) + "****";
         }
 
         if(tboxsn!=null && tboxsn.length()>6)
         {
-            this.tboxsn = tboxsn.substring(0,tboxsn.length()-6) + "******";
-        }
-        else if(tboxsn!=null)
-        {
-            this.license_plate = "******";
+            this.tboxsn = tboxsn.substring(0,tboxsn.length()-4) + "****";
         }
 
         if(license_plate!=null && license_plate.length()>3)
         {
             this.license_plate = license_plate.substring(0,license_plate.length()-3) + "***";
-        }
-        else if(license_plate!=null)
-        {
-            this.license_plate = "******";
         }
 
         this.buystore = null;
@@ -213,5 +201,13 @@ public class VehicleExShow {
 
     public void setSecurity_salt(String security_salt) {
         this.security_salt = security_salt;
+    }
+
+    public Integer getVflag() {
+        return vflag;
+    }
+
+    public void setVflag(Integer vflag) {
+        this.vflag = vflag;
     }
 }
