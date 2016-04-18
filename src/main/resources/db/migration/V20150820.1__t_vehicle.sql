@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS t_vehicle
   t_flag int COMMENT '0 车辆未禁用 1 已禁用',
   security_pwd varchar(32) DEFAULT NULL COMMENT '安防密码',
   security_salt varchar(4) DEFAULT NULL COMMENT 'salt',
+  remote_count  int(5) default 0 COMMENT ' 车辆远程控制计数',
   PRIMARY KEY (id),
   UNIQUE key (vin)
 --   UNIQUE key (tboxsn)

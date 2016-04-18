@@ -392,9 +392,7 @@ public class OutputHexService {
     public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user){
         //报警数据保存
         _logger.info(">>get WarningMessage For Push:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        WarningMessage bean=dp.loadBean(WarningMessage.class);
+        WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
@@ -438,9 +436,7 @@ public class OutputHexService {
     public void sendWarningMessageSms(String vin,String msg,String phone){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        WarningMessage bean=dp.loadBean(WarningMessage.class);
+        WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
@@ -509,10 +505,7 @@ public class OutputHexService {
     public void sendResendWarningMessageSms(String vin,String msg,String phone){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-
-        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
 
 /*        WarningMessage bean=dp.loadBean(WarningMessage.class);
@@ -584,9 +577,7 @@ public class OutputHexService {
     public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user){
         //报警数据保存
         _logger.info(">>get Resend WarningMessage For Push:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        DataResendWarningMes bean=dp.loadBean(DataResendWarningMes.class);
+        DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
@@ -996,6 +987,18 @@ public class OutputHexService {
     }
 
     /**
+     * 返回远程控制记录
+     * @param vin vin
+     * @param eventId eventId
+     */
+    public RemoteControl getRemoteControlRecord(String vin,long eventId){
+        String sessionId=49+"-"+eventId;
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        return rc;
+    }
+
+
+    /**
      * 处理远程控制结果上行（持久化 push）
      * @param vin vin
      * @param eventId eventId
@@ -1015,6 +1018,11 @@ public class OutputHexService {
             _logger.info("RemoteControl Rst persistence and push start");
             rc.setStatus(dbResult);
             remoteControlRepository.save(rc);
+            Vehicle vehicle=vehicleRepository.findByVin(vin);
+            if(vehicle!=null){
+                vehicle.setRemoteCount(vehicle.getRemoteCount()+1);
+                vehicleRepository.save(vehicle);
+            }
             String pushMsg=(result==(short)0)?"远程命令执行成功:":"远程命令执行失败:";
             pushMsg=pushMsg+sessionId;
             try{

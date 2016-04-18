@@ -167,4 +167,49 @@ public class GpsTool {
         }
         return gpsData;//success返回1 faild返回0
     }
+
+
+
+    private static double EARTH_RADIUS = 6378137;
+
+    private static double rad(double d) {
+        return d * Math.PI / 180.0;
+    }
+
+    /**
+     * 通过经纬度获取距离(单位：米)
+     * @param lng1
+     * @param lat1
+     * @param lng2
+     * @param lat2
+     * @return
+     */
+    public static double getDistance(double lng1, double lat1, double lng2, double lat2){
+        if(lng1==lng2&&lat1==lat2){
+            return 0;
+        }
+        double f = rad((lat1 + lat2) / 2);
+        double g = rad((lat1 - lat2) / 2);
+        double l = rad((lng1 - lng2) / 2);
+        double sg =  Math.sin(g);
+        double sl =  Math.sin(l);
+        double sf =  Math.sin(f);
+        double s, c, w, r, d, h1, h2;
+        double fl = 1/298.257;//扁率
+        int alx = 1;
+        sg = sg*sg;
+        sl = sl*sl;
+        sf = sf*sf;
+
+        s = sg * (1 - sl)*alx + (1 - sf) * sl*alx;
+        c = (1 - sg) * (1 - sl)*alx + sf * sl*alx;
+        w = Math.atan(Math.sqrt(s / c));
+        r = Math.sqrt(s * c) / w;
+        d = 2 * w * EARTH_RADIUS;
+        h1 = (3 * r - 1) / 2 / c;
+        h2 = (3 * r + 1) / 2 / s;
+        return d * (1 + fl * (h1 * sf * (1 - sg) - h2 * (1 - sf) * sg));
+    }
+
+
 }

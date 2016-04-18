@@ -22,6 +22,8 @@ public class RemoteControl {
      */
     private Short acTemperature;
     private Short status;
+    private double latitude;//发起命令APP的纬度
+    private double longitude;//发起命令APP经度
     private String remark;
 
     private Short available;// 0 失效 1 有效 默认为1
@@ -125,5 +127,21 @@ public class RemoteControl {
 
     public void setAvailable(Short available) {
         this.available = available;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

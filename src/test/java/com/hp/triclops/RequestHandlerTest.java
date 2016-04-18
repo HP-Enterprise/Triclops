@@ -109,7 +109,7 @@ public class RequestHandlerTest {
     public void test_handleRemoteControlPreconditionResp() {
         //测试
         String byteString="23 23 00 41 00 56 04 BF DA 31 02 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 56 1E 16 3D 56 04 BF DA 3C 03 E8 41 01 2C 01 5E 50 50 AA AA AA 23 28 AA AA AA AA AA AA AA AA AA AA AA AA AA 05 CB ";
-        requestHandler.handleRemoteControlRequest(byteString, "12345678919991234");
+        requestHandler.handleRemoteControlRequest(byteString, "12345678919991234",1000);
 
     }
     @Test
@@ -118,7 +118,7 @@ public class RequestHandlerTest {
     public void test_handleRemoteControlAck() {
         //测试
         String byteString="23 23 00 21 00 56 04 BF DA 31 04 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 56 1E 16 3D 01 71 ";
-        requestHandler.handleRemoteControlRequest(byteString, "12345678919991234");
+        requestHandler.handleRemoteControlRequest(byteString, "12345678919991234",1000);
     }
 
     @Ignore("Not suitable for travis-ci")
@@ -128,7 +128,7 @@ public class RequestHandlerTest {
     public void test_handleRemoteControlRst() {
         //测试
         String byteString="23 23 00 22 00 56 04 BF DA 31 05 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 56 1E 16 3D 00 02 70 ";
-        requestHandler.handleRemoteControlRequest(byteString, "12345678919991234");
+        requestHandler.handleRemoteControlRequest(byteString, "12345678919991234",1000);
     }
 
     @Test

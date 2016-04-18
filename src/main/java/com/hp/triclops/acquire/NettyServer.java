@@ -35,10 +35,12 @@ public class NettyServer {
     private Logger _logger;
     private  ScheduledExecutorService scheduledService;
     private int backlog;
+    private int maxDistance;
 
-    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,ScheduledExecutorService scheduledService) {
+    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,int maxDistance,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,ScheduledExecutorService scheduledService) {
         this.channels=cs;
         this.connections=connections;
+        this.maxDistance=maxDistance;
         this.backlog=_backlog;
         this.socketRedis=s;
         this.dataTool=dt;
@@ -63,7 +65,7 @@ public class NettyServer {
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024, 2, 2, 2, 0));
-                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, socketRedis, dataTool, requestHandler, outputHexService, scheduledService));
+                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, maxDistance,socketRedis, dataTool, requestHandler, outputHexService, scheduledService));
                                 connectionCount++;
                                 // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }

@@ -16,6 +16,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -49,20 +50,39 @@ public class VehicleDataService {
 
     @Autowired
     RemoteControlRespositoryDao remoteControlRespositoryDao;
+
+    @Value("${com.hp.remoteControl.maxCount}")
+    private int _maxCount;//远程控制最大次数
+
+    @Value("${com.hp.remoteControl.maxDistance}")
+    private int _maxDistance;//远程控制最大距离
+
     @Autowired
     TBoxRepository tBoxRepository;
     @Autowired
     SMSHttpTool smsHttpTool;
+
     /**
      * 下发参数设置命令
      * @param uid user id
      * @param vin vin
      * @param cType 控制类别 0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：远程寻车
      * @param acTmp 空调温度 cType=4时有效
+     * @param position app position
      * @return 持久化后的RemoteControl对象
      */
-    public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp){
+    public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp,Position position){
+
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
+        System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
+        if(isRemoteMaxCountReached(vin)){
+            _logger.info("vin:"+vin+" remote started max count reached,abort remote Control");
+          return null;
+        }
+        if(!initCheck(vin,cType)){
+            _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
+            return null;
+        }
         if(!hasConnection(vin)){
             _logger.info("vin:"+vin+" have not connection,do wake up...");
             remoteWakeUp(vin);
@@ -70,7 +90,7 @@ public class VehicleDataService {
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
         if(hasConnection(vin)){
             _logger.info("vin:"+vin+" have connection,sending command...");
-            Long eventId=(long)dataTool.getCurrentSeconds();
+            Long eventId= (long) dataTool.getCurrentSeconds();
             RemoteControl rc=new RemoteControl();
             rc.setUid(uid);
             rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
@@ -79,6 +99,8 @@ public class VehicleDataService {
             rc.setControlType(cType);
             rc.setAcTemperature(acTmp);
             rc.setStatus((short) 0);
+            rc.setLongitude(position.getLongitude());
+            rc.setLatitude(position.getLatitude());
             rc.setRemark("");
             rc.setAvailable((short)1);
             remoteControlRepository.save(rc);
@@ -176,7 +198,7 @@ public class VehicleDataService {
             wakeup(vin);
             count++;
             try{
-                Thread.sleep(10*1000);//唤醒后等待10s
+                Thread.sleep(30*1000);//唤醒后等待10s
             }catch (InterruptedException e){e.printStackTrace(); }
             //检测连接是否已经建立
             if(hasConnection(vin)){
@@ -210,6 +232,69 @@ public class VehicleDataService {
         Channel ch=AcquirePort.channels.get(vin);
         if(ch!=null){
             re=true;
+        }
+        return re;
+    }
+
+    /**
+     * initCheck
+     * @param vin vin
+     * @return 校验
+     */
+    private boolean initCheck(String vin,short cType){
+        //initCheck
+        if(cType!=(short)0){//只有远程启动发动机才需要做initCheck
+            return true;
+        }
+        boolean vehicleSpeedCheck=false;
+        boolean sunroofCheck=false;
+        boolean windowsCheck=false;
+        boolean doorsCheck=false;
+        boolean trunkCheck=false;
+        boolean bonnetCheck=false;
+        RealTimeReportData realData=realTimeReportDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        GpsData gpsData=gpsDataRepository.findTopByVinOrderBySendingTimeDesc(vin);
+        if(realData!=null&&gpsData!=null) {
+            if (realData.getLeftFrontDoorInformation().equals("1") && realData.getLeftRearDoorInformation().equals("1") &&
+                    realData.getRightFrontDoorInformation().equals("1") && realData.getRightRearDoorInformation().equals("1")) {
+                doorsCheck = true;
+            }//左前车门信息 0开1关2保留3信号异常
+            if (realData.getLeftFrontWindowInformation().equals("2") && realData.getLeftRearWindowInformation().equals("2")
+                    && realData.getRightFrontWindowInformation().equals("2") && realData.getRightRearWindowInformation().equals("2")) {
+                windowsCheck = true;
+            }
+            if (realData.getSkylightState().equals("2")) {
+                sunroofCheck = true;
+            }
+            if (realData.getTrunkLidState().equals("1")) {
+                trunkCheck = true;
+            }
+            if (realData.getEngineCoverState().equals("1")) {
+                bonnetCheck = true;
+            }
+            if (gpsData.getSpeed() == 0) {
+                vehicleSpeedCheck = true;
+            }
+        }
+        //右后车窗信息 0开1半开2关3信号异常
+        _logger.info("initCheck:"+vehicleSpeedCheck +"-"+ sunroofCheck +"-"+ windowsCheck +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck);
+        boolean re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
+        _logger.info("initCheck result:"+re);
+        return re;
+    }
+
+    /**
+     * 检测对应TBox远程次数是否达到最大值
+     * @param vin vin
+     * @return 是否达到最大值
+     */
+    private boolean isRemoteMaxCountReached(String vin){
+        //测对应TBox远程次数是否达到最大值
+        boolean re=false;
+        Vehicle v=vehicleRepository.findByVin(vin);
+        if(v!=null){
+            if(v.getRemoteCount()>=_maxCount)
+                re=true;
         }
         return re;
     }

@@ -122,6 +122,7 @@ public class Vehicle implements Serializable {
     private Integer t_flag;
     private String security_pwd;
     private String security_salt;
+    private Integer remoteCount;
     private Set<TBox> tboxSet;
     private Set<UserVehicleRelatived> vinSet;
     private Set<Organization> organizationSet;
@@ -348,5 +349,11 @@ public class Vehicle implements Serializable {
         this.tboxSet.add(tbox);
     }
 
+    public Integer getRemoteCount() {
+        return remoteCount;
+    }
 
+    public void setRemoteCount(Integer remoteCount) {
+        this.remoteCount = remoteCount;
+    }
 }

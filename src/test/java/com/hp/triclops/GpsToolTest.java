@@ -48,4 +48,12 @@ public class GpsToolTest {
         GpsData g=gpsTool.convertToBaiDuGps(gpsData);
         System.out.println(">>>>>>"+g.getLongitude()+","+g.getLatitude());
     }
+    @Test
+    public void test_getDistance(){
+
+
+        System.out.println(gpsTool.getDistance(114.2698092,30.4579801,114.3904393,30.4612779));
+    }
+
+
 }

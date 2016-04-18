@@ -1,7 +1,9 @@
 package com.hp.triclops.acquire;
 
+import com.hp.data.bean.tbox.DataResendWarningMes;
 import com.hp.data.bean.tbox.FailureMessage;
 import com.hp.data.bean.tbox.DataResendFailureData;
+import com.hp.data.bean.tbox.WarningMessage;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
@@ -185,8 +187,8 @@ public class DataTool {
       /*  //经纬度除以1000000得到真实值
         String  num = a/1000000+"."+a%1000000;
         return Double.valueOf(num);*/
-        //按照0.610协议变更经纬度取值方式
-        double  num = a * 0.00390625;
+        //按照0.619协议变更经纬度取值方式
+        double  num = a * 0.00390625*3600;
         return num;
 
     }
@@ -200,13 +202,20 @@ public class DataTool {
         String  avgOil=a/10+"."+a%10;
         return Float.valueOf(avgOil);
     }
-    public Short getInternTrueTmp(short a){
+    public float getInternTrueTmp(short a){
         //得到车内真实温度
-        return a;
+        //分辨率 0.5A，偏移量40，
+        //显示范围： -40°C ~+80°C
+        //上报数据范围： 0~240
+        short t=(short)(a-(short)80);
+        return t*0.5f;
     }
-    public Short getOuterTrueTmp(short a){
-        //得到车外真实温度
-        return (short)(a-(short)40);
+    public float getOuterTrueTmp(short a){
+        //分辨率 0.5A，偏移量40，
+        //显示范围： -40°C ~+80°C
+        //上报数据范围： 0~240
+        short t=(short)(a-(short)80);
+        return t*0.5f;
     }
     public String getWindowStatus(String bita_b){
         //得到车窗状态 传入两个bit的字符表示,
@@ -351,6 +360,10 @@ public class DataTool {
         return Double.valueOf(v);
     }
 
+    public  char[] getBitsFrom2Byte(byte[]  bytes){
+        String a=new String(getBitsFromByte(bytes[0]))+new String(getBitsFromByte(bytes[1]));
+        return a.toCharArray();
+    }
     public  char[] getBitsFromInteger(int value){
         //双字节转二进制
         char[] array=new char[16];
@@ -653,9 +666,9 @@ public class DataTool {
         //某一消息的下发超时时间（秒） 参考文档
         int re=60;
         if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
-            re=60;
+            re=30;
         }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
-            re=60;
+            re=30;
         }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
             re=60;
         }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
@@ -708,9 +721,7 @@ public class DataTool {
         if(_acm[3]== '0'){//bit0 0 warning MID=55
             sb.append(",55");
         }
-        if(_acm[2]== '0'){//bit0 0 warning MID=120
-            sb.append(",120");
-        }
+
 
         char[] _ic=getBitsFromInteger(bean.getWarnMsg_ic());
         if(_ic[15]== '0'){//bit0 0 warning MID=2
@@ -745,6 +756,9 @@ public class DataTool {
         }
         if(_ic[5]== '0'){//bit0 0 warning MID=149
             sb.append(",149");
+        }
+        if(_ic[4]== '0'){//bit0 0 warning MID=149
+            sb.append(",145");
         }
 
         char[] _escl=getBitsFromShort(bean.getWarnMsg_escl());
@@ -813,6 +827,9 @@ public class DataTool {
         if(_bcm[13]== '0'){//bit0 0 warning MID=139
             sb.append(",139");
         }
+        if(_bcm[12]== '0'){//bit0 0 warning MID=139
+            sb.append(",159");
+        }
 
 
 
@@ -842,10 +859,10 @@ public class DataTool {
 
         char[] _dme=getBitsFromInteger(bean.getWarnMsg_dme());
         if(_dme[15]== '0'){//bit0 0 warning MID=20
-            sb.append(",20");
+            sb.append(",212");
         }
         if(_dme[14]== '0'){//bit0 0 warning MID=21
-            sb.append(",21");
+            sb.append(",39");
         }
         if(_dme[13]== '0'){//bit0 0 warning MID=23
             sb.append(",23");
@@ -860,10 +877,10 @@ public class DataTool {
             sb.append(",95");
         }
         if(_dme[9]== '0'){//bit0 0 warning MID=97
-            sb.append(",97");
+            sb.append(",213");
         }
         if(_dme[8]== '0'){//bit0 0 warning MID=98
-            sb.append(",98");
+            sb.append(",34");
         }
         if(_dme[7]== '0'){//bit0 0 warning MID=141
             sb.append(",141");
@@ -886,9 +903,6 @@ public class DataTool {
         }
         if(_pdc_bsw[6]== '0'){//bit0 0 warning MID=51
             sb.append(",51");
-        }
-        if(_pdc_bsw[5]== '0'){//bit0 0 warning MID=59
-            sb.append(",59");
         }
 
         char[] _sesam=getBitsFromInteger(bean.getWarnMsg_sesam());
@@ -931,8 +945,6 @@ public class DataTool {
         if(_sesam[3]== '0'){//bit0 0 warning MID=142
             sb.append(",142");
         }
-
-
 
 
         char[] _tbox=getBitsFromShort(bean.getWarnMsg_tbox());
@@ -1051,5 +1063,95 @@ public class DataTool {
             suffix=suffixesArray[index];
         }
         return suffix;
+    }
+
+    /**
+     * 解码报警数据包
+     * @param msg
+     * @return
+     */
+    public WarningMessage decodeWarningMessage(String msg){
+        WarningMessage warningMessage=new WarningMessage();
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        ByteBuf buf=getByteBuf(bytes2hex(data));
+        warningMessage.setHead((int) buf.readShort());
+        warningMessage.setLength((int) buf.readShort());
+        warningMessage.setTestFlag((short) buf.readByte());
+        warningMessage.setSendingTime((long) buf.readInt());
+        warningMessage.setApplicationID((short) buf.readByte());
+        warningMessage.setMessageID((short) buf.readByte());
+        byte[] imeiBytes=new byte[15];
+        buf.readBytes(imeiBytes);
+        warningMessage.setImei(new String(imeiBytes));
+        warningMessage.setProtocolVersionNumber((short) buf.readByte());
+        byte[] vehicleIDBytes=new byte[2];
+        buf.readBytes(vehicleIDBytes);
+        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setTripID((int) buf.readShort());
+        warningMessage.setReserved((int) buf.readShort());
+        warningMessage.setIsLocation((short) buf.readByte());
+        warningMessage.setLatitude((long) buf.readInt());
+        warningMessage.setLongitude((long) buf.readInt());
+        warningMessage.setSpeed((int) buf.readShort());
+        warningMessage.setHeading((int) buf.readShort());
+        warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setAtaWarning(buf.readByte());
+        if(warningMessage.getSrsWarning()==(byte)1) {
+            warningMessage.setSafetyBeltCount((short) buf.readByte());
+            byte[] speedLastBytes = new byte[300];
+            Integer[] speeds = new Integer[150];
+            buf.readBytes(speedLastBytes);
+            ByteBuf bu=getByteBuf(bytes2hex(speedLastBytes));
+            for(int i=0;i<150;i++){
+                speeds[i]=(int)bu.readShort();
+            }
+            warningMessage.setVehicleSpeedLast(speeds);
+        }
+        return warningMessage;
+    }
+
+    /**
+     * 解码补发报警数据包
+     * @param msg
+     * @return
+     */
+    public DataResendWarningMes decodeResendWarningMessage(String msg){
+        DataResendWarningMes warningMessage=new DataResendWarningMes();
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        ByteBuf buf=getByteBuf(bytes2hex(data));
+        warningMessage.setHead((int) buf.readShort());
+        warningMessage.setLength((int) buf.readShort());
+        warningMessage.setTestFlag((short) buf.readByte());
+        warningMessage.setSendingTime((long) buf.readInt());
+        warningMessage.setApplicationID((short) buf.readByte());
+        warningMessage.setMessageID((short) buf.readByte());
+        byte[] imeiBytes=new byte[15];
+        buf.readBytes(imeiBytes);
+        warningMessage.setImei(new String(imeiBytes));
+        warningMessage.setProtocolVersionNumber((short) buf.readByte());
+        byte[] vehicleIDBytes=new byte[2];
+        buf.readBytes(vehicleIDBytes);
+        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setTripID((int) buf.readShort());
+        warningMessage.setReserved((int) buf.readShort());
+        warningMessage.setIsLocation((short) buf.readByte());
+        warningMessage.setLatitude((long) buf.readInt());
+        warningMessage.setLongitude((long) buf.readInt());
+        warningMessage.setSpeed((int) buf.readShort());
+        warningMessage.setHeading((int) buf.readShort());
+        warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setAtaWarning(buf.readByte());
+        if(warningMessage.getSrsWarning()==(byte)1) {
+            warningMessage.setSafetyBeltCount((short) buf.readByte());
+            byte[] speedLastBytes = new byte[300];
+            Integer[] speeds = new Integer[150];
+            buf.readBytes(speedLastBytes);
+            ByteBuf bu=getByteBuf(bytes2hex(speedLastBytes));
+            for(int i=0;i<150;i++){
+                speeds[i]=(int)bu.readShort();
+            }
+            warningMessage.setVehicleSpeedLast(speeds);
+        }
+        return warningMessage;
     }
 }

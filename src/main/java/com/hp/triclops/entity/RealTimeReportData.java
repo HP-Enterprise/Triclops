@@ -33,8 +33,8 @@ public class RealTimeReportData {
     private String leftRearWindowInformation;
     private String rightFrontWindowInformation;
     private String rightRearWindowInformation;
-    private Short vehicleTemperature;
-    private Short vehicleOuterTemperature;
+    private float vehicleTemperature;
+    private float vehicleOuterTemperature;
     private String leftFrontDoorInformation;
     private String leftRearDoorInformation;
     private String rightFrontDoorInformation;
@@ -190,21 +190,21 @@ public class RealTimeReportData {
 
     @Basic
     @Column(name = "vehicle_temperature", nullable = false, insertable = true, updatable = true)
-    public Short getVehicleTemperature() {
+    public float getVehicleTemperature() {
         return vehicleTemperature;
     }
 
-    public void setVehicleTemperature(Short vehicleTemperature) {
+    public void setVehicleTemperature(float vehicleTemperature) {
         this.vehicleTemperature = vehicleTemperature;
     }
 
     @Basic
     @Column(name = "vehicle_outer_temperature", nullable = false, insertable = true, updatable = true)
-    public Short getVehicleOuterTemperature() {
+    public float getVehicleOuterTemperature() {
         return vehicleOuterTemperature;
     }
 
-    public void setVehicleOuterTemperature(Short vehicleOuterTemperature) {
+    public void setVehicleOuterTemperature(float vehicleOuterTemperature) {
         this.vehicleOuterTemperature = vehicleOuterTemperature;
     }
 
