@@ -295,10 +295,13 @@ public class DataHandleService {
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
-
-        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
-        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
-
+        if(bean.getSrsWarning()==(byte)1) {
+            wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+            wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+        }else{
+            wd.setSafetyBeltCount((short)0);
+            wd.setVehicleHitSpeed(0);
+        }
         warningMessageDataRespository.save(wd);
     }
 
