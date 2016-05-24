@@ -270,7 +270,8 @@ public class RequestHandler {
                 _logger.info("get RemoteCmd Value From db return null...");
                 return;
             }
-            if(verifyRemoteControlPreconditionResp(vin,bean,dbRc)&&verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance)){
+            boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
+            if(verifyRemoteControlPreconditionResp(vin,bean,dbRc)&&distanceCheck){
                 //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
                 long eventId=bean.getEventID();
                 //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
@@ -284,7 +285,7 @@ public class RequestHandler {
                 _logger.info("verify RemoteControl PreconditionResp success,we will send RemoteCommand:"+cmdByteString);
                 outputHexService.saveCmdToRedis(vin, cmdByteString);
             }else{
-                 outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID());
+                 outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),"提示消息");
                 _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
             }
         }else if(messageId==0x04){

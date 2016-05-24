@@ -206,8 +206,9 @@ public class OutputHexService {
      * 根据报警hex信息生成文本性质的报警提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
+     *  @param srsFirst 气囊优先
      */
-    public void getWarningMessageAndPush(String vin,String msg){
+    public void getWarningMessageAndPush(String vin,String msg,boolean srsFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
         //一个车对应多个uid
@@ -219,7 +220,7 @@ public class OutputHexService {
                 UserVehicleRelatived userVehicleRelatived =  iterator.next();
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
-                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user);
+                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user,srsFirst);
                     pushWarningOrFailureMessage(vin,pushMsg);
                 }
 
@@ -252,8 +253,9 @@ public class OutputHexService {
      * 根据补发报警hex信息生成文本性质的报警提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
+     * @param srsFirst 气囊优先
      */
-    public void getResendWarningMessageAndPush(String vin,String msg){
+    public void getResendWarningMessageAndPush(String vin,String msg,boolean srsFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
         //一个车对应多个uid
@@ -263,7 +265,7 @@ public class OutputHexService {
                 UserVehicleRelatived userVehicleRelatived =  iterator.next();
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
-                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user);
+                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user,srsFirst);
                     pushWarningOrFailureMessage(vin,pushMsg);
                 }
             }
@@ -340,6 +342,9 @@ public class OutputHexService {
      */
     public void pushWarningOrFailureMessage(String vin,Map<String,Object> pushMsg){
         _logger.info("push message:"+pushMsg);
+        if(pushMsg==null){
+            return;
+        }
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
         //一个车对应多个uid 报警消息都push过去
@@ -387,9 +392,10 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      * @param user user
+     * @param srsfirst 气囊优先
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user){
+    public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user,boolean srsfirst){
         //报警数据保存
         _logger.info(">>get WarningMessage For Push:"+msg);
         WarningMessage bean=dataTool.decodeWarningMessage(msg);
@@ -422,7 +428,7 @@ public class OutputHexService {
         }
 
         //生成报警信息
-        Map<String,Object> warningMessage=buildWarningString(wd,user,rd);
+        Map<String,Object> warningMessage=buildWarningString(wd,user,rd,srsfirst);
         return warningMessage;
     }
 
@@ -572,9 +578,10 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      * @param user user
+     * @param srsFirst 气囊优先
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user){
+    public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user,boolean srsFirst){
         //报警数据保存
         _logger.info(">>get Resend WarningMessage For Push:"+msg);
         DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
@@ -606,7 +613,7 @@ public class OutputHexService {
             rd = rdList.get(0);
         }
         //生成报警信息
-        Map<String,Object> warningMessage=buildWarningString(wd, user, rd);
+        Map<String,Object> warningMessage=buildWarningString(wd, user, rd, srsFirst);
         return warningMessage;
     }
 
@@ -698,9 +705,10 @@ public class OutputHexService {
      * @param wd 报警消息实体类
      * @param user user
      * @param realTimeReportData 实时数据实体类
+     * @param srsFirst 气囊优先
      * @return 便于阅读的报警消息
      */
-    public Map<String,Object> buildWarningString(WarningMessageData wd,User user,RealTimeReportData realTimeReportData){
+    public Map<String,Object> buildWarningString(WarningMessageData wd,User user,RealTimeReportData realTimeReportData,boolean srsFirst){
         Map<String,Object> dataMap = new HashMap<String,Object>();
        // StringBuilder sb=new StringBuilder() ;
         Map<String,Object> jsonMap = new HashMap<String,Object>();
@@ -734,91 +742,99 @@ public class OutputHexService {
             positionMap.put("speed","");
             positionMap.put("heading","");
         }
-        if(wd.getSrsWarning()==(short)1){
-            //安全气囊报警 0未触发 1触发
+        if(srsFirst){
+            //仅处理气囊
+            if(wd.getSrsWarning()==(short)1){
+                //安全气囊报警 0未触发 1触发
 /*            sb.append("安全气囊报警触发,");
             sb.append("背扣安全带数量:").append(wd.getSafetyBeltCount()).append(",");
             sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");*/
-            jsonMap.put("srs_warning","1");
-            jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
-            jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
-            dataMap.put("pType", 8);
-            dataMap.put("cleanFlag", "0");
+                jsonMap.put("srs_warning","1");
+                jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
+                jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
+                dataMap.put("pType", 8);
+                dataMap.put("cleanFlag", "0");
 
-            String contactsPhone ="";
-            if(user!=null){
-                contactsPhone =  user.getContactsPhone();
+                String contactsPhone ="";
+                if(user!=null){
+                    contactsPhone =  user.getContactsPhone();
+                }
+                jsonMap.put("contacts_phone",contactsPhone);
             }
-            jsonMap.put("contacts_phone",contactsPhone);
-        }else if(wd.getAtaWarning()==(short)1){
-            //防盗报警 0未触发 1触发
-           // sb.append("车辆防盗报警触发");
-            jsonMap.put("ata_warning","1");
-            dataMap.put("pType", 9);
-            dataMap.put("cleanFlag", "0");
+            if(wd.getSrsWarning()==(short)0 && srsWarning==1){//srs1--0
+                //推srs解除
+                jsonMap.put("srs_warning","0");
+                jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
+                jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
+                dataMap.put("pType", 8);
+                dataMap.put("cleanFlag", "1");
 
-            String leftFrontDoorInformation = "";
-            String leftRearDoorInformation = "";
-            String rightFrontDoorInformation = "";
-            String rightRearDoorInformation = "";
-            String engineCoverState = "";
-            String trunkLidState = "";
-            if(realTimeReportData!=null){
-                leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
-                leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
-                rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
-                rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
-                engineCoverState = realTimeReportData.getEngineCoverState();
-                trunkLidState = realTimeReportData.getTrunkLidState();
+                String contactsPhone ="";
+                if(user!=null){
+                    contactsPhone =  user.getContactsPhone();
+                }
+                jsonMap.put("contacts_phone",contactsPhone);
             }
-            jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
-            jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
-            jsonMap.put("rightFrontDoorInformation",rightFrontDoorInformation);
-            jsonMap.put("rightRearDoorInformation",rightRearDoorInformation);
-            jsonMap.put("engineCoverState",engineCoverState);
-            jsonMap.put("trunkLidState",trunkLidState);
-        }else if(wd.getSrsWarning()==(short)0 && srsWarning==1){//srs1--0
-            //推srs解除
-            jsonMap.put("srs_warning","0");
-
-            jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
-            jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
-            dataMap.put("pType", 8);
-            dataMap.put("cleanFlag", "1");
-
-            String contactsPhone ="";
-            if(user!=null){
-                contactsPhone =  user.getContactsPhone();
+        }else{
+            //仅处理防盗
+            if(wd.getAtaWarning()==(short)1){
+                //防盗报警 0未触发 1触发
+                // sb.append("车辆防盗报警触发");
+                jsonMap.put("ata_warning","1");
+                dataMap.put("pType", 9);
+                dataMap.put("cleanFlag", "0");
+                String leftFrontDoorInformation = "";
+                String leftRearDoorInformation = "";
+                String rightFrontDoorInformation = "";
+                String rightRearDoorInformation = "";
+                String engineCoverState = "";
+                String trunkLidState = "";
+                if(realTimeReportData!=null){
+                    leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
+                    leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
+                    rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
+                    rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
+                    engineCoverState = realTimeReportData.getEngineCoverState();
+                    trunkLidState = realTimeReportData.getTrunkLidState();
+                }
+                jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
+                jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
+                jsonMap.put("rightFrontDoorInformation",rightFrontDoorInformation);
+                jsonMap.put("rightRearDoorInformation",rightRearDoorInformation);
+                jsonMap.put("engineCoverState",engineCoverState);
+                jsonMap.put("trunkLidState",trunkLidState);
             }
-            jsonMap.put("contacts_phone",contactsPhone);
-
-        }else if(wd.getAtaWarning()==(short)0 && ataWarning==1 ){//atr1---0
-            //推ata解除
-            jsonMap.put("ata_warning","0");
-            dataMap.put("pType", 9);
-            dataMap.put("cleanFlag", "1");
-
-            String leftFrontDoorInformation = "";
-            String leftRearDoorInformation = "";
-            String rightFrontDoorInformation = "";
-            String rightRearDoorInformation = "";
-            String engineCoverState = "";
-            String trunkLidState = "";
-            if(realTimeReportData!=null){
-                leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
-                leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
-                rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
-                rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
-                engineCoverState = realTimeReportData.getEngineCoverState();
-                trunkLidState = realTimeReportData.getTrunkLidState();
+            if(wd.getAtaWarning()==(short)0 && ataWarning==1 ){//atr1---0
+                //推ata解除
+                jsonMap.put("ata_warning","0");
+                dataMap.put("pType", 9);
+                dataMap.put("cleanFlag", "1");
+                String leftFrontDoorInformation = "";
+                String leftRearDoorInformation = "";
+                String rightFrontDoorInformation = "";
+                String rightRearDoorInformation = "";
+                String engineCoverState = "";
+                String trunkLidState = "";
+                if(realTimeReportData!=null){
+                    leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
+                    leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
+                    rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
+                    rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
+                    engineCoverState = realTimeReportData.getEngineCoverState();
+                    trunkLidState = realTimeReportData.getTrunkLidState();
+                }
+                jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
+                jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
+                jsonMap.put("rightFrontDoorInformation",rightFrontDoorInformation);
+                jsonMap.put("rightRearDoorInformation",rightRearDoorInformation);
+                jsonMap.put("engineCoverState",engineCoverState);
+                jsonMap.put("trunkLidState",trunkLidState);
             }
-            jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
-            jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
-            jsonMap.put("rightFrontDoorInformation",rightFrontDoorInformation);
-            jsonMap.put("rightRearDoorInformation",rightRearDoorInformation);
-            jsonMap.put("engineCoverState",engineCoverState);
-            jsonMap.put("trunkLidState",trunkLidState);
 
+        }
+
+        if(jsonMap.size()==0){
+        return null;
         }
         jsonMap.put("position", positionMap);
         String contextJson= JSON.toJSONString(jsonMap);
@@ -936,7 +952,7 @@ public class OutputHexService {
      * @param vin vin
      * @param eventId eventId
      */
-    public void handleRemoteControlPreconditionResp(String vin,long eventId){
+    public void handleRemoteControlPreconditionResp(String vin,long eventId,String message){
         String sessionId=49+"-"+eventId;
         Short dbResult=1;//参考建表sql 1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
@@ -948,7 +964,7 @@ public class OutputHexService {
             //返回无效才更新db记录
             rc.setStatus(dbResult);
             remoteControlRepository.save(rc);
-            String pushMsg="行驶中，不能远程控制:"+sessionId;
+            String pushMsg=message+sessionId;
             try{
                 this.mqService.pushToUser(rc.getUid(), pushMsg);
             }catch (RuntimeException e){_logger.info(e.getMessage());}
