@@ -270,22 +270,47 @@ public class RequestHandler {
                 _logger.info("get RemoteCmd Value From db return null...");
                 return;
             }
+            int preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc);
+            //0 通过   1~6 各种异常
             boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
-            if(verifyRemoteControlPreconditionResp(vin,bean,dbRc)&&distanceCheck){
+            if(preconditionRespCheck==0 && distanceCheck){
                 //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
                 long eventId=bean.getEventID();
                 //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                 //取出redis暂存的控制参数 生成指令
-                RemoteControl rc=outputHexService.getRemoteCmdValueFromRedis(vin,bean.getEventID());
+                RemoteControl rc=outputHexService.getRemoteCmdValueFromRedis(vin, bean.getEventID());
                 if(rc==null){
                     _logger.info("get RemoteCmd Value From Redis return null...");
                     return;
                 }
                 String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,eventId);
-                _logger.info("verify RemoteControl PreconditionResp success,we will send RemoteCommand:"+cmdByteString);
+                _logger.info("verify RemoteControl PreconditionResp success,we will send RemoteCommand:" + cmdByteString);
                 outputHexService.saveCmdToRedis(vin, cmdByteString);
             }else{
-                 outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),"提示消息");
+                String msg="";
+                if(distanceCheck==false){
+                    msg="远程控制距离超出允许范围";
+                }else{
+                    if(preconditionRespCheck==1){
+                        msg="远程启动发动机条件不符合";
+                    }
+                    if(preconditionRespCheck==2){
+                        msg="远程关闭发动机失败,必须是远程启动发动机才能远程关闭";
+                    }
+                    if(preconditionRespCheck==3){
+                        msg="操作条件不符合，请检查车辆状态";
+                    }
+                    if(preconditionRespCheck==4){
+                        msg="操作条件不符合，请检查车门车窗状态";
+                    }
+                    if(preconditionRespCheck==5){
+                        msg="远程开启空调失败,必须是远程启动发动机才能开启空调";
+                    }
+                    if(preconditionRespCheck==6){
+                        msg="远程开启座椅加热失败,必须是远程启动发动机才能开启座椅加热";
+                    }
+                }
+                 outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg);
                 _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
             }
         }else if(messageId==0x04){
@@ -331,9 +356,10 @@ public class RequestHandler {
      * @param remoteControlPreconditionResp 数据bean
      * @return 是否通过
      */
-    public boolean verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp,RemoteControl remoteControl){
+    public int verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp,RemoteControl remoteControl){
         //目前逻辑 根据0619协议
         boolean re=false;
+        int reint=-1;
         boolean tmpCheck=false;
         boolean clampCheck=false;
         boolean remoteKeyCheck=false;
@@ -435,21 +461,51 @@ public class RequestHandler {
                         && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
                         && remainingFuelCheck;
+                if(re){
+                    reint=0;
+                }else{
+                    reint=1;
+                }
             }else if(contorlType==(short)1){//1：远程关闭发动机
                 if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能远程关闭
                     re=true;
                 }
+                if(re){
+                    reint=0;
+                }else{
+                    reint=2;
+                }
             }else if(contorlType==(short)10){//10：远程寻车
                 re=doorsCheck && clampCheck && hazardLightsCheck;
+                if(re){
+                    reint=0;
+                }else{
+                    reint=3;
+                }
             }else if(contorlType==(short)2||contorlType==(short)3){//2：车门上锁  3：车门解锁
                 re=doorsCheck && clampCheck ;
+                if(re){
+                    reint=0;
+                }else{
+                    reint=4;
+                }
             }else if(contorlType==(short)4){//4：空调开启
                 if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启空调
                     re=true;
                 }
+                if(re){
+                    reint=0;
+                }else{
+                    reint=5;
+                }
             }else if(contorlType==(short)6){//6：座椅加热
                 if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启座椅加热
                     re=true;
+                }
+                if(re){
+                    reint=0;
+                }else{
+                    reint=6;
                 }
             }
         }
@@ -457,8 +513,8 @@ public class RequestHandler {
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
                 +"-"+ remainingFuelCheck);
-        _logger.info("verifyRemoteControlPreconditionResp result:"+re);
-        return re;
+        _logger.info("verifyRemoteControlPreconditionResp result:"+reint);
+        return reint;
     }
     /**
      * 校验发起指令APP与车之间的距离
