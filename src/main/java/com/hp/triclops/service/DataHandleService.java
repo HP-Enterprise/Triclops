@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 /**
  * Created by luj on 2015/9/28.
@@ -116,7 +117,8 @@ public class DataHandleService {
         rd.setImei(bean.getImei());
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
-        rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        Date receiveDate=new Date();
+        rd.setSendingTime(receiveDate);//服务器时间
         rd.setTripId(bean.getTripID());
 
         rd.setFuelOil(bean.getFuelOil() * 1f);
@@ -163,7 +165,7 @@ public class DataHandleService {
         gd.setImei(bean.getImei());
         gd.setApplicationId(bean.getApplicationID());
         gd.setMessageId(bean.getMessageID());
-        gd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        gd.setSendingTime(receiveDate);//服务器时间
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
         gd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位

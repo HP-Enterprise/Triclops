@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -325,7 +326,7 @@ public class VehicleDataService {
                 data.setMessageId(rd.getMessageId());
                 data.setSendingTime(rd.getSendingTime());
 
-                data.setFuelOil(rd.getFuelOil());
+                data.setFuelOil((int)rd.getFuelOil());
                 data.setAvgOilA(rd.getAvgOilA());
                 data.setAvgOilB(rd.getAvgOilB());
                 data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
@@ -369,6 +370,18 @@ public class VehicleDataService {
                 data.setSpeed(gd.getSpeed());
                 data.setHeading(gd.getHeading());
 
+                //数据转换处理
+                data.setFuelOil(100*data.getFuelOil()/63);//返回百分比整数  63=100%
+
+                float _avgOilA=data.getAvgOilA();
+                BigDecimal bdA  =   new  BigDecimal((double)_avgOilA);
+                bdA   =  bdA.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+                data.setAvgOilA(bdA.floatValue());
+
+                float _avgOilB=data.getAvgOilB();
+                BigDecimal bdB  =   new  BigDecimal((double)_avgOilB);
+                bdB   =  bdB.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+                data.setAvgOilB(bdB.floatValue());
 
                 return data;
         }
