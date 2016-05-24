@@ -371,7 +371,10 @@ public class VehicleDataService {
                 data.setHeading(gd.getHeading());
 
                 //数据转换处理
-                data.setFuelOil(100*data.getFuelOil()/63);//返回百分比整数  63=100%
+                int p=100*data.getFuelOil()/63;
+                p=p<0?0:p;
+                p=p>100?100:p;
+                data.setFuelOil(p);//返回百分比整数  63=100%  0-100
 
                 float _avgOilA=data.getAvgOilA();
                 BigDecimal bdA  =   new  BigDecimal((double)_avgOilA);
