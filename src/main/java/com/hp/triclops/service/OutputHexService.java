@@ -965,6 +965,7 @@ public class OutputHexService {
             rc.setStatus(dbResult);
             remoteControlRepository.save(rc);
             String pushMsg=message+sessionId;
+            _logger.info("RemoteControl PreconditionResp  push message>:"+pushMsg);
             try{
                 this.mqService.pushToUser(rc.getUid(), pushMsg);
             }catch (RuntimeException e){_logger.info(e.getMessage());}
