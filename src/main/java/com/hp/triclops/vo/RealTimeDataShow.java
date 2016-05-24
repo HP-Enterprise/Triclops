@@ -303,7 +303,8 @@ public class RealTimeDataShow {
     private int messageId;
     private Date sendingTime;
 
-    private float fuelOil;
+    //private float fuelOil;
+    private int fuelOil;//剩余燃油量改为整数
     private float avgOilA;
     private float avgOilB;
     private float leftFrontTirePressure;
@@ -395,11 +396,11 @@ public class RealTimeDataShow {
         this.sendingTime = sendingTime;
     }
 
-    public float getFuelOil() {
+    public int getFuelOil() {
         return fuelOil;
     }
 
-    public void setFuelOil(float fuelOil) {
+    public void setFuelOil(int fuelOil) {
         this.fuelOil = fuelOil;
     }
 

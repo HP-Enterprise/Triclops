@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
@@ -188,9 +189,12 @@ public class DataTool {
         String  num = a/1000000+"."+a%1000000;
         return Double.valueOf(num);*/
         //按照0.619协议变更经纬度取值方式
-        double  num = a * 0.00390625*3600;
-        return num;
-
+        //double  num = a * 0.00390625*3600;
+        // 2016.5.24变化
+        double num=a * 0.00390625 /3600;
+        BigDecimal bd  =   new  BigDecimal(num);
+        bd   =  bd.setScale(6,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留6位小数
+        return bd.doubleValue();
     }
     public float getTrueSpeed(int a){
         //得到真实速度值
