@@ -1161,4 +1161,17 @@ public class DataTool {
         }
         return warningMessage;
     }
+
+    /**
+     *四舍五入保留指定小数位数
+     * @param value
+     * @param num
+     * @return
+     */
+    public float getRoundHalfDown(float value,int num){
+        BigDecimal bd  =   new  BigDecimal((double)value);
+        bd   =  bd.setScale(num,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留 num 位小数
+       float re=bd.floatValue();
+        return re;
+    }
 }

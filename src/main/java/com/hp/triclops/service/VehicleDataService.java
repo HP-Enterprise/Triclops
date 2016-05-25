@@ -76,10 +76,11 @@ public class VehicleDataService {
 
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
-        if(isRemoteMaxCountReached(vin)){
+      /*  if(isRemoteMaxCountReached(vin)){
             _logger.info("vin:"+vin+" remote started max count reached,abort remote Control");
           return null;
-        }
+        }*/
+        //20160525取消T平台对控制次数的检查
         if(!initCheck(vin,cType)){
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
             return null;
@@ -385,6 +386,12 @@ public class VehicleDataService {
                 BigDecimal bdB  =   new  BigDecimal((double)_avgOilB);
                 bdB   =  bdB.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
                 data.setAvgOilB(bdB.floatValue());
+
+                //胎压处理
+                data.setLeftFrontTirePressure(dataTool.getRoundHalfDown(rd.getLeftFrontTirePressure(),1));
+                data.setLeftRearTirePressure(dataTool.getRoundHalfDown(rd.getLeftRearTirePressure(),1));
+                data.setRightFrontTirePressure(dataTool.getRoundHalfDown(rd.getRightFrontTirePressure(),1));
+                data.setRightRearTirePressure(dataTool.getRoundHalfDown(rd.getRightRearTirePressure(),1));
 
                 return data;
         }
