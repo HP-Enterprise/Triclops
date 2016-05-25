@@ -309,6 +309,9 @@ public class RequestHandler {
                     if(preconditionRespCheck==6){
                         msg="远程开启座椅加热失败,必须是远程启动发动机才能开启座椅加热";
                     }
+                    if(preconditionRespCheck==7){
+                        msg="远程关闭座椅加热失败,必须是远程启动发动机才能关闭座椅加热";
+                    }
                 }
                  outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg);
                 _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
@@ -506,6 +509,15 @@ public class RequestHandler {
                     reint=0;
                 }else{
                     reint=6;
+                }
+            }else if(contorlType==(short)7){//6：座椅加热关闭
+                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能关闭座椅加热
+                    re=true;
+                }
+                if(re){
+                    reint=0;
+                }else{
+                    reint=7;
                 }
             }
         }
