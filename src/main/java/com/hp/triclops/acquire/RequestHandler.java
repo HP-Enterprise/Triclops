@@ -510,8 +510,8 @@ public class RequestHandler {
                 }else{
                     reint=6;
                 }
-            }else if(contorlType==(short)7){//6：座椅加热
-                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启座椅加热
+            }else if(contorlType==(short)7){//6：座椅加热关闭
+                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能关闭座椅加热
                     re=true;
                 }
                 if(re){
