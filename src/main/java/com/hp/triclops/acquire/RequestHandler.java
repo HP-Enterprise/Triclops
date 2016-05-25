@@ -483,7 +483,8 @@ public class RequestHandler {
                     reint=3;
                 }
             }else if(contorlType==(short)2||contorlType==(short)3){//2：车门上锁  3：车门解锁
-                re=doorsCheck && clampCheck ;
+                //re=doorsCheck && clampCheck ;
+                re=doorsCheck;//201605251319调整
                 if(re){
                     reint=0;
                 }else{

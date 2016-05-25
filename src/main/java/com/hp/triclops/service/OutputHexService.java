@@ -1040,7 +1040,41 @@ public class OutputHexService {
                 vehicle.setRemoteCount(vehicle.getRemoteCount()+1);
                 vehicleRepository.save(vehicle);
             }
-            String pushMsg=(result==(short)0)?"远程命令执行成功:":"远程命令执行失败:";
+
+            String pushMsg="";//参考PDF0621 page55
+            if(result==(short)0){
+                pushMsg="远程命令执行成功";
+            }else if(result==(short)0){
+
+            }else if(result==(short)1){
+                pushMsg="远程命令执行失败";
+            }else if(result==(short)20){
+                pushMsg="请求未完成";
+            }else if(result==(short)21){
+                pushMsg="请求的CRC错误";
+            }else if(result==(short)22){
+                pushMsg="请求的身份验证错误";
+            }else if(result==(short)23){
+                pushMsg="请求无效";
+            }else if(result==(short)24){
+                pushMsg="请求消息顺序错误";
+            }else if(result==(short)30){
+                pushMsg="请求不能执行";
+            }else if(result==(short)31){
+                pushMsg="请求先决条件无效";
+            }else if(result==(short)40){
+                pushMsg="本地用户终止请求";
+            }else if(result==(short)50){
+                pushMsg="请求超时失效";
+            }else if(result==(short)51){
+                pushMsg="请求次数超过3次";
+            }else if(result==(short)60){
+                pushMsg="功能无效，请求被忽略";
+            }else if(result==(short)80){
+                pushMsg="等待响应中，指定时间后再请求";
+            }else if(result==(short)81){
+                pushMsg="响应等待下次车辆启动";
+            }
             pushMsg=pushMsg+sessionId;
             try{
             this.mqService.pushToUser(rc.getUid(), pushMsg);
