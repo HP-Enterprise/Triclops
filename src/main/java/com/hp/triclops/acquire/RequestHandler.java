@@ -422,7 +422,7 @@ public class RequestHandler {
             }
             byte windows=remoteControlPreconditionResp.getBcm_Stat_window();
             char[] windows_char=dataTool.getBitsFromByte(windows);
-            if(windows_char[6]=='1'&&windows_char[7]=='1' && windows_char[4]=='1'&&windows_char[5]=='1' && windows_char[2]=='1'&&windows_char[3]=='1' && windows_char[0]=='1'&&windows_char[1]=='1'){
+            if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
                 windowsCheck=true;
             }
             byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
