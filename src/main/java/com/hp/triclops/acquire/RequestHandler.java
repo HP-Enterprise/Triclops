@@ -385,7 +385,7 @@ public class RequestHandler {
             }
             byte clampStatus=remoteControlPreconditionResp.getSesam_clamp_stat();
             char[] clampStatus_char=dataTool.getBitsFromByte(clampStatus);
-            if(clampStatus_char[6]=='0'&&clampStatus_char[7]=='1' && clampStatus_char[4]=='0'&&clampStatus_char[5]=='1' && clampStatus_char[2]=='0'&&clampStatus_char[3]=='1'){
+            if(clampStatus_char[2]=='0'&&clampStatus_char[3]=='0'){
                 clampCheck=true;
             }
             byte remoteKey=remoteControlPreconditionResp.getSesam_hw_status();
