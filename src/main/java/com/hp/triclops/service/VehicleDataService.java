@@ -386,6 +386,12 @@ public class VehicleDataService {
                 bdB   =  bdB.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
                 data.setAvgOilB(bdB.floatValue());
 
+                //胎压处理
+                data.setLeftFrontTirePressure(dataTool.getRoundHalfDown(rd.getLeftFrontTirePressure(),1));
+                data.setLeftRearTirePressure(dataTool.getRoundHalfDown(rd.getLeftRearTirePressure(),1));
+                data.setRightFrontTirePressure(dataTool.getRoundHalfDown(rd.getRightFrontTirePressure(),1));
+                data.setRightRearTirePressure(dataTool.getRoundHalfDown(rd.getRightRearTirePressure(),1));
+
                 return data;
         }
 
