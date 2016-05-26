@@ -301,16 +301,19 @@ public class RequestHandler {
                         msg="操作条件不符合，请检查车辆状态";
                     }
                     if(preconditionRespCheck==4){
-                        msg="操作条件不符合，请检查车门车窗状态";
+                        msg="远程开启空调失败,必须是远程启动发动机才能开启空调";
                     }
                     if(preconditionRespCheck==5){
-                        msg="远程开启空调失败,必须是远程启动发动机才能开启空调";
+                        msg="远程关闭空调失败,必须是远程启动发动机才能关闭空调";
                     }
                     if(preconditionRespCheck==6){
                         msg="远程开启座椅加热失败,必须是远程启动发动机才能开启座椅加热";
                     }
                     if(preconditionRespCheck==7){
                         msg="远程关闭座椅加热失败,必须是远程启动发动机才能关闭座椅加热";
+                    }
+                    if(preconditionRespCheck==10){
+                        msg="远程寻车失败，操作条件不满足";
                     }
                 }
                  outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg);
@@ -478,22 +481,24 @@ public class RequestHandler {
                 }else{
                     reint=2;
                 }
-            }else if(contorlType==(short)10){//10：远程寻车
-                re=doorsCheck && clampCheck && hazardLightsCheck;
-                if(re){
-                    reint=0;
-                }else{
-                    reint=3;
-                }
             }else if(contorlType==(short)2||contorlType==(short)3){//2：车门上锁  3：车门解锁
                 re=doorsCheck && clampCheck ;
                 if(re){
                     reint=0;
                 }else{
-                    reint=4;
+                    reint=3;
                 }
             }else if(contorlType==(short)4){//4：空调开启
                 if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启空调
+                    re=true;
+                }
+                if(re){
+                    reint=0;
+                }else{
+                    reint=4;
+                }
+            }else if(contorlType==(short)5){//5：空调关闭
+                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能关闭空调
                     re=true;
                 }
                 if(re){
@@ -518,6 +523,13 @@ public class RequestHandler {
                     reint=0;
                 }else{
                     reint=7;
+                }
+            }else if(contorlType==(short)10){//10：远程寻车
+                re=doorsCheck && clampCheck && hazardLightsCheck;
+                if(re){
+                    reint=0;
+                }else{
+                    reint=10;
                 }
             }
         }
