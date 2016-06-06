@@ -187,6 +187,8 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getSleepResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
+                _logger.info("after send sleep response,close Connection");
+                ch.close();//关闭连接
                 break;
             case 0x28://故障数据上报
                 _logger.info("Failure Message");
