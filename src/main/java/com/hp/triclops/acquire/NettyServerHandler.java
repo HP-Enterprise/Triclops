@@ -102,15 +102,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     ch.writeAndFlush(buf);//心跳流程直接回消息
                     break;
                 case 0x27://休眠请求
-                    _logger.info("Sleep request");
-                    chKey = geVinByAddress(ch.remoteAddress().toString());
-                    if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
-                        return;
-                    }
-                    respStr=requestHandler.getSleepResp(receiveDataHexString);
-                    buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//回发数据直接回消息
+                    scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x28://故障数据上报
                     scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
