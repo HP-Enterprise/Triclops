@@ -91,6 +91,19 @@ public class UserManagement {
     }
 
     /**
+     * 根据用户名查询用户ID
+     * @param name 用户名
+     * @return 用户ID集合
+     */
+    public List<Integer> findUidsByName(String name)
+    {
+        name = "%" + name + "%";
+        List<Integer> uids = userExRepository.findUidsByName(name);
+
+        return uids;
+    }
+
+    /**
      * 修改用户信息
      * @param user 用户信息类
      * @return 修改后的的用户信息

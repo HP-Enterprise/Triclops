@@ -14,6 +14,10 @@ public class UserVehicleRelativeExShow {
     private int iflag;
     private int puid;
 
+    private String userName;  // 用户名
+    private String vin;       // 车架号
+    private String tbox;      // tbox码
+
     public UserVehicleRelativeExShow() {}
 
     public UserVehicleRelativeExShow(int uid, int vid, int vflag, int iflag, int puid) {
@@ -79,5 +83,29 @@ public class UserVehicleRelativeExShow {
 
     public void setPuid(int puid) {
         this.puid = puid;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
+    public String getTbox() {
+        return tbox;
+    }
+
+    public void setTbox(String tbox) {
+        this.tbox = tbox;
     }
 }
