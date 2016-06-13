@@ -23,6 +23,9 @@ public interface UserExRepository extends CrudRepository<UserEx, String> {
 
     UserEx findByName(String name);
 
+    @Query("select ue.id from UserEx ue where ue.name like ?1" )
+    List<Integer> findUidsByName(String name);
+
     @Query("select ue from UserEx ue " +
             "where ue.id in ?1 " +
             "and (?2 is null or ue.name like ?2) " +

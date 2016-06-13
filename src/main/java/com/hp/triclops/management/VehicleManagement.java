@@ -115,6 +115,20 @@ public class VehicleManagement {
     }
 
     /**
+     * 根据Vin、Tbox码查询车辆ID
+     * @param vin 车辆VIN码
+     * @param tboxsn 车辆TBOX码
+     * @return 车辆ID集合
+     */
+    public List<Integer> findByVinAndTboxsn(String vin, String tboxsn)
+    {
+        if(vin!=null) vin = "%" + vin + "%";
+        if(tboxsn!=null) tboxsn = "%" + tboxsn + "%";
+        List<Integer> vids = vehicleExRepository.findByVinAndTboxsn(vin,tboxsn);
+        return vids;
+    }
+
+    /**
      * 条件查询车辆(具有Read权限的组织成员)
      * @param oid 组织ID
      * @param vin 车架号
