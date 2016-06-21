@@ -390,7 +390,7 @@ public class VehicleDataService {
 
                 float _voltage=data.getVoltage();
                 BigDecimal bdC  =   new  BigDecimal((double)_voltage);
-                bdC   =  bdC.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+                bdC   =  bdC.setScale(2,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留2位小数
                 data.setVoltage(bdC.floatValue());
 
                 //胎压处理
