@@ -716,18 +716,6 @@ public class DataTool {
         if(_acm[7]== '0'){//bit0 0 warning MID=1
             sb.append(",1");
         }
-        if(_acm[6]== '0'){//bit0 0 warning MID=52
-            sb.append(",52");
-        }
-        if(_acm[5]== '0'){//bit0 0 warning MID=53
-            sb.append(",53");
-        }
-        if(_acm[4]== '0'){//bit0 0 warning MID=54
-            sb.append(",54");
-        }
-        if(_acm[3]== '0'){//bit0 0 warning MID=55
-            sb.append(",55");
-        }
 
 
         char[] _ic=getBitsFromInteger(bean.getWarnMsg_ic());
@@ -737,36 +725,46 @@ public class DataTool {
         if(_ic[14]== '0'){//bit0 0 warning MID=5
             sb.append(",5");
         }
-        if(_ic[13]== '0'){//bit0 0 warning MID=7
-            sb.append(",7");
-        }
-        if(_ic[12]== '0'){//bit0 0 warning MID=10
+        if(_ic[13]== '0'){//bit0 0 warning MID=10
             sb.append(",10");
         }
-        if(_ic[11]== '0'){//bit0 0 warning MID=13
+        if(_ic[12]== '0'){//bit0 0 warning MID=13
             sb.append(",13");
         }
-        if(_ic[10]== '0'){//bit0 0 warning MID=56
-            sb.append(",56");
+        if(_ic[11]== '0'){//bit0 0 warning MID=14
+            sb.append(",14");
         }
-        if(_ic[9]== '0'){//bit0 0 warning MID=99
+        if(_ic[10]== '0'){//bit0 0 warning MID=15
+            sb.append(",15");
+        }
+        if(_ic[9]== '0'){//bit0 0 warning MID=16
+            sb.append(",16");
+        }
+        if(_ic[8]== '0'){//bit0 0 warning MID=17
+            sb.append(",17");
+        }
+        if(_ic[7]== '0'){//bit0 0 warning MID=18
+            sb.append(",18");
+        }
+        if(_ic[6]== '0'){//bit0 0 warning MID=19
+            sb.append(",19");
+        }
+        if(_ic[5]== '0'){//bit0 0 warning MID=99
             sb.append(",99");
         }
-        if(_ic[8]== '0'){//bit0 0 warning MID=100
+        if(_ic[4]== '0'){//bit0 0 warning MID=100
             sb.append(",100");
         }
-        if(_ic[7]== '0'){//bit0 0 warning MID=101
-            sb.append(",101");
-        }
-        if(_ic[6]== '0'){//bit0 0 warning MID=147
-            sb.append(",147");
-        }
-        if(_ic[5]== '0'){//bit0 0 warning MID=149
-            sb.append(",149");
-        }
-        if(_ic[4]== '0'){//bit0 0 warning MID=149
+        if(_ic[3]== '0'){//bit0 0 warning MID=145
             sb.append(",145");
         }
+        if(_ic[2]== '0'){//bit0 0 warning MID=147
+            sb.append(",147");
+        }
+        if(_ic[1]== '0'){//bit0 0 warning MID=149
+            sb.append(",149");
+        }
+
 
         char[] _escl=getBitsFromShort(bean.getWarnMsg_escl());
         if(_escl[7]== '0'){//bit0 0 warning MID=3
@@ -780,18 +778,18 @@ public class DataTool {
         if(_bcm[31]== '0'){//bit0 0 warning MID=4
             sb.append(",4");
         }
-        if(_bcm[30]== '0'){//bit0 0 warning MID=73
+      /*  if(_bcm[30]== '0'){//bit0 0 warning MID=73
             sb.append(",73");
         }
         if(_bcm[29]== '0'){//bit0 0 warning MID=76
             sb.append(",76");
-        }
+        }*/
         if(_bcm[28]== '0'){//bit0 0 warning MID=124
             sb.append(",124");
         }
-        if(_bcm[27]== '0'){//bit0 0 warning MID=125
+      /*  if(_bcm[27]== '0'){//bit0 0 warning MID=125
             sb.append(",125");
-        }
+        }*/
         if(_bcm[26]== '0'){//bit0 0 warning MID=126
             sb.append(",126");
         }
@@ -822,7 +820,7 @@ public class DataTool {
         if(_bcm[17]== '0'){//bit0 0 warning MID=135
             sb.append(",135");
         }
-        if(_bcm[16]== '0'){//bit0 0 warning MID=136
+    /*    if(_bcm[16]== '0'){//bit0 0 warning MID=136
             sb.append(",136");
         }
         if(_bcm[15]== '0'){//bit0 0 warning MID=137
@@ -833,15 +831,37 @@ public class DataTool {
         }
         if(_bcm[13]== '0'){//bit0 0 warning MID=139
             sb.append(",139");
-        }
+        }*/
         if(_bcm[12]== '0'){//bit0 0 warning MID=139
-            sb.append(",159");
+            sb.append(",59");
         }
 
 
+        char[] _esc=getBitsFromInteger(bean.getWarnMsg_esc());
+        if(_esc[15]== '0'){//bit0 0 warning MID=6
+            sb.append(",6");
+        }
+        if(_esc[14]== '0'){//bit0 0 warning MID=9
+            sb.append(",9");
+        }
+        if(_esc[13]== '0'){//bit0 0 warning MID=11
+            sb.append(",11");
+        }
+        if(_esc[12]== '0'){//bit0 0 warning MID=12
+            sb.append(",12");
+        }
+        if(_esc[11]== '0'){//bit0 0 warning MID=80
+            sb.append(",80");
+        }
+        if(_esc[10]== '0'){//bit0 0 warning MID=83
+            sb.append(",87");
+        }
+        if(_esc[9]== '0'){//bit0 0 warning MID=85
+            sb.append(",105");
+        }
 
 
-        char[] _tpms=getBitsFromShort(bean.getWarnMsg_tpms());
+       /* char[] _tpms=getBitsFromShort(bean.getWarnMsg_tpms());
         if(_tpms[7]== '0'){//bit0 0 warning MID=14
             sb.append(",14");
         }
@@ -862,14 +882,14 @@ public class DataTool {
         }
         if(_tpms[1]== '0'){//bit0 0 warning MID=140
             sb.append(",140");
-        }
+        }*/
 
         char[] _dme=getBitsFromInteger(bean.getWarnMsg_dme());
         if(_dme[15]== '0'){//bit0 0 warning MID=20
-            sb.append(",212");
+            sb.append(",20");
         }
         if(_dme[14]== '0'){//bit0 0 warning MID=21
-            sb.append(",39");
+            sb.append(",21");
         }
         if(_dme[13]== '0'){//bit0 0 warning MID=23
             sb.append(",23");
@@ -877,17 +897,17 @@ public class DataTool {
         if(_dme[12]== '0'){//bit0 0 warning MID=89
             sb.append(",89");
         }
-        if(_dme[11]== '0'){//bit0 0 warning MID=90
+      /*  if(_dme[11]== '0'){//bit0 0 warning MID=90
             sb.append(",90");
         }
         if(_dme[10]== '0'){//bit0 0 warning MID=95
             sb.append(",95");
-        }
+        }*/
         if(_dme[9]== '0'){//bit0 0 warning MID=97
-            sb.append(",213");
+            sb.append(",97");
         }
         if(_dme[8]== '0'){//bit0 0 warning MID=98
-            sb.append(",34");
+            sb.append(",98");
         }
         if(_dme[7]== '0'){//bit0 0 warning MID=141
             sb.append(",141");
@@ -900,8 +920,11 @@ public class DataTool {
         if(_tcu[6]== '0'){//bit0 0 warning MID=96
             sb.append(",96");
         }
-        if(_tcu[5]== '0'){//bit0 0 warning MID=148
+       /* if(_tcu[5]== '0'){//bit0 0 warning MID=148
             sb.append(",148");
+        }*/
+        if(_tcu[4]== '0'){//bit0 0 warning MID=148
+            sb.append(",88");
         }
 
         char[] _pdc_bsw=getBitsFromShort(bean.getWarnMsg_pdc_bsw());
@@ -922,7 +945,8 @@ public class DataTool {
         if(_sesam[13]== '0'){//bit0 0 warning MID=61
             sb.append(",61");
         }
-        if(_sesam[12]== '0'){//bit0 0 warning MID=62
+
+     /*   if(_sesam[12]== '0'){//bit0 0 warning MID=62
             sb.append(",62");
         }
         if(_sesam[11]== '0'){//bit0 0 warning MID=63
@@ -933,31 +957,35 @@ public class DataTool {
         }
         if(_sesam[9]== '0'){//bit0 0 warning MID=65
             sb.append(",65");
-        }
+        }*/
         if(_sesam[8]== '0'){//bit0 0 warning MID=91
             sb.append(",91");
         }
         if(_sesam[7]== '0'){//bit0 0 warning MID=92
             sb.append(",92");
         }
-        if(_sesam[6]== '0'){//bit0 0 warning MID=93
+
+      /*  if(_sesam[6]== '0'){//bit0 0 warning MID=93
             sb.append(",93");
         }
         if(_sesam[5]== '0'){//bit0 0 warning MID=94
             sb.append(",94");
-        }
+        }*/
         if(_sesam[4]== '0'){//bit0 0 warning MID=121
             sb.append(",121");
         }
-        if(_sesam[3]== '0'){//bit0 0 warning MID=142
+     /*   if(_sesam[3]== '0'){//bit0 0 warning MID=142
             sb.append(",142");
+        }*/
+        if(_sesam[2]== '0'){//bit0 0 warning MID=142
+            sb.append(",56");
         }
 
 
         char[] _tbox=getBitsFromShort(bean.getWarnMsg_tbox());
-        if(_tbox[7]== '0'){//bit0 0 warning MID=143
+      /*  if(_tbox[7]== '0'){//bit0 0 warning MID=143
             sb.append(",143");
-        }
+        }*/
         if(_tbox[6]== '0'){//bit0 0 warning MID=144
             sb.append(",144");
         }
