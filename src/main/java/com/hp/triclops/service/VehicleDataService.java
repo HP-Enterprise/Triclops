@@ -72,7 +72,7 @@ public class VehicleDataService {
      * @param position app position
      * @return 持久化后的RemoteControl对象
      */
-    public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp,Position position){
+    public RemoteControl handleRemoteControl(int uid,String vin,RemoteControlBody remoteControlBody){
 
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
@@ -81,7 +81,7 @@ public class VehicleDataService {
           return null;
         }*/
         //20160525取消T平台对控制次数的检查
-        if(!initCheck(vin,cType)){
+        if(!initCheck(vin,remoteControlBody.getcType())){
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
             return null;
         }
@@ -98,11 +98,11 @@ public class VehicleDataService {
             rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
             rc.setVin(vin);
             rc.setSendingTime(new Date());
-            rc.setControlType(cType);
-            rc.setAcTemperature(acTmp);
+            rc.setControlType(remoteControlBody.getcType());
+            rc.setAcTemperature(remoteControlBody.getTemp());
             rc.setStatus((short) 0);
-            rc.setLongitude(position.getLongitude());
-            rc.setLatitude(position.getLatitude());
+            rc.setLongitude(remoteControlBody.getLongitude());
+            rc.setLatitude(remoteControlBody.getLatitude());
             rc.setRemark("");
             rc.setAvailable((short)1);
             remoteControlRepository.save(rc);

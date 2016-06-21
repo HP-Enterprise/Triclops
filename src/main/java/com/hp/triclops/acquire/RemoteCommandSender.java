@@ -2,6 +2,7 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.entity.Position;
 import com.hp.triclops.entity.RemoteControl;
+import com.hp.triclops.entity.RemoteControlBody;
 import com.hp.triclops.service.VehicleDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +19,20 @@ public class RemoteCommandSender extends Thread{
     private short cType;
     private short acTmp;
     private Position position;
+    private RemoteControlBody remoteControlBody;
     private Logger _logger;
-    public RemoteCommandSender(VehicleDataService vehicleDataService,int uid,String vin,short cType,short acTmp,Position position){
+    public RemoteCommandSender(VehicleDataService vehicleDataService,int uid,String vin,RemoteControlBody remoteControlBody){
         this.vehicleDataService=vehicleDataService;
         this.uid=uid;
         this.vin=vin;
-        this.cType=cType;
-        this.acTmp=acTmp;
-        this.position=position;
+        this.remoteControlBody=remoteControlBody;
         this._logger = LoggerFactory.getLogger(RemoteCommandSender.class);
     }
 
     public  void run()
     {
         _logger.info("handling remoteCommand...");
-        RemoteControl rc=vehicleDataService.handleRemoteControl(uid, vin, cType, acTmp,position);
+        RemoteControl rc=vehicleDataService.handleRemoteControl(uid, vin, remoteControlBody);
         if(rc!=null){
             //远程控制命令下发成功,执行结果会通过mqtt下发 以sessionId识别
             //ObjectResult obj = new ObjectResult("success",rc.getSessionId());
