@@ -213,13 +213,15 @@ public class VehicleDataService {
      * 调用具体实现的唤醒接口 可能是Ring或者SMS To Tbox
      * @param vin vin
      */
-    private void wakeup(String vin){
+    public void wakeup(String vin){
         //本部分代码为调用外部唤醒接口
         _logger.info(" wake up tbox"+vin);
         TBox tBox=tBoxRepository.findByVin(vin);
         if(tBox!=null){
             String tboxMobile=tBox.getMobile();
             smsHttpTool.doHttp(tboxMobile,"WAKEUP");
+        }else{
+            _logger.info("can not find phone for vin:"+vin);
         }
     }
 
@@ -321,39 +323,39 @@ public class VehicleDataService {
         }else{
                 RealTimeDataShow data=new RealTimeDataShow();
                 data.setId(rd.getId());
-                data.setVin(rd.getVin());
-                data.setImei(rd.getImei());
-                data.setApplicationId(rd.getApplicationId());
-                data.setMessageId(rd.getMessageId());
-                data.setSendingTime(rd.getSendingTime());
+            data.setVin(rd.getVin());
+            data.setImei(rd.getImei());
+            data.setApplicationId(rd.getApplicationId());
+            data.setMessageId(rd.getMessageId());
+            data.setSendingTime(rd.getSendingTime());
 
-                data.setFuelOil((int) rd.getFuelOil());
-                data.setAvgOilA(rd.getAvgOilA());
-                data.setAvgOilB(rd.getAvgOilB());
-                data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
-                data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
-                data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
-                data.setRightRearTirePressure(rd.getRightRearTirePressure());
-                data.setLeftFrontWindowInformation(rd.getLeftFrontWindowInformation());
-                data.setRightFrontWindowInformation(rd.getRightFrontWindowInformation());
-                data.setLeftRearWindowInformation(rd.getLeftRearWindowInformation());
-                data.setRightRearWindowInformation(rd.getRightRearWindowInformation());
-                data.setVehicleTemperature(rd.getVehicleTemperature());//
-                data.setVehicleOuterTemperature(rd.getVehicleOuterTemperature());
-                data.setLeftFrontDoorInformation(rd.getLeftFrontDoorInformation());
-                data.setLeftRearDoorInformation(rd.getLeftRearDoorInformation());
-                data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
-                data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
+            data.setFuelOil((int) rd.getFuelOil());
+            data.setAvgOilA(rd.getAvgOilA());
+            data.setAvgOilB(rd.getAvgOilB());
+            data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
+            data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
+            data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
+            data.setRightRearTirePressure(rd.getRightRearTirePressure());
+            data.setLeftFrontWindowInformation(rd.getLeftFrontWindowInformation());
+            data.setRightFrontWindowInformation(rd.getRightFrontWindowInformation());
+            data.setLeftRearWindowInformation(rd.getLeftRearWindowInformation());
+            data.setRightRearWindowInformation(rd.getRightRearWindowInformation());
+            data.setVehicleTemperature(rd.getVehicleTemperature());//
+            data.setVehicleOuterTemperature(rd.getVehicleOuterTemperature());
+            data.setLeftFrontDoorInformation(rd.getLeftFrontDoorInformation());
+            data.setLeftRearDoorInformation(rd.getLeftRearDoorInformation());
+            data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
+            data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
 
-                data.setOilLife(rd.getOilLife());
-                data.setParkingState(Integer.parseInt(rd.getParkingState()));
-                data.setMileageRange(rd.getMileageRange());
-                data.setDrivingRange(rd.getDrivingRange());
-                data.setDrivingTime(rd.getDrivingTime());
-                data.setSkylightState(Integer.parseInt(rd.getSkylightState()));
-                data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
-                data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
-                data.setAverageSpeedA(rd.getAverageSpeedA());
+            data.setOilLife(rd.getOilLife());
+            data.setParkingState(Integer.parseInt(rd.getParkingState()));
+            data.setMileageRange(rd.getMileageRange());
+            data.setDrivingRange(rd.getDrivingRange());
+            data.setDrivingTime(rd.getDrivingTime());
+            data.setSkylightState(Integer.parseInt(rd.getSkylightState()));
+            data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
+            data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
+            data.setAverageSpeedA(rd.getAverageSpeedA());
                 data.setAverageSpeedB(rd.getAverageSpeedB());
                 data.setFmax(280);
                 data.setFmin(200);
