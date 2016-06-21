@@ -327,7 +327,7 @@ public class VehicleDataService {
                 data.setMessageId(rd.getMessageId());
                 data.setSendingTime(rd.getSendingTime());
 
-                data.setFuelOil((int)rd.getFuelOil());
+                data.setFuelOil((int) rd.getFuelOil());
                 data.setAvgOilA(rd.getAvgOilA());
                 data.setAvgOilB(rd.getAvgOilB());
                 data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
@@ -353,7 +353,8 @@ public class VehicleDataService {
                 data.setSkylightState(Integer.parseInt(rd.getSkylightState()));
                 data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
                 data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
-
+                data.setAverageSpeedA(rd.getAverageSpeedA());
+                data.setAverageSpeedB(rd.getAverageSpeedB());
                 data.setFmax(280);
                 data.setFmin(200);
                 data.setRmax(290);
@@ -370,7 +371,7 @@ public class VehicleDataService {
                 data.setLongitude(gd.getLongitude());
                 data.setSpeed(gd.getSpeed());
                 data.setHeading(gd.getHeading());
-
+                data.setVoltage(rd.getVoltage());
                 //数据转换处理
                 int p=100*data.getFuelOil()/63;
                 p=p<0?0:p;
@@ -386,6 +387,11 @@ public class VehicleDataService {
                 BigDecimal bdB  =   new  BigDecimal((double)_avgOilB);
                 bdB   =  bdB.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
                 data.setAvgOilB(bdB.floatValue());
+
+                float _voltage=data.getVoltage();
+                BigDecimal bdC  =   new  BigDecimal((double)_voltage);
+                bdC   =  bdC.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+                data.setVoltage(bdC.floatValue());
 
                 //胎压处理
                 data.setLeftFrontTirePressure(dataTool.getRoundHalfDown(rd.getLeftFrontTirePressure(),1));

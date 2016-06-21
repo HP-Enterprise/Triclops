@@ -126,7 +126,7 @@ public class DataHandleService {
         rd.setFuelOil(bean.getFuelOil() * 1f);
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
-        rd.setServiceIntervall(bean.getServiceIntervall()-32768);//分辨率1KM， 偏移量-32768， 显示范围： -32768 KM-32767KM  上报数据范围：0-65535
+        rd.setServiceIntervall(bean.getServiceIntervall() - 32768);//分辨率1KM， 偏移量-32768， 显示范围： -32768 KM-32767KM  上报数据范围：0-65535
 
         rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure() * 2.8f);
         rd.setLeftRearTirePressure(bean.getLeftRearTirePressure() * 2.8f);
@@ -159,6 +159,9 @@ public class DataHandleService {
         char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
         rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
+        rd.setVoltage(bean.getVoltage() * 0.0009765625f + 3.0f);//pdf 0625 part5.4
+        rd.setAverageSpeedA(bean.getAverageSpeedA());
+        rd.setAverageSpeedB(bean.getAverageSpeedB());
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -230,7 +233,9 @@ public class DataHandleService {
         char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
         rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
-
+        rd.setVoltage(bean.getVoltage() * 0.0009765625f + 3.0f);//pdf 0625 part5.4
+        rd.setAverageSpeedA(bean.getAverageSpeedA());
+        rd.setAverageSpeedB(bean.getAverageSpeedB());
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
         GpsData gd=new GpsData();
