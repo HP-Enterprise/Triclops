@@ -14,19 +14,30 @@ public class RemoteControl {
     private String sessionId;
     private String vin;
     private Date sendingTime;
-
-
     private Short controlType;
     /*
          控制类别  0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：远程寻车
      */
-    private Short acTemperature;
-    private Short status;
-    private double latitude;//发起命令APP的纬度
-    private double longitude;//发起命令APP经度
-    private String remark;
 
+    private Short status;
+    private String remark;
     private Short available;// 0 失效 1 有效 默认为1
+    private Short acTemperature;
+    //0625新增加的控制指令
+    private Short lightNum;//闪灯次数，仅在cType=10生效
+    private Short lightTime;//闪灯时长，仅在cType=10生效
+    private Short hornNum;//鸣笛次数，仅在cType=10生效
+    private Short hornTime;//鸣笛时长，仅在cType=10生效
+    private Short recirMode;//循环模式 0 内循环 1 外循环 默认外循环.仅在cType=4生效
+    private Short acMode;//AC模式  0 关闭压缩机 1 开启压缩机.仅在cType=4生效
+    private Short fan;//风速  范围 1-7.仅在cType=4生效
+    private Short mode;//模式  1除雾 2前玻璃除雾+吹脚 3 吹脚 4吹身体+吹脚 5吹身体.仅在cType=4生效
+    private Short masterStat;//主驾加热状态 0关闭 1 开启 仅在cType=6 7生效
+    private Short masterLevel;//主驾加热级别 1 低 2 中 3高 仅在cType=6生效
+    private Short slaveStat;//附驾驶加热状态0关闭 1 开启 仅在cType=6 7生效
+    private Short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -129,19 +140,124 @@ public class RemoteControl {
         this.available = available;
     }
 
-    public double getLatitude() {
-        return latitude;
+
+    @Basic
+    @Column(name = "light_num", nullable = false, insertable = true, updatable = true)
+    public Short getLightNum() {
+        return lightNum;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLightNum(Short lightNum) {
+        this.lightNum = lightNum;
     }
 
-    public double getLongitude() {
-        return longitude;
+    @Basic
+    @Column(name = "light_time", nullable = false, insertable = true, updatable = true)
+    public Short getLightTime() {
+        return lightTime;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLightTime(Short lightTime) {
+        this.lightTime = lightTime;
+    }
+
+    @Basic
+    @Column(name = "horn_num", nullable = false, insertable = true, updatable = true)
+    public Short getHornNum() {
+        return hornNum;
+    }
+
+    public void setHornNum(Short hornNum) {
+        this.hornNum = hornNum;
+    }
+
+    @Basic
+    @Column(name = "horn_time", nullable = false, insertable = true, updatable = true)
+    public Short getHornTime() {
+        return hornTime;
+    }
+
+    public void setHornTime(Short hornTime) {
+        this.hornTime = hornTime;
+    }
+
+    @Basic
+    @Column(name = "recir_mode", nullable = false, insertable = true, updatable = true)
+    public Short getRecirMode() {
+        return recirMode;
+    }
+
+    public void setRecirMode(Short recirMode) {
+        this.recirMode = recirMode;
+    }
+
+    @Basic
+    @Column(name = "ac_mode", nullable = false, insertable = true, updatable = true)
+    public Short getAcMode() {
+        return acMode;
+    }
+
+    public void setAcMode(Short acMode) {
+        this.acMode = acMode;
+    }
+
+    @Basic
+    @Column(name = "fan", nullable = false, insertable = true, updatable = true)
+    public Short getFan() {
+        return fan;
+    }
+
+    public void setFan(Short fan) {
+        this.fan = fan;
+    }
+
+    @Basic
+    @Column(name = "mode", nullable = false, insertable = true, updatable = true)
+    public Short getMode() {
+        return mode;
+    }
+
+    public void setMode(Short mode) {
+        this.mode = mode;
+    }
+
+    @Basic
+    @Column(name = "master_stat", nullable = false, insertable = true, updatable = true)
+    public Short getMasterStat() {
+        return masterStat;
+    }
+
+    public void setMasterStat(Short masterStat) {
+        this.masterStat = masterStat;
+    }
+
+    @Basic
+    @Column(name = "master_level", nullable = false, insertable = true, updatable = true)
+    public Short getMasterLevel() {
+        return masterLevel;
+    }
+
+    public void setMasterLevel(Short masterLevel) {
+        this.masterLevel = masterLevel;
+    }
+
+    @Basic
+    @Column(name = "slave_stat", nullable = false, insertable = true, updatable = true)
+    public Short getSlaveStat() {
+        return slaveStat;
+    }
+
+    public void setSlaveStat(Short slaveStat) {
+        this.slaveStat = slaveStat;
+    }
+
+    @Basic
+    @Column(name = "slave_level", nullable = false, insertable = true, updatable = true)
+    public Short getSlaveLevel() {
+        return slaveLevel;
+    }
+
+    public void setSlaveLevel(Short slaveLevel) {
+        this.slaveLevel = slaveLevel;
     }
 }

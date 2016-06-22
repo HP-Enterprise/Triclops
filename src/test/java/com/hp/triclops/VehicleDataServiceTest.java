@@ -56,7 +56,7 @@ public class VehicleDataServiceTest {
         Position p=new Position();
         p.setLatitude(30.123555);
         p.setLongitude(117.123456);
-        System.out.println("handleRemoteControl return:" + vehicleDataService.handleRemoteControl(1, "1443151834l", (short) 15, (short) 22, p));
+       // System.out.println("handleRemoteControl return:" + vehicleDataService.handleRemoteControl(1, "1443151834l", (short) 15, (short) 22, p));
         //单元测试无法唤醒 总是null
     }
 

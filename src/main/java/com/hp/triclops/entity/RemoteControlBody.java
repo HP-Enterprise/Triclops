@@ -5,24 +5,24 @@ package com.hp.triclops.entity;
  */
 public class RemoteControlBody {
     private int uid;
-    private String vin;//Ä¿±ê³µÁ¾vin
+    private String vin;//ç›®æ ‡è½¦è¾†vin
     private short cType;//
-    private short lightNum;//ÉÁµÆ´ÎÊı£¬½öÔÚcType=10ÉúĞ§
-    private short lightTime;//ÉÁµÆÊ±³¤£¬½öÔÚcType=10ÉúĞ§
-    private short hornNum;//ÃùµÑ´ÎÊı£¬½öÔÚcType=10ÉúĞ§
-    private short hornTime;//ÃùµÑÊ±³¤£¬½öÔÚcType=10ÉúĞ§
-    private short recirMode;//Ñ­»·Ä£Ê½ 0 ÄÚÑ­»· 1 ÍâÑ­»· Ä¬ÈÏÍâÑ­»·.½öÔÚcType=4ÉúĞ§
-    private short acMode;//ACÄ£Ê½  0 ¹Ø±ÕÑ¹Ëõ»ú 1 ¿ªÆôÑ¹Ëõ»ú.½öÔÚcType=4ÉúĞ§
-    private short fan;//·çËÙ  ·¶Î§ 1-7.½öÔÚcType=4ÉúĞ§
-    private short mode;//Ä£Ê½  1³ıÎí 2Ç°²£Á§³ıÎí+´µ½Å 3 ´µ½Å 4´µÉíÌå+´µ½Å 5´µÉíÌå.½öÔÚcType=4ÉúĞ§
-    private short temp;//ÎÂ¶È ½öÔÚcType=4ÉúĞ§
-    private short masterStat;//Ö÷¼İ¼ÓÈÈ×´Ì¬ 0¹Ø±Õ 1 ¿ªÆô ½öÔÚcType=6 7ÉúĞ§
-    private short masterLevel;//Ö÷¼İ¼ÓÈÈ¼¶±ğ 1 µÍ 2 ÖĞ 3¸ß ½öÔÚcType=6ÉúĞ§
-    private short slaveStat;//¸½¼İÊ»¼ÓÈÈ×´Ì¬0¹Ø±Õ 1 ¿ªÆô ½öÔÚcType=6 7ÉúĞ§
-    private short slaveLevel;//¸½¼İ¼ÓÈÈ¼¶±ğ  1 µÍ 2 ÖĞ 3¸ß ½öÔÚcType=6ÉúĞ§
+    private short lightNum;//é—ªç¯æ¬¡æ•°ï¼Œä»…åœ¨cType=10ç”Ÿæ•ˆ
+    private short lightTime;//é—ªç¯æ—¶é•¿ï¼Œä»…åœ¨cType=10ç”Ÿæ•ˆ
+    private short hornNum;//é¸£ç¬›æ¬¡æ•°ï¼Œä»…åœ¨cType=10ç”Ÿæ•ˆ
+    private short hornTime;//é¸£ç¬›æ—¶é•¿ï¼Œä»…åœ¨cType=10ç”Ÿæ•ˆ
+    private short recirMode;//å¾ªç¯æ¨¡å¼ 0 å†…å¾ªç¯ 1 å¤–å¾ªç¯ é»˜è®¤å¤–å¾ªç¯.ä»…åœ¨cType=4ç”Ÿæ•ˆ
+    private short acMode;//ACæ¨¡å¼  0 å…³é—­å‹ç¼©æœº 1 å¼€å¯å‹ç¼©æœº.ä»…åœ¨cType=4ç”Ÿæ•ˆ
+    private short fan;//é£é€Ÿ  èŒƒå›´ 1-7.ä»…åœ¨cType=4ç”Ÿæ•ˆ
+    private short mode;//æ¨¡å¼  1é™¤é›¾ 2å‰ç»ç’ƒé™¤é›¾+å¹è„š 3 å¹è„š 4å¹èº«ä½“+å¹è„š 5å¹èº«ä½“.ä»…åœ¨cType=4ç”Ÿæ•ˆ
+    private short temp;//æ¸©åº¦ ä»…åœ¨cType=4ç”Ÿæ•ˆ
+    private short masterStat;//ä¸»é©¾åŠ çƒ­çŠ¶æ€ 0å…³é—­ 1 å¼€å¯ ä»…åœ¨cType=6 7ç”Ÿæ•ˆ
+    private short masterLevel;//ä¸»é©¾åŠ çƒ­çº§åˆ« 1 ä½ 2 ä¸­ 3é«˜ ä»…åœ¨cType=6ç”Ÿæ•ˆ
+    private short slaveStat;//é™„é©¾é©¶åŠ çƒ­çŠ¶æ€0å…³é—­ 1 å¼€å¯ ä»…åœ¨cType=6 7ç”Ÿæ•ˆ
+    private short slaveLevel;//é™„é©¾åŠ çƒ­çº§åˆ«  1 ä½ 2 ä¸­ 3é«˜ ä»…åœ¨cType=6ç”Ÿæ•ˆ
 
-    private double latitude;//Î³¶È
-    private double longitude;//¾­¶È
+    private double latitude;//çº¬åº¦
+    private double longitude;//ç»åº¦
 
     public int getUid() {
         return uid;

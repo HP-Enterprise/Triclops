@@ -90,12 +90,208 @@ public class OutputHexService {
     public String getRemoteControlCmdHex(RemoteControl remoteControl,long eventId){
         //产生远程控制指令hex
         RemoteControlCmd  remoteControlCmd=new RemoteControlCmd();
-        remoteControlCmd.setRemoteControlType(remoteControl.getControlType().intValue());
-        remoteControlCmd.setAcTemperature(remoteControl.getAcTemperature());
+        int _cType=-1;
+        byte _remoteStartEngine=(byte)0;
+        byte[] _remoteFindCar={(byte)0,(byte)0,(byte)0,(byte)0};
+        byte _remoteLock=(byte)0;
+        byte[] _remoteAc={(byte)0,(byte)0,(byte)0,(byte)0};
+        byte[] _remoteHeating={(byte)0,(byte)0};
+        short _masterL=0;
+        short _slaveL=0;
+
+        short _ac=0;//空调关
+        short _recir=0;
+        short _compr=0;
+        short _model=0;
+        switch(remoteControl.getControlType().intValue())
+        {
+            case 0://
+               _cType=0;
+                //todo
+                _remoteStartEngine=(byte)0;
+                break;
+            case 1://远程关闭发动机
+                _cType=1;
+                break;
+            case 2://上锁
+                _cType=3;
+                _remoteLock=(byte)1;
+                break;
+            case 3://解锁
+                _cType=3;
+                _remoteLock=(byte)2;
+                break;
+            case 4://空调开启
+                //todo
+                _cType=4;
+                _remoteAc[0]=remoteControl.getAcTemperature().byteValue();
+                //Bit 0 – bit 1:   0x00:Deactivate climatization   0x01:Active  climatization
+                //Bit 2 – bit 3:   0x01:recirulation on   0x02:recirulation off
+                //Bit 4 – bit 5:   0x01:compressor on     0x02:compressor off
+
+                _ac=1;//空调开启
+                if(remoteControl.getRecirMode()!=null){
+                    if(remoteControl.getRecirMode()==1){//外循环
+                        _recir=2;
+                    }else if(remoteControl.getRecirMode()==0){//内循环
+                        _recir=1;
+                    }
+                }
+                if(remoteControl.getAcMode()!=null){
+                    if(remoteControl.getAcMode().intValue()==1){//压缩机开
+                        _compr=1;
+                    }else if(remoteControl.getAcMode().intValue()==0){//关
+                        _compr=2;
+                    }
+                }
+                _remoteAc[1]=(byte)(_ac+_recir*4+_compr*16);
+
+                //BYTE[2]:0x00 not used  0x01 defrost 0x02 front defrost +feet 0x03 feet 0x04 body + feet 0x05 body
+                if(remoteControl.getMode()!=null){
+                    if(remoteControl.getMode()==1){//1除雾
+                        _model=1;
+                    }else if(remoteControl.getMode()==2){//2前玻璃除雾+吹脚
+                        _model=2;
+                    }else if(remoteControl.getMode()==3){//3 吹脚
+                        _model=3;
+                    }else if(remoteControl.getMode()==4){//4吹身体+吹脚
+                        _model=4;
+                    }else if(remoteControl.getMode()==5){//5吹身体
+                        _model=5;
+                    }
+                }
+                _remoteAc[2]=(byte)_model;//吹风模式
+
+                //BYTE[3]:0x00 off 0x01–0x07 : 1-7 fan speed
+                if(remoteControl.getFan()!=null){
+                    if(remoteControl.getFan()>=1&&remoteControl.getFan()<=7){
+                        _remoteAc[3]=remoteControl.getFan().byteValue();//风速1-7 不在此范围则为0 off
+                    }
+                }
+
+                break;
+            case 5://空调关闭
+                //todo
+                _cType=4;
+                _remoteAc[0]=remoteControl.getAcTemperature().byteValue();
+                _ac=0;//空调关
+                _remoteAc[1]=(byte)(_ac+_recir*4+_compr*16);
+                break;
+            case 6://座椅加热
+                //todo ok
+                _cType=5;
+                if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1 && remoteControl.getSlaveStat()==null){
+                    //主开
+                    _remoteHeating[0]=(byte)1;
+                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0&&remoteControl.getSlaveStat()==null){
+                    //主关
+                    _remoteHeating[0]=(byte)0;
+                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1){
+                    //副开
+                    _remoteHeating[0]=(byte)5;
+                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
+                    //副关
+                    _remoteHeating[0]=(byte)4;
+                }
+                else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1&&remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1) {
+                    //主开副开
+                    _remoteHeating[0] = (byte) 9;
+                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0 && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
+                    //主关副关
+                    _remoteHeating[0]=(byte)8;
+                }
+
+                if(remoteControl.getMasterLevel()!=null){
+                    if(remoteControl.getMasterLevel()>=1&& remoteControl.getMasterLevel()<=3){
+                        _masterL=remoteControl.getMasterLevel();
+                    }
+                }
+                if(remoteControl.getSlaveLevel()!=null){
+                    if(remoteControl.getSlaveLevel()>=1&& remoteControl.getSlaveLevel()<=3){
+                        _slaveL=(short)(remoteControl.getSlaveLevel().shortValue()+3);
+                    }
+                }
+                _remoteHeating[1]=(byte)(_slaveL*16+_masterL);//BYTE[1]:  Bit 0–Bit 3:  0x01–0x03 Driver level Bit 4–Bit7: 0x04–0x06   Passenger level
+                break;
+            case 7://停止座椅加热
+                //todo ok
+                _cType=5;
+                if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1 && remoteControl.getSlaveStat()==null){
+                    //主开
+                    _remoteHeating[0]=(byte)1;
+                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0&&remoteControl.getSlaveStat()==null){
+                    //主关
+                    _remoteHeating[0]=(byte)0;
+                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1){
+                    //副开
+                    _remoteHeating[0]=(byte)5;
+                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
+                    //副关
+                    _remoteHeating[0]=(byte)4;
+                }
+                else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1&&remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1) {
+                    //主开副开
+                    _remoteHeating[0] = (byte) 9;
+                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0 && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
+                    //主关副关
+                    _remoteHeating[0]=(byte)8;
+                }
+                if(remoteControl.getMasterLevel()!=null){
+                    if(remoteControl.getMasterLevel()>=1&& remoteControl.getMasterLevel()<=3){
+                        _masterL=remoteControl.getMasterLevel();
+                    }
+                }
+                if(remoteControl.getSlaveLevel()!=null){
+                    if(remoteControl.getSlaveLevel()>=1&& remoteControl.getSlaveLevel()<=3){
+                        _slaveL=(short)(remoteControl.getSlaveLevel().shortValue()+3);
+                    }
+                }
+                _remoteHeating[1]=(byte)(_slaveL*16+_masterL);//BYTE[1]:  Bit 0–Bit 3:  0x01–0x03 Driver level Bit 4–Bit7: 0x04–0x06   Passenger level
+                break;
+            case 8://远程发动机限制  协议不支持
+                //_cType=0;
+                break;
+            case 9://远程发动机限制关闭 协议不支持
+                //_cType=0;
+                break;
+            case 10://远程寻车
+                //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
+                _cType=2;
+                _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
+                _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
+                _remoteFindCar[2]=remoteControl.getLightTime().byteValue()>remoteControl.getHornTime().byteValue()?remoteControl.getLightTime().byteValue():remoteControl.getHornTime().byteValue();
+                if(remoteControl.getLightNum()!=null&&remoteControl.getHornNum()!=null){
+                    //born Bit0–bit1:  0x00:horn and lights to be activated
+                    //Bit2 – bit3:  0x00:function activation
+                    _remoteFindCar[3]=(byte)0;//
+                }else if(remoteControl.getLightNum()!=null&&remoteControl.getHornNum()==null){
+                    //Bit0–bit1 0x01:lights only to be activated
+                    //Bit2 – bit3:  0x00:function activation
+                    _remoteFindCar[3]=(byte)1;//
+                }else if(remoteControl.getLightNum()==null&&remoteControl.getHornNum()!=null){
+                    //Bit0–bit1 0x02: horn only to be activated
+                    //Bit2 – bit3:  0x00:function activation
+                    _remoteFindCar[3]=(byte)2;//
+                }else if(remoteControl.getLightNum()==null&&remoteControl.getHornNum()==null){
+                    //Bit2 – bit3:  0x01:function deactivation
+                    _remoteFindCar[3]=(byte)4;//00000100
+                }
+                break;
+            default:
+                _logger.info("unknown cType"+remoteControl.getControlType().intValue());
+                break;
+        }
+        remoteControlCmd.setRemoteControlType(_cType);
+        remoteControlCmd.setRemoteStartEngine(_remoteStartEngine);
+        remoteControlCmd.setRemoteFindCar(_remoteFindCar);
+        remoteControlCmd.setRemoteLock(_remoteLock);
+        remoteControlCmd.setRemoteAc(_remoteAc);
+        remoteControlCmd.setRemoteHeating(_remoteHeating);
+
         remoteControlCmd.setApplicationID((short) 49);
         remoteControlCmd.setMessageID((short) 3);
         remoteControlCmd.setEventID(eventId);
-        remoteControlCmd.setSendingTime((long)dataTool.getCurrentSeconds());
+        remoteControlCmd.setSendingTime((long) dataTool.getCurrentSeconds());
         remoteControlCmd.setTestFlag((short) 0);
 
         DataPackage dpw=new DataPackage("8995_49_3");//>>>

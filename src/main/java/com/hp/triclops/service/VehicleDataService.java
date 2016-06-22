@@ -67,9 +67,7 @@ public class VehicleDataService {
      * 下发参数设置命令
      * @param uid user id
      * @param vin vin
-     * @param cType 控制类别 0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：远程寻车
-     * @param acTmp 空调温度 cType=4时有效
-     * @param position app position
+     * @param remoteControlBody app remoteControlBody
      * @return 持久化后的RemoteControl对象
      */
     public RemoteControl handleRemoteControl(int uid,String vin,RemoteControlBody remoteControlBody){
@@ -100,9 +98,20 @@ public class VehicleDataService {
             rc.setSendingTime(new Date());
             rc.setControlType(remoteControlBody.getcType());
             rc.setAcTemperature(remoteControlBody.getTemp());
+            rc.setLightNum(remoteControlBody.getLightNum());
+            rc.setLightTime(remoteControlBody.getLightTime());
+            rc.setHornNum(remoteControlBody.getHornNum());
+            rc.setHornTime(remoteControlBody.getHornTime());
+            rc.setRecirMode(remoteControlBody.getRecirMode());
+            rc.setAcMode(remoteControlBody.getAcMode());
+            rc.setFan(remoteControlBody.getFan());
+            rc.setMode(remoteControlBody.getMode());
+            rc.setMasterStat(remoteControlBody.getMasterStat());
+            rc.setMasterLevel(remoteControlBody.getMasterLevel());
+            rc.setSlaveStat(remoteControlBody.getSlaveStat());
+            rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
+
             rc.setStatus((short) 0);
-            rc.setLongitude(remoteControlBody.getLongitude());
-            rc.setLatitude(remoteControlBody.getLatitude());
             rc.setRemark("");
             rc.setAvailable((short)1);
             remoteControlRepository.save(rc);
