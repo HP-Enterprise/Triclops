@@ -44,6 +44,9 @@ public class RealTimeReportData {
     private String skylightState;
     private String parkingState;
     private int tripId;
+    private float voltage;
+    private int averageSpeedA;
+    private int averageSpeedB;
 
 
     @Id
@@ -376,5 +379,32 @@ public class RealTimeReportData {
 
     public void setParkingState(String parkingState) {
         this.parkingState = parkingState;
+    }
+
+    public float getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(float voltage) {
+        this.voltage = voltage;
+    }
+
+    @Basic
+    @Column(name = "average_speed_a", nullable = false, insertable = true, updatable = true)
+    public int getAverageSpeedA() {
+        return averageSpeedA;
+    }
+
+    public void setAverageSpeedA(int averageSpeedA) {
+        this.averageSpeedA = averageSpeedA;
+    }
+    @Basic
+    @Column(name = "average_speed_b", nullable = false, insertable = true, updatable = true)
+    public int getAverageSpeedB() {
+        return averageSpeedB;
+    }
+
+    public void setAverageSpeedB(int averageSpeedB) {
+        this.averageSpeedB = averageSpeedB;
     }
 }

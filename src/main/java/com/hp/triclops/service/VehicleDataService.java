@@ -67,12 +67,10 @@ public class VehicleDataService {
      * 下发参数设置命令
      * @param uid user id
      * @param vin vin
-     * @param cType 控制类别 0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：远程寻车
-     * @param acTmp 空调温度 cType=4时有效
-     * @param position app position
+     * @param remoteControlBody app remoteControlBody
      * @return 持久化后的RemoteControl对象
      */
-    public RemoteControl handleRemoteControl(int uid,String vin,short cType,short acTmp,Position position){
+    public RemoteControl handleRemoteControl(int uid,String vin,RemoteControlBody remoteControlBody){
 
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
@@ -81,7 +79,7 @@ public class VehicleDataService {
           return null;
         }*/
         //20160525取消T平台对控制次数的检查
-        if(!initCheck(vin,cType)){
+        if(!initCheck(vin,remoteControlBody.getcType())){
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
             return null;
         }
@@ -98,11 +96,22 @@ public class VehicleDataService {
             rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
             rc.setVin(vin);
             rc.setSendingTime(new Date());
-            rc.setControlType(cType);
-            rc.setAcTemperature(acTmp);
+            rc.setControlType(remoteControlBody.getcType());
+            rc.setAcTemperature(remoteControlBody.getTemp());
+            rc.setLightNum(remoteControlBody.getLightNum());
+            rc.setLightTime(remoteControlBody.getLightTime());
+            rc.setHornNum(remoteControlBody.getHornNum());
+            rc.setHornTime(remoteControlBody.getHornTime());
+            rc.setRecirMode(remoteControlBody.getRecirMode());
+            rc.setAcMode(remoteControlBody.getAcMode());
+            rc.setFan(remoteControlBody.getFan());
+            rc.setMode(remoteControlBody.getMode());
+            rc.setMasterStat(remoteControlBody.getMasterStat());
+            rc.setMasterLevel(remoteControlBody.getMasterLevel());
+            rc.setSlaveStat(remoteControlBody.getSlaveStat());
+            rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
+
             rc.setStatus((short) 0);
-            rc.setLongitude(position.getLongitude());
-            rc.setLatitude(position.getLatitude());
             rc.setRemark("");
             rc.setAvailable((short)1);
             remoteControlRepository.save(rc);
@@ -213,13 +222,15 @@ public class VehicleDataService {
      * 调用具体实现的唤醒接口 可能是Ring或者SMS To Tbox
      * @param vin vin
      */
-    private void wakeup(String vin){
+    public void wakeup(String vin){
         //本部分代码为调用外部唤醒接口
         _logger.info(" wake up tbox"+vin);
         TBox tBox=tBoxRepository.findByVin(vin);
         if(tBox!=null){
             String tboxMobile=tBox.getMobile();
             smsHttpTool.doHttp(tboxMobile,"WAKEUP");
+        }else{
+            _logger.info("can not find phone for vin:"+vin);
         }
     }
 
@@ -321,39 +332,40 @@ public class VehicleDataService {
         }else{
                 RealTimeDataShow data=new RealTimeDataShow();
                 data.setId(rd.getId());
-                data.setVin(rd.getVin());
-                data.setImei(rd.getImei());
-                data.setApplicationId(rd.getApplicationId());
-                data.setMessageId(rd.getMessageId());
-                data.setSendingTime(rd.getSendingTime());
+            data.setVin(rd.getVin());
+            data.setImei(rd.getImei());
+            data.setApplicationId(rd.getApplicationId());
+            data.setMessageId(rd.getMessageId());
+            data.setSendingTime(rd.getSendingTime());
 
-                data.setFuelOil((int)rd.getFuelOil());
-                data.setAvgOilA(rd.getAvgOilA());
-                data.setAvgOilB(rd.getAvgOilB());
-                data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
-                data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
-                data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
-                data.setRightRearTirePressure(rd.getRightRearTirePressure());
-                data.setLeftFrontWindowInformation(rd.getLeftFrontWindowInformation());
-                data.setRightFrontWindowInformation(rd.getRightFrontWindowInformation());
-                data.setLeftRearWindowInformation(rd.getLeftRearWindowInformation());
-                data.setRightRearWindowInformation(rd.getRightRearWindowInformation());
-                data.setVehicleTemperature(rd.getVehicleTemperature());//
-                data.setVehicleOuterTemperature(rd.getVehicleOuterTemperature());
-                data.setLeftFrontDoorInformation(rd.getLeftFrontDoorInformation());
-                data.setLeftRearDoorInformation(rd.getLeftRearDoorInformation());
-                data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
-                data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
+            data.setFuelOil((int) rd.getFuelOil());
+            data.setAvgOilA(rd.getAvgOilA());
+            data.setAvgOilB(rd.getAvgOilB());
+            data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
+            data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
+            data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
+            data.setRightRearTirePressure(rd.getRightRearTirePressure());
+            data.setLeftFrontWindowInformation(rd.getLeftFrontWindowInformation());
+            data.setRightFrontWindowInformation(rd.getRightFrontWindowInformation());
+            data.setLeftRearWindowInformation(rd.getLeftRearWindowInformation());
+            data.setRightRearWindowInformation(rd.getRightRearWindowInformation());
+            data.setVehicleTemperature(rd.getVehicleTemperature());//
+            data.setVehicleOuterTemperature(rd.getVehicleOuterTemperature());
+            data.setLeftFrontDoorInformation(rd.getLeftFrontDoorInformation());
+            data.setLeftRearDoorInformation(rd.getLeftRearDoorInformation());
+            data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
+            data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
 
-                data.setOilLife(rd.getOilLife());
-                data.setParkingState(Integer.parseInt(rd.getParkingState()));
-                data.setMileageRange(rd.getMileageRange());
-                data.setDrivingRange(rd.getDrivingRange());
-                data.setDrivingTime(rd.getDrivingTime());
-                data.setSkylightState(Integer.parseInt(rd.getSkylightState()));
-                data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
-                data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
-
+            data.setOilLife(rd.getOilLife());
+            data.setParkingState(Integer.parseInt(rd.getParkingState()));
+            data.setMileageRange(rd.getMileageRange());
+            data.setDrivingRange(rd.getDrivingRange());
+            data.setDrivingTime(rd.getDrivingTime());
+            data.setSkylightState(Integer.parseInt(rd.getSkylightState()));
+            data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
+            data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
+            data.setAverageSpeedA(rd.getAverageSpeedA());
+                data.setAverageSpeedB(rd.getAverageSpeedB());
                 data.setFmax(280);
                 data.setFmin(200);
                 data.setRmax(290);
@@ -370,7 +382,7 @@ public class VehicleDataService {
                 data.setLongitude(gd.getLongitude());
                 data.setSpeed(gd.getSpeed());
                 data.setHeading(gd.getHeading());
-
+                data.setVoltage(rd.getVoltage());
                 //数据转换处理
                 int p=100*data.getFuelOil()/63;
                 p=p<0?0:p;
@@ -386,6 +398,11 @@ public class VehicleDataService {
                 BigDecimal bdB  =   new  BigDecimal((double)_avgOilB);
                 bdB   =  bdB.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
                 data.setAvgOilB(bdB.floatValue());
+
+                float _voltage=data.getVoltage();
+                BigDecimal bdC  =   new  BigDecimal((double)_voltage);
+                bdC   =  bdC.setScale(2,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留2位小数
+                data.setVoltage(bdC.floatValue());
 
                 //胎压处理
                 data.setLeftFrontTirePressure(dataTool.getRoundHalfDown(rd.getLeftFrontTirePressure(),1));

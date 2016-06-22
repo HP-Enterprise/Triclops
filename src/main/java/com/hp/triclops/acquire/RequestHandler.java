@@ -449,7 +449,7 @@ public class RequestHandler {
             }
             byte crashStatus=remoteControlPreconditionResp.getAcm_crash_status();
             char[] crashStatus_char=dataTool.getBitsFromByte(crashStatus);
-            if(crashStatus_char[6]=='0'&&crashStatus_char[7]=='0'&& crashStatus_char[4]=='0'&&crashStatus_char[5]=='0'){
+            if(crashStatus_char[6]=='0'&&crashStatus_char[7]=='0'&& crashStatus_char[1]=='0'&&crashStatus_char[0]=='0'){
                 crashStatusCheck=true;
             }
             short remainingFuel=remoteControlPreconditionResp.getFuelLevel();
@@ -548,7 +548,7 @@ public class RequestHandler {
      */
     public boolean verifyRemoteControlDistance(String vin,long eventId,int maxDistance){
         //目前逻辑 app与car距离小于配置的maxDistance 单位m
-        boolean re=false;
+     /*   boolean re=false;
         RemoteControl rc=outputHexService.getRemoteControlRecord(vin, eventId);
         GpsData gpsData=gpsDataRepository.findTopByVinOrderBySendingTimeDesc(vin);
 
@@ -559,8 +559,9 @@ public class RequestHandler {
                 re=true;
             }
         }
-        _logger.info("verifyRemoteControlDistance result:"+re);
-        return re;
+        _logger.info("verifyRemoteControlDistance result:"+re);*/
+        return true;//协议0625 取消此校验
+
     }
 
 
