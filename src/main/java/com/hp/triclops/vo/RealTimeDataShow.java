@@ -346,7 +346,7 @@ public class RealTimeDataShow {
     private int skylightState;
     private int engineDoorInformation;
     private int trunkDoorInformation;
-    private float voltage;
+    private float batteryVoltage;
     private int averageSpeedA;
     private int averageSpeedB;
     public Long getId() {
@@ -721,12 +721,12 @@ public class RealTimeDataShow {
         this.trunkDoorInformation = trunkDoorInformation;
     }
 
-    public float getVoltage() {
-        return voltage;
+    public float getBatteryVoltage() {
+        return batteryVoltage;
     }
 
-    public void setVoltage(float voltage) {
-        this.voltage = voltage;
+    public void setBatteryVoltage(float batteryVoltage) {
+        this.batteryVoltage = batteryVoltage;
     }
 
     public int getAverageSpeedA() {
