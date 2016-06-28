@@ -103,6 +103,9 @@ public class OutputHexService {
         short _recir=0;
         short _compr=0;
         short _model=0;
+
+        double _sendTemp=0;
+        Integer _sendTempInt=0;
         switch(remoteControl.getControlType().intValue())
         {
             case 0://
@@ -124,7 +127,9 @@ public class OutputHexService {
             case 4://空调开启
                 //todo
                 _cType=4;
-                _remoteAc[0]=remoteControl.getAcTemperature().byteValue();
+                _sendTemp=(remoteControl.getAcTemperature()-15.5)*2;
+                _sendTempInt=(int)_sendTemp;
+                _remoteAc[0]=_sendTempInt.byteValue();
                 //Bit 0 – bit 1:   0x00:Deactivate climatization   0x01:Active  climatization
                 //Bit 2 – bit 3:   0x01:recirulation on   0x02:recirulation off
                 //Bit 4 – bit 5:   0x01:compressor on     0x02:compressor off
@@ -172,8 +177,10 @@ public class OutputHexService {
                 break;
             case 5://空调关闭
                 //todo
-                _cType=4;
-                _remoteAc[0]=remoteControl.getAcTemperature().byteValue();
+                 _cType=4;
+                 _sendTemp=(remoteControl.getAcTemperature()-15.5)*2; //真实温度 15.5~32.5
+                 _sendTempInt=(int)_sendTemp;
+                _remoteAc[0]=_sendTempInt.byteValue();//0x00~0x23
                 _ac=0;//空调关
                 _remoteAc[1]=(byte)(_ac+_recir*4+_compr*16);
                 break;
@@ -259,7 +266,10 @@ public class OutputHexService {
                 _cType=2;
                 _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
                 _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
-                _remoteFindCar[2]=remoteControl.getLightTime().byteValue()>remoteControl.getHornTime().byteValue()?remoteControl.getLightTime().byteValue():remoteControl.getHornTime().byteValue();
+                Integer _lightTime=(int)(remoteControl.getLightTime()*10);//0.2~0.5-> 0x02~0x05
+                Integer _hornTime=(int)(remoteControl.getHornTime()*10);
+
+                _remoteFindCar[2]=_lightTime.byteValue()>_hornTime.byteValue()?_lightTime.byteValue():_hornTime.byteValue();
                 if(remoteControl.getLightNum()!=null&&remoteControl.getHornNum()!=null){
                     //born Bit0–bit1:  0x00:horn and lights to be activated
                     //Bit2 – bit3:  0x00:function activation
@@ -1110,17 +1120,17 @@ public class OutputHexService {
         return dataMap;
     }
 
-    /**
+   /* *//**
      * 远程控制参数暂存redis
      * @param vin vin
      * @param eventId eventId
      * @param rc 封装远程控制参数的RemoteControl对象
-     */
+     *//*
     public  void saveRemoteCmdValueToRedis(String vin,long eventId,RemoteControl rc){
         String valueStr=rc.getControlType()+","+rc.getAcTemperature();//类型和温度值 15,25
         socketRedis.saveValueString(dataTool.remote_cmd_value_preStr +"-"+ vin+"-"+eventId, valueStr, DataTool.remote_cmd_value_ttl);
         //控制参数暂存redis
-    }
+    }*/
 
     /**
      * 从redis取出暂存的远程控制参数
@@ -1128,18 +1138,15 @@ public class OutputHexService {
      * @param eventId eventId
      * @return 封装远程控制参数的RemoteControl对象
      */
-    public  RemoteControl getRemoteCmdValueFromRedis(String vin,long eventId){
-        String cmdValueKey=dataTool.remote_cmd_value_preStr +"-"+ vin+"-"+eventId;
-        String valueStr=socketRedis.getValueString(cmdValueKey);
-        socketRedis.delValueString(cmdValueKey);
-        if(!valueStr.equalsIgnoreCase("null")&&valueStr.length()>0){
-            String[] values=valueStr.split(",");
-            RemoteControl  rc=new RemoteControl();
-            rc.setControlType(Short.parseShort(values[0]));
-            rc.setAcTemperature(Short.parseShort(values[1]));
+    public  RemoteControl getRemoteCmdValueFromDb(String vin,long eventId){
+        String sessionId=49+"-"+eventId;
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        if (rc == null) {
+            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
+            return null;
+        }else{
             return rc;
         }
-        return null;
         //取出暂存redis控制参数
     }
 

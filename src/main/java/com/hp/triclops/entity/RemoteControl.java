@@ -22,12 +22,12 @@ public class RemoteControl {
     private Short status;
     private String remark;
     private Short available;// 0 失效 1 有效 默认为1
-    private Short acTemperature;
+    private Double acTemperature;
     //0625新增加的控制指令
     private Short lightNum;//闪灯次数，仅在cType=10生效
-    private Short lightTime;//闪灯时长，仅在cType=10生效
+    private Double lightTime;//闪灯时长，仅在cType=10生效
     private Short hornNum;//鸣笛次数，仅在cType=10生效
-    private Short hornTime;//鸣笛时长，仅在cType=10生效
+    private Double hornTime;//鸣笛时长，仅在cType=10生效
     private Short recirMode;//循环模式 0 内循环 1 外循环 默认外循环.仅在cType=4生效
     private Short acMode;//AC模式  0 关闭压缩机 1 开启压缩机.仅在cType=4生效
     private Short fan;//风速  范围 1-7.仅在cType=4生效
@@ -102,11 +102,11 @@ public class RemoteControl {
 
     @Basic
     @Column(name = "ac_temperature", nullable = false, insertable = true, updatable = true)
-    public Short getAcTemperature() {
+    public Double getAcTemperature() {
         return acTemperature;
     }
 
-    public void setAcTemperature(Short acTemperature) {
+    public void setAcTemperature(Double acTemperature) {
         this.acTemperature = acTemperature;
     }
 
@@ -153,11 +153,11 @@ public class RemoteControl {
 
     @Basic
     @Column(name = "light_time", nullable = false, insertable = true, updatable = true)
-    public Short getLightTime() {
+    public Double getLightTime() {
         return lightTime;
     }
 
-    public void setLightTime(Short lightTime) {
+    public void setLightTime(Double lightTime) {
         this.lightTime = lightTime;
     }
 
@@ -173,11 +173,11 @@ public class RemoteControl {
 
     @Basic
     @Column(name = "horn_time", nullable = false, insertable = true, updatable = true)
-    public Short getHornTime() {
+    public Double getHornTime() {
         return hornTime;
     }
 
-    public void setHornTime(Short hornTime) {
+    public void setHornTime(Double hornTime) {
         this.hornTime = hornTime;
     }
 
