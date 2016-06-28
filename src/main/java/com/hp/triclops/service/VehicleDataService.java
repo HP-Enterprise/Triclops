@@ -115,11 +115,8 @@ public class VehicleDataService {
             rc.setRemark("");
             rc.setAvailable((short)1);
             remoteControlRepository.save(rc);
-            _logger.info("save RemoteControl to db");
+            _logger.info("save RemoteControl to db"+rc.getId());
             //保存到数据库
-            //产生预控制数据包hex并入redis发送，将远程控制参数暂存redis
-            //remoteCommand:vin:eventId->type,acTmp
-            outputHexService.saveRemoteCmdValueToRedis(vin,eventId,rc);
             String byteStr=outputHexService.getRemoteControlPreHex(rc,eventId);
             outputHexService.saveCmdToRedis(vin,byteStr);//发送预命令
             _logger.info("pre command hex:"+byteStr);
@@ -488,6 +485,20 @@ public class VehicleDataService {
             remoteControlShow.setUid(remoteControllList.get(i).getUid());
             remoteControlShow.setControlType(remoteControllList.get(i).getControlType());
             remoteControlShow.setAcTemperature(remoteControllList.get(i).getAcTemperature());
+            //0625新增加的控制指令
+            remoteControlShow.setLightNum(remoteControllList.get(i).getLightNum());
+            remoteControlShow.setLightTime(remoteControllList.get(i).getLightTime());
+            remoteControlShow.setHornNum(remoteControllList.get(i).getHornNum());
+            remoteControlShow.setHornTime(remoteControllList.get(i).getHornTime());
+            remoteControlShow.setRecirMode(remoteControllList.get(i).getRecirMode());
+            remoteControlShow.setAcMode(remoteControllList.get(i).getAcMode());
+            remoteControlShow.setFan(remoteControllList.get(i).getFan());
+            remoteControlShow.setMode(remoteControllList.get(i).getMode());
+            remoteControlShow.setMasterStat(remoteControllList.get(i).getMasterStat());
+            remoteControlShow.setMasterLevel(remoteControllList.get(i).getMasterLevel());
+            remoteControlShow.setSlaveStat(remoteControllList.get(i).getSlaveStat());
+            remoteControlShow.setSlaveLevel(remoteControllList.get(i).getSlaveLevel());
+
             remoteControlShow.setVin(remoteControllList.get(i).getVin());
             remoteControlAndVehicle.add(remoteControlShow);
         }

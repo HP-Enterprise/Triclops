@@ -278,7 +278,7 @@ public class RequestHandler {
                 long eventId=bean.getEventID();
                 //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                 //取出redis暂存的控制参数 生成指令
-                RemoteControl rc=outputHexService.getRemoteCmdValueFromRedis(vin, bean.getEventID());
+                RemoteControl rc=outputHexService.getRemoteCmdValueFromDb(vin, bean.getEventID());
                 if(rc==null){
                     _logger.info("get RemoteCmd Value From Redis return null...");
                     return;

@@ -44,7 +44,7 @@ public class OutputHexServiceTest {
         RemoteControl remoteControl=new RemoteControl();
         remoteControl.setSendingTime(new Date());
         remoteControl.setControlType((short) 13);
-        remoteControl.setAcTemperature((short) 23);
+        remoteControl.setAcTemperature(23.0);
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
         System.out.println(">>>>>>>"+outputHexService.getRemoteControlPreHex(remoteControl, (long) 1444812349));
@@ -57,7 +57,7 @@ public class OutputHexServiceTest {
         RemoteControl remoteControl=new RemoteControl();
         remoteControl.setSendingTime(new Date());
         remoteControl.setControlType((short) 4);
-        remoteControl.setAcTemperature((short) 21);
+        remoteControl.setAcTemperature(21.0);
         remoteControl.setMode((short) 3);
         remoteControl.setRecirMode((short) 1);
         remoteControl.setAcMode((short) 0);
@@ -77,9 +77,9 @@ public class OutputHexServiceTest {
         remoteControl.setSendingTime(new Date());
         remoteControl.setControlType((short) 10);
         remoteControl.setLightNum((short) 15);
-        remoteControl.setLightTime((short) 10);
+        remoteControl.setLightTime(0.3);
         remoteControl.setHornNum((short) 20);
-        remoteControl.setHornTime((short)25);
+        remoteControl.setHornTime(0.4);
 
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");

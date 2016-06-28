@@ -8,21 +8,20 @@ public class RemoteControlBody {
     private String vin;//目标车辆vin
     private short cType;//
     private short lightNum;//闪灯次数，仅在cType=10生效
-    private short lightTime;//闪灯时长，仅在cType=10生效
+    private double lightTime;//闪灯时长，仅在cType=10生效 0.2~0.5s
     private short hornNum;//鸣笛次数，仅在cType=10生效
-    private short hornTime;//鸣笛时长，仅在cType=10生效
+    private double hornTime;//鸣笛时长，仅在cType=10生效 0.2~0.5s
     private short recirMode;//循环模式 0 内循环 1 外循环 默认外循环.仅在cType=4生效
     private short acMode;//AC模式  0 关闭压缩机 1 开启压缩机.仅在cType=4生效
     private short fan;//风速  范围 1-7.仅在cType=4生效
     private short mode;//模式  1除雾 2前玻璃除雾+吹脚 3 吹脚 4吹身体+吹脚 5吹身体.仅在cType=4生效
-    private short temp;//温度 仅在cType=4生效
+    private double temp;//温度 仅在cType=4生效 15.5~32.5
     private short masterStat;//主驾加热状态 0关闭 1 开启 仅在cType=6 7生效
     private short masterLevel;//主驾加热级别 1 低 2 中 3高 仅在cType=6生效
     private short slaveStat;//附驾驶加热状态0关闭 1 开启 仅在cType=6 7生效
     private short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
 
-    private double latitude;//纬度
-    private double longitude;//经度
+
 
     public int getUid() {
         return uid;
@@ -56,11 +55,11 @@ public class RemoteControlBody {
         this.lightNum = lightNum;
     }
 
-    public short getLightTime() {
+    public double getLightTime() {
         return lightTime;
     }
 
-    public void setLightTime(short lightTime) {
+    public void setLightTime(double lightTime) {
         this.lightTime = lightTime;
     }
 
@@ -72,13 +71,7 @@ public class RemoteControlBody {
         this.hornNum = hornNum;
     }
 
-    public short getHornTime() {
-        return hornTime;
-    }
 
-    public void setHornTime(short hornTime) {
-        this.hornTime = hornTime;
-    }
 
     public short getRecirMode() {
         return recirMode;
@@ -112,11 +105,19 @@ public class RemoteControlBody {
         this.mode = mode;
     }
 
-    public short getTemp() {
+    public double getHornTime() {
+        return hornTime;
+    }
+
+    public void setHornTime(double hornTime) {
+        this.hornTime = hornTime;
+    }
+
+    public double getTemp() {
         return temp;
     }
 
-    public void setTemp(short temp) {
+    public void setTemp(double temp) {
         this.temp = temp;
     }
 
@@ -152,19 +153,5 @@ public class RemoteControlBody {
         this.slaveLevel = slaveLevel;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 }
