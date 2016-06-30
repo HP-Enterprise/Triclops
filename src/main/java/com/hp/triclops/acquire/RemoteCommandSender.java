@@ -32,6 +32,7 @@ public class RemoteCommandSender extends Thread{
     public  void run()
     {
         _logger.info("handling remoteCommand...");
+        _logger.info("remoteCommand:"+remoteControlBody.getVin()+"| type:"+remoteControlBody.getcType());
         RemoteControl rc=vehicleDataService.handleRemoteControl(uid, vin, remoteControlBody);
         if(rc!=null){
             //远程控制命令下发成功,执行结果会通过mqtt下发 以sessionId识别
