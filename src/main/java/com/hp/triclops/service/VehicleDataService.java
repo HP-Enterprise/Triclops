@@ -74,13 +74,38 @@ public class VehicleDataService {
 
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
-      /*  if(isRemoteMaxCountReached(vin)){
-            _logger.info("vin:"+vin+" remote started max count reached,abort remote Control");
-          return null;
-        }*/
+        //保存远程控制记录
+        Long eventId= (long) dataTool.getCurrentSeconds();
+        RemoteControl rc=new RemoteControl();
+        rc.setUid(uid);
+        rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
+        rc.setVin(vin);
+        rc.setSendingTime(new Date());
+        rc.setControlType(remoteControlBody.getcType());
+        rc.setAcTemperature(remoteControlBody.getTemp());
+        rc.setLightNum(remoteControlBody.getLightNum());
+        rc.setLightTime(remoteControlBody.getLightTime());
+        rc.setHornNum(remoteControlBody.getHornNum());
+        rc.setHornTime(remoteControlBody.getHornTime());
+        rc.setRecirMode(remoteControlBody.getRecirMode());
+        rc.setAcMode(remoteControlBody.getAcMode());
+        rc.setFan(remoteControlBody.getFan());
+        rc.setMode(remoteControlBody.getMode());
+        rc.setMasterStat(remoteControlBody.getMasterStat());
+        rc.setMasterLevel(remoteControlBody.getMasterLevel());
+        rc.setSlaveStat(remoteControlBody.getSlaveStat());
+        rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
+        rc.setStatus((short) 0);//默认失败
+        rc.setRemark("");
+        rc.setAvailable((short)1);
+        remoteControlRepository.save(rc);
+        _logger.info("save RemoteControl to db"+rc.getId());
+
         //20160525取消T平台对控制次数的检查
         if(!initCheck(vin,remoteControlBody.getcType())){
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
+            rc.setRemark("车辆初始状态不满足控制条件，无法下发远程控制指令！");
+            remoteControlRepository.save(rc);
             return null;
         }
         if(!hasConnection(vin)){
@@ -90,37 +115,14 @@ public class VehicleDataService {
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
         if(hasConnection(vin)){
             _logger.info("vin:"+vin+" have connection,sending command...");
-            Long eventId= (long) dataTool.getCurrentSeconds();
-            RemoteControl rc=new RemoteControl();
-            rc.setUid(uid);
-            rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
-            rc.setVin(vin);
-            rc.setSendingTime(new Date());
-            rc.setControlType(remoteControlBody.getcType());
-            rc.setAcTemperature(remoteControlBody.getTemp());
-            rc.setLightNum(remoteControlBody.getLightNum());
-            rc.setLightTime(remoteControlBody.getLightTime());
-            rc.setHornNum(remoteControlBody.getHornNum());
-            rc.setHornTime(remoteControlBody.getHornTime());
-            rc.setRecirMode(remoteControlBody.getRecirMode());
-            rc.setAcMode(remoteControlBody.getAcMode());
-            rc.setFan(remoteControlBody.getFan());
-            rc.setMode(remoteControlBody.getMode());
-            rc.setMasterStat(remoteControlBody.getMasterStat());
-            rc.setMasterLevel(remoteControlBody.getMasterLevel());
-            rc.setSlaveStat(remoteControlBody.getSlaveStat());
-            rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
-
-            rc.setStatus((short) 0);
-            rc.setRemark("");
-            rc.setAvailable((short)1);
-            remoteControlRepository.save(rc);
-            _logger.info("save RemoteControl to db"+rc.getId());
             //保存到数据库
             String byteStr=outputHexService.getRemoteControlPreHex(rc,eventId);
             outputHexService.saveCmdToRedis(vin,byteStr);//发送预命令
             _logger.info("pre command hex:"+byteStr);
             return rc;
+        }else{
+            rc.setRemark("远程唤醒失败，无法下发远程控制命令！");
+            remoteControlRepository.save(rc);
         }
         return null;
         //命令下发成功，返回保存后的rc  否则返回null

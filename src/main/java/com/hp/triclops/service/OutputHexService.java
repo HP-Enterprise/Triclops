@@ -261,7 +261,8 @@ public class OutputHexService {
             case 9://远程发动机限制关闭 协议不支持
                 //_cType=0;
                 break;
-            case 10://远程寻车
+            case 10://闪灯->寻车
+            case 11://鸣笛->寻车
                 //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
                 _cType=2;
                 _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
