@@ -343,8 +343,13 @@ public class RequestHandler {
                 if(preconditionRespCheck==10){
                 msg="远程寻车失败，操作条件不满足";
                 }
-                 outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg);
-                _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
+                if(preconditionRespCheck==4||preconditionRespCheck==5||preconditionRespCheck==6||preconditionRespCheck==7){
+                    _logger.info("trying start engine...");
+                }else{//除了4 5 6 7之外的失败会导致流程结束，而4 5 6 7会尝试启动发动机
+                    outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg);
+                    _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
+                }
+
             }
         }else if(messageId==0x04){
             _logger.info("receive RemoteControlAck,start  handle...");
