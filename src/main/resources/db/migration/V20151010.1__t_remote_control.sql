@@ -18,8 +18,8 @@ master_stat smallint(6) DEFAULT 0 COMMENT '主驾加热状态 0关闭 1 开启 �
 master_level smallint(6) DEFAULT 0 COMMENT '主驾加热级别 1 低 2 中 3高 仅在cType=6生效',
 slave_stat smallint(6) DEFAULT 0 COMMENT '附驾驶加热状态0关闭 1 开启 仅在cType=6 7生效',
 slave_level smallint(6) DEFAULT 0 COMMENT '附驾加热级别  1 低 2 中 3高 仅在cType=6生效',
-status smallint(1)  COMMENT '状态变化 0已发预命令  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败',
-remark varchar(200) COMMENT '备注',
+status smallint(1)  COMMENT '状态变化 0：失败 1：成功',
+remark varchar(200) COMMENT '备注，错误详细信息',
 available smallint(1) NOT NULL DEFAULT 1 COMMENT '是否存在, 0 失效 1 有效 默认为1',
 PRIMARY KEY (id),
  FOREIGN KEY (uid) REFERENCES t_user(Id)

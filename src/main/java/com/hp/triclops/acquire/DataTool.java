@@ -32,6 +32,7 @@ public class DataTool {
 
     public static final String msgSendCount_preStr="msgSendCount:";
     public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
+    public static final String remoteControlRef_preStr="remoteControlRef:";//远程控制event引用的远程控制db id
     public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
 

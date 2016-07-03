@@ -37,9 +37,9 @@ public class RemoteCommandSender extends Thread{
         if(rc!=null){
             //远程控制命令下发成功,执行结果会通过mqtt下发 以sessionId识别
             //ObjectResult obj = new ObjectResult("success",rc.getSessionId());
-             _logger.info("Command send success  "+uid+"-"+ vin+"-"+cType+"-"+acTmp+"-"+position);
+             _logger.info("Command send success  "+uid+"-"+ vin+"-"+cType+"-"+acTmp);
         }else{
-            _logger.info("Command send failed"+uid+"-"+ vin+"-"+cType+"-"+acTmp+"-"+position);
+            _logger.info("Command send failed"+uid+"-"+ vin+"-"+cType+"-"+acTmp);
         }
     }
 

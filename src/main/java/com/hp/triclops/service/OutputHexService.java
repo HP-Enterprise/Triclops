@@ -261,7 +261,8 @@ public class OutputHexService {
             case 9://远程发动机限制关闭 协议不支持
                 //_cType=0;
                 break;
-            case 10://远程寻车
+            case 10://闪灯->寻车
+            case 11://鸣笛->寻车
                 //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
                 _cType=2;
                 _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
@@ -1133,7 +1134,7 @@ public class OutputHexService {
     }*/
 
     /**
-     * 从redis取出暂存的远程控制参数
+     * 从数据库取出暂存的远程控制参数
      * @param vin vin
      * @param eventId eventId
      * @return 封装远程控制参数的RemoteControl对象
@@ -1151,13 +1152,41 @@ public class OutputHexService {
     }
 
     /**
+     * 生成一个简单remoteControl 用于生成启动发动机命令,无需数据库存储
+     * @param vin vin
+     * @param eventId eventId
+     * @return 封装远程控制参数的RemoteControl对象
+     */
+    public  RemoteControl getStartEngineRemoteControl(String vin){
+       RemoteControl remoteControl=new RemoteControl();
+        remoteControl.setVin(vin);
+        remoteControl.setControlType((short)0);
+        return remoteControl;
+    }
+
+    /**
+     * 从数据库取出暂存的远程控制参数
+     * @param id id
+     * @return 封装远程控制参数的RemoteControl对象
+     */
+    public  RemoteControl getRemoteCmdValueFromDb(long id){
+        RemoteControl rc=remoteControlRepository.findOne(id);
+        if (rc == null) {
+            _logger.info("No RemoteControl found in db,id:"+id);
+            return null;
+        }else{
+            return rc;
+        }
+    }
+
+
+    /**
      * 处理远程控制Ack上行（持久化 push）
      * @param vin vin
      * @param eventId eventId
      */
     public void handleRemoteControlPreconditionResp(String vin,long eventId,String message){
         String sessionId=49+"-"+eventId;
-        Short dbResult=1;//参考建表sql 1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
@@ -1165,7 +1194,7 @@ public class OutputHexService {
             //持久化远程控制记录状态，push to sender
             _logger.info("RemoteControl PreconditionResp persistence and push start");
             //返回无效才更新db记录
-            rc.setStatus(dbResult);
+            rc.setRemark(message);
             remoteControlRepository.save(rc);
             String pushMsg=message+sessionId;
             _logger.info("RemoteControl PreconditionResp  push message>:"+pushMsg);
@@ -1181,22 +1210,22 @@ public class OutputHexService {
      * 处理远程控制Ack上行（持久化 push）
      * @param vin vin
      * @param eventId eventId
-     * @param result Ack响应结果
+     * @param result Ack响应结果  0：无效 1：命令已接收
      */
     public void handleRemoteControlAck(String vin,long eventId,Short result){
         String sessionId=49+"-"+eventId;
-        Short dbResult=(result==(short)0)?(short)2:(short)-1;//参考建表sql 1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败  Rst 0：无效 1：命令已接收
+        //  Rst 0：无效 1：命令已接收
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
             //持久化远程控制记录状态，push to sender
-           if(dbResult==(short)2){
+           if(result==(short)0){
                _logger.info("RemoteControl Ack persistence and push start");
                //返回无效才更新db记录 不阻塞
-               rc.setStatus(dbResult);
+               rc.setRemark("TBOX提示命令无效");
                remoteControlRepository.save(rc);
-               String pushMsg="远程命令无效:"+sessionId;
+               String pushMsg="TBOX提示命令无效:"+sessionId;
                try{
                this.mqService.pushToUser(rc.getUid(), pushMsg);
                }catch (RuntimeException e){_logger.info(e.getMessage());}
@@ -1205,6 +1234,33 @@ public class OutputHexService {
 
         }
     }
+
+    /**
+     * 处理远程控制Ack上行（持久化 push）本方法只有引用远程启动的情况才会被调用
+     * @param id vin
+     * @param result Ack响应结果  0：无效 1：命令已接收
+     */
+    public void handleRefRemoteControlAck(long id,Short result){
+        RemoteControl rc=remoteControlRepository.findOne(id);
+        if (rc == null) {
+            _logger.info("No RemoteControl found in db id:"+id+"  "+"result:"+ result);
+        }else{
+            //持久化远程控制记录状态，push to sender
+            if(result==(short)0){//Rst 0：无效 1：命令已接收
+                _logger.info("RemoteControl Ack persistence and push start");
+                //返回无效才更新db记录 不阻塞
+                rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
+                remoteControlRepository.save(rc);
+                String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效"+rc.getSessionId();
+                try{
+                    this.mqService.pushToUser(rc.getUid(), pushMsg);
+                }catch (RuntimeException e){_logger.info(e.getMessage());}
+                _logger.info("RemoteControl Ack persistence and push success");
+            }
+
+        }
+    }
+
 
     /**
      * 返回远程控制记录
@@ -1222,13 +1278,13 @@ public class OutputHexService {
      * 处理远程控制结果上行（持久化 push）
      * @param vin vin
      * @param eventId eventId
-     * @param result Rst响应结果
+     * @param result Rst响应结果 0：成功 1：失败
      */
     public void handleRemoteControlRst(String vin,long eventId,Short result){
         String sessionId=49+"-"+eventId;
-        Short dbResult=4;//参考建表sql  1不符合条件主动终止 2返回无效 3返回执行成功 4返回执行失败,  Rst 0：成功 1：失败
+        Short dbResult=0;//参考建表sql  0失败1成功   ,  Rst 0：成功 1：失败
         if(result==(short)0){
-            dbResult=3;
+            dbResult=1;
         }
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         if (rc == null) {
@@ -1237,7 +1293,6 @@ public class OutputHexService {
             //持久化远程控制记录状态，push to sender
             _logger.info("RemoteControl Rst persistence and push start");
             rc.setStatus(dbResult);
-            remoteControlRepository.save(rc);
             Vehicle vehicle=vehicleRepository.findByVin(vin);
             if(vehicle!=null){
                 vehicle.setRemoteCount(vehicle.getRemoteCount()+1);
@@ -1247,37 +1302,38 @@ public class OutputHexService {
             String pushMsg="";//参考PDF0621 page55
             if(result==(short)0){
                 pushMsg="远程命令执行成功";
-            }else if(result==(short)0){
-
             }else if(result==(short)1){
                 pushMsg="远程命令执行失败";
-            }else if(result==(short)20){
+            }else if(result==(short)0x20){
                 pushMsg="请求未完成";
-            }else if(result==(short)21){
+            }else if(result==(short)0x21){
                 pushMsg="请求的CRC错误";
-            }else if(result==(short)22){
+            }else if(result==(short)0x22){
                 pushMsg="请求的身份验证错误";
-            }else if(result==(short)23){
+            }else if(result==(short)0x23){
                 pushMsg="请求无效";
-            }else if(result==(short)24){
+            }else if(result==(short)0x24){
                 pushMsg="请求消息顺序错误";
-            }else if(result==(short)30){
+            }else if(result==(short)0x30){
                 pushMsg="请求不能执行";
-            }else if(result==(short)31){
+            }else if(result==(short)0x31){
                 pushMsg="请求先决条件无效";
-            }else if(result==(short)40){
+            }else if(result==(short)0x40){
                 pushMsg="本地用户终止请求";
-            }else if(result==(short)50){
+            }else if(result==(short)0x50){
                 pushMsg="请求超时失效";
-            }else if(result==(short)51){
+            }else if(result==(short)0x51){
                 pushMsg="请求次数超过3次";
-            }else if(result==(short)60){
+            }else if(result==(short)0x60){
                 pushMsg="功能无效，请求被忽略";
-            }else if(result==(short)80){
+            }else if(result==(short)0x80){
                 pushMsg="等待响应中，指定时间后再请求";
-            }else if(result==(short)81){
+            }else if(result==(short)0x81){
                 pushMsg="响应等待下次车辆启动";
             }
+            String _dbReMark=pushMsg;
+            rc.setRemark(_dbReMark);
+            remoteControlRepository.save(rc);
             pushMsg=pushMsg+sessionId;
             try{
             this.mqService.pushToUser(rc.getUid(), pushMsg);
@@ -1285,6 +1341,65 @@ public class OutputHexService {
             _logger.info("RemoteControl Rst persistence and push success");
         }
     }
+
+    /**
+     * 处理远程控制结果上行（持久化 push） 仅仅只处理失败的引用情况
+     * @param id vin
+     * @param result Rst响应结果 0：成功 1：失败  ...
+     */
+    public void handleRefRemoteControlRst(long id,Short result){
+        RemoteControl rc=remoteControlRepository.findOne(id);
+        if (rc == null) {
+            _logger.info("No RemoteControl found in db id:"+id+"  "+"result:"+ result);
+        }else{
+            //持久化远程控制记录状态，push to sender
+            _logger.info("RemoteControl Rst persistence and push start");
+            Vehicle vehicle=vehicleRepository.findByVin(rc.getVin());
+            if(vehicle!=null){
+                vehicle.setRemoteCount(vehicle.getRemoteCount()+1);
+                vehicleRepository.save(vehicle);
+            }
+            String pushMsg="";//参考PDF0621 page55
+            if(result==(short)1){
+                pushMsg="远程命令执行失败";
+            }else if(result==(short)0x20){
+                pushMsg="请求未完成";
+            }else if(result==(short)0x21){
+                pushMsg="请求的CRC错误";
+            }else if(result==(short)0x22){
+                pushMsg="请求的身份验证错误";
+            }else if(result==(short)0x23){
+                pushMsg="请求无效";
+            }else if(result==(short)0x24){
+                pushMsg="请求消息顺序错误";
+            }else if(result==(short)0x30){
+                pushMsg="请求不能执行";
+            }else if(result==(short)0x31){
+                pushMsg="请求先决条件无效";
+            }else if(result==(short)0x40){
+                pushMsg="本地用户终止请求";
+            }else if(result==(short)0x50){
+                pushMsg="请求超时失效";
+            }else if(result==(short)0x51){
+                pushMsg="请求次数超过3次";
+            }else if(result==(short)0x60){
+                pushMsg="功能无效，请求被忽略";
+            }else if(result==(short)0x80){
+                pushMsg="等待响应中，指定时间后再请求";
+            }else if(result==(short)0x81){
+                pushMsg="响应等待下次车辆启动";
+            }
+            String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
+            rc.setRemark(_dbReMark);
+            remoteControlRepository.save(rc);
+            pushMsg=_dbReMark+rc.getSessionId();
+            try{
+                this.mqService.pushToUser(rc.getUid(), pushMsg);
+            }catch (RuntimeException e){_logger.info(e.getMessage());}
+            _logger.info("RemoteControl Rst persistence and push success");
+        }
+    }
+
 
     public  void saveCmdToRedis(String vin,String hexStr){
         socketRedis.saveSetString(dataTool.out_cmd_preStr + vin, hexStr, -1);//代发命令的TTL为-1 由处理程序取出
