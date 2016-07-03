@@ -632,6 +632,10 @@ public class RequestHandler {
                 }
             }
         }
+        _logger.info("status:tmpCheck-clampCheck-remoteKeyCheck-hazardLightsCheck-vehicleSpeedCheck"
+                +"-transmissionGearPositionCheck-handBrakeCheck-sunroofCheck-windowsCheck"
+                +"-doorsCheck-trunkCheck-bonnetCheck-centralLockCheck-crashStatusCheck"
+                +"-remainingFuelCheck");
         _logger.info("status:"+tmpCheck +"-"+ clampCheck +"-"+ remoteKeyCheck +"-"+ hazardLightsCheck +"-"+ vehicleSpeedCheck
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
