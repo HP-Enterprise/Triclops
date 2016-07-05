@@ -1160,15 +1160,15 @@ public class OutputHexService {
         RemoteControlBody remoteControl=new RemoteControlBody();
         remoteControl.setVin(vin);
         remoteControl.setRefId(refId);
-        remoteControl.setcType((short)0);
+        remoteControl.setcType((short) 0);
         remoteControl.setTemp(0.0);
-        remoteControl.setLightNum((short)0);
+        remoteControl.setLightNum((short) 0);
         remoteControl.setLightTime(0.0);
-        remoteControl.setHornNum((short)0);
+        remoteControl.setHornNum((short) 0);
         remoteControl.setHornTime(0.0);
-        remoteControl.setRecirMode((short)0);
-        remoteControl.setAcMode((short)0);
-        remoteControl.setFan((short)0);
+        remoteControl.setRecirMode((short) 0);
+        remoteControl.setAcMode((short) 0);
+        remoteControl.setFan((short) 0);
         remoteControl.setMode((short)0);
         remoteControl.setMasterStat((short)0);
         remoteControl.setMasterLevel((short)0);
@@ -1198,9 +1198,9 @@ public class OutputHexService {
      * @param vin vin
      * @param eventId eventId
      */
-    public void handleRemoteControlPreconditionResp(String vin,long eventId,String message){
+    public void handleRemoteControlPreconditionResp(String vin,long eventId,String message,String messageEn){
         String sessionId=49+"-"+eventId;
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
         }else{
@@ -1208,6 +1208,7 @@ public class OutputHexService {
             _logger.info("RemoteControl PreconditionResp persistence and push start");
             //返回无效才更新db记录
             rc.setRemark(message);
+            rc.setRemarkEn(messageEn);
             remoteControlRepository.save(rc);
             String pushMsg=message+sessionId;
             _logger.info("RemoteControl PreconditionResp  push message>:"+pushMsg);
@@ -1225,7 +1226,7 @@ public class OutputHexService {
      * @param eventId eventId
      * @param result Ack响应结果  0：无效 1：命令已接收
      */
-    public void handleRemoteControlAck(String vin,long eventId,Short result){
+    public void handleRemoteControlAck(String vin,long eventId,Short result,boolean push){
         String sessionId=49+"-"+eventId;
         //  Rst 0：无效 1：命令已接收
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
@@ -1237,11 +1238,14 @@ public class OutputHexService {
                _logger.info("RemoteControl Ack persistence and push start");
                //返回无效才更新db记录 不阻塞
                rc.setRemark("TBOX提示命令无效");
+               rc.setRemarkEn("TBOX return invalid command");
                remoteControlRepository.save(rc);
                String pushMsg="TBOX提示命令无效:"+sessionId;
-               try{
-               this.mqService.pushToUser(rc.getUid(), pushMsg);
-               }catch (RuntimeException e){_logger.info(e.getMessage());}
+               if(push){
+                   try{
+                       this.mqService.pushToUser(rc.getUid(), pushMsg);
+                   }catch (RuntimeException e){_logger.info(e.getMessage());}
+               }
                _logger.info("RemoteControl Ack persistence and push success");
            }
 
@@ -1263,6 +1267,7 @@ public class OutputHexService {
                 _logger.info("RemoteControl Ack persistence and push start");
                 //返回无效才更新db记录 不阻塞
                 rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
+                rc.setRemarkEn("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
                 remoteControlRepository.save(rc);
                 String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效"+rc.getSessionId();
                 try{
@@ -1293,7 +1298,7 @@ public class OutputHexService {
      * @param eventId eventId
      * @param result Rst响应结果 0：成功 1：失败
      */
-    public void handleRemoteControlRst(String vin,long eventId,Short result){
+    public void handleRemoteControlRst(String vin,long eventId,Short result,boolean push){
         String sessionId=49+"-"+eventId;
         Short dbResult=0;//参考建表sql  0失败1成功   ,  Rst 0：成功 1：失败
         if(result==(short)0){
@@ -1346,6 +1351,7 @@ public class OutputHexService {
             }
             String _dbReMark=pushMsg;
             rc.setRemark(_dbReMark);
+            rc.setRemarkEn(_dbReMark);
             remoteControlRepository.save(rc);
             pushMsg=pushMsg+sessionId;
             try{
@@ -1404,6 +1410,7 @@ public class OutputHexService {
             }
             String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
             rc.setRemark(_dbReMark);
+            rc.setRemarkEn(_dbReMark);
             remoteControlRepository.save(rc);
             pushMsg=_dbReMark+rc.getSessionId();
             try{
@@ -1411,6 +1418,17 @@ public class OutputHexService {
             }catch (RuntimeException e){_logger.info(e.getMessage());}
             _logger.info("RemoteControl Rst persistence and push success");
         }
+    }
+
+    /**
+     * update RefController Remark
+     * @param id id
+     */
+    public void updateRefRemoteControlRst(long id,String remark,String remaerEn) {
+        RemoteControl rc = remoteControlRepository.findOne(id);
+        rc.setRemark(remark);
+        rc.setRemarkEn(remaerEn);
+        remoteControlRepository.save(rc);
     }
 
 
