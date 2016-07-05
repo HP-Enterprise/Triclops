@@ -21,6 +21,7 @@ public class RemoteControl {
 
     private Short status;
     private String remark;
+    private String remarkEn;
     private Short available;// 0 失效 1 有效 默认为1
     private Double acTemperature;
     //0625新增加的控制指令
@@ -36,7 +37,7 @@ public class RemoteControl {
     private Short masterLevel;//主驾加热级别 1 低 2 中 3高 仅在cType=6生效
     private Short slaveStat;//附驾驶加热状态0关闭 1 开启 仅在cType=6 7生效
     private Short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
-
+    private Long refId;
 
 
     @Id
@@ -259,5 +260,24 @@ public class RemoteControl {
 
     public void setSlaveLevel(Short slaveLevel) {
         this.slaveLevel = slaveLevel;
+    }
+
+    @Basic
+    @Column(name = "remark_en", nullable = false, insertable = true, updatable = true, length = 200)
+    public String getRemarkEn() {
+        return remarkEn;
+    }
+
+    public void setRemarkEn(String remarkEn) {
+        this.remarkEn = remarkEn;
+    }
+
+    public Long getRefId() {
+        return refId;
+    }
+    @Basic
+    @Column(name = "ref_id", nullable = false, insertable = true, updatable = true)
+    public void setRefId(Long refId) {
+        this.refId = refId;
     }
 }

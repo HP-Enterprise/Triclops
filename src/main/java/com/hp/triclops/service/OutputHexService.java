@@ -1154,13 +1154,26 @@ public class OutputHexService {
     /**
      * 生成一个简单remoteControl 用于生成启动发动机命令,无需数据库存储
      * @param vin vin
-     * @param eventId eventId
      * @return 封装远程控制参数的RemoteControl对象
      */
-    public  RemoteControl getStartEngineRemoteControl(String vin){
-       RemoteControl remoteControl=new RemoteControl();
+    public  RemoteControlBody getStartEngineRemoteControl(String vin,long refId){
+        RemoteControlBody remoteControl=new RemoteControlBody();
         remoteControl.setVin(vin);
-        remoteControl.setControlType((short)0);
+        remoteControl.setRefId(refId);
+        remoteControl.setcType((short)0);
+        remoteControl.setTemp(0.0);
+        remoteControl.setLightNum((short)0);
+        remoteControl.setLightTime(0.0);
+        remoteControl.setHornNum((short)0);
+        remoteControl.setHornTime(0.0);
+        remoteControl.setRecirMode((short)0);
+        remoteControl.setAcMode((short)0);
+        remoteControl.setFan((short)0);
+        remoteControl.setMode((short)0);
+        remoteControl.setMasterStat((short)0);
+        remoteControl.setMasterLevel((short)0);
+        remoteControl.setSlaveStat((short)0);
+        remoteControl.setSlaveLevel((short)0);
         return remoteControl;
     }
 
