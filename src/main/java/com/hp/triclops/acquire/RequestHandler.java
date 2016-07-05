@@ -296,10 +296,11 @@ public class RequestHandler {
                     int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
                     if(_startEngineCheck==0){
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
+                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
+                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
                         _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
-                        saveRefRemoteControlId(vin,bean.getEventID(),dbRc.getId());
+                        saveRefRemoteControlId(vin,newEventId,dbRc.getId());
                     }else{
                         msg="远程开启空调失败,依赖的远程启动发动机条件不符合";
                     }
@@ -308,10 +309,12 @@ public class RequestHandler {
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
                     int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
                     if(_startEngineCheck==0){
+                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
+                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
                         _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        saveRefRemoteControlId(vin, newEventId, dbRc.getId());
                     }else{
                         msg="远程关闭空调失败,依赖的远程启动发动机条件不符合";
                     }
@@ -320,10 +323,12 @@ public class RequestHandler {
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
                     int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
                     if(_startEngineCheck==0){
+                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
+                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
                         _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        saveRefRemoteControlId(vin, newEventId, dbRc.getId());
                     }else{
                         msg="远程开启座椅加热失败,依赖的远程启动发动机条件不符合";
                     }
@@ -332,10 +337,12 @@ public class RequestHandler {
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
                     int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
                     if(_startEngineCheck==0){
+                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
+                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
                         _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        saveRefRemoteControlId(vin, newEventId, dbRc.getId());
                     }else{
                         msg="远程关闭座椅加热失败,依赖的远程启动发动机条件不符合";
                     }

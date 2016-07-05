@@ -96,7 +96,7 @@ public class VehicleDataService {
         rc.setSlaveStat(remoteControlBody.getSlaveStat());
         rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
         rc.setStatus((short) 0);//默认失败
-        rc.setRemark("");
+        rc.setRemark("命令下发成功，处理中");
         rc.setAvailable((short)1);
         remoteControlRepository.save(rc);
         _logger.info("save RemoteControl to db"+rc.getId());
