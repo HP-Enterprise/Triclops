@@ -68,9 +68,10 @@ public class VehicleDataService {
      * @param uid user id
      * @param vin vin
      * @param remoteControlBody app remoteControlBody
+     * @param isRefCommand 是否是依赖的启动发动机命令
      * @return 持久化后的RemoteControl对象
      */
-    public RemoteControl handleRemoteControl(int uid,String vin,RemoteControlBody remoteControlBody){
+    public RemoteControl handleRemoteControl(int uid,String vin,RemoteControlBody remoteControlBody,boolean isRefCommand){
 
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
@@ -80,6 +81,7 @@ public class VehicleDataService {
         rc.setUid(uid);
         rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
         rc.setVin(vin);
+        rc.setRefId(remoteControlBody.getRefId());
         rc.setSendingTime(new Date());
         rc.setControlType(remoteControlBody.getcType());
         rc.setAcTemperature(remoteControlBody.getTemp());
@@ -97,7 +99,11 @@ public class VehicleDataService {
         rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
         rc.setStatus((short) 0);//默认失败
         rc.setRemark("命令下发成功，处理中");
-        rc.setAvailable((short)1);
+        rc.setRemarkEn("sending command");
+        rc.setAvailable((short) 1);
+        if(isRefCommand){
+            rc.setAvailable((short) 0);
+        }
         remoteControlRepository.save(rc);
         _logger.info("save RemoteControl to db"+rc.getId());
 
@@ -105,6 +111,7 @@ public class VehicleDataService {
         if(!initCheck(vin,remoteControlBody.getcType())){
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
             rc.setRemark("车辆初始状态不满足控制条件，无法下发远程控制指令！");
+            rc.setRemarkEn("can not send command,because init check failed.");
             remoteControlRepository.save(rc);
             return null;
         }
@@ -122,6 +129,7 @@ public class VehicleDataService {
             return rc;
         }else{
             rc.setRemark("远程唤醒失败，无法下发远程控制命令！");
+            rc.setRemarkEn("Remote wake up failed, unable to send remote control command!");
             remoteControlRepository.save(rc);
         }
         return null;
@@ -483,6 +491,7 @@ public class VehicleDataService {
             remoteControlShow.setSessionId(remoteControllList.get(i).getSessionId());
             remoteControlShow.setSendingTime(remoteControllList.get(i).getSendingTime());
             remoteControlShow.setRemark(remoteControllList.get(i).getRemark());
+            remoteControlShow.setRemarkEn(remoteControllList.get(i).getRemarkEn());
             remoteControlShow.setStatus(remoteControllList.get(i).getStatus());
             remoteControlShow.setUid(remoteControllList.get(i).getUid());
             remoteControlShow.setControlType(remoteControllList.get(i).getControlType());

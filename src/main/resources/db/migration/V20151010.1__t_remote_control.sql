@@ -20,7 +20,9 @@ slave_stat smallint(6) DEFAULT 0 COMMENT '附驾驶加热状态0关闭 1 开启 
 slave_level smallint(6) DEFAULT 0 COMMENT '附驾加热级别  1 低 2 中 3高 仅在cType=6生效',
 status smallint(1)  COMMENT '状态变化 0：失败 1：成功',
 remark varchar(200) COMMENT '备注，错误详细信息',
+remark_en varchar(200) COMMENT '英文备注，错误详细信息',
 available smallint(1) NOT NULL DEFAULT 1 COMMENT '是否存在, 0 失效 1 有效 默认为1',
+ref_id bigint(20) NOT NULL COMMENT 'ref id',
 PRIMARY KEY (id),
  FOREIGN KEY (uid) REFERENCES t_user(Id)
 ) DEFAULT CHARSET=utf8 COMMENT='远程控制指令表';

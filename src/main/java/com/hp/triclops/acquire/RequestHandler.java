@@ -12,6 +12,7 @@ import com.hp.triclops.repository.RealTimeReportDataRespository;
 import com.hp.triclops.repository.TBoxParmSetRepository;
 import com.hp.triclops.service.OutputHexService;
 import com.hp.triclops.service.TboxService;
+import com.hp.triclops.service.VehicleDataService;
 import com.hp.triclops.utils.GpsTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,8 @@ public class RequestHandler {
     DiagnosticDataRepository diagnosticDataRepository;
     @Autowired
     GpsDataRepository gpsDataRepository;
+    @Autowired
+    VehicleDataService vehicleDataService;
     @Autowired
     GpsTool gpsTool;
 
@@ -265,6 +268,7 @@ public class RequestHandler {
             socketRedis.saveValueString(statusKey, statusValue, -1);
             _logger.info("update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
             RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
+            long currentRefId=dbRc.getRefId();
             //取出redis暂存的控制参数 生成指令
             if(dbRc==null){
                 _logger.info("get RemoteCmd Value From db return null...");
@@ -282,81 +286,75 @@ public class RequestHandler {
                 outputHexService.saveCmdToRedis(vin, cmdByteString);
             }else{
                 String msg="";
+                String msgEn="";
                 if(preconditionRespCheck==1){
                     msg="远程启动发动机条件不符合";
+                    msgEn="emote start engine conditions do not meet";
                 }
                 if(preconditionRespCheck==2){
                     msg="远程关闭发动机失败,必须是远程启动发动机才能远程关闭";
+                    msgEn="Remote shutdown of the engine fails, it must be remote start the engine to remote shutdown";
                 }
                 if(preconditionRespCheck==3){
                     msg="操作条件不符合，请检查车辆状态";
+                    msgEn="Operating conditions do not meet, please check the state of the vehicle";
                 }
                 if(preconditionRespCheck==4){
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
-                    int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
-                    if(_startEngineCheck==0){
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
-                        saveRefRemoteControlId(vin,newEventId,dbRc.getId());
-                    }else{
-                        msg="远程开启空调失败,依赖的远程启动发动机条件不符合";
+                    if(currentRefId<=0){
+                        long refId=dbRc.getId();
+                        RemoteControlBody rc=outputHexService.getStartEngineRemoteControl(vin,refId);
+                        new RemoteCommandSender(vehicleDataService,dbRc.getUid(), vin, rc,true).start();
+                        _logger.info("we will send a ref startEngine RemoteCommand refId:" + refId);
                     }
                 }
                 if(preconditionRespCheck==5){
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
                     int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
                     if(_startEngineCheck==0){
-                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
-                        saveRefRemoteControlId(vin, newEventId, dbRc.getId());
+
                     }else{
                         msg="远程关闭空调失败,依赖的远程启动发动机条件不符合";
+                        msgEn="Remote shutdown of air conditioning fails, dependent remote start engine conditions do not meet";
                     }
                 }
                 if(preconditionRespCheck==6){
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
                     int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
                     if(_startEngineCheck==0){
-                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
-                        saveRefRemoteControlId(vin, newEventId, dbRc.getId());
+
                     }else{
                         msg="远程开启座椅加热失败,依赖的远程启动发动机条件不符合";
+                        msgEn="Remote open seat heating fails, dependent remote start engine conditions do not meet";
                     }
                 }
                 if(preconditionRespCheck==7){
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
                     int _startEngineCheck=verifyRemoteControlPreconditionResp(vin,bean,(short)0);
                     if(_startEngineCheck==0){
-                        long newEventId=dataTool.getCurrentSeconds();//新起一个eventId
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(vin);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,newEventId);
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
-                        saveRefRemoteControlId(vin, newEventId, dbRc.getId());
+
                     }else{
                         msg="远程关闭座椅加热失败,依赖的远程启动发动机条件不符合";
+                        msgEn="The remote shutdown of the seat heating fails, the dependence of the remote start engine conditions do not meet the";
                     }
                 }
                 if(preconditionRespCheck==10){
-                msg="远程寻车失败，操作条件不满足";
+                    msg="远程寻车失败，操作条件不满足";
+                    msgEn="Remote search failed, the operating conditions are not satisfied";
                 }
                 if(preconditionRespCheck==4||preconditionRespCheck==5||preconditionRespCheck==6||preconditionRespCheck==7){
-                    _logger.info("trying start engine...");
+                    if(currentRefId<=0){
+                        _logger.info("trying start engine...");
+                    }
                 }else{//除了4 5 6 7之外的失败会导致流程结束，而4 5 6 7会尝试启动发动机
-                    outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg);
+                    outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn);
+                    if(currentRefId>0){
+                        String pre="依赖的操作失败:";
+                        String preEn="Dependent operation failure :";
+                        outputHexService.updateRefRemoteControlRst(currentRefId,pre+msg,preEn+msgEn);
+                    }
                     _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
                 }
-
             }
         }else if(messageId==0x04){
             _logger.info("receive RemoteControlAck,start  handle...");
@@ -371,13 +369,20 @@ public class RequestHandler {
             String statusValue=String.valueOf(bean.getMessageID());
             socketRedis.saveValueString(statusKey, statusValue, -1);
             //todo 《失败时》需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，更新失败原因
+            RemoteControl rc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
+            if(rc==null){
+                _logger.info("get RemoteCmd Value From DB return null...");
+                return;
+            }
+            long refId=rc.getRefId();
             if(bean.getRemoteControlAck()==(short)0){//无效
-                long refId=getRefRemoteControlId(vin,bean.getEventID());
-                if(refId>0){//存在ref记录
-                    outputHexService.handleRefRemoteControlAck(refId,bean.getRemoteControlAck());
-                }else{//不存在ref记录，普通命令，处理方式和之前相同，仅需要更新失败原因
-                    //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
-                    outputHexService.handleRemoteControlAck(vin,bean.getEventID(),bean.getRemoteControlAck());
+                //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
+
+                if(refId>0) {//存在ref记录
+                    outputHexService.handleRemoteControlAck(vin, bean.getEventID(), bean.getRemoteControlAck(),false);
+                    outputHexService.handleRefRemoteControlAck(refId, bean.getRemoteControlAck());
+                }else{
+                    outputHexService.handleRemoteControlAck(vin, bean.getEventID(), bean.getRemoteControlAck(),true);
                 }
             }
             _logger.info("handle remote Control Ack finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
@@ -399,74 +404,42 @@ public class RequestHandler {
             //todo 需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，参照0x02 resp处理下发
             //todo 存在ref  成功:找到remote记录，下发0x03命令  失败：持久化失败消息
             //todo 不存在ref 成功或者失败 持久化消息
-            long refId=getRefRemoteControlId(vin,bean.getEventID());
-            if(refId>0){//存在ref记录
-                if(bean.getRemoteControlAck()==(short)0){//成功了
-                    //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
-                    long eventId=bean.getEventID();//生成新的eventId ? 还是用之前的eventId 只需要改这里就可以
-                    //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
-                    //取出redis暂存的控制参数 生成指令
-                    RemoteControl rc=outputHexService.getRemoteCmdValueFromDb(refId);
-                    if(rc==null){
-                        _logger.info("get RemoteCmd Value From DB return null...");
-                        return;
-                    }
-                    String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,eventId);
-                    _logger.info("ref start engine success ,we will send original RemoteCommand:" + cmdByteString);
-                    outputHexService.saveCmdToRedis(vin, cmdByteString);
-                    removeRefRemoteControlId(vin,bean.getEventID());//清除依赖记录
-                }else{//各种原因未能成功
-                    outputHexService.handleRefRemoteControlRst(refId, bean.getRemoteControlAck());
-                }
-            }else{//不存在ref记录，普通命令，处理方式和之前相同
-                outputHexService.handleRemoteControlRst(vin,bean.getEventID(),bean.getRemoteControlAck());
+            RemoteControl rc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
+            if(rc==null){
+                _logger.info("get RemoteCmd Value From DB return null...");
+                return;
             }
+            long refId=rc.getRefId();
+            if(bean.getRemoteControlAck()==(short)0){//成功了
+                    //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
+                   //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
+                    //取出redis暂存的控制参数 生成指令
+                    if(refId>0){
+                    //存在ref记录
+                        RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
+                        long eventId=Long.parseLong(refRc.getSessionId().split("-")[1]);
+                        String cmdByteString=outputHexService.getRemoteControlCmdHex(refRc,eventId);
+                        _logger.info("ref start engine success ,we will send original RemoteCommand:" + cmdByteString);
+                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.handleRefRemoteControlRst(refId, bean.getRemoteControlAck());
+                    }
+                else{
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),true);
+                    }
+                }else{//各种原因未能成功
+
+                if(refId>0){
+                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),false);
+                    outputHexService.handleRefRemoteControlRst(refId, bean.getRemoteControlAck());
+                }else {
+                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),true);
+                }
+                }
             _logger.info("handle remote Control Rst finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
-        }else{
-            _logger.info("remote control data error");
         }
     }
 
-    /**
-     * 获取引用remote id
-     * @param vin
-     * @param eventId
-     * @return
-     */
-    private long getRefRemoteControlId(String vin,long eventId){
-        //取此流程的引用远程控制记录
-        String  redisKey=DataTool.remoteControlRef_preStr+vin+"-"+eventId;
-        long re=-1;
-        String currentValue=socketRedis.getValueString(redisKey);
-        if(!currentValue.equals("null")){
-            re=Long.parseLong(currentValue);
-        }
-        return re;
-    }
 
-    /**
-     * 记录引用remote id
-     * @param vin
-     * @param eventId
-     * @return
-     */
-    private void saveRefRemoteControlId(String vin,long eventId,long recordId){
-        //保存流程的引用远程控制记录
-        String  redisKey=DataTool.remoteControlRef_preStr+vin+"-"+eventId;
-        socketRedis.saveValueString(redisKey,String.valueOf(recordId),-1);
-    }
-
-    /**
-     * 清除引用remote id
-     * @param vin
-     * @param eventId
-     * @return
-     */
-    private void removeRefRemoteControlId(String vin,long eventId){
-        //清除此流程的引用远程控制记录
-        String  redisKey=DataTool.remoteControlRef_preStr+vin+"-"+eventId;
-        socketRedis.delValueString(redisKey);
-    }
 
     /**
      * 校验,是否发送远程指令
