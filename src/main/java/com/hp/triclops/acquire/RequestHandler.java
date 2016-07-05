@@ -289,12 +289,15 @@ public class RequestHandler {
                 String msgEn="";
                 if(preconditionRespCheck==1){
                     msg="远程启动发动机条件不符合";
+                    msgEn="emote start engine conditions do not meet";
                 }
                 if(preconditionRespCheck==2){
                     msg="远程关闭发动机失败,必须是远程启动发动机才能远程关闭";
+                    msgEn="Remote shutdown of the engine fails, it must be remote start the engine to remote shutdown";
                 }
                 if(preconditionRespCheck==3){
                     msg="操作条件不符合，请检查车辆状态";
+                    msgEn="Operating conditions do not meet, please check the state of the vehicle";
                 }
                 if(preconditionRespCheck==4){
                     //todo 判断是否满足远程启动发动机条件，不满足提示，满足生成启动发动机命令
@@ -312,6 +315,7 @@ public class RequestHandler {
 
                     }else{
                         msg="远程关闭空调失败,依赖的远程启动发动机条件不符合";
+                        msgEn="Remote shutdown of air conditioning fails, dependent remote start engine conditions do not meet";
                     }
                 }
                 if(preconditionRespCheck==6){
@@ -321,6 +325,7 @@ public class RequestHandler {
 
                     }else{
                         msg="远程开启座椅加热失败,依赖的远程启动发动机条件不符合";
+                        msgEn="Remote open seat heating fails, dependent remote start engine conditions do not meet";
                     }
                 }
                 if(preconditionRespCheck==7){
@@ -330,10 +335,12 @@ public class RequestHandler {
 
                     }else{
                         msg="远程关闭座椅加热失败,依赖的远程启动发动机条件不符合";
+                        msgEn="The remote shutdown of the seat heating fails, the dependence of the remote start engine conditions do not meet the";
                     }
                 }
                 if(preconditionRespCheck==10){
-                msg="远程寻车失败，操作条件不满足";
+                    msg="远程寻车失败，操作条件不满足";
+                    msgEn="Remote search failed, the operating conditions are not satisfied";
                 }
                 if(preconditionRespCheck==4||preconditionRespCheck==5||preconditionRespCheck==6||preconditionRespCheck==7){
                     if(currentRefId<=0){
@@ -343,7 +350,7 @@ public class RequestHandler {
                     outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn);
                     if(currentRefId>0){
                         String pre="依赖的操作失败:";
-                        String preEn="ref command failed:";
+                        String preEn="Dependent operation failure :";
                         outputHexService.updateRefRemoteControlRst(currentRefId,pre+msg,preEn+msgEn);
                     }
                     _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");

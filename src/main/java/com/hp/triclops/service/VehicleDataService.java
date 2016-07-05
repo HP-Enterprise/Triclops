@@ -129,6 +129,7 @@ public class VehicleDataService {
             return rc;
         }else{
             rc.setRemark("远程唤醒失败，无法下发远程控制命令！");
+            rc.setRemarkEn("Remote wake up failed, unable to send remote control command!");
             remoteControlRepository.save(rc);
         }
         return null;
@@ -490,6 +491,7 @@ public class VehicleDataService {
             remoteControlShow.setSessionId(remoteControllList.get(i).getSessionId());
             remoteControlShow.setSendingTime(remoteControllList.get(i).getSendingTime());
             remoteControlShow.setRemark(remoteControllList.get(i).getRemark());
+            remoteControlShow.setRemarkEn(remoteControllList.get(i).getRemarkEn());
             remoteControlShow.setStatus(remoteControllList.get(i).getStatus());
             remoteControlShow.setUid(remoteControllList.get(i).getUid());
             remoteControlShow.setControlType(remoteControllList.get(i).getControlType());

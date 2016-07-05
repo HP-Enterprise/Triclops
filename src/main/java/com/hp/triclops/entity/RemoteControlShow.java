@@ -35,6 +35,7 @@ public class RemoteControlShow {
 
     private Short status;
     private String remark;
+    private String remarkEn;
     private  String licensePlate;
     public String getLicensePlate() {
         return licensePlate;
@@ -210,5 +211,13 @@ public class RemoteControlShow {
 
     public void setSlaveLevel(Short slaveLevel) {
         this.slaveLevel = slaveLevel;
+    }
+
+    public String getRemarkEn() {
+        return remarkEn;
+    }
+
+    public void setRemarkEn(String remarkEn) {
+        this.remarkEn = remarkEn;
     }
 }

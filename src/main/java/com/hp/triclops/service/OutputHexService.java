@@ -1238,7 +1238,7 @@ public class OutputHexService {
                _logger.info("RemoteControl Ack persistence and push start");
                //返回无效才更新db记录 不阻塞
                rc.setRemark("TBOX提示命令无效");
-               rc.setRemarkEn("TBOX return invalid command");
+               rc.setRemarkEn("TBOX prompt invalid command");
                remoteControlRepository.save(rc);
                String pushMsg="TBOX提示命令无效:"+sessionId;
                if(push){
@@ -1267,7 +1267,7 @@ public class OutputHexService {
                 _logger.info("RemoteControl Ack persistence and push start");
                 //返回无效才更新db记录 不阻塞
                 rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
-                rc.setRemarkEn("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
+                rc.setRemarkEn("Command execution failed, dependent remote start engine command execution failed: TBOX prompt command is invalid");
                 remoteControlRepository.save(rc);
                 String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效"+rc.getSessionId();
                 try{
@@ -1318,40 +1318,53 @@ public class OutputHexService {
             }
 
             String pushMsg="";//参考PDF0621 page55
-            if(result==(short)0){
-                pushMsg="远程命令执行成功";
-            }else if(result==(short)1){
+            String pushMsgEn="";
+            if(result==(short)1){
                 pushMsg="远程命令执行失败";
+                pushMsgEn="Remote command execution failed";
             }else if(result==(short)0x20){
                 pushMsg="请求未完成";
+                pushMsgEn="Request not completed";
             }else if(result==(short)0x21){
                 pushMsg="请求的CRC错误";
+                pushMsgEn="Requested CRC error";
             }else if(result==(short)0x22){
                 pushMsg="请求的身份验证错误";
+                pushMsgEn="Requested authentication error";
             }else if(result==(short)0x23){
                 pushMsg="请求无效";
+                pushMsgEn="Request message order error";
             }else if(result==(short)0x24){
                 pushMsg="请求消息顺序错误";
+                pushMsgEn="请求的CRC错误";
             }else if(result==(short)0x30){
                 pushMsg="请求不能执行";
+                pushMsgEn="Request cannot be executed";
             }else if(result==(short)0x31){
                 pushMsg="请求先决条件无效";
+                pushMsgEn="Request prerequisites are invalid";
             }else if(result==(short)0x40){
                 pushMsg="本地用户终止请求";
+                pushMsgEn="Local user termination request";
             }else if(result==(short)0x50){
                 pushMsg="请求超时失效";
+                pushMsgEn="Request timeout";
             }else if(result==(short)0x51){
                 pushMsg="请求次数超过3次";
+                pushMsgEn="More than 3 times the number of requests";
             }else if(result==(short)0x60){
                 pushMsg="功能无效，请求被忽略";
+                pushMsgEn="Function is not valid, the request is ignored.";
             }else if(result==(short)0x80){
                 pushMsg="等待响应中，指定时间后再请求";
+                pushMsgEn="Wait for the response, after the specified time to request";
             }else if(result==(short)0x81){
                 pushMsg="响应等待下次车辆启动";
+                pushMsgEn="In response to waiting for the next vehicle to start";
             }
             String _dbReMark=pushMsg;
             rc.setRemark(_dbReMark);
-            rc.setRemarkEn(_dbReMark);
+            rc.setRemarkEn(pushMsgEn);
             remoteControlRepository.save(rc);
             pushMsg=pushMsg+sessionId;
             try{
@@ -1379,38 +1392,53 @@ public class OutputHexService {
                 vehicleRepository.save(vehicle);
             }
             String pushMsg="";//参考PDF0621 page55
+            String pushMsgEn="";
             if(result==(short)1){
                 pushMsg="远程命令执行失败";
+                pushMsgEn="Remote command execution failed";
             }else if(result==(short)0x20){
                 pushMsg="请求未完成";
+                pushMsgEn="Request not completed";
             }else if(result==(short)0x21){
                 pushMsg="请求的CRC错误";
+                pushMsgEn="Requested CRC error";
             }else if(result==(short)0x22){
                 pushMsg="请求的身份验证错误";
+                pushMsgEn="Requested authentication error";
             }else if(result==(short)0x23){
                 pushMsg="请求无效";
+                pushMsgEn="Request message order error";
             }else if(result==(short)0x24){
                 pushMsg="请求消息顺序错误";
+                pushMsgEn="请求的CRC错误";
             }else if(result==(short)0x30){
                 pushMsg="请求不能执行";
+                pushMsgEn="Request cannot be executed";
             }else if(result==(short)0x31){
                 pushMsg="请求先决条件无效";
+                pushMsgEn="Request prerequisites are invalid";
             }else if(result==(short)0x40){
                 pushMsg="本地用户终止请求";
+                pushMsgEn="Local user termination request";
             }else if(result==(short)0x50){
                 pushMsg="请求超时失效";
+                pushMsgEn="Request timeout";
             }else if(result==(short)0x51){
                 pushMsg="请求次数超过3次";
+                pushMsgEn="More than 3 times the number of requests";
             }else if(result==(short)0x60){
                 pushMsg="功能无效，请求被忽略";
+                pushMsgEn="Function is not valid, the request is ignored.";
             }else if(result==(short)0x80){
                 pushMsg="等待响应中，指定时间后再请求";
+                pushMsgEn="Wait for the response, after the specified time to request";
             }else if(result==(short)0x81){
                 pushMsg="响应等待下次车辆启动";
+                pushMsgEn="In response to waiting for the next vehicle to start";
             }
             String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
             rc.setRemark(_dbReMark);
-            rc.setRemarkEn(_dbReMark);
+            rc.setRemarkEn(pushMsgEn);
             remoteControlRepository.save(rc);
             pushMsg=_dbReMark+rc.getSessionId();
             try{
