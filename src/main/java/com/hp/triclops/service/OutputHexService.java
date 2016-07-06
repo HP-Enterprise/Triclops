@@ -262,31 +262,39 @@ public class OutputHexService {
                 //_cType=0;
                 break;
             case 10://闪灯->寻车
-            case 11://鸣笛->寻车
                 //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
                 _cType=2;
                 _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
                 _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
                 Integer _lightTime=(int)(remoteControl.getLightTime()*10);//0.2~0.5-> 0x02~0x05
-                Integer _hornTime=(int)(remoteControl.getHornTime()*10);
-
-                _remoteFindCar[2]=_lightTime.byteValue()>_hornTime.byteValue()?_lightTime.byteValue():_hornTime.byteValue();
-                if(remoteControl.getLightNum()!=null&&remoteControl.getHornNum()!=null){
-                    //born Bit0–bit1:  0x00:horn and lights to be activated
-                    //Bit2 – bit3:  0x00:function activation
-                    _remoteFindCar[3]=(byte)0;//
-                }else if(remoteControl.getLightNum()!=null&&remoteControl.getHornNum()==null){
+                if(_lightTime<2){
+                    _lightTime=2;
+                }
+                if(_lightTime>5){
+                    _lightTime=5;
+                }
+                _remoteFindCar[2]=_lightTime.byteValue();
                     //Bit0–bit1 0x01:lights only to be activated
                     //Bit2 – bit3:  0x00:function activation
                     _remoteFindCar[3]=(byte)1;//
-                }else if(remoteControl.getLightNum()==null&&remoteControl.getHornNum()!=null){
-                    //Bit0–bit1 0x02: horn only to be activated
-                    //Bit2 – bit3:  0x00:function activation
-                    _remoteFindCar[3]=(byte)2;//
-                }else if(remoteControl.getLightNum()==null&&remoteControl.getHornNum()==null){
-                    //Bit2 – bit3:  0x01:function deactivation
-                    _remoteFindCar[3]=(byte)4;//00000100
+                break;
+            case 11://鸣笛->寻车
+                //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
+                _cType=2;
+                _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
+                _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
+                Integer  _hornTime=(int)(remoteControl.getHornTime()*10);
+                if(_hornTime<2){
+                    _hornTime=2;
                 }
+                if(_hornTime>5){
+                    _hornTime=5;
+                }
+                _remoteFindCar[2]=_hornTime.byteValue();
+                //Bit0–bit1 0x02: horn only to be activated
+                //Bit2 – bit3:  0x00:function activation
+                _remoteFindCar[3]=(byte)2;//
+
                 break;
             default:
                 _logger.info("unknown cType"+remoteControl.getControlType().intValue());
