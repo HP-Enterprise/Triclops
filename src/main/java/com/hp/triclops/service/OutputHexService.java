@@ -1319,7 +1319,10 @@ public class OutputHexService {
 
             String pushMsg="";//参考PDF0621 page55
             String pushMsgEn="";
-            if(result==(short)1){
+            if(result==(short)0){
+                pushMsg="远程命令执行成功";
+                pushMsgEn="Remote command execution success";
+            }else if(result==(short)1){
                 pushMsg="远程命令执行失败";
                 pushMsgEn="Remote command execution failed";
             }else if(result==(short)0x20){
@@ -1367,9 +1370,11 @@ public class OutputHexService {
             rc.setRemarkEn(pushMsgEn);
             remoteControlRepository.save(rc);
             pushMsg=pushMsg+sessionId;
-            try{
-            this.mqService.pushToUser(rc.getUid(), pushMsg);
-            }catch (RuntimeException e){_logger.info(e.getMessage());}
+            if(push){
+                try{
+                    this.mqService.pushToUser(rc.getUid(), pushMsg);
+                }catch (RuntimeException e){_logger.info(e.getMessage());}
+            }
             _logger.info("RemoteControl Rst persistence and push success");
         }
     }
@@ -1393,7 +1398,10 @@ public class OutputHexService {
             }
             String pushMsg="";//参考PDF0621 page55
             String pushMsgEn="";
-            if(result==(short)1){
+            if(result==(short)0){
+                pushMsg="远程命令执行成功";
+                pushMsgEn="Remote command execution success";
+            }else if(result==(short)1){
                 pushMsg="远程命令执行失败";
                 pushMsgEn="Remote command execution failed";
             }else if(result==(short)0x20){
