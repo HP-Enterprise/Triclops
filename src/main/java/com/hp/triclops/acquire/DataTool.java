@@ -717,6 +717,12 @@ public class DataTool {
         if(_acm[7]== '0'){//bit0 0 warning MID=1
             sb.append(",1");
         }
+        if(_acm[6]== '0'){//bit0 0 warning MID=200
+            sb.append(",200");
+        }
+        if(_acm[5]== '0'){//bit0 0 warning MID=201
+            sb.append(",201");
+        }
 
 
         char[] _ic=getBitsFromInteger(bean.getWarnMsg_ic());
