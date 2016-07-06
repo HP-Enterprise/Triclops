@@ -262,31 +262,39 @@ public class OutputHexService {
                 //_cType=0;
                 break;
             case 10://闪灯->寻车
-            case 11://鸣笛->寻车
                 //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
                 _cType=2;
                 _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
                 _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
                 Integer _lightTime=(int)(remoteControl.getLightTime()*10);//0.2~0.5-> 0x02~0x05
-                Integer _hornTime=(int)(remoteControl.getHornTime()*10);
-
-                _remoteFindCar[2]=_lightTime.byteValue()>_hornTime.byteValue()?_lightTime.byteValue():_hornTime.byteValue();
-                if(remoteControl.getLightNum()!=null&&remoteControl.getHornNum()!=null){
-                    //born Bit0–bit1:  0x00:horn and lights to be activated
-                    //Bit2 – bit3:  0x00:function activation
-                    _remoteFindCar[3]=(byte)0;//
-                }else if(remoteControl.getLightNum()!=null&&remoteControl.getHornNum()==null){
+                if(_lightTime<2){
+                    _lightTime=2;
+                }
+                if(_lightTime>5){
+                    _lightTime=5;
+                }
+                _remoteFindCar[2]=_lightTime.byteValue();
                     //Bit0–bit1 0x01:lights only to be activated
                     //Bit2 – bit3:  0x00:function activation
                     _remoteFindCar[3]=(byte)1;//
-                }else if(remoteControl.getLightNum()==null&&remoteControl.getHornNum()!=null){
-                    //Bit0–bit1 0x02: horn only to be activated
-                    //Bit2 – bit3:  0x00:function activation
-                    _remoteFindCar[3]=(byte)2;//
-                }else if(remoteControl.getLightNum()==null&&remoteControl.getHornNum()==null){
-                    //Bit2 – bit3:  0x01:function deactivation
-                    _remoteFindCar[3]=(byte)4;//00000100
+                break;
+            case 11://鸣笛->寻车
+                //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
+                _cType=2;
+                _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
+                _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
+                Integer  _hornTime=(int)(remoteControl.getHornTime()*10);
+                if(_hornTime<2){
+                    _hornTime=2;
                 }
+                if(_hornTime>5){
+                    _hornTime=5;
+                }
+                _remoteFindCar[2]=_hornTime.byteValue();
+                //Bit0–bit1 0x02: horn only to be activated
+                //Bit2 – bit3:  0x00:function activation
+                _remoteFindCar[3]=(byte)2;//
+
                 break;
             default:
                 _logger.info("unknown cType"+remoteControl.getControlType().intValue());
@@ -1141,7 +1149,7 @@ public class OutputHexService {
      */
     public  RemoteControl getRemoteCmdValueFromDb(String vin,long eventId){
         String sessionId=49+"-"+eventId;
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
             return null;
@@ -1152,16 +1160,35 @@ public class OutputHexService {
     }
 
     /**
+     * 更新远程控制记录的eventId
+     * @param rc 远程控制对象
+     * @return 封装远程控制参数的RemoteControl对象
+     */
+    public  RemoteControl modifyRemoteControl(RemoteControl rc){
+        String newSessionId=49+"-"+dataTool.getCurrentSeconds();
+        rc.setRefId(-2l);
+        rc.setSessionId(newSessionId);
+        RemoteControl retRc=remoteControlRepository.save(rc);
+        return rc;
+
+    }
+
+
+    /**
      * 生成一个简单remoteControl 用于生成启动发动机命令,无需数据库存储
      * @param vin vin
      * @return 封装远程控制参数的RemoteControl对象
      */
-    public  RemoteControlBody getStartEngineRemoteControl(String vin,long refId){
-        RemoteControlBody remoteControl=new RemoteControlBody();
+    public  RemoteControl getStartEngineRemoteControl(int uid,String vin,long eventId,long refId){
+        RemoteControl remoteControl=new RemoteControl();
+        String sessionId="49-"+eventId;
+        remoteControl.setUid(uid);
+        remoteControl.setSendingTime(new Date());
         remoteControl.setVin(vin);
+        remoteControl.setSessionId(sessionId);
         remoteControl.setRefId(refId);
-        remoteControl.setcType((short) 0);
-        remoteControl.setTemp(0.0);
+        remoteControl.setControlType((short) 0);
+        remoteControl.setAcTemperature(0.0);
         remoteControl.setLightNum((short) 0);
         remoteControl.setLightTime(0.0);
         remoteControl.setHornNum((short) 0);
@@ -1169,11 +1196,16 @@ public class OutputHexService {
         remoteControl.setRecirMode((short) 0);
         remoteControl.setAcMode((short) 0);
         remoteControl.setFan((short) 0);
-        remoteControl.setMode((short)0);
-        remoteControl.setMasterStat((short)0);
-        remoteControl.setMasterLevel((short)0);
-        remoteControl.setSlaveStat((short)0);
-        remoteControl.setSlaveLevel((short)0);
+        remoteControl.setMode((short) 0);
+        remoteControl.setMasterStat((short) 0);
+        remoteControl.setMasterLevel((short) 0);
+        remoteControl.setSlaveStat((short) 0);
+        remoteControl.setSlaveLevel((short) 0);
+        remoteControl.setStatus((short) 2);//处理中
+        remoteControl.setRemark("命令下发成功，处理中");
+        remoteControl.setRemarkEn("sending command");
+        remoteControl.setAvailable((short) 0);
+        remoteControlRepository.save(remoteControl);
         return remoteControl;
     }
 
@@ -1229,7 +1261,7 @@ public class OutputHexService {
     public void handleRemoteControlAck(String vin,long eventId,Short result,boolean push){
         String sessionId=49+"-"+eventId;
         //  Rst 0：无效 1：命令已接收
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
@@ -1239,6 +1271,7 @@ public class OutputHexService {
                //返回无效才更新db记录 不阻塞
                rc.setRemark("TBOX提示命令无效");
                rc.setRemarkEn("TBOX prompt invalid command");
+               rc.setStatus((short) 0);
                remoteControlRepository.save(rc);
                String pushMsg="TBOX提示命令无效:"+sessionId;
                if(push){
@@ -1268,6 +1301,7 @@ public class OutputHexService {
                 //返回无效才更新db记录 不阻塞
                 rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
                 rc.setRemarkEn("Command execution failed, dependent remote start engine command execution failed: TBOX prompt command is invalid");
+                rc.setStatus((short)0);
                 remoteControlRepository.save(rc);
                 String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效"+rc.getSessionId();
                 try{
@@ -1304,7 +1338,7 @@ public class OutputHexService {
         if(result==(short)0){
             dbResult=1;
         }
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
@@ -1447,6 +1481,11 @@ public class OutputHexService {
             String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
             rc.setRemark(_dbReMark);
             rc.setRemarkEn(pushMsgEn);
+            if(result==(short)0){
+                rc.setStatus((short)1);
+            }else{
+                rc.setStatus((short)0);
+            }
             remoteControlRepository.save(rc);
             pushMsg=_dbReMark+rc.getSessionId();
             try{

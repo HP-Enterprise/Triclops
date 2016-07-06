@@ -22,8 +22,10 @@ public class RemoteCommandSender extends Thread{
     private RemoteControlBody remoteControlBody;
     private Logger _logger;
     private boolean isRefCommand;
-    public RemoteCommandSender(VehicleDataService vehicleDataService,int uid,String vin,RemoteControlBody remoteControlBody, boolean isRefCommand){
+    private long id;
+    public RemoteCommandSender(VehicleDataService vehicleDataService,long id,int uid,String vin,RemoteControlBody remoteControlBody, boolean isRefCommand){
         this.vehicleDataService=vehicleDataService;
+        this.id=id;
         this.uid=uid;
         this.vin=vin;
         this.remoteControlBody=remoteControlBody;
@@ -34,8 +36,10 @@ public class RemoteCommandSender extends Thread{
     public  void run()
     {
         _logger.info("handling remoteCommand...");
-        _logger.info("remoteCommand:"+remoteControlBody.getVin()+"| type:"+remoteControlBody.getcType());
-        RemoteControl rc=vehicleDataService.handleRemoteControl(uid, vin, remoteControlBody,isRefCommand);
+        if(remoteControlBody!=null){
+            _logger.info("remoteCommand:"+remoteControlBody.getVin()+"| type:"+remoteControlBody.getcType());
+        }
+        RemoteControl rc=vehicleDataService.handleRemoteControl(uid,id, vin, remoteControlBody,isRefCommand);
         if(rc!=null){
             //远程控制命令下发成功,执行结果会通过mqtt下发 以sessionId识别
             //ObjectResult obj = new ObjectResult("success",rc.getSessionId());
