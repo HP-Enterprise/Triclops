@@ -267,12 +267,12 @@ public class RequestHandler {
             String statusValue=String.valueOf(bean.getMessageID());
             socketRedis.saveValueString(statusKey, statusValue, -1);
             RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin, bean.getEventID());
-            _logger.info(dbRc.getId()+":update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
-            //取出redis暂存的控制参数 生成指令
             if(dbRc==null){
-                _logger.info("get RemoteCmd Value From db return null...");
+                _logger.info("get RemoteCmd Value From db return null..."+vin+"--"+bean.getEventID());
                 return;
             }
+            _logger.info(dbRc.getId()+":update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
+            //取出redis暂存的控制参数 生成指令
             long currentRefId=dbRc.getRefId();
             _logger.info("[debug] currentRefId:"+currentRefId);
             int preconditionRespCheck=0;
