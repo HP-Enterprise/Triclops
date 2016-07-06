@@ -275,7 +275,7 @@ public class RequestHandler {
                 return;
             }
             int preconditionRespCheck=0;
-            if(dbRc.getRefId()<=0){//普通报文才做check ,对于关联指令refId>0 check直接通过
+            if(dbRc.getRefId()!=-2){//普通报文才做check ,-2 check直接通过
                preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType());
             }
 
