@@ -277,7 +277,7 @@ public class RequestHandler {
             int preconditionRespCheck=0;
             if(dbRc.getRefId()<=0){//普通报文才做check ,对于关联指令refId>0 check直接通过
                preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType());
-            }else
+            }
 
             //0 通过   1~6 各种异常
             //boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
