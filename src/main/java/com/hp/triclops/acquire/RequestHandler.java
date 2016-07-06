@@ -266,19 +266,20 @@ public class RequestHandler {
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
             socketRedis.saveValueString(statusKey, statusValue, -1);
-            _logger.info("update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
-            RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
-            long currentRefId=dbRc.getRefId();
+            RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin, bean.getEventID());
+            _logger.info(dbRc.getId()+":update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
             //取出redis暂存的控制参数 生成指令
             if(dbRc==null){
                 _logger.info("get RemoteCmd Value From db return null...");
                 return;
             }
+            long currentRefId=dbRc.getRefId();
+            _logger.info("[debug] currentRefId:"+currentRefId);
             int preconditionRespCheck=0;
-            if(dbRc.getRefId()!=-2){//普通报文才做check ,-2 check直接通过
+            if(currentRefId!=-2){//普通报文才做check ,-2 check直接通过
                preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType());
             }
-
+            _logger.info("[debug] preconditionRespCheck:"+preconditionRespCheck);
             //0 通过   1~6 各种异常
             //boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
             if(preconditionRespCheck==0){

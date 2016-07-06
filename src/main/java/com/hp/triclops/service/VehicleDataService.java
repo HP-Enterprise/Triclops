@@ -81,6 +81,7 @@ public class VehicleDataService {
         RemoteControl rc=new RemoteControl();
         if(remoteControlBody==null){
             rc=remoteControlRepository.findOne(id);
+            eventId=Long.parseLong(rc.getSessionId().split("-")[1]);
         }else{
             rc.setUid(uid);
             rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
