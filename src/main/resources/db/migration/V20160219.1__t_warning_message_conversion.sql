@@ -120,6 +120,6 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('149','Service Information','服务指南');
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('105','','','12','驻车系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('200','','','13','电子换挡器故障');
-insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('201','','','14','电子换挡器故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('201','','','14','电动尾门系统故障');
 
 

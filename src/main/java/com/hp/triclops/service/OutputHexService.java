@@ -515,18 +515,8 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getFailureMessageAndPush(String vin,String msg){
-        Vehicle vehicle=vehicleRepository.findByVin(vin);
-        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
-        if(uvr.size()>0) {
-            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
-            while (iterator.hasNext()) {
-                UserVehicleRelatived userVehicleRelatived =  iterator.next();
-                if(userVehicleRelatived.getVflag()==1) {
-                    Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
-                    pushWarningOrFailureMessage(vin, pushMsg);
-                }
-            }
-        }
+        Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
+        pushWarningOrFailureMessage(vin, pushMsg);
     }
 
     /**
@@ -535,18 +525,8 @@ public class OutputHexService {
      * @param msg 16进制报警信息
      */
     public void getResendFailureMessageAndPush(String vin,String msg){
-        Vehicle vehicle=vehicleRepository.findByVin(vin);
-        List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
-        if(uvr.size()>0) {
-            Iterator<UserVehicleRelatived> iterator = uvr.iterator();
-            while (iterator.hasNext()) {
-                UserVehicleRelatived userVehicleRelatived =  iterator.next();
-                if(userVehicleRelatived.getVflag()==1) {
-                    Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
-                    pushWarningOrFailureMessage(vin, pushMsg);
-                }
-            }
-        }
+        Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
+        pushWarningOrFailureMessage(vin, pushMsg);
     }
 
 
@@ -1089,8 +1069,7 @@ public class OutputHexService {
         jsonMap.put("driving_range",drivingRange);
         jsonMap.put("driving_time",drivingTime);
 
-        int count = 0;
-        //StringBuilder sb=new StringBuilder() ;
+         //StringBuilder sb=new StringBuilder() ;
         //sb.append("车辆故障信息: ");
     /*    if(wd.getIsLocation()==(short)0){
             //0有效 1无效
@@ -1113,16 +1092,15 @@ public class OutputHexService {
             String _info=messages.get(failureId[i]);
             if(_info!=null){
                 failInfo.add(_info);
-                count++;
             }
         }
 
         //jsonMap.put("position",positionMap);
         jsonMap.put("failure_info",failInfo);
-        jsonMap.put("failure_num",count);
+        jsonMap.put("failure_num",failInfo.size());
         String contextJson= JSON.toJSONString(jsonMap);
 
-        dataMap.put("messageNums",count);
+        dataMap.put("messageNums",failInfo.size());
         dataMap.put("textContent",contextJson);
         dataMap.put("pType",2);
 
