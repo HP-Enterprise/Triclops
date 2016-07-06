@@ -1152,16 +1152,33 @@ public class OutputHexService {
     }
 
     /**
+     * 更新远程控制记录的eventId
+     * @param rc 远程控制对象
+     * @return 封装远程控制参数的RemoteControl对象
+     */
+    public  RemoteControl modifyRemoteControl(RemoteControl rc){
+        String newSessionId=49+"-"+dataTool.getCurrentSeconds();
+        rc.setSessionId(newSessionId);
+        RemoteControl retRc=remoteControlRepository.save(rc);
+        return rc;
+
+    }
+
+
+    /**
      * 生成一个简单remoteControl 用于生成启动发动机命令,无需数据库存储
      * @param vin vin
      * @return 封装远程控制参数的RemoteControl对象
      */
-    public  RemoteControlBody getStartEngineRemoteControl(String vin,long refId){
-        RemoteControlBody remoteControl=new RemoteControlBody();
+    public  RemoteControl getStartEngineRemoteControl(int uid,String vin,long eventId,long refId){
+        RemoteControl remoteControl=new RemoteControl();
+        String sessionId="49-"+eventId;
+        remoteControl.setUid(uid);
         remoteControl.setVin(vin);
+        remoteControl.setSessionId("");
         remoteControl.setRefId(refId);
-        remoteControl.setcType((short) 0);
-        remoteControl.setTemp(0.0);
+        remoteControl.setControlType((short) 0);
+        remoteControl.setAcTemperature(0.0);
         remoteControl.setLightNum((short) 0);
         remoteControl.setLightTime(0.0);
         remoteControl.setHornNum((short) 0);
@@ -1169,11 +1186,12 @@ public class OutputHexService {
         remoteControl.setRecirMode((short) 0);
         remoteControl.setAcMode((short) 0);
         remoteControl.setFan((short) 0);
-        remoteControl.setMode((short)0);
-        remoteControl.setMasterStat((short)0);
-        remoteControl.setMasterLevel((short)0);
-        remoteControl.setSlaveStat((short)0);
-        remoteControl.setSlaveLevel((short)0);
+        remoteControl.setMode((short) 0);
+        remoteControl.setMasterStat((short) 0);
+        remoteControl.setMasterLevel((short) 0);
+        remoteControl.setSlaveStat((short) 0);
+        remoteControl.setSlaveLevel((short) 0);
+        remoteControlRepository.save(remoteControl);
         return remoteControl;
     }
 
