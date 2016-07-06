@@ -44,6 +44,8 @@ public class VehicleDataService {
     @Autowired
     RealTimeReportDataRespository realTimeReportDataRespository;
     @Autowired
+    FailureMessageDataRespository failureMessageDataRespository;
+    @Autowired
     GpsDataRepository gpsDataRepository;
     @Autowired
     GpsTool gpsTool;
@@ -516,6 +518,146 @@ public class VehicleDataService {
             remoteControlAndVehicle.add(remoteControlShow);
         }
         return remoteControlAndVehicle;
+    }
+
+    /**
+     * 获取诊断数据，来自故障数据转换
+     * @param vin 目标vin
+     * @return DiagnosticData或者null
+     */
+    public DiagnosticDataShow getDiagDataShowFromFailure(String vin){
+        DiagnosticData diagnosticData=getDiagDataFromFailure(vin);
+        if(diagnosticData==null){
+            return null;
+        }
+        DiagnosticDataShow diagnosticDataShow=new DiagnosticDataShow();
+        diagnosticDataShow.setId(diagnosticData.getId());
+        diagnosticDataShow.setVin(diagnosticData.getVin());
+        diagnosticDataShow.setEventId(diagnosticData.getEventId());
+        diagnosticDataShow.setSendDate(diagnosticData.getSendDate());
+        diagnosticDataShow.setReceiveDate(diagnosticData.getReceiveDate());
+        diagnosticDataShow.setHasAck(diagnosticData.getHasAck());
+        diagnosticDataShow.setMessage1(diagnosticData.getMessage1());
+        diagnosticDataShow.setMessage2(diagnosticData.getMessage2());
+        diagnosticDataShow.setMessage3(diagnosticData.getMessage3());
+        diagnosticDataShow.setMessage4(diagnosticData.getMessage4());
+        diagnosticDataShow.setMessage5(diagnosticData.getMessage5());
+        diagnosticDataShow.setMessage6(diagnosticData.getMessage6());
+        diagnosticDataShow.setMessage7(diagnosticData.getMessage7());
+        diagnosticDataShow.setMessage8(diagnosticData.getMessage8());
+        diagnosticDataShow.setMessage9(diagnosticData.getMessage9());
+        diagnosticDataShow.setMessage10(diagnosticData.getMessage10());
+        diagnosticDataShow.setMessage11(diagnosticData.getMessage11());
+        diagnosticDataShow.setMessage12(diagnosticData.getMessage12());
+        diagnosticDataShow.setMessage13(diagnosticData.getMessage13());
+        diagnosticDataShow.setMessage14(diagnosticData.getMessage14());
+        return  diagnosticDataShow;
+    }
+
+    /**
+     * 获取诊断数据，来自故障数据转换
+     * @param vin 目标vin
+     * @return DiagnosticData或者null
+     */
+    public DiagnosticData getDiagDataFromFailure(String vin){
+        //todo 转换逻辑暂缺
+        short[] info=new short[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        if(failureMessageData!=null){
+            String[] array=failureMessageData.getIdArray();
+            if(array!=null){
+                for (int i = 0; i <array.length ; i++) {
+                    if(array[i].equals("")){
+                        continue;
+                    }
+                    int _id=Integer.parseInt(array[i]);
+                    if(_id==1){
+                        info[0]=1;
+                        _logger.info("info 1 failure");
+                    }
+                    if(_id==3){
+                        info[1]=1;
+                        _logger.info("info 2 failure");
+                    }
+                    if(_id==4){
+                        info[2]=1;
+                        _logger.info("info 3 failure");
+                    }
+                    if(_id==6){
+                        info[3]=1;
+                        _logger.info("info 4 failure");
+                    }
+                    if(_id==9){
+                        info[4]=1;
+                        _logger.info("info 5 failure");
+                    }
+                    if(_id==11||_id==12){
+                        info[5]=1;
+                        _logger.info("info 6 failure");
+                    }
+                    if(_id==23){
+                        info[6]=1;
+                        _logger.info("info 7 failure");
+                    }
+                    if(_id==50){
+                        info[7]=1;
+                        _logger.info("info 8 failure");
+                    }
+                    if(_id==51){
+                        info[8]=1;
+                        _logger.info("info 9 failure");
+                    }
+                    if(_id==87){
+                        info[9]=1;
+                        _logger.info("info 10 failure");
+                    }
+                    if(_id==88||_id==90||_id==97||_id==22){
+                        info[10]=1;
+                        _logger.info("info 11 failure");
+                    }
+                    if(_id==105){
+                        info[11]=1;
+                        _logger.info("info 12 failure");
+                    }
+                    if(_id==200){
+                        info[12]=1;
+                        _logger.info("info 13 failure");
+                    }
+                    if(_id==201){
+                        info[13]=1;
+                        _logger.info("info 14 failure");
+                    }
+
+                }
+            }
+            DiagnosticData diagnosticData=new DiagnosticData();
+            diagnosticData.setId(failureMessageData.getId());
+            diagnosticData.setVin(failureMessageData.getVin());
+            diagnosticData.setHasAck((short) 1);
+            diagnosticData.setEventId((long)dataTool.getCurrentSeconds());
+            diagnosticData.setSendDate(failureMessageData.getSendingTime());
+            diagnosticData.setReceiveDate(failureMessageData.getSendingTime());
+            diagnosticData.setMessage1(info[0]);
+            diagnosticData.setMessage2(info[1]);
+            diagnosticData.setMessage3(info[2]);
+            diagnosticData.setMessage4(info[3]);
+            diagnosticData.setMessage5(info[4]);
+            diagnosticData.setMessage6(info[5]);
+            diagnosticData.setMessage7(info[6]);
+            diagnosticData.setMessage8(info[7]);
+            diagnosticData.setMessage9(info[8]);
+            diagnosticData.setMessage10(info[9]);
+            diagnosticData.setMessage11(info[10]);
+            diagnosticData.setMessage12(info[11]);
+            diagnosticData.setMessage13(info[12]);
+            diagnosticData.setMessage14(info[13]);
+            diagnosticData.setMessage15(info[14]);
+            diagnosticData.setMessage16(info[15]);
+            return  diagnosticData;
+        }else{
+            _logger.info("no failure data exist!");
+            return null;//没有故障数据
+        }
     }
 
     /**

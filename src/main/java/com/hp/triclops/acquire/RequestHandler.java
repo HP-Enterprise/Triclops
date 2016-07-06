@@ -313,6 +313,8 @@ public class RequestHandler {
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
+                    }else{
+                        _logger.info("command already has a ref remote control->"+currentRefId);
                     }
                 }
                 if(preconditionRespCheck==5){
