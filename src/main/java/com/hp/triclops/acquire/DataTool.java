@@ -700,7 +700,7 @@ public class DataTool {
         HashMap<String,String> messages=new HashMap<String,String>();
         while (iterator.hasNext()){
             WarningMessageConversion warningMessageConversion=iterator.next();
-            messages.put(warningMessageConversion.getMessageId(),warningMessageConversion.getMessageZh());
+            messages.put(warningMessageConversion.getMessageId(),warningMessageConversion.getGroupMessage());
         }
         return messages;
     }

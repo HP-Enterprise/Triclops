@@ -3,22 +3,24 @@ CREATE TABLE t_warning_message_conversion (
   message_id varchar(5) NOT NULL COMMENT '报警消息id',
   message_en varchar(150) NOT NULL COMMENT '英文消息',
   message_zh varchar(150) NOT NULL COMMENT '中文消息',
+  group_id varchar(5) DEFAULT NULL COMMENT '组id',
+  group_message varchar(150) DEFAULT NULL COMMENT '组消息',
   PRIMARY KEY (id)
  ) DEFAULT CHARSET=utf8 COMMENT='报警消息表';
 
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('50','PDC System not available because of malfunction','PDC系统故障');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('51','BSW System not available because of malfunction','BSW系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('50','PDC System not available because of malfunction','PDC系统故障','8','倒车雷达系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('51','BSW System not available because of malfunction','BSW系统故障','9','盲区监测系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('52','Continious Seat belt warning for unbelted driver','司机未系安全带持续警报');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('53','Blinking Seat belt warning for unbelted driver','司机未系安全带持续闪烁警报灯');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('54','Continious Seat belt warning for unbelted front passenger','前排乘客没有系安全带的安全带持续预警');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('55','Blinking Seat belt warning for unbelted front passenger','前排乘客没有系安全带持续闪烁警报灯');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('1','Airbag or Restraint sytem malfunction','安全气囊或者座椅安全带系统失灵');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('1','Airbag or Restraint sytem malfunction','安全气囊或者座椅安全带系统失灵','1','安全气囊系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('120','passenger air bag off','乘客安全气囊关闭');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('2','Airbag or Restraint sytem malfunction','安全气囊或者座椅安全带系统失灵');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('56','Seat belt system malfunction','座椅安全带系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('57','Immobilizer key acceptance failed','防盗钥匙接受失败');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('58','Immobilizer communication failure','防盗器通信故障');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('3','steering lock defect, steering wheel is not able to be moved','转向锁缺陷，转向盘不能移动');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('3','steering lock defect, steering wheel is not able to be moved','转向锁缺陷，转向盘不能移动','2','电子转向锁故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('59','BCM lost communication with PDC','BCM与PDC失去连接');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('60','Steering lock failed to unlock because of blocking','转向锁因为阻塞未能解锁');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('61','engine start / stop button defect','发动机起动/停止按钮缺陷');
@@ -40,7 +42,7 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('73','Position lights are not deactivated during driver door opened','在驾驶门打开时位置灯不被激活');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('124','Information about activated Follow me home light','激活伴我回家功能');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('125','Energy Saving or Transport mode activated','激活节能或运输方式');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('4','Gateway in BCM not working so general Electric fault in the vehicle','网关在BCM不工作，车辆通用电气故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('4','Gateway in BCM not working so general Electric fault in the vehicle','网关在BCM不工作，车辆通用电气故障','3','车身控制器故障');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('5','Gateway and BCM not working so general Electric fault in the vehicle','网关和BCM不工作，车辆通用电气故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('74','Malfunction in light system','光系统故障');
@@ -61,14 +63,14 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('76','BCM lost communication with SCM and activates wiper durable until communication is working again','BCM失去与单片机和激活雨刷通信直至通信恢复工作');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('139','Rain light sensor malfunction','雨光传感器故障');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('6','ESC System not working','ESC系统不工作');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('6','ESC System not working','ESC系统不工作','4','电子稳定系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('7','ESC System not working','ESC系统不工作');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('8','ECS Control active because of instable driving situation','ECS因为不稳定的驾驶状况控制主动');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('77','ESC switched off on drivers demand','ESC关闭驾驶员需求');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('9','ABS System not working','ABS防抱死系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('9','ABS System not working','ABS防抱死系统故障','5','刹车防抱死系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('10','ABS System not working','ABS防抱死系统故障');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('11','Brake fluid level to low','制动液液位低');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('12','Brake system malfunction','制动系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('11','Brake fluid level to low','制动液液位低','6','制动系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('12','Brake system malfunction','制动系统故障','6','制动系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('13','Brake system malfunction','制动系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('14','Tyre is loosing pressure very quick','轮胎在很快的失去压力');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('15','Tyre is loosing pressure under a certain level','轮胎压力过低');
@@ -86,9 +88,9 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('84','Electric power steering limited function','电动助力转向功能');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('85','Hill decent control activated','激活坡路缓降系统');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('86','Hill decent control active','坡路缓降系统活动');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('87','Hill decent control malfunction','坡路缓降系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('87','Hill decent control malfunction','坡路缓降系统故障','10','陡坡缓降系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('19','Forward collision warning because of critical distance to vehicle in front','正向碰撞警告，因为在前面的车辆的临界距离');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('88','Forward collision warning malfunction','正向碰撞警告故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('88','Forward collision warning malfunction','正向碰撞警告故障','11','变速箱系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('89','Cruise Control System activated','激活巡航控制系统');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('141','Cruise Control System cancelled','取消巡航控制系统');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('90','Contact Service to check Cruise Control','联系服务检查巡航控制系统');
@@ -102,11 +104,11 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('20','Low Oil Pressure','低油压力');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('21','Coolant temperature too high Engine overheated','冷却液温度过高发动机过热');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('95','Coolant temperature high','冷却液温度高');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('22','Critical Malfunction of Transmission System','传输系统故障');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('96','Malfunction of Transmission System','传动系统故障');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('97','Charging of the battery is not working','电池充电不工作');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('22','Critical Malfunction of Transmission System','传输系统故障','11','变速箱系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('96','Malfunction of Transmission System','传动系统故障','11','变速箱系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('97','Charging of the battery is not working','电池充电不工作','11','变速箱系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('98',"'Increased emissions Check at next Service'",'在下一个服务增加排放检查');
-insert into t_warning_message_conversion(message_id,message_en,message_zh) values('23','Engine fault Check at next Service','在下一个服务发动机故障检查');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('23','Engine fault Check at next Service','在下一个服务发动机故障检查','7','发动机系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('99','Low fuel warning','低燃油警告');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('100','Icy Road warning at temperatures <= +3°C','道路低温警告< = 3°C');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('101','Speed Limit set up in IPC exceeded','在IPC限速设置');
@@ -116,4 +118,8 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh) value
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('147','Symbol shows that one or more Warnings are active','符号显示一个或多个警告是活动的');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('148','Transmission over heated(7 DCT)','变速器过热（7 DCT）');
 insert into t_warning_message_conversion(message_id,message_en,message_zh) values('149','Service Information','服务指南');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('105','','','12','驻车系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('200','','','13','电子换挡器故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('201','','','14','电子换挡器故障');
+
 

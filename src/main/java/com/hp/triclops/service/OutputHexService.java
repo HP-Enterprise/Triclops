@@ -1078,7 +1078,7 @@ public class OutputHexService {
 
         Map<String,Object> jsonMap = new HashMap<String,Object>();
        // Map<String,String> positionMap = new HashMap<String,String>();
-        List<String> failInfo = new ArrayList<String>();
+        HashSet<String> failInfo = new HashSet<String>();
 
         int drivingRange = 0;
         int drivingTime = 0;
@@ -1301,7 +1301,7 @@ public class OutputHexService {
                 //返回无效才更新db记录 不阻塞
                 rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
                 rc.setRemarkEn("Command execution failed, dependent remote start engine command execution failed: TBOX prompt command is invalid");
-                rc.setStatus((short)0);
+                rc.setStatus((short) 0);
                 remoteControlRepository.save(rc);
                 String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效"+rc.getSessionId();
                 try{

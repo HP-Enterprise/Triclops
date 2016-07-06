@@ -12,6 +12,8 @@ public class WarningMessageConversion {
     private String messageId;
     private String messageZh;
     private String messageEn;
+    private String groupId;
+    private String groupMessage;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,5 +54,24 @@ public class WarningMessageConversion {
 
     public void setMessageEn(String messageEn) {
         this.messageEn = messageEn;
+    }
+
+    @Basic
+    @Column(name = "group_id", nullable = false, insertable = true, updatable = true, length = 5)
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+    @Basic
+    @Column(name = "group_message", nullable = false, insertable = true, updatable = true, length = 150)
+    public String getGroupMessage() {
+        return groupMessage;
+    }
+
+    public void setGroupMessage(String groupMessage) {
+        this.groupMessage = groupMessage;
     }
 }
