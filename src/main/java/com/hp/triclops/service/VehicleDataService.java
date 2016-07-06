@@ -71,44 +71,46 @@ public class VehicleDataService {
      * @param isRefCommand 是否是依赖的启动发动机命令
      * @return 持久化后的RemoteControl对象
      */
-    public RemoteControl handleRemoteControl(int uid,String vin,RemoteControlBody remoteControlBody,boolean isRefCommand){
+    public RemoteControl handleRemoteControl(int uid,long id,String vin,RemoteControlBody remoteControlBody,boolean isRefCommand){
 
          //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
-        System.out.println(">>_maxCount:"+_maxCount+" _maxDistance:"+_maxDistance);
         //保存远程控制记录
         Long eventId= (long) dataTool.getCurrentSeconds();
         RemoteControl rc=new RemoteControl();
-        rc.setUid(uid);
-        rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
-        rc.setVin(vin);
-        rc.setRefId(remoteControlBody.getRefId());
-        rc.setSendingTime(new Date());
-        rc.setControlType(remoteControlBody.getcType());
-        rc.setAcTemperature(remoteControlBody.getTemp());
-        rc.setLightNum(remoteControlBody.getLightNum());
-        rc.setLightTime(remoteControlBody.getLightTime());
-        rc.setHornNum(remoteControlBody.getHornNum());
-        rc.setHornTime(remoteControlBody.getHornTime());
-        rc.setRecirMode(remoteControlBody.getRecirMode());
-        rc.setAcMode(remoteControlBody.getAcMode());
-        rc.setFan(remoteControlBody.getFan());
-        rc.setMode(remoteControlBody.getMode());
-        rc.setMasterStat(remoteControlBody.getMasterStat());
-        rc.setMasterLevel(remoteControlBody.getMasterLevel());
-        rc.setSlaveStat(remoteControlBody.getSlaveStat());
-        rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
-        rc.setStatus((short) 0);//默认失败
-        rc.setRemark("命令下发成功，处理中");
-        rc.setRemarkEn("sending command");
-        rc.setAvailable((short) 1);
-        if(isRefCommand){
-            rc.setAvailable((short) 0);
+        if(remoteControlBody==null){
+            rc=remoteControlRepository.findOne(id);
+        }else{
+            rc.setUid(uid);
+            rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
+            rc.setVin(vin);
+            rc.setRefId(remoteControlBody.getRefId());
+            rc.setSendingTime(new Date());
+            rc.setControlType(remoteControlBody.getcType());
+            rc.setAcTemperature(remoteControlBody.getTemp());
+            rc.setLightNum(remoteControlBody.getLightNum());
+            rc.setLightTime(remoteControlBody.getLightTime());
+            rc.setHornNum(remoteControlBody.getHornNum());
+            rc.setHornTime(remoteControlBody.getHornTime());
+            rc.setRecirMode(remoteControlBody.getRecirMode());
+            rc.setAcMode(remoteControlBody.getAcMode());
+            rc.setFan(remoteControlBody.getFan());
+            rc.setMode(remoteControlBody.getMode());
+            rc.setMasterStat(remoteControlBody.getMasterStat());
+            rc.setMasterLevel(remoteControlBody.getMasterLevel());
+            rc.setSlaveStat(remoteControlBody.getSlaveStat());
+            rc.setSlaveLevel(remoteControlBody.getSlaveLevel());
+            rc.setStatus((short) 2);//处理中
+            rc.setRemark("命令下发成功，处理中");
+            rc.setRemarkEn("sending command");
+            rc.setAvailable((short) 1);
+            if(isRefCommand){
+                rc.setAvailable((short) 0);
+            }
+            remoteControlRepository.save(rc);
+            _logger.info("save RemoteControl to db"+rc.getId());
         }
-        remoteControlRepository.save(rc);
-        _logger.info("save RemoteControl to db"+rc.getId());
-
         //20160525取消T平台对控制次数的检查
-        if(!initCheck(vin,remoteControlBody.getcType())){
+        if(!initCheck(vin,rc.getControlType())){
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
             rc.setRemark("车辆初始状态不满足控制条件，无法下发远程控制指令！");
             rc.setRemarkEn("can not send command,because init check failed.");

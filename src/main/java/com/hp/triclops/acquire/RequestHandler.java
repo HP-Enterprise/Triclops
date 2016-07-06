@@ -301,7 +301,7 @@ public class RequestHandler {
                 }
                 if(preconditionRespCheck==4){
                     //todo 生成启动发动机命令,建立关联关系
-                    if(currentRefId<=0){
+                    if(currentRefId==-1){
                         long refId=dbRc.getId();
                        //更新原来的命令eventId，后续通过id找回,
                         outputHexService.modifyRemoteControl(dbRc);
@@ -313,7 +313,7 @@ public class RequestHandler {
                 }
                 if(preconditionRespCheck==5){
                     //todo 生成启动发动机命令,建立关联关系
-                    if(currentRefId<=0){
+                    if(currentRefId==-1){
                         long refId=dbRc.getId();
                         //更新原来的命令eventId，后续通过id找回,
                         outputHexService.modifyRemoteControl(dbRc);
@@ -325,7 +325,7 @@ public class RequestHandler {
                 }
                 if(preconditionRespCheck==6){
                     //todo 生成启动发动机命令,建立关联关系
-                    if(currentRefId<=0){
+                    if(currentRefId==-1){
                         long refId=dbRc.getId();
                         //更新原来的命令eventId，后续通过id找回,
                         outputHexService.modifyRemoteControl(dbRc);
@@ -337,7 +337,7 @@ public class RequestHandler {
                 }
                 if(preconditionRespCheck==7){
                     //todo 生成启动发动机命令,建立关联关系
-                    if(currentRefId<=0){
+                    if(currentRefId==-1){
                         long refId=dbRc.getId();
                         //更新原来的命令eventId，后续通过id找回,
                         outputHexService.modifyRemoteControl(dbRc);
@@ -423,11 +423,11 @@ public class RequestHandler {
                    //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                     //取出redis暂存的控制参数 生成指令
                     if(refId>0){
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),false);
                     //存在ref记录
                         RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
-                        long eventId=Long.parseLong(refRc.getSessionId().split("-")[1]);
-                        _logger.info("start Executing the original command");
-                        //new RemoteCommandSender(vehicleDataService,rc.getUid(), vin, rc,true).start();
+                       _logger.info("start Executing the original command");
+                        new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
                     }
                 else{
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),true);

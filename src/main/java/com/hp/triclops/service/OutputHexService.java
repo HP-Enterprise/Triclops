@@ -1141,7 +1141,7 @@ public class OutputHexService {
      */
     public  RemoteControl getRemoteCmdValueFromDb(String vin,long eventId){
         String sessionId=49+"-"+eventId;
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
             return null;
@@ -1158,6 +1158,7 @@ public class OutputHexService {
      */
     public  RemoteControl modifyRemoteControl(RemoteControl rc){
         String newSessionId=49+"-"+dataTool.getCurrentSeconds();
+        rc.setRefId(-2l);
         rc.setSessionId(newSessionId);
         RemoteControl retRc=remoteControlRepository.save(rc);
         return rc;
@@ -1174,8 +1175,9 @@ public class OutputHexService {
         RemoteControl remoteControl=new RemoteControl();
         String sessionId="49-"+eventId;
         remoteControl.setUid(uid);
+        remoteControl.setSendingTime(new Date());
         remoteControl.setVin(vin);
-        remoteControl.setSessionId("");
+        remoteControl.setSessionId(sessionId);
         remoteControl.setRefId(refId);
         remoteControl.setControlType((short) 0);
         remoteControl.setAcTemperature(0.0);
@@ -1191,6 +1193,10 @@ public class OutputHexService {
         remoteControl.setMasterLevel((short) 0);
         remoteControl.setSlaveStat((short) 0);
         remoteControl.setSlaveLevel((short) 0);
+        remoteControl.setStatus((short) 2);//处理中
+        remoteControl.setRemark("命令下发成功，处理中");
+        remoteControl.setRemarkEn("sending command");
+        remoteControl.setAvailable((short) 0);
         remoteControlRepository.save(remoteControl);
         return remoteControl;
     }
@@ -1247,7 +1253,7 @@ public class OutputHexService {
     public void handleRemoteControlAck(String vin,long eventId,Short result,boolean push){
         String sessionId=49+"-"+eventId;
         //  Rst 0：无效 1：命令已接收
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
@@ -1257,6 +1263,7 @@ public class OutputHexService {
                //返回无效才更新db记录 不阻塞
                rc.setRemark("TBOX提示命令无效");
                rc.setRemarkEn("TBOX prompt invalid command");
+               rc.setStatus((short) 0);
                remoteControlRepository.save(rc);
                String pushMsg="TBOX提示命令无效:"+sessionId;
                if(push){
@@ -1286,6 +1293,7 @@ public class OutputHexService {
                 //返回无效才更新db记录 不阻塞
                 rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
                 rc.setRemarkEn("Command execution failed, dependent remote start engine command execution failed: TBOX prompt command is invalid");
+                rc.setStatus((short)0);
                 remoteControlRepository.save(rc);
                 String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效"+rc.getSessionId();
                 try{
@@ -1322,7 +1330,7 @@ public class OutputHexService {
         if(result==(short)0){
             dbResult=1;
         }
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
@@ -1465,6 +1473,11 @@ public class OutputHexService {
             String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
             rc.setRemark(_dbReMark);
             rc.setRemarkEn(pushMsgEn);
+            if(result==(short)0){
+                rc.setStatus((short)1);
+            }else{
+                rc.setStatus((short)0);
+            }
             remoteControlRepository.save(rc);
             pushMsg=_dbReMark+rc.getSessionId();
             try{
