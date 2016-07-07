@@ -8,6 +8,7 @@ import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.utils.DateUtil;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -512,6 +513,10 @@ public class DataTool {
         re.put("vin", vin);
         re.put("serialNum", serialNum);
         return re;
+    }
+
+    public String getCurrentDate(){
+        return DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss");
     }
 
     public   HashMap<String,Object> getApplicationIdAndMessageIdFromDownBytes(String msg)

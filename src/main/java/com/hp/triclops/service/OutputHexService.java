@@ -1100,7 +1100,7 @@ public class OutputHexService {
             drivingTime = realTimeReportData.getDrivingTime();
         }
         jsonMap.put("driving_range",drivingRange);
-        jsonMap.put("driving_time",drivingTime);
+        jsonMap.put("driving_time",dataTool.getCurrentDate());
 
          //StringBuilder sb=new StringBuilder() ;
         //sb.append("车辆故障信息: ");
