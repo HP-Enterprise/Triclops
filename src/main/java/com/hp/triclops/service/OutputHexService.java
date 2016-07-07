@@ -978,19 +978,31 @@ public class OutputHexService {
                 jsonMap.put("ata_warning","1");
                 dataMap.put("pType", 9);
                 dataMap.put("cleanFlag", "0");
-                String leftFrontDoorInformation = "";
-                String leftRearDoorInformation = "";
-                String rightFrontDoorInformation = "";
-                String rightRearDoorInformation = "";
-                String engineCoverState = "";
-                String trunkLidState = "";
+                String leftFrontDoorInformation = "1";
+                String leftRearDoorInformation = "1";
+                String rightFrontDoorInformation = "1";
+                String rightRearDoorInformation = "1";
+                String engineCoverState = "1";
+                String trunkLidState = "1";
                 if(realTimeReportData!=null){
-                    leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
-                    leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
-                    rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
-                    rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
-                    engineCoverState = realTimeReportData.getEngineCoverState();
-                    trunkLidState = realTimeReportData.getTrunkLidState();
+                    if(realTimeReportData.getLeftFrontDoorInformation().equals("1")){
+                        leftFrontDoorInformation="0";
+                    }
+                    if(realTimeReportData.getLeftRearDoorInformation().equals("1")){
+                        leftRearDoorInformation="0";
+                    }
+                    if(realTimeReportData.getRightFrontDoorInformation().equals("1")){
+                        rightFrontDoorInformation="0";
+                    }
+                    if(realTimeReportData.getRightRearDoorInformation().equals("1")){
+                        rightRearDoorInformation="0";
+                    }
+                    if(realTimeReportData.getEngineCoverState().equals("1")){
+                        engineCoverState="0";
+                    }
+                    if(realTimeReportData.getTrunkLidState().equals("1")){
+                        trunkLidState="0";
+                    }
                 }
                 jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
                 jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
@@ -1004,19 +1016,31 @@ public class OutputHexService {
                 jsonMap.put("ata_warning","0");
                 dataMap.put("pType", 9);
                 dataMap.put("cleanFlag", "1");
-                String leftFrontDoorInformation = "";
-                String leftRearDoorInformation = "";
-                String rightFrontDoorInformation = "";
-                String rightRearDoorInformation = "";
-                String engineCoverState = "";
-                String trunkLidState = "";
+                String leftFrontDoorInformation = "1";
+                String leftRearDoorInformation = "1";
+                String rightFrontDoorInformation = "1";
+                String rightRearDoorInformation = "1";
+                String engineCoverState = "1";
+                String trunkLidState = "1";
                 if(realTimeReportData!=null){
-                    leftFrontDoorInformation = realTimeReportData.getLeftFrontDoorInformation();
-                    leftRearDoorInformation = realTimeReportData.getLeftRearDoorInformation();
-                    rightFrontDoorInformation = realTimeReportData.getRightFrontDoorInformation();
-                    rightRearDoorInformation = realTimeReportData.getRightRearDoorInformation();
-                    engineCoverState = realTimeReportData.getEngineCoverState();
-                    trunkLidState = realTimeReportData.getTrunkLidState();
+                    if(realTimeReportData.getLeftFrontDoorInformation().equals("1")){
+                        leftFrontDoorInformation="0";
+                    }
+                    if(realTimeReportData.getLeftRearDoorInformation().equals("1")){
+                        leftRearDoorInformation="0";
+                    }
+                    if(realTimeReportData.getRightFrontDoorInformation().equals("1")){
+                        rightFrontDoorInformation="0";
+                    }
+                    if(realTimeReportData.getRightRearDoorInformation().equals("1")){
+                        rightRearDoorInformation="0";
+                    }
+                    if(realTimeReportData.getEngineCoverState().equals("1")){
+                        engineCoverState="0";
+                    }
+                    if(realTimeReportData.getTrunkLidState().equals("1")){
+                        trunkLidState="0";
+                    }
                 }
                 jsonMap.put("leftFrontDoorInformation",leftFrontDoorInformation);
                 jsonMap.put("leftRearDoorInformation",leftRearDoorInformation);
