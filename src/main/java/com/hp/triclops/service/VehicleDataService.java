@@ -538,20 +538,20 @@ public class VehicleDataService {
         diagnosticDataShow.setSendDate(diagnosticData.getSendDate());
         diagnosticDataShow.setReceiveDate(diagnosticData.getReceiveDate());
         diagnosticDataShow.setHasAck(diagnosticData.getHasAck());
-        diagnosticDataShow.setMessage1(diagnosticData.getMessage1());
-        diagnosticDataShow.setMessage2(diagnosticData.getMessage2());
-        diagnosticDataShow.setMessage3(diagnosticData.getMessage3());
-        diagnosticDataShow.setMessage4(diagnosticData.getMessage4());
-        diagnosticDataShow.setMessage5(diagnosticData.getMessage5());
-        diagnosticDataShow.setMessage6(diagnosticData.getMessage6());
-        diagnosticDataShow.setMessage7(diagnosticData.getMessage7());
-        diagnosticDataShow.setMessage8(diagnosticData.getMessage8());
-        diagnosticDataShow.setMessage9(diagnosticData.getMessage9());
-        diagnosticDataShow.setMessage10(diagnosticData.getMessage10());
-        diagnosticDataShow.setMessage11(diagnosticData.getMessage11());
-        diagnosticDataShow.setMessage12(diagnosticData.getMessage12());
-        diagnosticDataShow.setMessage13(diagnosticData.getMessage13());
-        diagnosticDataShow.setMessage14(diagnosticData.getMessage14());
+        diagnosticDataShow.setMessage1(String.valueOf(diagnosticData.getMessage1()));
+        diagnosticDataShow.setMessage2(String.valueOf(diagnosticData.getMessage2()));
+        diagnosticDataShow.setMessage3(String.valueOf(diagnosticData.getMessage3()));
+        diagnosticDataShow.setMessage4(String.valueOf(diagnosticData.getMessage4()));
+        diagnosticDataShow.setMessage5(String.valueOf(diagnosticData.getMessage5()));
+        diagnosticDataShow.setMessage6(String.valueOf(diagnosticData.getMessage6()));
+        diagnosticDataShow.setMessage7(String.valueOf(diagnosticData.getMessage7()));
+        diagnosticDataShow.setMessage8(String.valueOf(diagnosticData.getMessage8()));
+        diagnosticDataShow.setMessage9(String.valueOf(diagnosticData.getMessage9()));
+        diagnosticDataShow.setMessage10(String.valueOf(diagnosticData.getMessage10()));
+        diagnosticDataShow.setMessage11(String.valueOf(diagnosticData.getMessage11()));
+        diagnosticDataShow.setMessage12(String.valueOf(diagnosticData.getMessage12()));
+        diagnosticDataShow.setMessage13(String.valueOf(diagnosticData.getMessage13()));
+        diagnosticDataShow.setMessage14(String.valueOf(diagnosticData.getMessage14()));
         return  diagnosticDataShow;
     }
 
