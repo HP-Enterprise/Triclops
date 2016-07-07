@@ -911,13 +911,13 @@ public class OutputHexService {
 
         //获取上一条报警消息
         String vin = wd.getVin();
+        Short lastSrsWarning=0;
+        Short lastAtaWarning=0;
         WarningMessageData wmd = this.getWarningMessageData(vin);
-        Short srsWarning = wmd.getSrsWarning();
-        Short ataWarning = wmd.getAtaWarning();
-
-        srsWarning=(srsWarning==null)?-1:srsWarning;
-        ataWarning=(ataWarning==null)?-1:ataWarning;
-
+        if(wmd!=null){
+            lastSrsWarning=wmd.getSrsWarning();
+            lastAtaWarning=wmd.getAtaWarning();
+        }
         //sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
             //0有效 1无效
@@ -956,7 +956,7 @@ public class OutputHexService {
                 }
                 jsonMap.put("contacts_phone",contactsPhone);
             }
-            if(wd.getSrsWarning()==(short)0 && srsWarning==1){//srs1--0
+            if(wd.getSrsWarning()==(short)0 && lastSrsWarning==1){//srs1--0 碰撞解除
                 //推srs解除
                 jsonMap.put("srs_warning","0");
                 jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
@@ -969,6 +969,9 @@ public class OutputHexService {
                     contactsPhone =  user.getContactsPhone();
                 }
                 jsonMap.put("contacts_phone",contactsPhone);
+            }
+            if(wd.getSrsWarning()==(short)0 && lastSrsWarning==0) {//碰撞一直没有
+                return null;
             }
         }else{
             //仅处理防盗
@@ -1011,7 +1014,7 @@ public class OutputHexService {
                 jsonMap.put("engineCoverState",engineCoverState);
                 jsonMap.put("trunkLidState",trunkLidState);
             }
-            if(wd.getAtaWarning()==(short)0 && ataWarning==1 ){//atr1---0
+            if(wd.getAtaWarning()==(short)0 && lastAtaWarning==1 ){//atr1---0 防盗解除
                 //推ata解除
                 jsonMap.put("ata_warning","0");
                 dataMap.put("pType", 9);
@@ -1049,7 +1052,9 @@ public class OutputHexService {
                 jsonMap.put("engineCoverState",engineCoverState);
                 jsonMap.put("trunkLidState",trunkLidState);
             }
-
+            if(wd.getAtaWarning()==(short)0 && lastAtaWarning==0 ) {//atr1---0 防盗一直没有
+            return null;
+            }
         }
 
         if(jsonMap.size()==0){
