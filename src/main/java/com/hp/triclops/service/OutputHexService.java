@@ -1073,7 +1073,7 @@ public class OutputHexService {
 
     public WarningMessageData getWarningMessageData(String vin){
         List<WarningMessageData> list = warningMessageDataRespository.findTop1ByVinOrderBySendingTimeDesc(vin);
-        WarningMessageData wmd = new WarningMessageData();
+        WarningMessageData wmd =null;
         if(list!=null && list.size()>0){
             wmd =  list.get(0);
         }
