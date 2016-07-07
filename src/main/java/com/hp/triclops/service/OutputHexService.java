@@ -918,6 +918,8 @@ public class OutputHexService {
             lastSrsWarning=wmd.getSrsWarning();
             lastAtaWarning=wmd.getAtaWarning();
         }
+        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowAtaWarning"+wd.getAtaWarning());
         //sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
             //0有效 1无效
@@ -938,6 +940,7 @@ public class OutputHexService {
             positionMap.put("heading","");
         }
         if(srsFirst){
+            _logger.info("handle srs warning only");
             //仅处理气囊
             if(wd.getSrsWarning()==(short)1){
                 //安全气囊报警 0未触发 1触发
@@ -974,6 +977,7 @@ public class OutputHexService {
                 return null;
             }
         }else{
+            _logger.info("handle ata warning only");
             //仅处理防盗
             if(wd.getAtaWarning()==(short)1){
                 //防盗报警 0未触发 1触发
