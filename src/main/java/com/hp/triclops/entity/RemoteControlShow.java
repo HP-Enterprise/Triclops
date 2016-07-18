@@ -21,9 +21,10 @@ public class RemoteControlShow {
     private Double acTemperature;
     //0625新增加的控制指令
     private Short lightNum;//闪灯次数，仅在cType=10生效
-    private Double lightTime;//闪灯时长，仅在cType=10生效
     private Short hornNum;//鸣笛次数，仅在cType=10生效
-    private Double hornTime;//鸣笛时长，仅在cType=10生效
+    private double actTime;//闪灯鸣笛时长，仅在cType=10生效 0.2~0.5s
+    private short deActive;//关闭闪灯鸣笛，0 无效 1 生效 仅在cType=10生效
+    private short autoMode;//空调自动模式 0 手动 1 自动 默认 0
     private Short recirMode;//循环模式 0 内循环 1 外循环 默认外循环.仅在cType=4生效
     private Short acMode;//AC模式  0 关闭压缩机 1 开启压缩机.仅在cType=4生效
     private Short fan;//风速  范围 1-7.仅在cType=4生效
@@ -125,14 +126,6 @@ public class RemoteControlShow {
         this.lightNum = lightNum;
     }
 
-    public Double getLightTime() {
-        return lightTime;
-    }
-
-    public void setLightTime(Double lightTime) {
-        this.lightTime = lightTime;
-    }
-
     public Short getHornNum() {
         return hornNum;
     }
@@ -141,12 +134,28 @@ public class RemoteControlShow {
         this.hornNum = hornNum;
     }
 
-    public Double getHornTime() {
-        return hornTime;
+    public double getActTime() {
+        return actTime;
     }
 
-    public void setHornTime(Double hornTime) {
-        this.hornTime = hornTime;
+    public void setActTime(double actTime) {
+        this.actTime = actTime;
+    }
+
+    public short getDeActive() {
+        return deActive;
+    }
+
+    public void setDeActive(short deActive) {
+        this.deActive = deActive;
+    }
+
+    public short getAutoMode() {
+        return autoMode;
+    }
+
+    public void setAutoMode(short autoMode) {
+        this.autoMode = autoMode;
     }
 
     public Short getRecirMode() {

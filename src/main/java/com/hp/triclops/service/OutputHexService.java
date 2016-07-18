@@ -129,12 +129,25 @@ public class OutputHexService {
                 _cType=4;
                 _sendTemp=(remoteControl.getAcTemperature()-15.5)*2;
                 _sendTempInt=(int)_sendTemp;
+                if(_sendTempInt<0){
+                    _sendTempInt=0;
+                }
+                if(_sendTempInt>22){
+                    _sendTempInt=22;
+                }
                 _remoteAc[0]=_sendTempInt.byteValue();
-                //Bit 0 – bit 1:   0x00:Deactivate climatization   0x01:Active  climatization
+                //Bit 0 – bit 1:     0x00:Deactivate climatization
+                                    //0x01: Active Climatization in Manual Mode(CCUon)
+                                    //0x02: Active Climatization in Auto mode (CCUon)
                 //Bit 2 – bit 3:   0x01:recirulation on   0x02:recirulation off
                 //Bit 4 – bit 5:   0x01:compressor on     0x02:compressor off
 
-                _ac=1;//空调开启
+                _ac=1;//0x00:关 0x01: 开（手动模式） 0x02: 开（自动模式）
+                if(remoteControl.getAutoMode()!=null){
+                    if(remoteControl.getAutoMode()==(short)1){
+                        _ac=2;
+                    }
+                }
                 if(remoteControl.getRecirMode()!=null){
                     if(remoteControl.getRecirMode()==1){//外循环
                         _recir=2;
@@ -151,18 +164,18 @@ public class OutputHexService {
                 }
                 _remoteAc[1]=(byte)(_ac+_recir*4+_compr*16);
 
-                //BYTE[2]:0x00 not used  0x01 defrost 0x02 front defrost +feet 0x03 feet 0x04 body + feet 0x05 body
+                //BYTE[2]:0x00 not used 1 Body 2 Body + Feet 3 Feet 4 Defrost + Feet 5 Defrost
                 if(remoteControl.getMode()!=null){
                     if(remoteControl.getMode()==1){//1除雾
-                        _model=1;
+                        _model=5;
                     }else if(remoteControl.getMode()==2){//2前玻璃除雾+吹脚
-                        _model=2;
+                        _model=4;
                     }else if(remoteControl.getMode()==3){//3 吹脚
                         _model=3;
                     }else if(remoteControl.getMode()==4){//4吹身体+吹脚
-                        _model=4;
+                        _model=2;
                     }else if(remoteControl.getMode()==5){//5吹身体
-                        _model=5;
+                        _model=1;
                     }
                 }
                 _remoteAc[2]=(byte)_model;//吹风模式
@@ -186,28 +199,24 @@ public class OutputHexService {
                 break;
             case 6://座椅加热
                 //todo ok
+                //Bit0 – bit1:0x00:Deactivate passengers seat heating 0x01:Active passenger Seat Heating
+                //Bit2 – Bit3:0x00:Deactivate drivers seat heating    0x01:Active drivers seat heating
                 _cType=5;
-                if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1 && remoteControl.getSlaveStat()==null){
-                    //主开
-                    _remoteHeating[0]=(byte)1;
-                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0&&remoteControl.getSlaveStat()==null){
-                    //主关
-                    _remoteHeating[0]=(byte)0;
-                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1){
-                    //副开
-                    _remoteHeating[0]=(byte)5;
-                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
-                    //副关
-                    _remoteHeating[0]=(byte)4;
+                int _masterSTAT=0;
+                int _slaveSTAT=0;
+                if(remoteControl.getMasterStat()!=null){
+                    if(remoteControl.getMasterStat()==1){
+                        //主开
+                        _masterSTAT=1;
+                    }
                 }
-                else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1&&remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1) {
-                    //主开副开
-                    _remoteHeating[0] = (byte) 9;
-                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0 && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
-                    //主关副关
-                    _remoteHeating[0]=(byte)8;
+                if(remoteControl.getSlaveStat()!=null){
+                    if(remoteControl.getSlaveStat()==1) {
+                        //副开
+                        _slaveSTAT = 1;
+                    }
                 }
-
+                _remoteHeating[0]=(byte)(_masterSTAT*4+_slaveSTAT);
                 if(remoteControl.getMasterLevel()!=null){
                     if(remoteControl.getMasterLevel()>=1&& remoteControl.getMasterLevel()<=3){
                         _masterL=remoteControl.getMasterLevel();
@@ -223,36 +232,10 @@ public class OutputHexService {
             case 7://停止座椅加热
                 //todo ok
                 _cType=5;
-                if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1 && remoteControl.getSlaveStat()==null){
-                    //主开
-                    _remoteHeating[0]=(byte)1;
-                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0&&remoteControl.getSlaveStat()==null){
-                    //主关
-                    _remoteHeating[0]=(byte)0;
-                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1){
-                    //副开
-                    _remoteHeating[0]=(byte)5;
-                }else if(remoteControl.getMasterStat()==null && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
-                    //副关
-                    _remoteHeating[0]=(byte)4;
-                }
-                else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==1&&remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==1) {
-                    //主开副开
-                    _remoteHeating[0] = (byte) 9;
-                }else if(remoteControl.getMasterStat()!=null && remoteControl.getMasterStat()==0 && remoteControl.getSlaveStat()!=null && remoteControl.getSlaveStat()==0){
-                    //主关副关
-                    _remoteHeating[0]=(byte)8;
-                }
-                if(remoteControl.getMasterLevel()!=null){
-                    if(remoteControl.getMasterLevel()>=1&& remoteControl.getMasterLevel()<=3){
-                        _masterL=remoteControl.getMasterLevel();
-                    }
-                }
-                if(remoteControl.getSlaveLevel()!=null){
-                    if(remoteControl.getSlaveLevel()>=1&& remoteControl.getSlaveLevel()<=3){
-                        _slaveL=(short)(remoteControl.getSlaveLevel().shortValue()+3);
-                    }
-                }
+                _masterSTAT=0;
+                _slaveSTAT=0;
+                _remoteHeating[0]=(byte)(_masterSTAT*4+_slaveSTAT);
+
                 _remoteHeating[1]=(byte)(_slaveL*16+_masterL);//BYTE[1]:  Bit 0–Bit 3:  0x01–0x03 Driver level Bit 4–Bit7: 0x04–0x06   Passenger level
                 break;
             case 8://远程发动机限制  协议不支持
@@ -261,40 +244,44 @@ public class OutputHexService {
             case 9://远程发动机限制关闭 协议不支持
                 //_cType=0;
                 break;
-            case 10://闪灯->寻车
+            case 10://远程寻车 通过闪灯鸣笛次数判断是属于哪种模式 （闪灯鸣笛/仅闪灯/仅鸣笛）
                 //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
                 _cType=2;
                 _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
                 _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
-                Integer _lightTime=(int)(remoteControl.getLightTime()*10);//0.2~0.5-> 0x02~0x05
-                if(_lightTime<2){
-                    _lightTime=2;
+                Integer _actTime=(int)(remoteControl.getActTime()*10);//0.2~0.5-> 0x02~0x05
+                if(_actTime<2){
+                    _actTime=2;
                 }
-                if(_lightTime>5){
-                    _lightTime=5;
+                if(_actTime>5){
+                    _actTime=5;
                 }
-                _remoteFindCar[2]=_lightTime.byteValue();
-                    //Bit0–bit1 0x01:lights only to be activated
-                    //Bit2 – bit3:  0x00:function activation
-                    _remoteFindCar[3]=(byte)1;//
-                break;
-            case 11://鸣笛->寻车
-                //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
-                _cType=2;
-                _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
-                _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
-                Integer  _hornTime=(int)(remoteControl.getHornTime()*10);
-                if(_hornTime<2){
-                    _hornTime=2;
+                _remoteFindCar[2]=_actTime.byteValue();
+                //BYTE[3]:
+                //Bit0 – bit1: 0x00:horn and lights to be activated 0x01:lights only tobe activated 0x02: horn only tobe activated
+                //Bit2 – bit3: 0x00:function activation 0x01:function deactivation
+                int _remoteFindA=0;//0 闪灯鸣笛都开 1 仅闪灯 2 仅鸣笛
+                int _remoteFindB=0;// 0开 1关
+                if(remoteControl.getLightNum()==null){
+                    remoteControl.setLightNum((short)0);
                 }
-                if(_hornTime>5){
-                    _hornTime=5;
+                if(remoteControl.getHornNum()==null){
+                    remoteControl.setHornNum((short) 0);
                 }
-                _remoteFindCar[2]=_hornTime.byteValue();
-                //Bit0–bit1 0x02: horn only to be activated
-                //Bit2 – bit3:  0x00:function activation
-                _remoteFindCar[3]=(byte)2;//
-
+                if(remoteControl.getLightNum()>0 && remoteControl.getHornNum()==0){
+                    //1 仅闪灯
+                    _remoteFindA=1;
+                }
+                if(remoteControl.getLightNum()==0 && remoteControl.getHornNum()>0){
+                    //2 仅鸣笛
+                    _remoteFindA=2;
+                }
+                if(remoteControl.getDeActive()!=null){
+                    if(remoteControl.getDeActive()==(short)1){
+                        _remoteFindB=1;
+                    }
+                }
+                _remoteFindCar[3]=(byte)(_remoteFindB*4+_remoteFindA);
                 break;
             default:
                 _logger.info("unknown cType"+remoteControl.getControlType().intValue());
@@ -1201,9 +1188,10 @@ public class OutputHexService {
         remoteControl.setControlType((short) 0);
         remoteControl.setAcTemperature(0.0);
         remoteControl.setLightNum((short) 0);
-        remoteControl.setLightTime(0.0);
         remoteControl.setHornNum((short) 0);
-        remoteControl.setHornTime(0.0);
+        remoteControl.setActTime(0.0);
+        remoteControl.setDeActive((short) 0);
+        remoteControl.setAutoMode((short)0);
         remoteControl.setRecirMode((short) 0);
         remoteControl.setAcMode((short) 0);
         remoteControl.setFan((short) 0);

@@ -62,6 +62,7 @@ public class OutputHexServiceTest {
         remoteControl.setRecirMode((short) 1);
         remoteControl.setAcMode((short) 0);
         remoteControl.setFan((short) 6);
+        remoteControl.setAcMode((short)0);
 
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
@@ -77,9 +78,9 @@ public class OutputHexServiceTest {
         remoteControl.setSendingTime(new Date());
         remoteControl.setControlType((short) 10);
         remoteControl.setLightNum((short) 15);
-        remoteControl.setLightTime(0.3);
         remoteControl.setHornNum((short) 20);
-        remoteControl.setHornTime(0.4);
+        remoteControl.setActTime(0.4);
+        remoteControl.setDeActive((short)0);
 
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
