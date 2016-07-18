@@ -8,9 +8,10 @@ public class RemoteControlBody {
     private String vin;//目标车辆vin
     private short cType;//
     private short lightNum;//闪灯次数，仅在cType=10生效
-    private double lightTime;//闪灯时长，仅在cType=10生效 0.2~0.5s
     private short hornNum;//鸣笛次数，仅在cType=10生效
-    private double hornTime;//鸣笛时长，仅在cType=10生效 0.2~0.5s
+    private double actTime;//闪灯鸣笛时长，仅在cType=10生效 0.2~0.5s
+    private short deActive;//关闭闪灯鸣笛，0 无效 1 生效 仅在cType=10生效
+    private short autoMode;//空调自动模式 0 手动 1 自动 默认 0
     private short recirMode;//循环模式 0 内循环 1 外循环 默认外循环.仅在cType=4生效
     private short acMode;//AC模式  0 关闭压缩机 1 开启压缩机.仅在cType=4生效
     private short fan;//风速  范围 1-7.仅在cType=4生效
@@ -55,14 +56,6 @@ public class RemoteControlBody {
         this.lightNum = lightNum;
     }
 
-    public double getLightTime() {
-        return lightTime;
-    }
-
-    public void setLightTime(double lightTime) {
-        this.lightTime = lightTime;
-    }
-
     public short getHornNum() {
         return hornNum;
     }
@@ -70,8 +63,6 @@ public class RemoteControlBody {
     public void setHornNum(short hornNum) {
         this.hornNum = hornNum;
     }
-
-
 
     public short getRecirMode() {
         return recirMode;
@@ -105,12 +96,28 @@ public class RemoteControlBody {
         this.mode = mode;
     }
 
-    public double getHornTime() {
-        return hornTime;
+    public double getActTime() {
+        return actTime;
     }
 
-    public void setHornTime(double hornTime) {
-        this.hornTime = hornTime;
+    public void setActTime(double actTime) {
+        this.actTime = actTime;
+    }
+
+    public short getDeActive() {
+        return deActive;
+    }
+
+    public void setDeActive(short deActive) {
+        this.deActive = deActive;
+    }
+
+    public short getAutoMode() {
+        return autoMode;
+    }
+
+    public void setAutoMode(short autoMode) {
+        this.autoMode = autoMode;
     }
 
     public double getTemp() {

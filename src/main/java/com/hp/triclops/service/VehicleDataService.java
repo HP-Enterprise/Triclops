@@ -91,9 +91,10 @@ public class VehicleDataService {
             rc.setControlType(remoteControlBody.getcType());
             rc.setAcTemperature(remoteControlBody.getTemp());
             rc.setLightNum(remoteControlBody.getLightNum());
-            rc.setLightTime(remoteControlBody.getLightTime());
             rc.setHornNum(remoteControlBody.getHornNum());
-            rc.setHornTime(remoteControlBody.getHornTime());
+            rc.setActTime(remoteControlBody.getActTime());
+            rc.setDeActive(remoteControlBody.getDeActive());
+            rc.setAutoMode(remoteControlBody.getAutoMode());
             rc.setRecirMode(remoteControlBody.getRecirMode());
             rc.setAcMode(remoteControlBody.getAcMode());
             rc.setFan(remoteControlBody.getFan());
@@ -503,9 +504,10 @@ public class VehicleDataService {
             remoteControlShow.setAcTemperature(remoteControllList.get(i).getAcTemperature());
             //0625新增加的控制指令
             remoteControlShow.setLightNum(remoteControllList.get(i).getLightNum());
-            remoteControlShow.setLightTime(remoteControllList.get(i).getLightTime());
             remoteControlShow.setHornNum(remoteControllList.get(i).getHornNum());
-            remoteControlShow.setHornTime(remoteControllList.get(i).getHornTime());
+            remoteControlShow.setActTime(remoteControllList.get(i).getActTime());
+            remoteControlShow.setDeActive(remoteControllList.get(i).getDeActive());
+            remoteControlShow.setAutoMode(remoteControllList.get(i).getAutoMode());
             remoteControlShow.setRecirMode(remoteControllList.get(i).getRecirMode());
             remoteControlShow.setAcMode(remoteControllList.get(i).getAcMode());
             remoteControlShow.setFan(remoteControllList.get(i).getFan());

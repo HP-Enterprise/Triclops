@@ -26,9 +26,10 @@ public class RemoteControl {
     private Double acTemperature;
     //0625新增加的控制指令
     private Short lightNum;//闪灯次数，仅在cType=10生效
-    private Double lightTime;//闪灯时长，仅在cType=10生效
     private Short hornNum;//鸣笛次数，仅在cType=10生效
-    private Double hornTime;//鸣笛时长，仅在cType=10生效
+    private Double actTime;//闪灯鸣笛时长，仅在cType=10生效 0.2~0.5s
+    private Short deActive;//关闭闪灯鸣笛，0 无效 1 生效 仅在cType=10生效
+    private Short autoMode;//空调自动模式 0 手动 1 自动 默认 0
     private Short recirMode;//循环模式 0 内循环 1 外循环 默认外循环.仅在cType=4生效
     private Short acMode;//AC模式  0 关闭压缩机 1 开启压缩机.仅在cType=4生效
     private Short fan;//风速  范围 1-7.仅在cType=4生效
@@ -153,16 +154,6 @@ public class RemoteControl {
     }
 
     @Basic
-    @Column(name = "light_time", nullable = false, insertable = true, updatable = true)
-    public Double getLightTime() {
-        return lightTime;
-    }
-
-    public void setLightTime(Double lightTime) {
-        this.lightTime = lightTime;
-    }
-
-    @Basic
     @Column(name = "horn_num", nullable = false, insertable = true, updatable = true)
     public Short getHornNum() {
         return hornNum;
@@ -173,14 +164,37 @@ public class RemoteControl {
     }
 
     @Basic
-    @Column(name = "horn_time", nullable = false, insertable = true, updatable = true)
-    public Double getHornTime() {
-        return hornTime;
+    @Column(name = "act_time", nullable = false, insertable = true, updatable = true)
+    public Double getActTime() {
+        return actTime;
     }
 
-    public void setHornTime(Double hornTime) {
-        this.hornTime = hornTime;
+    public void setActTime(Double actTime) {
+        this.actTime = actTime;
     }
+
+    @Basic
+    @Column(name = "de_active", nullable = false, insertable = true, updatable = true)
+    public Short getDeActive() {
+        return deActive;
+    }
+
+    public void setDeActive(Short deActive) {
+        this.deActive = deActive;
+    }
+
+    @Basic
+    @Column(name = "auto_mode", nullable = false, insertable = true, updatable = true)
+    public Short getAutoMode() {
+        return autoMode;
+    }
+
+    public void setAutoMode(Short autoMode) {
+        this.autoMode = autoMode;
+    }
+
+
+
 
     @Basic
     @Column(name = "recir_mode", nullable = false, insertable = true, updatable = true)
