@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS t_fs_store (
   address varchar(50) COMMENT '经销商地址',
   hotlline_Exclusive varchar(50) NOT NULL COMMENT '专属服务热线',
   hotline24  varchar(50) COMMENT '24小时热线',
-  PRIMARY KEY (id) 
+  PRIMARY KEY (id)
 
 ) DEFAULT CHARSET=utf8 COMMENT='4s店信息表';
 INSERT INTO t_fs_store(id,vehicle_Type,province,city,name,address,hotlline_Exclusive,hotline24)
