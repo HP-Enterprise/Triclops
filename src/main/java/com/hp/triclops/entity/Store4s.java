@@ -67,7 +67,7 @@ public class Store4s {
 
 
     @Basic
-    @Column(name = "oid", nullable = false, insertable = true, updatable = true, length = 15)
+    @Column(name = "oid", nullable = true, insertable = true, updatable = true, length = 15)
 
     public int getOid() {
         return oid;
