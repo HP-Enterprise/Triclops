@@ -7,6 +7,7 @@ import com.hp.triclops.entity.Store4s;
  */
 public class Store4sShow {
     private int vehicleType;
+    private int oid;
     private String province;
     private String city;
     private String name;
@@ -16,6 +17,7 @@ public class Store4sShow {
 
     public Store4sShow(Store4s store4s) {
         this.vehicleType = store4s.getVehicleType();
+        this.oid = store4s.getOid();
         this.province = store4s.getProvince();
         this.city = store4s.getCity();
         this.name = store4s.getName();
@@ -24,6 +26,14 @@ public class Store4sShow {
         this.hotline24 = store4s.getHotline24();
 
 
+    }
+
+    public int getOid() {
+        return oid;
+    }
+
+    public void setOid(int oid) {
+        this.oid = oid;
     }
 
     public int getVehicleType() {
