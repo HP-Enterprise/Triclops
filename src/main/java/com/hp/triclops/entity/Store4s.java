@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Store4s {
     private int id;
     private int vehicleType;
-    private int oid;
+    private Integer oid;
     private String province;
     private String city;
     private String name;
@@ -21,7 +21,7 @@ public class Store4s {
     public Store4s() {
     }
 
-    public Store4s(int id, int vehicleType, int oid,String province, String city, String name, String address, String hotllineExclusive, String hotline24) {
+    public Store4s(int id, int vehicleType, Integer oid,String province, String city, String name, String address, String hotllineExclusive, String hotline24) {
         this.id = id;
         this.vehicleType = vehicleType;
         this.oid = oid;
@@ -33,7 +33,7 @@ public class Store4s {
         this.hotline24 = hotline24;
     }
 
-    public Store4s(int vehicleType,int oid, String province, String city, String name, String address, String hotllineExclusive, String hotline24) {
+    public Store4s(int vehicleType,Integer oid, String province, String city, String name, String address, String hotllineExclusive, String hotline24) {
         this.vehicleType = vehicleType;
         this.oid = oid;
         this.province = province;
@@ -68,11 +68,11 @@ public class Store4s {
 
     @Basic
     @Column(name = "oid", nullable = true, insertable = true, updatable = true, length = 15)
-    public int getOid() {
+    public Integer getOid() {
         return oid;
     }
 
-    public void setOid(int oid) {
+    public void setOid(Integer oid) {
         this.oid = oid;
     }
 
