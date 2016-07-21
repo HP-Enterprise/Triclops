@@ -7,7 +7,7 @@ import com.hp.triclops.entity.Store4s;
  */
 public class Store4sShow {
     private int vehicleType;
-    private int oid;
+    private Integer oid;
     private String province;
     private String city;
     private String name;
@@ -32,7 +32,7 @@ public class Store4sShow {
         return oid;
     }
 
-    public void setOid(int oid) {
+    public void setOid(Integer oid) {
         this.oid = oid;
     }
 
