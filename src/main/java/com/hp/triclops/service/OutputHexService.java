@@ -132,8 +132,8 @@ public class OutputHexService {
                 if(_sendTempInt<0){
                     _sendTempInt=0;
                 }
-                if(_sendTempInt>22){
-                    _sendTempInt=22;
+                if(_sendTempInt>0x22){
+                    _sendTempInt=0x22;
                 }
                 _remoteAc[0]=_sendTempInt.byteValue();
                 //Bit 0 – bit 1:     0x00:Deactivate climatization
