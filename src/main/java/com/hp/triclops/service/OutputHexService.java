@@ -1240,6 +1240,7 @@ public class OutputHexService {
             //返回无效才更新db记录
             rc.setRemark(message);
             rc.setRemarkEn(messageEn);
+            rc.setStatus((short)0);
             remoteControlRepository.save(rc);
             String pushMsg=message+sessionId;
             _logger.info("RemoteControl PreconditionResp  push message>:"+pushMsg);
@@ -1502,6 +1503,7 @@ public class OutputHexService {
         RemoteControl rc = remoteControlRepository.findOne(id);
         rc.setRemark(remark);
         rc.setRemarkEn(remaerEn);
+        rc.setStatus((short)0);
         remoteControlRepository.save(rc);
     }
 

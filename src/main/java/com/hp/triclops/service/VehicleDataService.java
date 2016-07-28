@@ -118,6 +118,7 @@ public class VehicleDataService {
             _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
             rc.setRemark("车辆初始状态不满足控制条件，无法下发远程控制指令！");
             rc.setRemarkEn("can not send command,because init check failed.");
+            rc.setStatus((short)0);
             remoteControlRepository.save(rc);
             return null;
         }
@@ -136,6 +137,7 @@ public class VehicleDataService {
         }else{
             rc.setRemark("远程唤醒失败，无法下发远程控制命令！");
             rc.setRemarkEn("Remote wake up failed, unable to send remote control command!");
+            rc.setStatus((short)0);
             remoteControlRepository.save(rc);
         }
         return null;
