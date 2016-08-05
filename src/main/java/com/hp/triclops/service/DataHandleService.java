@@ -69,12 +69,22 @@ public class DataHandleService {
                 saveDataResendWarningMessage(vin, msg);
                 break;
             case 0x28://故障数据
-                saveFailureMessage(vin, msg);
-                outputHexService.getFailureMessageAndPush(vin, msg);
+                boolean checkDuplicate=isDuplicateFailureMessage(vin,msg);
+                if(!checkDuplicate){
+                    saveFailureMessage(vin, msg);
+                    outputHexService.getFailureMessageAndPush(vin, msg);
+                }else{
+                    _logger.info(">>Duplicate FailureMessage>");
+                }
                 break;
             case 0x29://补发故障数据
-                saveDataResendFailureMessage(vin, msg);
-                outputHexService.getResendFailureMessageAndPush(vin, msg);
+               checkDuplicate=isDuplicateResendFailureMessage(vin,msg);
+               if(!checkDuplicate){
+                    saveDataResendFailureMessage(vin, msg);
+                    outputHexService.getResendFailureMessageAndPush(vin, msg);
+                }else{
+                    _logger.info(">>Duplicate ResendFailureMessage>");
+                }
                 break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
@@ -314,6 +324,28 @@ public class DataHandleService {
         warningMessageDataRespository.save(wd);
     }
 
+    /**
+     * 判断是否是和最近一条故障消息内容一样
+     * @param vin
+     * @param msg
+     * @return
+     */
+    public boolean isDuplicateFailureMessage(String vin,String msg){
+        boolean result=false;
+        _logger.info(">>check isDuplicateFailureMessage:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        FailureMessage bean=dp.loadBean(FailureMessage.class);
+        String info=dataTool.getFailureMesId(bean);//当前故障消息
+        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        if(lastData!=null){
+            if(lastData.getInfo().equals(info)){
+                result=true;
+            }
+        }
+        return result;
+    }
+
     public void saveFailureMessage(String vin,String msg){
         //故障数据保存
         _logger.info(">>save FailureMessage:"+msg);
@@ -340,6 +372,27 @@ public class DataHandleService {
         failureMessageDataRespository.save(wd);
     }
 
+    /**
+     * 判断是否是和最近一条故障消息内容一样
+     * @param vin
+     * @param msg
+     * @return
+     */
+    public boolean isDuplicateResendFailureMessage(String vin,String msg){
+        boolean result=false;
+        _logger.info(">>check isDuplicateResendFailureMessage:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
+        String info=dataTool.getDataResendFailureMesId(bean);//当前故障消息
+        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        if(lastData!=null){
+            if(lastData.getInfo().equals(info)){
+                result=true;
+            }
+        }
+        return result;
+    }
     public void saveDataResendFailureMessage(String vin,String msg){
         //补发故障数据保存
         _logger.info(">>save DataResend FailureMessage:"+msg);
