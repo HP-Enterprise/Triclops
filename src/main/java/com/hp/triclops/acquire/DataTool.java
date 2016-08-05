@@ -1021,12 +1021,14 @@ public class DataTool {
          failureMessage.setWarnMsg_ic(bean.getWarnMsg_ic());
          failureMessage.setWarnMsg_escl(bean.getWarnMsg_escl());
          failureMessage.setWarnMsg_bcm(bean.getWarnMsg_bcm());
+         failureMessage.setWarnMsg_esc(bean.getWarnMsg_esc());
          failureMessage.setWarnMsg_tpms(bean.getWarnMsg_tpms());
          failureMessage.setWarnMsg_dme(bean.getWarnMsg_dme());
          failureMessage.setWarnMsg_tcu(bean.getWarnMsg_tcu());
          failureMessage.setWarnMsg_pdc_bsw(bean.getWarnMsg_pdc_bsw());
          failureMessage.setWarnMsg_sesam(bean.getWarnMsg_sesam());
          failureMessage.setWarnMsg_tbox(bean.getWarnMsg_tbox());
+         failureMessage.setWarnMsg_scu(bean.getWarnMsg_scu());
          return getFailureMesId(failureMessage);
         }
 
