@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS  t_data_failure_message (
   application_id int(11) NOT NULL COMMENT 'application id',
   message_id int(11) NOT NULL COMMENT 'message id',
   sending_time DATETIME NOT NULL COMMENT '发送时间',
+  receive_time DATETIME NOT NULL COMMENT '接收时间',
   is_location smallint(6) NOT NULL COMMENT '是否定位 0有效 1无效',
   north_south varchar(1) NOT NULL COMMENT '南北纬',
   east_west varchar(1) NOT NULL COMMENT '东西经',

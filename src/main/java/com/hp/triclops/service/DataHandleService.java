@@ -275,6 +275,7 @@ public class DataHandleService {
         wd.setApplicationId(bean.getApplicationID());
         wd.setMessageId(bean.getMessageID());
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        wd.setReceiveTime(new Date());
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
         wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
@@ -302,6 +303,7 @@ public class DataHandleService {
         wd.setApplicationId(bean.getApplicationID());
         wd.setMessageId(bean.getMessageID());
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        wd.setReceiveTime(new Date());
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
         wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
@@ -337,7 +339,7 @@ public class DataHandleService {
         DataPackage dp=conversionTBox.generate(bb);
         FailureMessage bean=dp.loadBean(FailureMessage.class);
         String info=dataTool.getFailureMesId(bean);//当前故障消息
-        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDesc(vin);
         if(lastData!=null){
             if(lastData.getInfo().equals(info)){
                 result=true;
@@ -358,6 +360,7 @@ public class DataHandleService {
         wd.setApplicationId(bean.getApplicationID());
         wd.setMessageId(bean.getMessageID());
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        wd.setReceiveTime(new Date());
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
         wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
@@ -385,7 +388,7 @@ public class DataHandleService {
         DataPackage dp=conversionTBox.generate(bb);
         DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
         String info=dataTool.getDataResendFailureMesId(bean);//当前故障消息
-        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDesc(vin);
         if(lastData!=null){
             if(lastData.getInfo().equals(info)){
                 result=true;
@@ -405,6 +408,7 @@ public class DataHandleService {
         wd.setApplicationId(bean.getApplicationID());
         wd.setMessageId(bean.getMessageID());
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        wd.setReceiveTime(new Date());
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
         wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位

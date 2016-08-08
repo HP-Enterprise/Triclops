@@ -15,6 +15,7 @@ public class FailureMessageData {
     private int applicationId;
     private int messageId;
     private Date sendingTime;
+    private Date receiveTime;
 
     private Short isLocation;
     private String northSouth;
@@ -88,6 +89,16 @@ public class FailureMessageData {
 
     public void setSendingTime(Date sendingTime) {
         this.sendingTime = sendingTime;
+    }
+
+    @Basic
+    @Column(name = "receive_time", nullable = false, insertable = true, updatable = true)
+    public Date getReceiveTime() {
+        return receiveTime;
+    }
+
+    public void setReceiveTime(Date receiveTime) {
+        this.receiveTime = receiveTime;
     }
 
     @Basic

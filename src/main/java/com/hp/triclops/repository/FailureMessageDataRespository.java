@@ -1,7 +1,6 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.FailureMessageData;
-import com.hp.triclops.entity.WarningMessageData;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -9,4 +8,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface FailureMessageDataRespository extends CrudRepository<FailureMessageData, Long> {
     FailureMessageData findTopByVinOrderBySendingTimeDesc(String vin);
+
+    FailureMessageData findTopByVinOrderByReceiveTimeDesc(String vin);
 }
