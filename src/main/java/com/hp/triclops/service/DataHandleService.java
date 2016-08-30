@@ -59,13 +59,15 @@ public class DataHandleService {
             case 0x24://报警数据
                 outputHexService.getWarningMessageAndPush(vin, msg,true);
                 outputHexService.getWarningMessageAndPush(vin, msg, false);
-                outputHexService.getWarningMessageAndSms(vin, msg);
+                outputHexService.getWarningMessageAndSms(vin, msg, true);
+                outputHexService.getWarningMessageAndSms(vin, msg,false);
                 saveWarningMessage(vin, msg);
                 break;
             case 0x25://补发报警数据
                 outputHexService.getResendWarningMessageAndPush(vin, msg,true);
                 outputHexService.getResendWarningMessageAndPush(vin, msg,false);
-                outputHexService.getResendWarningMessageAndSms(vin, msg);
+                outputHexService.getResendWarningMessageAndSms(vin, msg,true);
+                outputHexService.getResendWarningMessageAndSms(vin, msg,false);
                 saveDataResendWarningMessage(vin, msg);
                 break;
             case 0x28://故障数据

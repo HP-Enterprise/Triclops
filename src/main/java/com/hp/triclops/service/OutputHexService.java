@@ -435,17 +435,21 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      */
-    public void getWarningMessageAndSms(String vin,String msg){
+    public void getWarningMessageAndSms(String vin,String msg,boolean srsFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
         //一个车对应多个uid
         if(uvr.size()>0) {
-        User u=userRepository.findById(uvr.get(0).getId());
+        User u=userRepository.findById(uvr.get(0).getUid().getId());
             if(u!=null&&u.getContactsPhone()!=null){
                 //取到紧急联系人电话
                 //发送短信
-                _logger.info("send srs waring sms to"+u.getContactsPhone());
-                sendWarningMessageSms(vin, msg, u.getContactsPhone());
+                  String phone=u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
+                if(srsFirst){
+                    phone=u.getContactsPhone();
+                }
+                _logger.info("try send  waring sms to"+phone+"|srsFirst:"+srsFirst);
+                sendWarningMessageSms(vin, msg, phone,srsFirst);
             }
 
         }
@@ -480,17 +484,21 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      */
-    public void getResendWarningMessageAndSms(String vin,String msg){
+    public void getResendWarningMessageAndSms(String vin,String msg,boolean srsFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
         //一个车对应多个uid
         if(uvr.size()>0) {
-            User u=userRepository.findById(uvr.get(0).getId());
+            User u=userRepository.findById(uvr.get(0).getUid().getId());
             if(u!=null&&u.getContactsPhone()!=null){
                 //取到紧急联系人电话
                 //发送短信
-                _logger.info("send srs waring sms to"+u.getContactsPhone());
-                sendResendWarningMessageSms(vin, msg, u.getContactsPhone());
+                String phone=u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
+                if(srsFirst){
+                    phone=u.getContactsPhone();
+                }
+                _logger.info("try send srs waring sms to"+phone+"|srsFirst:"+srsFirst);
+                sendResendWarningMessageSms(vin, msg, phone,srsFirst);
             }
 
         }
@@ -621,7 +629,7 @@ public class OutputHexService {
      * @param phone 接收短信号码
      * @return 根据报警hex信息生成文本性质的报警短信
      */
-    public void sendWarningMessageSms(String vin,String msg,String phone){
+    public void sendWarningMessageSms(String vin,String msg,String phone,boolean srsFirst){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
         WarningMessage bean=dataTool.decodeWarningMessage(msg);
@@ -647,40 +655,81 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
-        if(wd.getSrsWarning()==(short)1){
-            GpsData gpsData=new GpsData();
-            gpsData.setLatitude(wd.getLatitude());
-            gpsData.setLongitude(wd.getLongitude());
-            GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+        Short lastSrsWarning=0;
+        Short lastAtaWarning=0;
+        WarningMessageData wmd = this.getWarningMessageData(vin);
+        if(wmd!=null){
+            lastSrsWarning=wmd.getSrsWarning();
+            lastAtaWarning=wmd.getAtaWarning();
+        }
+        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("nowSrsWarning" + wd.getSrsWarning() + "---nowAtaWarning" + wd.getAtaWarning());
 
+        if(srsFirst){
+            if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
+                GpsData gpsData=new GpsData();
+                gpsData.setLatitude(wd.getLatitude());
+                gpsData.setLongitude(wd.getLongitude());
+                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
                 String srs = "SRS Warning ,Location ";
                 try{
                     srs="气囊弹出,位置";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
-                 }catch(Exception e){
+                }catch(Exception e){
                     _logger.info(e.getMessage());
                 }
                 sb.append(srs);
-
                 longU.append("http://");
                 longU.append(webserverHost);
                 longU.append("/baiduMap.html?lon=");
                 longU.append(baiduGpsData.getLongitude());
                 longU.append("%26");
-                    //sb.append("&");
+                //sb.append("&");
                 longU.append("lat=");
                 longU.append(baiduGpsData.getLatitude());
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
                 sb.append(shortUrl);
                 String smsStr = sb.toString();
-
                 _logger.info("send sms:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
+            }
+        }else{
+            if(lastAtaWarning==(short)0 &&wd.getAtaWarning()==(short)1){
+                /*GpsData gpsData=new GpsData();
+                gpsData.setLatitude(wd.getLatitude());
+                gpsData.setLongitude(wd.getLongitude());
+                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
+                StringBuilder sb = new StringBuilder();
+                StringBuilder longU = new StringBuilder();
+                String srs = "SRS Warning ,Location ";
+                try{
+                    srs="车辆防盗报警触发！";
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                }catch(Exception e){
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+             /*   longU.append("http://");
+                longU.append(webserverHost);
+                longU.append("/baiduMap.html?lon=");
+                longU.append(baiduGpsData.getLongitude());
+                longU.append("%26");
+                //sb.append("&");
+                longU.append("lat=");
+                longU.append(baiduGpsData.getLatitude());
+                String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+                sb.append(shortUrl);*/
+                String smsStr = sb.toString();
+                _logger.info("send sms:" + phone + ":" + smsStr);
+                //调用工具类发起 http请求
+                smsHttpTool.doHttp(phone, smsStr);
+            }
 
         }
+
     }
 
     /**
@@ -690,7 +739,7 @@ public class OutputHexService {
      * @param phone 接收短信号码
      * @return 根据报警hex信息生成文本性质的报警短信
      */
-    public void sendResendWarningMessageSms(String vin,String msg,String phone){
+    public void sendResendWarningMessageSms(String vin,String msg,String phone,boolean srsFirst){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
         DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
@@ -719,40 +768,82 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
-        if(wd.getSrsWarning()==(short)1){
-            GpsData gpsData=new GpsData();
-            gpsData.setLatitude(wd.getLatitude());
-            gpsData.setLongitude(wd.getLongitude());
-            GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
 
-            StringBuilder sb = new StringBuilder();
-            StringBuilder longU = new StringBuilder();
-            String srs = "SRS Warning ,Location ";
-            try{
-                srs="气囊弹出,位置";
-                srs = java.net.URLEncoder.encode(srs, "UTF-8");
-            }catch(Exception e){
-                _logger.info(e.getMessage());
+        Short lastSrsWarning=0;
+        Short lastAtaWarning=0;
+        WarningMessageData wmd = this.getWarningMessageData(vin);
+        if(wmd!=null){
+            lastSrsWarning=wmd.getSrsWarning();
+            lastAtaWarning=wmd.getAtaWarning();
+        }
+        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("nowSrsWarning" + wd.getSrsWarning() + "---nowAtaWarning" + wd.getAtaWarning());
+
+        if(srsFirst){
+            if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
+                GpsData gpsData=new GpsData();
+                gpsData.setLatitude(wd.getLatitude());
+                gpsData.setLongitude(wd.getLongitude());
+                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+                StringBuilder sb = new StringBuilder();
+                StringBuilder longU = new StringBuilder();
+                String srs = "SRS Warning ,Location ";
+                try{
+                    srs="气囊弹出,位置";
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                }catch(Exception e){
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+                longU.append("http://");
+                longU.append(webserverHost);
+                longU.append("/baiduMap.html?lon=");
+                longU.append(baiduGpsData.getLongitude());
+                longU.append("%26");
+                //sb.append("&");
+                longU.append("lat=");
+                longU.append(baiduGpsData.getLatitude());
+                String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+                sb.append(shortUrl);
+                String smsStr = sb.toString();
+                _logger.info("send sms:" + phone + ":" + smsStr);
+                //调用工具类发起 http请求
+                smsHttpTool.doHttp(phone, smsStr);
             }
-            sb.append(srs);
-
-            longU.append("http://");
-            longU.append(webserverHost);
-            longU.append("/baiduMap.html?lon=");
-            longU.append(baiduGpsData.getLongitude());
-            longU.append("%26");
-            //sb.append("&");
-            longU.append("lat=");
-            longU.append(baiduGpsData.getLatitude());
-            String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
-            sb.append(shortUrl);
-            String smsStr = sb.toString();
-
-            _logger.info("send sms:" + phone + ":" + smsStr);
-            //调用工具类发起 http请求
-            smsHttpTool.doHttp(phone, smsStr);
+        }else{
+            if(lastAtaWarning==(short)0 && wd.getAtaWarning()==(short)1){
+            /*    GpsData gpsData=new GpsData();
+                gpsData.setLatitude(wd.getLatitude());
+                gpsData.setLongitude(wd.getLongitude());
+                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
+                StringBuilder sb = new StringBuilder();
+                StringBuilder longU = new StringBuilder();
+                String srs = "SRS Warning ,Location ";
+                try{
+                    srs="车辆防盗报警触发！";
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                }catch(Exception e){
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+               /* longU.append("http://");
+                longU.append(webserverHost);
+                longU.append("/baiduMap.html?lon=");
+                longU.append(baiduGpsData.getLongitude());
+                longU.append("%26");
+                //sb.append("&");
+                longU.append("lat=");
+                longU.append(baiduGpsData.getLatitude());
+                String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+                sb.append(shortUrl);*/
+                String smsStr = sb.toString();
+                _logger.info("send sms:" + phone + ":" + smsStr);
+                //调用工具类发起 http请求
+                smsHttpTool.doHttp(phone, smsStr);
+            }
 
         }
+
     }
 
     /**
