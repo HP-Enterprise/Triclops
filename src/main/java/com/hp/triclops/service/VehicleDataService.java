@@ -124,7 +124,8 @@ public class VehicleDataService {
         }
         if(!hasConnection(vin)){
             _logger.info("vin:"+vin+" have not connection,do wake up...");
-            remoteWakeUp(vin);
+            int wakeUpResult=remoteWakeUp(vin,50);
+            _logger.info("vin:"+vin+" wake up result(success-1 failed-0):"+wakeUpResult);
         }
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
         if(hasConnection(vin)){
@@ -194,7 +195,9 @@ public class VehicleDataService {
         //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         if(!hasConnection(diagnosticData.getVin())){
             _logger.info("vin:"+diagnosticData.getVin()+" have not connection,do wake up...");
-            remoteWakeUp(diagnosticData.getVin());
+            int wakeUpResult=remoteWakeUp(diagnosticData.getVin(),50);
+            _logger.info("vin:" + diagnosticData.getVin() + " wake up result(success-1 failed-0):" + wakeUpResult);
+
         }
         if(hasConnection(diagnosticData.getVin())){
             diagnosticData.setHasAck((short) 0);
@@ -215,22 +218,23 @@ public class VehicleDataService {
      * 远程唤醒流程 最多三次 每次唤醒后等待10s检测结果
      * @param vin vin
      */
-    public void remoteWakeUp(String vin){
+    public int remoteWakeUp(String vin,int checkCount){
         //远程唤醒动作
         _logger.info("doing wake up......");
+        wakeup(vin);
         int count=0;
-        while (count<3){
-            //最多执行唤醒三次
-            wakeup(vin);
+        while (count<checkCount){
+            //发送一次短信，然后间隔1s检测连接是否建立
             count++;
             try{
-                Thread.sleep(30*1000);//唤醒后等待15s
+                Thread.sleep(1*1000);//唤醒后等待1s循环检测
             }catch (InterruptedException e){e.printStackTrace(); }
             //检测连接是否已经建立
             if(hasConnection(vin)){
-                return;
+                return 1;
             }
         }
+        return 0;
       }
 
     /**
@@ -336,7 +340,8 @@ public class VehicleDataService {
         if(!hasConnection(vin)){
             //如果不在线，先唤醒
             _logger.info("vin:"+vin+" have not connection,do wake up...");
-            remoteWakeUp(vin);
+            int wakeUpResult=remoteWakeUp(vin,1);
+            _logger.info("vin:" + vin + " wake up result(success-1 failed-0):" + wakeUpResult);
         }
         RealTimeReportData rd=null;
         GpsData gd=null;
