@@ -521,14 +521,14 @@ public class RequestHandler {
             }
             byte sunroof=remoteControlPreconditionResp.getBcm_Stat_window2();
             char[] sunroof_char=dataTool.getBitsFromByte(sunroof);
-            if(sunroof_char[6]=='0'&&sunroof_char[7]=='1'){
+            //if(sunroof_char[6]=='0'&&sunroof_char[7]=='1'){
                 sunroofCheck=true;
-            }
+            //}
             byte windows=remoteControlPreconditionResp.getBcm_Stat_window();
             char[] windows_char=dataTool.getBitsFromByte(windows);
-            if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
+            //if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
                 windowsCheck=true;
-            }
+            //}
             byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
             char[] doors_char=dataTool.getBitsFrom2Byte(doors);
             if(doors_char[14]=='0'&&doors_char[15]=='0' && doors_char[12]=='0'&&doors_char[13]=='0' && doors_char[10]=='0'&&doors_char[11]=='0' && doors_char[8]=='0'&&doors_char[9]=='0'){

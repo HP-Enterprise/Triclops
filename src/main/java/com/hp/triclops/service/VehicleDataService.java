@@ -287,13 +287,13 @@ public class VehicleDataService {
                     realData.getRightFrontDoorInformation().equals("1") && realData.getRightRearDoorInformation().equals("1")) {
                 doorsCheck = true;
             }//左前车门信息 0开1关2保留3信号异常
-            if (realData.getLeftFrontWindowInformation().equals("2") && realData.getLeftRearWindowInformation().equals("2")
-                    && realData.getRightFrontWindowInformation().equals("2") && realData.getRightRearWindowInformation().equals("2")) {
+            //if (realData.getLeftFrontWindowInformation().equals("2") && realData.getLeftRearWindowInformation().equals("2")
+              //      && realData.getRightFrontWindowInformation().equals("2") && realData.getRightRearWindowInformation().equals("2")) {
                 windowsCheck = true;
-            }
-            if (realData.getSkylightState().equals("2")) {
+            //}
+            //if (realData.getSkylightState().equals("2")) {
                 sunroofCheck = true;
-            }
+            //}
             if (realData.getTrunkLidState().equals("1")) {
                 trunkCheck = true;
             }
