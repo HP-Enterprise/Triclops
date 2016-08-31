@@ -224,7 +224,7 @@ public class VehicleDataService {
             wakeup(vin);
             count++;
             try{
-                Thread.sleep(15*1000);//唤醒后等待15s
+                Thread.sleep(30*1000);//唤醒后等待15s
             }catch (InterruptedException e){e.printStackTrace(); }
             //检测连接是否已经建立
             if(hasConnection(vin)){
