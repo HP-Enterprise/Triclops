@@ -66,7 +66,7 @@ public class VehicleDataService {
     SMSHttpTool smsHttpTool;
 
     /**
-     * 下发参数设置命令
+     * 下发远程控制命令
      * @param uid user id
      * @param vin vin
      * @param remoteControlBody app remoteControlBody
@@ -224,7 +224,7 @@ public class VehicleDataService {
             wakeup(vin);
             count++;
             try{
-                Thread.sleep(30*1000);//唤醒后等待10s
+                Thread.sleep(15*1000);//唤醒后等待15s
             }catch (InterruptedException e){e.printStackTrace(); }
             //检测连接是否已经建立
             if(hasConnection(vin)){
@@ -333,6 +333,11 @@ public class VehicleDataService {
      * @return 封装数据的vo实体
      */
     public RealTimeDataShow getRealTimeData(String vin){
+        if(!hasConnection(vin)){
+            //如果不在线，先唤醒
+            _logger.info("vin:"+vin+" have not connection,do wake up...");
+            remoteWakeUp(vin);
+        }
         RealTimeReportData rd=null;
         GpsData gd=null;
         List<RealTimeReportData> rdList=realTimeReportDataRespository.findLatestOneByVin(vin);
