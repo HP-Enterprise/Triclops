@@ -2,6 +2,8 @@ package com.hp.triclops.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +22,17 @@ public class SMSHttpTool {
 
     @Value("${com.hp.web.server.host}")
     private String urlLink;
+    private Logger _logger = LoggerFactory.getLogger(SMSHttpTool.class);
 
     public  void doHttp(String phone,String message){
-
+        if(phone==null){
+            _logger.info("phone format error:"+phone);
+            return;
+        }
+        if(phone.length()!=11){
+            _logger.info("phone format error:"+phone);
+            return;
+        }
         DataOutputStream dos = null;
         try{
             String boundary = "Boundary-b1ed-4060-99b9-fca7ff59c113"; //Could be any string
@@ -62,7 +72,7 @@ public class SMSHttpTool {
             dos.writeBytes(part2);
             dos.flush();
             dos.close();
-            System.out.println("status code: "+conn.getResponseCode());
+            _logger.info("sms status code: "+conn.getResponseCode());
             conn.disconnect();
 
         }catch(Exception e){
