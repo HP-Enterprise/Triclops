@@ -14,5 +14,7 @@ public interface WarningMessageDataRespository extends CrudRepository<WarningMes
 
 
     //select * from t_data_warning_message where vin ='' order by sending_time desc LIMIT 1;
-    List<WarningMessageData> findTop1ByVinOrderBySendingTimeDesc(String vin);
+    //List<WarningMessageData> findTop1ByVinOrderBySendingTimeDesc(String vin);
+
+    List<WarningMessageData> findTop1ByVinOrderByReceiveTimeDesc(String vin);
 }
