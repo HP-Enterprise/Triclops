@@ -207,7 +207,8 @@ public class DataHandleService {
         rd.setImei(bean.getImei());
         rd.setApplicationId(bean.getApplicationID());
         rd.setMessageId(bean.getMessageID());
-        rd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        Date receiveDate=new Date();
+        rd.setSendingTime(receiveDate);
         rd.setTripId(bean.getTripID());
 
         rd.setFuelOil(bean.getFuelOil() * 1f);
@@ -255,7 +256,7 @@ public class DataHandleService {
         gd.setImei(bean.getImei());
         gd.setApplicationId(bean.getApplicationID());
         gd.setMessageId(bean.getMessageID());
-        gd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        gd.setSendingTime(receiveDate);
         //分解IsIsLocation信息
         char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
         gd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
