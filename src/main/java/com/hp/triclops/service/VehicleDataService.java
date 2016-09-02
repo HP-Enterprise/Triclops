@@ -577,7 +577,7 @@ public class VehicleDataService {
     public DiagnosticData getDiagDataFromFailure(String vin){
         //todo 转换逻辑暂缺
         short[] info=new short[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-        FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
+        FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderByReceiveTimeDesc(vin);
         if(failureMessageData!=null){
             String[] array=failureMessageData.getIdArray();
             if(array!=null){
