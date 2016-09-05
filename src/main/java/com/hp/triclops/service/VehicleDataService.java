@@ -284,8 +284,20 @@ public class VehicleDataService {
         boolean doorsCheck=false;
         boolean trunkCheck=false;
         boolean bonnetCheck=false;
-        RealTimeReportData realData=realTimeReportDataRespository.findTopByVinOrderBySendingTimeDesc(vin);
-        GpsData gpsData=gpsDataRepository.findTopByVinOrderBySendingTimeDesc(vin);
+        RealTimeReportData realData=null;
+        GpsData gpsData=null;
+        List<RealTimeReportData> realTimeReportDataList=realTimeReportDataRespository.findLatestOneByVin(vin);
+        if(realTimeReportDataList!=null){
+            if(realTimeReportDataList.size()>0){
+                realData=realTimeReportDataList.get(0);
+            }
+        }
+        List<GpsData> gpsDataList=gpsDataRepository.findLatestByVin(vin);
+        if(gpsDataList!=null){
+            if(gpsDataList.size()>0){
+                gpsData=gpsDataList.get(0);
+            }
+        }
         if(realData!=null&&gpsData!=null) {
             if (realData.getLeftFrontDoorInformation().equals("1") && realData.getLeftRearDoorInformation().equals("1") &&
                     realData.getRightFrontDoorInformation().equals("1") && realData.getRightRearDoorInformation().equals("1")) {

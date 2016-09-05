@@ -12,8 +12,8 @@ import java.util.List;
 public interface GpsDataRepository extends CrudRepository<GpsData, Long>{
     List<GpsData> findByVinAndSendingTime(String vin,Date sendingTime);
 
-    @Query("select gd from GpsData gd where gd.vin = ?1 ORDER BY gd.sendingTime DESC")
+    @Query("select gd from GpsData gd where gd.vin = ?1 and gd.applicationId = 34 ORDER BY gd.sendingTime DESC")
     List<GpsData> findLatestByVin(String vin);
 
-    GpsData findTopByVinOrderBySendingTimeDesc(String vin);
+    //GpsData findTopByVinOrderBySendingTimeDesc(String vin);
 }

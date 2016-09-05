@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface RealTimeReportDataRespository extends CrudRepository<RealTimeReportData, Long> {
 
-    @Query("select rd from RealTimeReportData rd where rd.vin = ?1 ORDER BY rd.sendingTime DESC")
+    @Query("select rd from RealTimeReportData rd where rd.vin = ?1 and rd.applicationId = 34 ORDER BY rd.sendingTime DESC")
     List<RealTimeReportData> findLatestOneByVin(String vin);
 
 
-    RealTimeReportData findTopByVinOrderBySendingTimeDesc(String vin);
+    //RealTimeReportData findTopByVinOrderBySendingTimeDesc(String vin);
 }
