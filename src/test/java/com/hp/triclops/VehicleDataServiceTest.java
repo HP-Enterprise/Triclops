@@ -45,7 +45,7 @@ public class VehicleDataServiceTest {
     @Ignore("Not suitable for travis-ci")
     @Test
     public void test_remoteWakeUp() {
-       vehicleDataService.remoteWakeUp("123456");
+       vehicleDataService.remoteWakeUp("123456",1);
     }
 
 

@@ -261,24 +261,24 @@ public class OutputHexService {
                 //Bit0 – bit1: 0x00:horn and lights to be activated 0x01:lights only tobe activated 0x02: horn only tobe activated
                 //Bit2 – bit3: 0x00:function activation 0x01:function deactivation
                 int _remoteFindA=0;//0 闪灯鸣笛都开 1 仅闪灯 2 仅鸣笛
-                int _remoteFindB=0;// 0开 1关
+                int _remoteFindB=1;// 0开 1关
                 if(remoteControl.getLightNum()==null){
                     remoteControl.setLightNum((short)0);
                 }
                 if(remoteControl.getHornNum()==null){
                     remoteControl.setHornNum((short) 0);
                 }
-                if(remoteControl.getLightNum()>0 && remoteControl.getHornNum()==0){
+                if(remoteControl.getLightNum().intValue()>0 && remoteControl.getHornNum().intValue()==0){
                     //1 仅闪灯
                     _remoteFindA=1;
                 }
-                if(remoteControl.getLightNum()==0 && remoteControl.getHornNum()>0){
+                if(remoteControl.getLightNum().intValue()==0 && remoteControl.getHornNum().intValue()>0){
                     //2 仅鸣笛
                     _remoteFindA=2;
                 }
                 if(remoteControl.getDeActive()!=null){
                     if(remoteControl.getDeActive()==(short)1){
-                        _remoteFindB=1;
+                        _remoteFindB=0;
                     }
                 }
                 _remoteFindCar[3]=(byte)(_remoteFindB*4+_remoteFindA);

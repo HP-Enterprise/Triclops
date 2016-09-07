@@ -56,13 +56,19 @@ public class OutputHexServiceTest {
     public void test_getRemoteControlCmdHex_ac(){
         RemoteControl remoteControl=new RemoteControl();
         remoteControl.setSendingTime(new Date());
-        remoteControl.setControlType((short) 4);
+        remoteControl.setControlType((short) 10);
         remoteControl.setAcTemperature(21.0);
         remoteControl.setMode((short) 3);
         remoteControl.setRecirMode((short) 1);
         remoteControl.setAcMode((short) 0);
         remoteControl.setFan((short) 6);
-        remoteControl.setAcMode((short)0);
+        remoteControl.setAcMode((short) 0);
+        remoteControl.setAcMode((short) 0);
+        remoteControl.setLightNum((short)1);
+        remoteControl.setHornNum((short) 0);
+        remoteControl.setActTime(0.2);
+        remoteControl.setDeActive((short)1);
+
 
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
