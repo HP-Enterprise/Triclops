@@ -24,6 +24,7 @@ public class User implements Serializable {
     private Set<Organization> organizationSet;
     private Set<Vehicle> vehicleSet;
     private String icon;
+    private String lastDeviceId;
 
     public User() {
         this.userSet = new HashSet<UserVehicleRelatived>();
@@ -174,5 +175,15 @@ public class User implements Serializable {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Basic
+    @Column(name = "last_device_id", nullable = true, insertable = true, updatable = true, length = 50)
+    public String getLastDeviceId() {
+        return lastDeviceId;
+    }
+
+    public void setLastDeviceId(String lastDeviceId) {
+        this.lastDeviceId = lastDeviceId;
     }
 }
