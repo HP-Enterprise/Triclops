@@ -560,10 +560,16 @@ public class RequestHandler {
             控制类别  0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：闪灯 11：鸣笛
             */
             if(controlType==(short)0){//0：远程启动发动机
-                re=tmpCheck && clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+              /*  re=tmpCheck && clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+                        && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
+                        && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
+                        && remainingFuelCheck;*/
+                //todo 20160908屏蔽发动机启动的温度检查
+                re= clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
                         && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
                         && remainingFuelCheck;
+
                 if(re){
                     reint=0;
                 }else{

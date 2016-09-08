@@ -13,6 +13,7 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
+import com.hp.triclops.utils.DateUtil;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.HttpRequestTool;
 import com.hp.triclops.utils.SMSHttpTool;
@@ -670,18 +671,18 @@ public class OutputHexService {
                 GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
                 gpsData.setLongitude(wd.getLongitude());
-                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+                //GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
                 String srs = "SRS Warning ,Location ";
                 try{
-                    srs="气囊弹出,位置";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
                 }
                 sb.append(srs);
-                longU.append("http://");
+            /*    longU.append("http://");
                 longU.append(webserverHost);
                 longU.append("/baiduMap.html?lon=");
                 longU.append(baiduGpsData.getLongitude());
@@ -690,7 +691,7 @@ public class OutputHexService {
                 longU.append("lat=");
                 longU.append(baiduGpsData.getLatitude());
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
-                sb.append(shortUrl);
+                sb.append(shortUrl);*/
                 String smsStr = sb.toString();
                 _logger.info("send sms:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
@@ -704,9 +705,9 @@ public class OutputHexService {
                 GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
-                String srs = "SRS Warning ,Location ";
+                String srs = "";
                 try{
-                    srs="车辆防盗报警触发！";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"车门被异常开启，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -781,21 +782,21 @@ public class OutputHexService {
 
         if(srsFirst){
             if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
-                GpsData gpsData=new GpsData();
+              /*  GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
                 gpsData.setLongitude(wd.getLongitude());
-                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
                 String srs = "SRS Warning ,Location ";
                 try{
-                    srs="气囊弹出,位置";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
                 }
                 sb.append(srs);
-                longU.append("http://");
+              /*  longU.append("http://");
                 longU.append(webserverHost);
                 longU.append("/baiduMap.html?lon=");
                 longU.append(baiduGpsData.getLongitude());
@@ -804,7 +805,7 @@ public class OutputHexService {
                 longU.append("lat=");
                 longU.append(baiduGpsData.getLatitude());
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
-                sb.append(shortUrl);
+                sb.append(shortUrl);*/
                 String smsStr = sb.toString();
                 _logger.info("send sms:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
@@ -818,9 +819,9 @@ public class OutputHexService {
                 GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
-                String srs = "SRS Warning ,Location ";
+                String srs = "";
                 try{
-                    srs="车辆防盗报警触发！";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"车门被异常开启，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
