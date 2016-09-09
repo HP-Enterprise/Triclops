@@ -180,7 +180,7 @@ public class DataTool {
     public int getCurrentSeconds(){
         //返回当前时间的秒数
         int currentSeconds=Integer.valueOf(String.valueOf(new Date().getTime()/1000));
-        return 1444812349;
+        return currentSeconds;
     }
 
     public Date seconds2Date(long seconds){
