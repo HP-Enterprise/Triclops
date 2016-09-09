@@ -76,7 +76,7 @@ public class RequestHandler {
             //请求解析到bean
             //远程唤醒响应
            _logger.info(bean.getVin() + "|" + bean.getSerialNumber());
-            boolean activeResult=tboxService.activationTBox(bean.getVin(),bean.getSerialNumber());//true成功 false失败
+            boolean activeResult=tboxService.activationTBox(bean.getVin(),bean.getSerialNumber(),bean.getImei(),bean.getIccid());//true成功 false失败
             short tBoxStatus=1; //0激活成功 1激活失败
             if(activeResult){
                 tBoxStatus=0;
@@ -363,12 +363,15 @@ public class RequestHandler {
                         _logger.info("trying start engine...");
                     }
                 }else{//除了4 5 6 7之外的失败会导致流程结束，而4 5 6 7会尝试启动发动机
-                    outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn);
-                    if(currentRefId>0){
+                    if(currentRefId>0) {//存在ref记录
+                        outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn,false);//关联子操作 不推送
                         String pre="依赖的操作失败:";
                         String preEn="Dependent operation failure :";
-                        outputHexService.updateRefRemoteControlRst(currentRefId,pre+msg,preEn+msgEn);
+                        outputHexService.updateRefRemoteControlRst(currentRefId,pre+msg,preEn+msgEn);//原始记录推送
+                    }else{
+                        outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn,true);//普通单条，推送
                     }
+
                     _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
                 }
             }
@@ -432,7 +435,7 @@ public class RequestHandler {
                     if(refId>0){
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),false);
                     //存在ref记录
-                        RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
+                        //RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
                        _logger.info("start Executing the original command");
                         new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
                     }
@@ -560,10 +563,16 @@ public class RequestHandler {
             控制类别  0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：闪灯 11：鸣笛
             */
             if(controlType==(short)0){//0：远程启动发动机
-                re=tmpCheck && clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+              /*  re=tmpCheck && clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+                        && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
+                        && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
+                        && remainingFuelCheck;*/
+                //todo 20160908屏蔽发动机启动的温度检查
+                re= clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
                         && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
                         && remainingFuelCheck;
+
                 if(re){
                     reint=0;
                 }else{

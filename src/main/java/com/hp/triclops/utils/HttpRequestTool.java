@@ -27,6 +27,7 @@ public class HttpRequestTool {
             String textContent=  String.valueOf(dataMap.get("textContent"));
             String pType=  String.valueOf(dataMap.get("pType"));
             String cleanFlag=String.valueOf(dataMap.get("cleanFlag"));
+            String rs=String.valueOf(dataMap.get("rs"));
             StringBuilder sb=new StringBuilder();
             sb.append("?targetId=").append(targetId);
             if(resourceTo!=null&&!resourceTo.equals("null")){
@@ -47,6 +48,9 @@ public class HttpRequestTool {
             }
             if(cleanFlag!=null&&!cleanFlag.equals("null")){
                 sb.append("&").append("cleanFlag=").append(cleanFlag);
+            }
+            if(rs!=null&&!rs.equals("null")){
+                sb.append("&").append("rs=").append(rs);
             }
             //String params=java.net.URLEncoder.encode(sb.toString());
             URL url = new URL(urlLink+sb.toString());

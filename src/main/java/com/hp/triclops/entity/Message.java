@@ -21,6 +21,7 @@ public class Message {
     private String fileName;
     private int messageNums;
     private int cleanFlag;
+    private int rs;
     private int available;
     private String playTime;
     private String locationName;
@@ -129,6 +130,14 @@ public class Message {
 
     public void setCleanFlag(int cleanFlag) {
         this.cleanFlag = cleanFlag;
+    }
+
+    public int getRs() {
+        return rs;
+    }
+
+    public void setRs(int rs) {
+        this.rs = rs;
     }
 
     public int getAvailable() {

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS t_message (
   file_name varchar(100) COMMENT '发送的附件名',
   message_nums  int(100) COMMENT '信息条数',
   clean_flag  int(1) COMMENT '消息推送消除标志，仅针对 气囊报警、防盗报警,0报警,1消除',
+  rs  int(1) COMMENT '远程控制结果 1成功 0失败',
   available int(1) default 1 COMMENT  '0 失效 1 有效 默认有效',
   play_time varchar(50) COMMENT '音乐时长',
   location_name varchar(100) COMMENT '位置名称',

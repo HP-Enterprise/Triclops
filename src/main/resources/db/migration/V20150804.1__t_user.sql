@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS t_user (
   contacts varchar(50) DEFAULT NULL COMMENT '紧急联系人的姓名',
   contacts_phone varchar(11) DEFAULT NULL COMMENT '紧急联系人的电话',
   icon varchar(100) DEFAULT  '/api/downloadIconFile?icon=default.png' COMMENT 'API路径 ICON为上传到sftp文件名',
+  last_device_id varchar(50) DEFAULT NULL COMMENT '上一次成功登录的设备号',
   PRIMARY KEY (Id),
   UNIQUE KEY unique_name (name),
   KEY idx_phone (phone)

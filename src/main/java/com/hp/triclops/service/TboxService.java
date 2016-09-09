@@ -1,11 +1,15 @@
 package com.hp.triclops.service;
 
+import com.hp.triclops.entity.IccidPhone;
 import com.hp.triclops.entity.TBox;
 import com.hp.triclops.entity.TBoxEx;
 import com.hp.triclops.entity.Vehicle;
+import com.hp.triclops.repository.IccidPhoneRepository;
 import com.hp.triclops.repository.TBoxExRepository;
 import com.hp.triclops.repository.TBoxRepository;
 import com.hp.triclops.repository.VehicleRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +26,10 @@ public class TboxService {
     VehicleRepository vehicleRepository;
     @Autowired
     TBoxExRepository tBoxExRepository;
-    public boolean activationTBox(String vin,String t_sn){
+    @Autowired
+    IccidPhoneRepository iccidPhoneRepository;
+    private Logger _logger = LoggerFactory.getLogger(TboxService.class);
+    public boolean activationTBox(String vin,String t_sn,String imei,String iccid){
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByVinAndT_sn(vin, t_sn);
         Vehicle sVehicle=null;
@@ -40,6 +47,17 @@ public class TboxService {
         if(tb!=null){//已经存在TBox 激活TBox
             tb.setIs_activated(1);
             tb.setActivation_time(new Date());
+            if(iccid!=null){
+                IccidPhone iccidPhone=iccidPhoneRepository.findByIccid(iccid);
+                if(iccidPhone!=null){
+                    tb.setMobile(iccidPhone.getPhone());
+                    _logger.info("find phone record for iccid:"+iccid+"-"+iccidPhone.getPhone());
+                }else{
+                    _logger.info("cann not find phone record for iccid:"+iccid);
+                }
+            }else{
+                _logger.info("no iccid");
+            }
             tBoxRepository.save(tb);
             return true;
         }else{//不存在TBox 新增TBox
@@ -49,9 +67,23 @@ public class TboxService {
             }else{
                 tBox.setVid(sVehicle.getId());
             }
+
+            if(iccid!=null){
+                IccidPhone iccidPhone=iccidPhoneRepository.findByIccid(iccid);
+                if(iccidPhone!=null){
+                    tBox.setMobile(iccidPhone.getPhone());
+                    _logger.info("find phone record for iccid:" + iccid + "-" + iccidPhone.getPhone());
+                }else{
+                    _logger.info("cann not find phone record for iccid:"+iccid);
+                }
+            }else{
+                _logger.info("no iccid");
+            }
+
             tBox.setVin(vin);
             tBox.setT_sn(t_sn);
             tBox.setIs_activated(1);
+            tBox.setImei(imei);
             tBox.setActivation_time(new Date());
             tBoxExRepository.save(tBox);
             return true;

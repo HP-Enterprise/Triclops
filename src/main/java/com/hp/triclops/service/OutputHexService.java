@@ -13,6 +13,7 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
+import com.hp.triclops.utils.DateUtil;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.HttpRequestTool;
 import com.hp.triclops.utils.SMSHttpTool;
@@ -423,7 +424,7 @@ public class OutputHexService {
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
                     Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user,srsFirst);
-                    pushWarningOrFailureMessage(vin,pushMsg);
+                    pushMessageToUser(vin, pushMsg);
                 }
 
             }
@@ -472,7 +473,7 @@ public class OutputHexService {
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
                     Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user,srsFirst);
-                    pushWarningOrFailureMessage(vin,pushMsg);
+                    pushMessageToUser(vin,pushMsg);
                 }
             }
         }
@@ -511,7 +512,7 @@ public class OutputHexService {
      */
     public void getFailureMessageAndPush(String vin,String msg){
         Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin, pushMsg);
+        pushMessageToUser(vin, pushMsg);
     }
 
     /**
@@ -521,16 +522,30 @@ public class OutputHexService {
      */
     public void getResendFailureMessageAndPush(String vin,String msg){
         Map<String,Object> pushMsg=getFailureMessageForPush(vin, msg);
-        pushWarningOrFailureMessage(vin, pushMsg);
+        pushMessageToUser(vin, pushMsg);
     }
 
+
+    /**
+     * 处理远程控制结果推送
+     * @param vin target vin
+     * @param result 1成功 0是失败
+     * @param message remark
+     */
+    public void pushRemoteControlResult(String vin,int result,String message){
+        Map<String,Object> dataMap = new HashMap<String,Object>();
+        dataMap.put("pType", 1);
+        dataMap.put("rs", result);
+        dataMap.put("textContent",message);
+        pushMessageToUser(vin,dataMap);
+    }
 
     /**
      * 根报警提示push到对应user
      * @param vin vin
      * @param pushMsg 文本报警信息
      */
-    public void pushWarningOrFailureMessage(String vin,Map<String,Object> pushMsg){
+    public void pushMessageToUser(String vin,Map<String,Object> pushMsg){
         _logger.info("push message:"+pushMsg);
         if(pushMsg==null){
             return;
@@ -670,18 +685,18 @@ public class OutputHexService {
                 GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
                 gpsData.setLongitude(wd.getLongitude());
-                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+                //GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
                 String srs = "SRS Warning ,Location ";
                 try{
-                    srs="气囊弹出,位置";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
                 }
                 sb.append(srs);
-                longU.append("http://");
+            /*    longU.append("http://");
                 longU.append(webserverHost);
                 longU.append("/baiduMap.html?lon=");
                 longU.append(baiduGpsData.getLongitude());
@@ -690,7 +705,7 @@ public class OutputHexService {
                 longU.append("lat=");
                 longU.append(baiduGpsData.getLatitude());
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
-                sb.append(shortUrl);
+                sb.append(shortUrl);*/
                 String smsStr = sb.toString();
                 _logger.info("send sms:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
@@ -704,9 +719,9 @@ public class OutputHexService {
                 GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
-                String srs = "SRS Warning ,Location ";
+                String srs = "";
                 try{
-                    srs="车辆防盗报警触发！";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"车门被异常开启，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -781,21 +796,21 @@ public class OutputHexService {
 
         if(srsFirst){
             if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
-                GpsData gpsData=new GpsData();
+              /*  GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
                 gpsData.setLongitude(wd.getLongitude());
-                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
                 String srs = "SRS Warning ,Location ";
                 try{
-                    srs="气囊弹出,位置";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
                 }
                 sb.append(srs);
-                longU.append("http://");
+              /*  longU.append("http://");
                 longU.append(webserverHost);
                 longU.append("/baiduMap.html?lon=");
                 longU.append(baiduGpsData.getLongitude());
@@ -804,7 +819,7 @@ public class OutputHexService {
                 longU.append("lat=");
                 longU.append(baiduGpsData.getLatitude());
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
-                sb.append(shortUrl);
+                sb.append(shortUrl);*/
                 String smsStr = sb.toString();
                 _logger.info("send sms:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
@@ -818,9 +833,9 @@ public class OutputHexService {
                 GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
-                String srs = "SRS Warning ,Location ";
+                String srs = "";
                 try{
-                    srs="车辆防盗报警触发！";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"车门被异常开启，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -1320,7 +1335,7 @@ public class OutputHexService {
      * @param vin vin
      * @param eventId eventId
      */
-    public void handleRemoteControlPreconditionResp(String vin,long eventId,String message,String messageEn){
+    public void handleRemoteControlPreconditionResp(String vin,long eventId,String message,String messageEn,boolean push){
         String sessionId=49+"-"+eventId;
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
@@ -1333,12 +1348,13 @@ public class OutputHexService {
             rc.setRemarkEn(messageEn);
             rc.setStatus((short)0);
             remoteControlRepository.save(rc);
-            String pushMsg=message+sessionId;
+            String pushMsg=message;
             _logger.info("RemoteControl PreconditionResp  push message>:"+pushMsg);
-            try{
-                this.mqService.pushToUser(rc.getUid(), pushMsg);
-            }catch (RuntimeException e){_logger.info(e.getMessage());}
-
+            if(push){
+                try{
+                    this.pushRemoteControlResult(rc.getVin(), 0, pushMsg);
+                }catch (RuntimeException e){_logger.info(e.getMessage());}
+            }
             _logger.info("RemoteControl PreconditionResp persistence and push success");
               }
     }
@@ -1364,10 +1380,10 @@ public class OutputHexService {
                rc.setRemarkEn("TBOX prompt invalid command");
                rc.setStatus((short) 0);
                remoteControlRepository.save(rc);
-               String pushMsg="TBOX提示命令无效:"+sessionId;
+               String pushMsg="TBOX提示命令无效";
                if(push){
-                   try{
-                       this.mqService.pushToUser(rc.getUid(), pushMsg);
+                   try {
+                       this.pushRemoteControlResult(rc.getVin(),0,pushMsg);
                    }catch (RuntimeException e){_logger.info(e.getMessage());}
                }
                _logger.info("RemoteControl Ack persistence and push success");
@@ -1394,9 +1410,9 @@ public class OutputHexService {
                 rc.setRemarkEn("Command execution failed, dependent remote start engine command execution failed: TBOX prompt command is invalid");
                 rc.setStatus((short) 0);
                 remoteControlRepository.save(rc);
-                String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效"+rc.getSessionId();
-                try{
-                    this.mqService.pushToUser(rc.getUid(), pushMsg);
+                String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效";
+                try {
+                    this.pushRemoteControlResult(rc.getVin(),0,pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
                 _logger.info("RemoteControl Ack persistence and push success");
             }
@@ -1438,7 +1454,11 @@ public class OutputHexService {
             rc.setStatus(dbResult);
             Vehicle vehicle=vehicleRepository.findByVin(vin);
             if(vehicle!=null){
-                vehicle.setRemoteCount(vehicle.getRemoteCount()+1);
+                int currentCount=0;
+                if(vehicle.getRemoteCount()!=null){
+                    currentCount=vehicle.getRemoteCount();
+                }
+                vehicle.setRemoteCount(currentCount+1);
                 vehicleRepository.save(vehicle);
             }
 
@@ -1494,10 +1514,9 @@ public class OutputHexService {
             rc.setRemark(_dbReMark);
             rc.setRemarkEn(pushMsgEn);
             remoteControlRepository.save(rc);
-            pushMsg=pushMsg+sessionId;
             if(push){
                 try{
-                    this.mqService.pushToUser(rc.getUid(), pushMsg);
+                    this.pushRemoteControlResult(rc.getVin(),rc.getStatus(),pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
             _logger.info("RemoteControl Rst persistence and push success");
@@ -1518,7 +1537,11 @@ public class OutputHexService {
             _logger.info("RemoteControl Rst persistence and push start");
             Vehicle vehicle=vehicleRepository.findByVin(rc.getVin());
             if(vehicle!=null){
-                vehicle.setRemoteCount(vehicle.getRemoteCount()+1);
+                int currentCount=0;
+                if(vehicle.getRemoteCount()!=null){
+                    currentCount=vehicle.getRemoteCount();
+                }
+                vehicle.setRemoteCount(currentCount+1);
                 vehicleRepository.save(vehicle);
             }
             String pushMsg="";//参考PDF0621 page55
@@ -1578,9 +1601,9 @@ public class OutputHexService {
                 rc.setStatus((short)0);
             }
             remoteControlRepository.save(rc);
-            pushMsg=_dbReMark+rc.getSessionId();
+            pushMsg=_dbReMark;
             try{
-                this.mqService.pushToUser(rc.getUid(), pushMsg);
+                this.pushRemoteControlResult(rc.getVin(), rc.getStatus(), pushMsg);
             }catch (RuntimeException e){_logger.info(e.getMessage());}
             _logger.info("RemoteControl Rst persistence and push success");
         }
@@ -1594,8 +1617,13 @@ public class OutputHexService {
         RemoteControl rc = remoteControlRepository.findOne(id);
         rc.setRemark(remark);
         rc.setRemarkEn(remaerEn);
-        rc.setStatus((short)0);
+        rc.setStatus((short) 0);
         remoteControlRepository.save(rc);
+        String pushMsg=remark;
+        try{
+            this.pushRemoteControlResult(rc.getVin(), rc.getStatus(), pushMsg);
+        }catch (RuntimeException e){_logger.info(e.getMessage());}
+        _logger.info("RemoteControl Rst persistence and push success");
     }
 
 
