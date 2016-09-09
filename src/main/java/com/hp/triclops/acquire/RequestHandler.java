@@ -363,12 +363,15 @@ public class RequestHandler {
                         _logger.info("trying start engine...");
                     }
                 }else{//除了4 5 6 7之外的失败会导致流程结束，而4 5 6 7会尝试启动发动机
-                    outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn);
-                    if(currentRefId>0){
+                    if(currentRefId>0) {//存在ref记录
+                        outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn,false);//关联子操作 不推送
                         String pre="依赖的操作失败:";
                         String preEn="Dependent operation failure :";
-                        outputHexService.updateRefRemoteControlRst(currentRefId,pre+msg,preEn+msgEn);
+                        outputHexService.updateRefRemoteControlRst(currentRefId,pre+msg,preEn+msgEn);//原始记录推送
+                    }else{
+                        outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn,true);//普通单条，推送
                     }
+
                     _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
                 }
             }
@@ -432,7 +435,7 @@ public class RequestHandler {
                     if(refId>0){
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),false);
                     //存在ref记录
-                        RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
+                        //RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
                        _logger.info("start Executing the original command");
                         new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
                     }
