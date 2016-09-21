@@ -636,12 +636,16 @@ public class DataTool {
         //将字节数组除了最后一位的部分进行异或操作，与最后一位比较
         //校验数据包尾
         //将编码后的报文（ Message Header -- Application Data）进行异或操作， 1 个字节长度
+        boolean result=false;
         byte sum=bytes[0];
         for(int i=1;i<bytes.length-1;i++){
             sum^=bytes[i];
         }
-        _logger.info(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
-        return bytes[bytes.length-1]==sum;
+        result = bytes[bytes.length-1]==sum;
+        if(!result) {
+            _logger.info(">>checkSum:" + Integer.toHexString(sum) + "<>" + Integer.toHexString(bytes[bytes.length - 1]));
+        }
+        return result;
     }
 
     public  byte getCheckSum(byte[] bytes){

@@ -261,6 +261,7 @@ public class VehicleDataService {
     private boolean hasConnection(String vin){
         //检测对应vin是否有连接可用
         boolean re=false;
+        _logger.info("check hasConnection  HashMap"+AcquirePort.channels.entrySet());
         Channel ch=AcquirePort.channels.get(vin);
         if(ch!=null){
             re=true;

@@ -85,6 +85,7 @@ public class RequestTask  implements Runnable{
                     connections.put(ch.remoteAddress().toString(),vin);
                     ch.writeAndFlush(buf);//回发数据直接回消息,此处2016.1.15修改，客户端发起数据之前确定已有连接注册记录
                     _logger.info("resister success,Save Connection" + vin+":"+ch.remoteAddress() + " to HashMap");
+                    _logger.info("Connection HashMap"+channels.entrySet());
                     afterRegisterSuccess(vin);
                 }else{
                     ch.writeAndFlush(buf);//回发数据直接回消息

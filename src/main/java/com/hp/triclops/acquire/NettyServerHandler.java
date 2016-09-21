@@ -148,6 +148,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         if(vin!=null){
             channels.remove(vin);
         }
+        _logger.info("Connection HashMap"+channels.entrySet());
        }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
