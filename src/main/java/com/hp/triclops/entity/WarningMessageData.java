@@ -25,6 +25,7 @@ public class WarningMessageData {
     private int heading;
 
     private Short srsWarning;
+    private Short crashWarning;
     private Short ataWarning;
 
     private Short safetyBeltCount;
@@ -188,6 +189,16 @@ public class WarningMessageData {
 
     public void setAtaWarning(Short ataWarning) {
         this.ataWarning = ataWarning;
+    }
+
+    @Basic
+    @Column(name = "crash_warning", nullable = false, insertable = true, updatable = true)
+    public Short getCrashWarning() {
+        return crashWarning;
+    }
+
+    public void setCrashWarning(Short crashWarning) {
+        this.crashWarning = crashWarning;
     }
 
     @Basic

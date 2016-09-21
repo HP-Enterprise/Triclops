@@ -69,6 +69,11 @@ public class OutputHexService {
     @Autowired
     WarningMessageDataRespository warningMessageDataRespository;
 
+    private final int SRSFIRST=1;
+    private final int CRASHFIRST=2;
+    private final int ATAFIRST=3;
+
+
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
     public String getRemoteControlPreHex(RemoteControl remoteControl,long eventId){
@@ -409,9 +414,9 @@ public class OutputHexService {
      * 根据报警hex信息生成文本性质的报警提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
-     *  @param srsFirst 气囊优先
+     *  @param oneFirst 气囊/碰撞/防盗优先
      */
-    public void getWarningMessageAndPush(String vin,String msg,boolean srsFirst){
+    public void getWarningMessageAndPush(String vin,String msg,int oneFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
         //一个车对应多个uid
@@ -423,11 +428,13 @@ public class OutputHexService {
                 UserVehicleRelatived userVehicleRelatived =  iterator.next();
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
-                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user,srsFirst);
+                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user,oneFirst);
                     pushMessageToUser(vin, pushMsg);
                 }
 
             }
+        }else{
+            _logger.info("no user to push message");
         }
     }
 
@@ -436,7 +443,7 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      */
-    public void getWarningMessageAndSms(String vin,String msg,boolean srsFirst){
+    public void getWarningMessageAndSms(String vin,String msg,int oneFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
         //一个车对应多个uid
@@ -446,11 +453,11 @@ public class OutputHexService {
                 //取到紧急联系人电话
                 //发送短信
                   String phone=u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
-                if(srsFirst){
+                if(oneFirst==SRSFIRST){//
                     phone=u.getContactsPhone();
                 }
-                _logger.info("try send  waring sms to"+phone+"|srsFirst:"+srsFirst);
-                sendWarningMessageSms(vin, msg, phone,srsFirst);
+                _logger.info("try send  waring sms to"+phone+"|oneFirst:"+oneFirst);
+                sendWarningMessageSms(vin, msg, phone,oneFirst);
             }
 
         }
@@ -460,9 +467,9 @@ public class OutputHexService {
      * 根据补发报警hex信息生成文本性质的报警提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
-     * @param srsFirst 气囊优先
+     * @param oneFirst 气囊/碰撞/防盗优先
      */
-    public void getResendWarningMessageAndPush(String vin,String msg,boolean srsFirst){
+    public void getResendWarningMessageAndPush(String vin,String msg,int oneFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findByVid(vehicle);
         //一个车对应多个uid
@@ -472,10 +479,12 @@ public class OutputHexService {
                 UserVehicleRelatived userVehicleRelatived =  iterator.next();
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
-                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user,srsFirst);
+                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user,oneFirst);
                     pushMessageToUser(vin,pushMsg);
                 }
             }
+        }else{
+            _logger.info("no user to push message");
         }
 
     }
@@ -485,7 +494,7 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      */
-    public void getResendWarningMessageAndSms(String vin,String msg,boolean srsFirst){
+    public void getResendWarningMessageAndSms(String vin,String msg,int oneFirst){
         Vehicle vehicle=vehicleRepository.findByVin(vin);
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
         //一个车对应多个uid
@@ -495,11 +504,11 @@ public class OutputHexService {
                 //取到紧急联系人电话
                 //发送短信
                 String phone=u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
-                if(srsFirst){
+                if(oneFirst==SRSFIRST){
                     phone=u.getContactsPhone();
                 }
-                _logger.info("try send srs waring sms to"+phone+"|srsFirst:"+srsFirst);
-                sendResendWarningMessageSms(vin, msg, phone,srsFirst);
+                _logger.info("try send srs waring sms to"+phone+"|oneFirst:"+oneFirst);
+                sendResendWarningMessageSms(vin, msg, phone,oneFirst);
             }
 
         }
@@ -597,10 +606,10 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      * @param user user
-     * @param srsfirst 气囊优先
+     * @param onefirst 气囊/碰撞/ATA 优先
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user,boolean srsfirst){
+    public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user,int onefirst){
         //报警数据保存
         _logger.info(">>get WarningMessage For Push:"+msg);
         WarningMessage bean=dataTool.decodeWarningMessage(msg);
@@ -621,6 +630,7 @@ public class OutputHexService {
         wd.setHeading(bean.getHeading());
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
@@ -633,7 +643,7 @@ public class OutputHexService {
         }
 
         //生成报警信息
-        Map<String,Object> warningMessage=buildWarningString(wd,user,rd,srsfirst);
+        Map<String,Object> warningMessage=buildWarningString(wd,user,rd,onefirst);
         return warningMessage;
     }
 
@@ -644,7 +654,7 @@ public class OutputHexService {
      * @param phone 接收短信号码
      * @return 根据报警hex信息生成文本性质的报警短信
      */
-    public void sendWarningMessageSms(String vin,String msg,String phone,boolean srsFirst){
+    public void sendWarningMessageSms(String vin,String msg,String phone,int oneFirst){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
         WarningMessage bean=dataTool.decodeWarningMessage(msg);
@@ -665,22 +675,25 @@ public class OutputHexService {
         wd.setHeading(bean.getHeading());
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
         Short lastSrsWarning=0;
+        Short lastCrashWarning=0;
         Short lastAtaWarning=0;
         WarningMessageData wmd = this.getWarningMessageData(vin);
         if(wmd!=null){
             lastSrsWarning=wmd.getSrsWarning();
+            lastCrashWarning=wmd.getCrashWarning();
             lastAtaWarning=wmd.getAtaWarning();
         }
-        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastAtaWarning" + lastAtaWarning);
-        _logger.info("nowSrsWarning" + wd.getSrsWarning() + "---nowAtaWarning" + wd.getAtaWarning());
+        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
 
-        if(srsFirst){
+        if(oneFirst==SRSFIRST){
             if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
                 GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
@@ -688,7 +701,7 @@ public class OutputHexService {
                 //GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
-                String srs = "SRS Warning ,Location ";
+                String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
@@ -711,7 +724,38 @@ public class OutputHexService {
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
-        }else{
+        }else   if(oneFirst==CRASHFIRST){
+            if(lastCrashWarning==(short)0 && wd.getCrashWarning()==(short)1){
+                GpsData gpsData=new GpsData();
+                gpsData.setLatitude(wd.getLatitude());
+                gpsData.setLongitude(wd.getLongitude());
+                //GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);
+                StringBuilder sb = new StringBuilder();
+                StringBuilder longU = new StringBuilder();
+                String srs = "";
+                try{
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                }catch(Exception e){
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+            /*    longU.append("http://");
+                longU.append(webserverHost);
+                longU.append("/baiduMap.html?lon=");
+                longU.append(baiduGpsData.getLongitude());
+                longU.append("%26");
+                //sb.append("&");
+                longU.append("lat=");
+                longU.append(baiduGpsData.getLatitude());
+                String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+                sb.append(shortUrl);*/
+                String smsStr = sb.toString();
+                _logger.info("send sms:" + phone + ":" + smsStr);
+                //调用工具类发起 http请求
+                smsHttpTool.doHttp(phone, smsStr);
+            }
+        }else if(oneFirst==ATAFIRST){
             if(lastAtaWarning==(short)0 &&wd.getAtaWarning()==(short)1){
                 /*GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
@@ -754,7 +798,7 @@ public class OutputHexService {
      * @param phone 接收短信号码
      * @return 根据报警hex信息生成文本性质的报警短信
      */
-    public void sendResendWarningMessageSms(String vin,String msg,String phone,boolean srsFirst){
+    public void sendResendWarningMessageSms(String vin,String msg,String phone,int oneFirst){
         //报警数据保存
         _logger.info(">>get WarningMessage For SMS:"+msg);
         DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
@@ -778,6 +822,7 @@ public class OutputHexService {
         wd.setHeading(bean.getHeading());
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
@@ -786,15 +831,17 @@ public class OutputHexService {
 
         Short lastSrsWarning=0;
         Short lastAtaWarning=0;
+        Short lastCrashWarning=0;
         WarningMessageData wmd = this.getWarningMessageData(vin);
         if(wmd!=null){
             lastSrsWarning=wmd.getSrsWarning();
+            lastCrashWarning=wmd.getCrashWarning();
             lastAtaWarning=wmd.getAtaWarning();
         }
-        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastAtaWarning" + lastAtaWarning);
-        _logger.info("nowSrsWarning" + wd.getSrsWarning() + "---nowAtaWarning" + wd.getAtaWarning());
+        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
 
-        if(srsFirst){
+        if(oneFirst==SRSFIRST){
             if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
               /*  GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
@@ -802,7 +849,7 @@ public class OutputHexService {
                 GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
                 StringBuilder sb = new StringBuilder();
                 StringBuilder longU = new StringBuilder();
-                String srs = "SRS Warning ,Location ";
+                String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
                     srs = java.net.URLEncoder.encode(srs, "UTF-8");
@@ -825,7 +872,38 @@ public class OutputHexService {
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
-        }else{
+        }else  if(oneFirst==CRASHFIRST){
+            if(lastCrashWarning==(short)0 && wd.getCrashWarning()==(short)1){
+              /*  GpsData gpsData=new GpsData();
+                gpsData.setLatitude(wd.getLatitude());
+                gpsData.setLongitude(wd.getLongitude());
+                GpsData baiduGpsData= gpsTool.getDataFromBaidu(gpsData);*/
+                StringBuilder sb = new StringBuilder();
+                StringBuilder longU = new StringBuilder();
+                String srs = "";
+                try{
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                }catch(Exception e){
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+              /*  longU.append("http://");
+                longU.append(webserverHost);
+                longU.append("/baiduMap.html?lon=");
+                longU.append(baiduGpsData.getLongitude());
+                longU.append("%26");
+                //sb.append("&");
+                longU.append("lat=");
+                longU.append(baiduGpsData.getLatitude());
+                String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
+                sb.append(shortUrl);*/
+                String smsStr = sb.toString();
+                _logger.info("send sms:" + phone + ":" + smsStr);
+                //调用工具类发起 http请求
+                smsHttpTool.doHttp(phone, smsStr);
+            }
+        }else if(oneFirst==ATAFIRST){
             if(lastAtaWarning==(short)0 && wd.getAtaWarning()==(short)1){
             /*    GpsData gpsData=new GpsData();
                 gpsData.setLatitude(wd.getLatitude());
@@ -866,10 +944,10 @@ public class OutputHexService {
      * @param vin vin
      * @param msg 16进制报警信息
      * @param user user
-     * @param srsFirst 气囊优先
+     * @param oneFirst 气囊/碰撞/防盗优先
      * @return 根据报警hex信息生成文本性质的报警提示
      */
-    public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user,boolean srsFirst){
+    public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user,int oneFirst){
         //报警数据保存
         _logger.info(">>get Resend WarningMessage For Push:"+msg);
         DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
@@ -890,6 +968,7 @@ public class OutputHexService {
         wd.setHeading(bean.getHeading());
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
 
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
@@ -901,7 +980,7 @@ public class OutputHexService {
             rd = rdList.get(0);
         }
         //生成报警信息
-        Map<String,Object> warningMessage=buildWarningString(wd, user, rd, srsFirst);
+        Map<String,Object> warningMessage=buildWarningString(wd, user, rd, oneFirst);
         return warningMessage;
     }
 
@@ -993,10 +1072,10 @@ public class OutputHexService {
      * @param wd 报警消息实体类
      * @param user user
      * @param realTimeReportData 实时数据实体类
-     * @param srsFirst 气囊优先
+     * @param oneFirst 气囊优先
      * @return 便于阅读的报警消息
      */
-    public Map<String,Object> buildWarningString(WarningMessageData wd,User user,RealTimeReportData realTimeReportData,boolean srsFirst){
+    public Map<String,Object> buildWarningString(WarningMessageData wd,User user,RealTimeReportData realTimeReportData,int  oneFirst){
         Map<String,Object> dataMap = new HashMap<String,Object>();
        // StringBuilder sb=new StringBuilder() ;
         Map<String,Object> jsonMap = new HashMap<String,Object>();
@@ -1005,14 +1084,16 @@ public class OutputHexService {
         //获取上一条报警消息
         String vin = wd.getVin();
         Short lastSrsWarning=0;
+        Short lastCrashWarning=0;
         Short lastAtaWarning=0;
         WarningMessageData wmd = this.getWarningMessageData(vin);
         if(wmd!=null){
             lastSrsWarning=wmd.getSrsWarning();
+            lastCrashWarning=wmd.getCrashWarning();
             lastAtaWarning=wmd.getAtaWarning();
         }
-        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastAtaWarning" + lastAtaWarning);
-        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowAtaWarning"+wd.getAtaWarning());
+        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
         //sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
             //0有效 1无效
@@ -1027,12 +1108,12 @@ public class OutputHexService {
             positionMap.put("heading",new StringBuilder().append(wd.getHeading()).toString());
 
         }else{
-            positionMap.put("longitude","");
+            positionMap.put("longitude", "");
             positionMap.put("latitude","");
             positionMap.put("speed","");
             positionMap.put("heading","");
         }
-        if(srsFirst){
+        if(oneFirst==SRSFIRST){
             _logger.info("handle srs warning only");
             //仅处理气囊
             if(wd.getSrsWarning()==(short)1){
@@ -1069,7 +1150,44 @@ public class OutputHexService {
             if(wd.getSrsWarning()==(short)0 && lastSrsWarning==0) {//碰撞一直没有
                 return null;
             }
-        }else{
+        }else   if(oneFirst==CRASHFIRST){
+            _logger.info("handle crash warning only");
+            //仅处理气囊
+            if(wd.getCrashWarning()==(short)1){
+                //安全气囊报警 0未触发 1触发
+/*            sb.append("安全气囊报警触发,");
+            sb.append("背扣安全带数量:").append(wd.getSafetyBeltCount()).append(",");
+            sb.append("碰撞速度:").append(wd.getVehicleHitSpeed()).append("km/h;");*/
+                jsonMap.put("srs_warning","1");
+                jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
+                jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
+                dataMap.put("pType", 8);
+                dataMap.put("cleanFlag", "0");
+
+                String contactsPhone ="";
+                if(user!=null){
+                    contactsPhone =  user.getContactsPhone();
+                }
+                jsonMap.put("contacts_phone",contactsPhone);
+            }
+            if(wd.getCrashWarning()==(short)0 && lastCrashWarning==1){//srs1--0 碰撞解除
+                //推srs解除
+                jsonMap.put("srs_warning","0");
+                jsonMap.put("safety_belt_count",wd.getSafetyBeltCount());
+                jsonMap.put("vehicle_hit_speed",new StringBuilder().append(wd.getVehicleHitSpeed()).toString());
+                dataMap.put("pType", 8);
+                dataMap.put("cleanFlag", "1");
+
+                String contactsPhone ="";
+                if(user!=null){
+                    contactsPhone =  user.getContactsPhone();
+                }
+                jsonMap.put("contacts_phone",contactsPhone);
+            }
+            if(wd.getCrashWarning()==(short)0 && lastCrashWarning==0) {//碰撞一直没有
+                return null;
+            }
+        }else if(oneFirst==ATAFIRST){
             _logger.info("handle ata warning only");
             //仅处理防盗
             if(wd.getAtaWarning()==(short)1){

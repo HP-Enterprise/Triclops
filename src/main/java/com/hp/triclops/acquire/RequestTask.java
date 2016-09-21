@@ -84,7 +84,7 @@ public class RequestTask  implements Runnable{
                     channels.put(vin, ch);
                     connections.put(ch.remoteAddress().toString(),vin);
                     ch.writeAndFlush(buf);//回发数据直接回消息,此处2016.1.15修改，客户端发起数据之前确定已有连接注册记录
-                    _logger.info("resister success,Save Connection" + vin+":"+ch.remoteAddress() + " to HashMap");
+                    _logger.info("resister success,Save Connection" + vin + ":" + ch.remoteAddress() + " to HashMap");
                     _logger.info("Connection HashMap"+channels.entrySet());
                     afterRegisterSuccess(vin);
                 }else{
@@ -135,6 +135,9 @@ public class RequestTask  implements Runnable{
                     _logger.info(ch.remoteAddress().toString()+" is not registered,do not save realTime data");
                     return;
                 }
+                respStr=requestHandler.getRealTimeDataResp(receiveDataHexString);
+                buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息
                 saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x23://补发实时数据上报
@@ -144,6 +147,9 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
+                respStr=requestHandler.getResendRealTimeDataResp(receiveDataHexString);
+                buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息
                 saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x24://报警数据上报
@@ -153,8 +159,10 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
+                respStr=requestHandler.getWarningMessageResp(receiveDataHexString);
+                buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息
                 saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
-                //outputHexService.getWarningMessageAndPush(chKey, receiveDataHexString);
                 break;
             case 0x25://补发报警数据上报
                 _logger.info("Data ReSend Warning Message");
@@ -163,8 +171,10 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
+                respStr=requestHandler.getDataResendWarningDataResp(receiveDataHexString);
+                buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息
                 saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
-                //outputHexService.getResendWarningMessageAndPush(chKey,receiveDataHexString);
                 //补发报警数据是否需要push
                 break;
             case 0x26://心跳
@@ -198,8 +208,10 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
+                respStr=requestHandler.getFailureDataResp(receiveDataHexString);
+                buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息
                 saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
-                //outputHexService.getFailureMessageAndPush(chKey, receiveDataHexString);
                 break;
             case 0x29://补发故障数据上报
                 _logger.info("Data ReSend Failure Message");
@@ -208,8 +220,10 @@ public class RequestTask  implements Runnable{
                     _logger.info("Connection is not registered,no response");
                     return;
                 }
+                respStr=requestHandler.getResendFailureDataResp(receiveDataHexString);
+                buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息
                 saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
-                //outputHexService.getResendFailureMessageAndPush(chKey,receiveDataHexString);
                 //补发故障数据是否需要push
                 break;
             case 0x31://远程控制响应(上行)包含mid 2 4 5

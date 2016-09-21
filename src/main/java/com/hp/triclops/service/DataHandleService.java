@@ -57,17 +57,21 @@ public class DataHandleService {
                 saveDataResendRealTimeMes(vin, msg);
                 break;
             case 0x24://报警数据
-                outputHexService.getWarningMessageAndPush(vin, msg,true);
-                outputHexService.getWarningMessageAndPush(vin, msg, false);
-                outputHexService.getWarningMessageAndSms(vin, msg, true);
-                outputHexService.getWarningMessageAndSms(vin, msg,false);
+                outputHexService.getWarningMessageAndPush(vin, msg,1);
+                outputHexService.getWarningMessageAndPush(vin, msg, 2);
+                outputHexService.getWarningMessageAndPush(vin, msg, 3);
+                outputHexService.getWarningMessageAndSms(vin, msg, 1);
+                outputHexService.getWarningMessageAndSms(vin, msg,2);
+                outputHexService.getWarningMessageAndSms(vin, msg, 3);
                 saveWarningMessage(vin, msg);
                 break;
             case 0x25://补发报警数据
-                outputHexService.getResendWarningMessageAndPush(vin, msg,true);
-                outputHexService.getResendWarningMessageAndPush(vin, msg,false);
-                outputHexService.getResendWarningMessageAndSms(vin, msg,true);
-                outputHexService.getResendWarningMessageAndSms(vin, msg,false);
+                outputHexService.getResendWarningMessageAndPush(vin, msg,1);
+                outputHexService.getResendWarningMessageAndPush(vin, msg,2);
+                outputHexService.getResendWarningMessageAndPush(vin, msg,3);
+                outputHexService.getResendWarningMessageAndSms(vin, msg,1);
+                outputHexService.getResendWarningMessageAndSms(vin, msg,2);
+                outputHexService.getResendWarningMessageAndSms(vin, msg,3);
                 saveDataResendWarningMessage(vin, msg);
                 break;
             case 0x28://故障数据
@@ -289,6 +293,7 @@ public class DataHandleService {
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
@@ -318,14 +323,11 @@ public class DataHandleService {
         wd.setHeading(bean.getHeading());
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
-        if(bean.getSrsWarning()==(byte)1) {
-            wd.setSafetyBeltCount(bean.getSafetyBeltCount());
-            wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
-        }else{
-            wd.setSafetyBeltCount((short)0);
-            wd.setVehicleHitSpeed(0);
-        }
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
         warningMessageDataRespository.save(wd);
     }
 

@@ -1148,8 +1148,9 @@ public class DataTool {
         warningMessage.setSpeed((int) buf.readShort());
         warningMessage.setHeading((int) buf.readShort());
         warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setCrashWarning(buf.readByte());
         warningMessage.setAtaWarning(buf.readByte());
-        if(warningMessage.getSrsWarning()==(byte)1) {
+       // if(warningMessage.getSrsWarning()==(byte)1) { 协议0627改为始终发送车速报文
             warningMessage.setSafetyBeltCount((short) buf.readByte());
             byte[] speedLastBytes = new byte[300];
             Integer[] speeds = new Integer[150];
@@ -1159,7 +1160,7 @@ public class DataTool {
                 speeds[i]=(int)bu.readShort();
             }
             warningMessage.setVehicleSpeedLast(speeds);
-        }
+       // }
         return warningMessage;
     }
 
@@ -1193,8 +1194,9 @@ public class DataTool {
         warningMessage.setSpeed((int) buf.readShort());
         warningMessage.setHeading((int) buf.readShort());
         warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setCrashWarning(buf.readByte());
         warningMessage.setAtaWarning(buf.readByte());
-        if(warningMessage.getSrsWarning()==(byte)1) {
+       // if(warningMessage.getSrsWarning()==(byte)1) {协议0627改为始终发送车速报文
             warningMessage.setSafetyBeltCount((short) buf.readByte());
             byte[] speedLastBytes = new byte[300];
             Integer[] speeds = new Integer[150];
@@ -1204,7 +1206,7 @@ public class DataTool {
                 speeds[i]=(int)bu.readShort();
             }
             warningMessage.setVehicleSpeedLast(speeds);
-        }
+     //   }
         return warningMessage;
     }
 
@@ -1219,5 +1221,16 @@ public class DataTool {
         bd   =  bd.setScale(num,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留 num 位小数
        float re=bd.floatValue();
         return re;
+    }
+
+    public  String getRandomString(int length) { //length表示生成字符串的长度
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        return sb.toString();
     }
 }
