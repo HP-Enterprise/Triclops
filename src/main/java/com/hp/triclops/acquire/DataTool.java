@@ -37,6 +37,8 @@ public class DataTool {
     public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
     public static final String connection_hashmap_name="tbox-connections";
+    public static final String remoteControl_hashmap_name="remoteControl-results";
+    public static final String remoteControlSet_hashmap_name="remoteControlSet-results";
 
     public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
     public static final long msgCurrentStatus_ttl=600l;
@@ -670,6 +672,8 @@ public class DataTool {
             re=3;
         }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
             re=3;
+        }else if(applicationId.equals("50")&&messageId.equals("1")) {//远程控制设置指令
+            re=3;
         }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
             re=3;
         }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
@@ -687,6 +691,8 @@ public class DataTool {
         //某一消息的下发超时时间（秒） 参考文档
         int re=60;
         if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+            re=30;
+        } if(applicationId.equals("50")&&messageId.equals("1")){//远程控制参数设置
             re=30;
         }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
             re=30;

@@ -658,7 +658,10 @@ public class RequestHandler {
             ByteBuffer bb=PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp=conversionTBox.generate(bb);
             RemoteSettingResp bean=dp.loadBean(RemoteSettingResp.class);
-            _logger.info("handle RemoteControl Setting resp"+vin+"-"+bean.getEventID()+":"+bean.getResponse());
+            String key=vin+"-"+bean.getEventID();
+            String val=String.valueOf(bean.getResponse());
+            _logger.info("handle RemoteControl Setting resp"+key+":"+val);
+            socketRedis.saveHashString(dataTool.remoteControlSet_hashmap_name,key,val,-1);
         }
     }
 

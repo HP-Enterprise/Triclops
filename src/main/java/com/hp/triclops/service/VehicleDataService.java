@@ -67,6 +67,10 @@ public class VehicleDataService {
     @Autowired
     SMSHttpTool smsHttpTool;
 
+    private int wakeUpWaitSeconds=50;
+    private int remoteControlTimeOut=60;//远程设置超时秒数.应该大于唤醒的最大等待时间
+    private int remoteSettingTimeOut=30;//远程设置超时秒数(唤醒后等待时间)
+
     /**
      * 下发远程控制命令
      * @param uid user id
@@ -126,7 +130,7 @@ public class VehicleDataService {
         }
         if(!hasConnection(vin)){
             _logger.info("vin:"+vin+" have not connection,do wake up...");
-            int wakeUpResult=remoteWakeUp(vin,50);
+            int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
             _logger.info("vin:"+vin+" wake up result(success-1 failed-0):"+wakeUpResult);
         }
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
@@ -197,7 +201,7 @@ public class VehicleDataService {
         //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         if(!hasConnection(diagnosticData.getVin())){
             _logger.info("vin:"+diagnosticData.getVin()+" have not connection,do wake up...");
-            int wakeUpResult=remoteWakeUp(diagnosticData.getVin(),50);
+            int wakeUpResult=remoteWakeUp(diagnosticData.getVin(),wakeUpWaitSeconds);
             _logger.info("vin:" + diagnosticData.getVin() + " wake up result(success-1 failed-0):" + wakeUpResult);
 
         }
@@ -215,6 +219,30 @@ public class VehicleDataService {
         return null;//TBox不在线 Controller通知出去
     }
 
+    /**
+     * 检测redis是否有结果数据
+     * @param hashName
+     * @param key
+     * @param checkCount
+     * @return 1有结果 0无结果
+     */
+    public int checkResultFromRedis(String hashName,String key,int checkCount){
+        //远程唤醒动作
+        _logger.info("doing wake up......");
+        int count=0;
+        while (count<checkCount){
+            //发送一次短信，然后间隔1s检测是否产生结果信息是否建立
+            count++;
+            try{
+                Thread.sleep(1*1000);//唤醒后等待1s循环检测
+            }catch (InterruptedException e){e.printStackTrace(); }
+            //检测连接是否已经建立
+            if(socketRedis.existHashString(hashName,key)){
+                return 1;
+            }
+        }
+        return 0;
+    }
 
     /**
      * 远程唤醒流程 最多三次 每次唤醒后等待10s检测结果
@@ -341,6 +369,47 @@ public class VehicleDataService {
                 re=true;
         }
         return re;
+    }
+
+
+    /**
+     *
+     * @param remoteControlSettingShow 设置参数
+     * @param vin 目标vin
+     * @return 0设置成功 1唤醒失败 2 设置失败 3响应超时
+     */
+    public int sendRemoteSetting( RemoteControlSettingShow remoteControlSettingShow,String vin){
+        if(!hasConnection(vin)){
+            //如果不在线，先唤醒
+            _logger.info("vin:"+vin+" have not connection,do wake up...");
+            int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
+            _logger.info("vin:" + vin + " wake up result(success-1 failed-0):" + wakeUpResult);
+            if(wakeUpResult==0){
+                return 1;//唤醒失败
+            }
+        }
+        long eventId=dataTool.getCurrentSeconds();
+        //唤醒成功
+        if(hasConnection(vin)){
+            _logger.info("vin:"+vin+" have connection,sending command...");
+            //保存到数据库
+            String byteStr=outputHexService.getRemoteControlSettingReqHex(remoteControlSettingShow,eventId);
+            outputHexService.saveCmdToRedis(vin,byteStr);//发送命令
+         }
+        //1有结果 0无结果
+        String key=vin+"-"+eventId;
+        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControlSet_hashmap_name,key,remoteSettingTimeOut);
+        if(checkResultUntilTimeOut==1){
+            //读取结果并返回至api
+            String settingResult=socketRedis.getHashString(dataTool.remoteControlSet_hashmap_name,key);
+            if(settingResult!=null){
+                if(settingResult.equals("0")){
+                    return 0;//设置成功
+                }
+            }
+         return 2;//设置失败
+        }
+        return 3;//响应超时
     }
 
     /**

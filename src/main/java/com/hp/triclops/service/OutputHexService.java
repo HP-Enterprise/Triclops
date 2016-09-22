@@ -76,6 +76,25 @@ public class OutputHexService {
 
     private Logger _logger = LoggerFactory.getLogger(OutputHexService.class);
 
+    public String getRemoteControlSettingReqHex(RemoteControlSettingShow show,long eventId){
+        //产生远程控制设置指令
+        RemoteSettingReq hr=new RemoteSettingReq();
+        hr.setTestFlag((short) 0);
+        hr.setSendingTime((long) dataTool.getCurrentSeconds());
+        hr.setApplicationID((short) 50);//>>>
+        hr.setMessageID((short) 1);//>>>
+        hr.setEventID(eventId);
+        int value=show.getStartEngine()+ 2*show.getCentralLock() +4* show.getFindCar() +8*show.getAc()
+                +16 *show.getSeatHeating() +32* show.getRemindFailure() +64 *show.getLocation() +128 *show.getSms();
+        value=value>255?255:value;
+        hr.setRemoteFunction(value);//01111111
+        DataPackage dpw=new DataPackage("8995_50_1");//>>>
+        dpw.fillBean(hr);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
     public String getRemoteControlPreHex(RemoteControl remoteControl,long eventId){
         //产生远程控制预指令hex
         RemoteControlPreconditionReq remoteControlCmd=new RemoteControlPreconditionReq();
