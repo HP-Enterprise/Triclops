@@ -207,7 +207,10 @@ public class DataTool {
         return speed;
     }
     public float getTrueAvgOil(int a){
-        //得到真实油耗值
+        //得到真实油耗值 0x1ff=511无效值
+        if(a>=511){
+            return 0.0f;
+        }
         String  avgOil=a/10+"."+a%10;
         return Float.valueOf(avgOil);
     }
@@ -1137,9 +1140,8 @@ public class DataTool {
         buf.readBytes(imeiBytes);
         warningMessage.setImei(new String(imeiBytes));
         warningMessage.setProtocolVersionNumber((short) buf.readByte());
-        byte[] vehicleIDBytes=new byte[2];
-        buf.readBytes(vehicleIDBytes);
-        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setVehicleID((short) buf.readByte());
+        warningMessage.setVehicleModel((short) buf.readByte());
         warningMessage.setTripID((int) buf.readShort());
         warningMessage.setReserved((int) buf.readShort());
         warningMessage.setIsLocation((short) buf.readByte());
@@ -1183,9 +1185,8 @@ public class DataTool {
         buf.readBytes(imeiBytes);
         warningMessage.setImei(new String(imeiBytes));
         warningMessage.setProtocolVersionNumber((short) buf.readByte());
-        byte[] vehicleIDBytes=new byte[2];
-        buf.readBytes(vehicleIDBytes);
-        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setVehicleID((short) buf.readByte());
+        warningMessage.setVehicleModel((short) buf.readByte());
         warningMessage.setTripID((int) buf.readShort());
         warningMessage.setReserved((int) buf.readShort());
         warningMessage.setIsLocation((short) buf.readByte());

@@ -75,6 +75,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 case 0x14://远程唤醒
                     scheduledService.schedule(  new RequestTask(channels,connections,maxDistance,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
+                case 0x15://流量查询请求
+                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    break;
                 case 0x21://固定数据上报
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
@@ -102,7 +105,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     ch.writeAndFlush(buf);//心跳流程直接回消息
                     break;
                 case 0x27://休眠请求
-                    scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, connections, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x28://故障数据上报
                     scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
@@ -111,6 +114,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x31://远程控制响应(上行)包含mid 2 4 5
+                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    break;
+                case 0x32://远程控制设置响应(上行)包含mid 2
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x41://参数查询响应(上行)

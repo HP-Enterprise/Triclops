@@ -119,6 +119,15 @@ public class RequestTask  implements Runnable{
                     ch.close();//关闭连接
                 }
                 break;
+            case 0x15://流量查询
+                _logger.info("Flow request...");
+                respStr=requestHandler.getFlowResp(receiveDataHexString);
+                if(respStr!=null){
+                    buf=dataTool.getByteBuf(respStr);
+                    ch.writeAndFlush(buf);//回发数据直接回消息
+                }
+
+                break;
             case 0x21://固定数据上报
                 _logger.info("Regular Data Report Message");
                 chKey=geVinByAddress(ch.remoteAddress().toString());
@@ -234,7 +243,18 @@ public class RequestTask  implements Runnable{
                     return;
                 }
                 String _vin=chKey;
-                requestHandler.handleRemoteControlRequest(receiveDataHexString, _vin,maxDistance);
+                requestHandler.handleRemoteControlRequest(receiveDataHexString, _vin, maxDistance);
+                //远程控制上行处理，无数据下行
+                break;
+            case 0x32://远程控制设置响应(上行)包含mid 2
+                _logger.info("RemoteControl Setting resp");
+                chKey=geVinByAddress(ch.remoteAddress().toString());
+                if(chKey==null){
+                    _logger.info("Connection is not registered,no response");
+                    return;
+                }
+                 _vin=chKey;
+                requestHandler.handleRemoteControlSettingRequest(receiveDataHexString, _vin);
                 //远程控制上行处理，无数据下行
                 break;
             case 0x41://参数查询响应(上行)

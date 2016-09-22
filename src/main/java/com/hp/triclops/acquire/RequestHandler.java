@@ -103,6 +103,34 @@ public class RequestHandler {
         return null;
     }
 
+    /**
+     *
+     * @param reqString 远程唤醒请求hex
+     * @return 远程唤醒响应hex
+     */
+    public String getFlowResp(String reqString){
+
+        //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        FlowReq bean=dp.loadBean(FlowReq.class);
+        //请求解析到bean
+        //远程唤醒响应
+        FlowResp resp=new FlowResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getEventID());
+        resp.setTotalSize(500l);
+        resp.setUsedSize(123l);
+        DataPackage dpw=new DataPackage("8995_21_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
 
     /**
      *
@@ -187,10 +215,10 @@ public class RequestHandler {
         short registerResult = checkRegister ? (short)0 : (short)1;
         resp.setRegisterResult(registerResult);
         resp.setTotalSize(500l);
-        resp.setUsedSize(120l);
+        resp.setUsedSize(123l);
         String randomKey="0123456789abcdef";
         randomKey=dataTool.getRandomString(16);
-        _logger.info("AES key from vin:"+randomKey);
+        _logger.info("AES key from vin:" + randomKey);
         resp.setKeyInfo(randomKey.getBytes());
         //注册响应
         DataPackage dpw=new DataPackage("8995_19_2");
@@ -617,6 +645,22 @@ public class RequestHandler {
     }
 
 
+    /**
+     *
+     * @param reqString 远程控制上行hex mid=2,4,5
+     * @param vin vin码
+     */
+    public void handleRemoteControlSettingRequest(String reqString,String vin) {
+        byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId=dataTool.getMessageId(bytes);
+        if(messageId==0x02){
+            //todo 记录远程控制设置结果
+            ByteBuffer bb=PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp=conversionTBox.generate(bb);
+            RemoteSettingResp bean=dp.loadBean(RemoteSettingResp.class);
+            _logger.info("handle RemoteControl Setting resp"+vin+"-"+bean.getEventID()+":"+bean.getResponse());
+        }
+    }
 
     /**
      * 校验,是否发送远程指令
@@ -673,9 +717,9 @@ public class RequestHandler {
             if(remoteControlPreconditionResp.getVehicleSpeed()==0){
                 vehicleSpeedCheck=true;
             }
-            byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();
+            byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();//要求P挡位 参考0627协议
             char[] transmissionGearPosition_char=dataTool.getBitsFromByte(transmissionGearPosition);
-            if(transmissionGearPosition_char[6]=='0'&&transmissionGearPosition_char[7]=='1'){
+            if(transmissionGearPosition_char[4]=='0'&&transmissionGearPosition_char[5]=='0'&&transmissionGearPosition_char[6]=='1'&&transmissionGearPosition_char[7]=='1'){
                 transmissionGearPositionCheck=true;
             }
             byte handBrake=remoteControlPreconditionResp.getEpb_status();
