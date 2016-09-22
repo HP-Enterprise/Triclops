@@ -7,6 +7,7 @@ package com.hp.triclops.service;
 import com.hp.triclops.acquire.AcquirePort;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
+import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.Page;
@@ -50,7 +51,8 @@ public class VehicleDataService {
     @Autowired
     GpsTool gpsTool;
     private Logger _logger = LoggerFactory.getLogger(VehicleDataService.class);
-
+    @Autowired
+    private SocketRedis socketRedis;
     @Autowired
     RemoteControlRespositoryDao remoteControlRespositoryDao;
 
@@ -261,11 +263,8 @@ public class VehicleDataService {
     private boolean hasConnection(String vin){
         //检测对应vin是否有连接可用
         boolean re=false;
-        _logger.info("check hasConnection  HashMap"+AcquirePort.channels.entrySet());
-        Channel ch=AcquirePort.channels.get(vin);
-        if(ch!=null){
-            re=true;
-        }
+        _logger.info("check hasConnection  in redis"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+        re=socketRedis.existHashString(dataTool.connection_hashmap_name,vin);
         return re;
     }
 

@@ -1,10 +1,7 @@
 package com.hp.triclops.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -21,6 +18,7 @@ public class SocketRedis {
     RedisTemplate<String, Object> objectRedisTemplate;
 
     ValueOperations<String,String> valOpts = null;
+    HashOperations<String,String,String> hashOpts=null;
 
     SetOperations<String,String> setOpts = null;
 
@@ -33,6 +31,52 @@ public class SocketRedis {
         this.objectRedisTemplate.afterPropertiesSet();
     }
 
+
+    /**
+     * 存储STRING类型数据 HASH
+     * @param hashName 键
+     * @param key 值
+     * @param value 该键值的过期时间，单位秒
+     */
+
+    public void saveHashString(String hashName,String key,String value,long expireSeconds){
+        this.hashOpts = this.stringRedisTemplate.opsForHash();
+        hashOpts.put(hashName, key, value);
+        if(expireSeconds>0) {//不设置即为-1永不过期
+            this.stringRedisTemplate.expire(hashName, expireSeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * 删除 HASH key
+     * @param hashName 键
+     * @param key 值
+     */
+    public void deleteHashString(String hashName,String key){
+        this.hashOpts = this.stringRedisTemplate.opsForHash();
+        hashOpts.delete(hashName, key);
+    }
+
+    /**
+     * 是否存在 HASH key
+     * @param hashName 键
+     * @param key 值
+     */
+    public boolean existHashString(String hashName,String key){
+        this.hashOpts = this.stringRedisTemplate.opsForHash();
+        boolean re=hashOpts.hasKey(hashName,key);
+        return re;
+    }
+
+
+    /**
+     * 列出HASH的所有key
+     * @param hashName 键
+     */
+    public Set<String> listHashKeys(String hashName){
+        this.hashOpts = this.stringRedisTemplate.opsForHash();
+        return hashOpts.keys(hashName);
+    }
 
 
     /**

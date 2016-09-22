@@ -36,6 +36,7 @@ public class DataTool {
     public static final String remoteControlRef_preStr="remoteControlRef:";//远程控制event引用的远程控制db id
     public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
+    public static final String connection_hashmap_name="tbox-connections";
 
     public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
     public static final long msgCurrentStatus_ttl=600l;
