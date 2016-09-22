@@ -498,7 +498,7 @@ public class OutputHexService {
                 UserVehicleRelatived userVehicleRelatived =  iterator.next();
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
-                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user,oneFirst);
+                    Map<String,Object> pushMsg=getResendWarningMessageForPush(vin, msg, user, oneFirst);
                     pushMessageToUser(vin,pushMsg);
                 }
             }
@@ -527,7 +527,7 @@ public class OutputHexService {
                     phone=u.getContactsPhone();
                 }
                 _logger.info("try send srs waring sms to"+phone+"|oneFirst:"+oneFirst);
-                sendResendWarningMessageSms(vin, msg, phone,oneFirst);
+                sendResendWarningMessageSms(vin, msg, phone, oneFirst);
             }
 
         }
@@ -560,11 +560,26 @@ public class OutputHexService {
      * @param result 1成功 0是失败
      * @param message remark
      */
-    public void pushRemoteControlResult(String vin,int result,String message){
+    public void pushRemoteControlResult(long id,String vin,String eventId,int result,String message){
+        /*todo
+        *如果一条记录进入终结状态，
+        需要判断他是否有指向它的启动发动机命令，
+        因为这条启动发动机的命令对应的eventId才是前端监听的key
+        在pushRemoteControlResult修改，
+        查找对应vin-eventId的记录，看看是否有refId=this id
+        如果有使用后者的eventId更新到redis
+         */
+        RemoteControl originalRemoteControl=remoteControlRepository.findByRefId(id);//判断他是否有指向它的启动发动机命令
+        if(originalRemoteControl!=null){
+            eventId=originalRemoteControl.getSessionId();
+        }
+        String key=vin+"-"+eventId;
+        String value=result+"|"+message;
+        socketRedis.saveHashString(dataTool.remoteControl_hashmap_name,key,value,-1);
         Map<String,Object> dataMap = new HashMap<String,Object>();
         dataMap.put("pType", 1);
         dataMap.put("rs", result);
-        dataMap.put("textContent",message);
+        dataMap.put("textContent", message);
         pushMessageToUser(vin,dataMap);
     }
 
@@ -1389,7 +1404,7 @@ public class OutputHexService {
      * @return 封装远程控制参数的RemoteControl对象
      */
     public  RemoteControl getRemoteCmdValueFromDb(String vin,long eventId){
-        String sessionId=49+"-"+eventId;
+        String sessionId=String.valueOf(eventId);
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
@@ -1406,7 +1421,7 @@ public class OutputHexService {
      * @return 封装远程控制参数的RemoteControl对象
      */
     public  RemoteControl modifyRemoteControl(RemoteControl rc){
-        String newSessionId=49+"-"+dataTool.getCurrentSeconds();
+        String newSessionId=String.valueOf(dataTool.getCurrentSeconds());
         rc.setRefId(-2l);
         rc.setSessionId(newSessionId);
         RemoteControl retRc=remoteControlRepository.save(rc);
@@ -1422,7 +1437,7 @@ public class OutputHexService {
      */
     public  RemoteControl getStartEngineRemoteControl(int uid,String vin,long eventId,long refId){
         RemoteControl remoteControl=new RemoteControl();
-        String sessionId="49-"+eventId;
+        String sessionId=String.valueOf(eventId);
         remoteControl.setUid(uid);
         remoteControl.setSendingTime(new Date());
         remoteControl.setVin(vin);
@@ -1473,7 +1488,7 @@ public class OutputHexService {
      * @param eventId eventId
      */
     public void handleRemoteControlPreconditionResp(String vin,long eventId,String message,String messageEn,boolean push){
-        String sessionId=49+"-"+eventId;
+        String sessionId=String.valueOf(eventId);
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
             _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
@@ -1489,7 +1504,7 @@ public class OutputHexService {
             _logger.info("RemoteControl PreconditionResp  push message>:"+pushMsg);
             if(push){
                 try{
-                    this.pushRemoteControlResult(rc.getVin(), 0, pushMsg);
+                    this.pushRemoteControlResult(rc.getId(),rc.getVin(),String.valueOf(eventId), 0, pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
             _logger.info("RemoteControl PreconditionResp persistence and push success");
@@ -1503,7 +1518,7 @@ public class OutputHexService {
      * @param result Ack响应结果  0：无效 1：命令已接收
      */
     public void handleRemoteControlAck(String vin,long eventId,Short result,boolean push){
-        String sessionId=49+"-"+eventId;
+        String sessionId=String.valueOf(eventId);
         //  Rst 0：无效 1：命令已接收
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
@@ -1520,7 +1535,7 @@ public class OutputHexService {
                String pushMsg="TBOX提示命令无效";
                if(push){
                    try {
-                       this.pushRemoteControlResult(rc.getVin(),0,pushMsg);
+                       this.pushRemoteControlResult(rc.getId(),rc.getVin(),String.valueOf(eventId),0,pushMsg);
                    }catch (RuntimeException e){_logger.info(e.getMessage());}
                }
                _logger.info("RemoteControl Ack persistence and push success");
@@ -1549,7 +1564,7 @@ public class OutputHexService {
                 remoteControlRepository.save(rc);
                 String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效";
                 try {
-                    this.pushRemoteControlResult(rc.getVin(),0,pushMsg);
+                    this.pushRemoteControlResult(rc.getId(),rc.getVin(),rc.getSessionId(),0,pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
                 _logger.info("RemoteControl Ack persistence and push success");
             }
@@ -1564,7 +1579,7 @@ public class OutputHexService {
      * @param eventId eventId
      */
     public RemoteControl getRemoteControlRecord(String vin,long eventId){
-        String sessionId=49+"-"+eventId;
+        String sessionId=String.valueOf(eventId);
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
         return rc;
     }
@@ -1577,7 +1592,7 @@ public class OutputHexService {
      * @param result Rst响应结果 0：成功 1：失败
      */
     public void handleRemoteControlRst(String vin,long eventId,Short result,boolean push){
-        String sessionId=49+"-"+eventId;
+        String sessionId=String.valueOf(eventId);
         Short dbResult=0;//参考建表sql  0失败1成功   ,  Rst 0：成功 1：失败
         if(result==(short)0){
             dbResult=1;
@@ -1653,7 +1668,7 @@ public class OutputHexService {
             remoteControlRepository.save(rc);
             if(push){
                 try{
-                    this.pushRemoteControlResult(rc.getVin(),rc.getStatus(),pushMsg);
+                    this.pushRemoteControlResult(rc.getId(), rc.getVin(), String.valueOf(eventId),rc.getStatus(),pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
             _logger.info("RemoteControl Rst persistence and push success");
@@ -1740,7 +1755,7 @@ public class OutputHexService {
             remoteControlRepository.save(rc);
             pushMsg=_dbReMark;
             try{
-                this.pushRemoteControlResult(rc.getVin(), rc.getStatus(), pushMsg);
+                this.pushRemoteControlResult(rc.getId(),rc.getVin(), rc.getSessionId(),rc.getStatus(), pushMsg);
             }catch (RuntimeException e){_logger.info(e.getMessage());}
             _logger.info("RemoteControl Rst persistence and push success");
         }
@@ -1758,7 +1773,7 @@ public class OutputHexService {
         remoteControlRepository.save(rc);
         String pushMsg=remark;
         try{
-            this.pushRemoteControlResult(rc.getVin(), rc.getStatus(), pushMsg);
+            this.pushRemoteControlResult(rc.getId(),rc.getVin(), rc.getSessionId(),rc.getStatus(), pushMsg);
         }catch (RuntimeException e){_logger.info(e.getMessage());}
         _logger.info("RemoteControl Rst persistence and push success");
     }

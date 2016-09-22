@@ -87,10 +87,10 @@ public class VehicleDataService {
         RemoteControl rc=new RemoteControl();
         if(remoteControlBody==null){
             rc=remoteControlRepository.findOne(id);
-            eventId=Long.parseLong(rc.getSessionId().split("-")[1]);
+            eventId=Long.parseLong(rc.getSessionId());
         }else{
             rc.setUid(uid);
-            rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
+            rc.setSessionId(String.valueOf(eventId));//根据application和eventid生成的session_id
             rc.setVin(vin);
             rc.setRefId(remoteControlBody.getRefId());
             rc.setSendingTime(new Date());
