@@ -574,7 +574,7 @@ public class OutputHexService {
             eventId=originalRemoteControl.getSessionId();
         }
         String key=vin+"-"+eventId;
-        String value=result+"|"+message;
+        String value=String.valueOf(id);
         socketRedis.saveHashString(dataTool.remoteControl_hashmap_name,key,value,-1);
         Map<String,Object> dataMap = new HashMap<String,Object>();
         dataMap.put("pType", 1);

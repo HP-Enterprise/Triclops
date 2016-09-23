@@ -398,7 +398,7 @@ public class VehicleDataService {
          }
         //1有结果 0无结果
         String key=vin+"-"+eventId;
-        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControlSet_hashmap_name,key,remoteSettingTimeOut);
+        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControlSet_hashmap_name, key, remoteSettingTimeOut);
         if(checkResultUntilTimeOut==1){
             //读取结果并返回至api
             String settingResult=socketRedis.getHashString(dataTool.remoteControlSet_hashmap_name,key);
@@ -410,6 +410,44 @@ public class VehicleDataService {
          return 2;//设置失败
         }
         return 3;//响应超时
+    }
+
+
+    /**
+     *
+     * @param eventId 设置参数
+     * @param vin 目标vin
+     * @return  >null超时导致 非null包含结果信息
+     */
+    public RemoteControl getRemoteControlResult(String eventId,String vin){
+      long resultId=checkRemoteControlResult(eventId,vin);
+        _logger.info("resultId:"+resultId);
+        if(resultId>0){
+            RemoteControl remoteControl=remoteControlRepository.findOne(resultId);
+            return remoteControl;
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param eventId 设置参数
+     * @param vin 目标vin
+     * @return  >0成功的结果id 0响应超时
+     */
+    public long checkRemoteControlResult(String eventId,String vin){
+        //1有结果 0无结果
+        String key=vin+"-"+eventId;
+        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControl_hashmap_name,key,remoteControlTimeOut);
+        if(checkResultUntilTimeOut==1){
+            //读取结果并返回至api
+            String resultId=socketRedis.getHashString(dataTool.remoteControl_hashmap_name,key);
+            if(resultId!=null){
+                return Long.parseLong(resultId);
+            }
+          }
+        return 0;//响应超时
     }
 
     /**
