@@ -67,9 +67,9 @@ public class VehicleDataService {
     @Autowired
     SMSHttpTool smsHttpTool;
 
-    private int wakeUpWaitSeconds=50;
-    private int remoteControlTimeOut=60;//远程设置超时秒数.应该大于唤醒的最大等待时间
-    private int remoteSettingTimeOut=30;//远程设置超时秒数(唤醒后等待时间)
+    private int wakeUpWaitSeconds=50;//唤醒等待时间，超过即为唤醒失败
+    private int remoteControlTimeOut=40;//远程控制API返回超时秒数（唤醒成功后等待时间）
+    private int remoteSettingTimeOut=40;//远程设置超时秒数(唤醒成功后等待时间)
 
     /**
      * 下发远程控制命令
@@ -146,8 +146,11 @@ public class VehicleDataService {
             rc.setRemarkEn("Remote wake up failed, unable to send remote control command!");
             rc.setStatus((short)0);
             remoteControlRepository.save(rc);
+            String key=vin+"-"+eventId;
+            String value=String.valueOf(rc.getId());
+            socketRedis.saveHashString(dataTool.remoteControl_hashmap_name, key, value, -1);
         }
-        return null;
+        return rc;
         //命令下发成功，返回保存后的rc  否则返回null
     }
 
@@ -228,7 +231,7 @@ public class VehicleDataService {
      */
     public int checkResultFromRedis(String hashName,String key,int checkCount){
         //远程唤醒动作
-        _logger.info("doing wake up......");
+        _logger.info("check Result From Redis......(timeout seconds):"+checkCount);
         int count=0;
         while (count<checkCount){
             //发送一次短信，然后间隔1s检测是否产生结果信息是否建立
@@ -421,7 +424,7 @@ public class VehicleDataService {
      */
     public RemoteControl getRemoteControlResult(String eventId,String vin){
       long resultId=checkRemoteControlResult(eventId,vin);
-        _logger.info("resultId:"+resultId);
+        _logger.info("exist resultId:" + resultId);
         if(resultId>0){
             RemoteControl remoteControl=remoteControlRepository.findOne(resultId);
             return remoteControl;

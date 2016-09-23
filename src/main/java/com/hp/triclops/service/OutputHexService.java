@@ -580,7 +580,7 @@ public class OutputHexService {
         dataMap.put("pType", 1);
         dataMap.put("rs", result);
         dataMap.put("textContent", message);
-        pushMessageToUser(vin,dataMap);
+       // pushMessageToUser(vin,dataMap); 协议0627远程控制改为API阻塞式响应后取消推送
     }
 
     /**
