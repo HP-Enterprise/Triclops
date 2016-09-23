@@ -199,7 +199,7 @@ public class RequestHandler {
      * @param checkRegister 注册是否通过
      * @return 响应hex
      */
-    public String getRegisterResp(String reqString,boolean checkRegister){
+    public String getRegisterResp(String reqString,String vin,boolean checkRegister){
         //根据注册请求的16进制字符串，生成响应的16进制字符串
         ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
         DataPackage dp=conversionTBox.generate(bb);
@@ -219,6 +219,7 @@ public class RequestHandler {
         String randomKey="0123456789abcdef";
         randomKey=dataTool.getRandomString(16);
         _logger.info("AES key from vin:" + randomKey);
+        socketRedis.saveHashString(dataTool.tboxkey_hashmap_name,vin,randomKey,-1);
         resp.setKeyInfo(randomKey.getBytes());
         //注册响应
         DataPackage dpw=new DataPackage("8995_19_2");

@@ -39,6 +39,7 @@ public class DataTool {
     public static final String connection_hashmap_name="tbox-connections";
     public static final String remoteControl_hashmap_name="remoteControl-results";
     public static final String remoteControlSet_hashmap_name="remoteControlSet-results";
+    public static final String tboxkey_hashmap_name="tbox-aeskeys";//存储AES加密的key (vin:value)
 
     public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
     public static final long msgCurrentStatus_ttl=600l;
@@ -494,8 +495,27 @@ public class DataTool {
         //基于netty
         byte[] result = new byte[buf.readableBytes()];
         buf.readBytes(result, 0, buf.readableBytes());
+        buf.readerIndex(0);
         return result;
     }
+
+    public  String getImeiFromReqData(byte[] data)
+    {
+        //解析TBOX上行数据包,提取imei
+        //imei:37,15
+        //vin         :51,17
+        String imei="";
+        if(data!=null){
+            if(data.length>33) {
+                imei=new String(data, 11, 15);//serialNum在字节数组中的位置
+                ByteBuffer bb= ByteBuffer.allocate(1024);
+                bb.put(data);
+                bb.flip();
+            }
+        }
+        return imei;
+    }
+
     public   HashMap<String,String> getVinDataFromRegBytes(byte[] data)
     {
         //解析注册数据包,提取vin和SerialNumber

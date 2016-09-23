@@ -77,7 +77,7 @@ public class RequestTask  implements Runnable{
                 String serialNum=vinAndSerialNum.get("serialNum");
                 boolean checkVinAndSerNum= dataTool.checkVinAndSerialNum(vin, serialNum);
                 //发往客户端的注册结果数据，根据验证结果+收到的数据生成
-                respStr=requestHandler.getRegisterResp(receiveDataHexString, checkVinAndSerNum);
+                respStr=requestHandler.getRegisterResp(receiveDataHexString, vin,checkVinAndSerNum);
                 buf=dataTool.getByteBuf(respStr);
                 //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
                 if(checkVinAndSerNum){
