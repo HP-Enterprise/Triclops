@@ -36,10 +36,11 @@ public class DataTool {
     public static final String remoteControlRef_preStr="remoteControlRef:";//远程控制event引用的远程控制db id
     public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
-    public static final String connection_hashmap_name="tbox-connections";
-    public static final String remoteControl_hashmap_name="remoteControl-results";
-    public static final String remoteControlSet_hashmap_name="remoteControlSet-results";
-    public static final String tboxkey_hashmap_name="tbox-aeskeys";//存储AES加密的key (vin:value)
+    public static final String connection_hashmap_name="tbox-connections";//Tbox连接标志 vin:remoteAddress
+    public static final String connection_online_imei_hashmap_name="tbox-connections-imei";//Tbox在线连接标志 remoteAddress:imei 用于提取imei下行报文加密时使用
+    public static final String remoteControl_hashmap_name="remoteControl-results";//远程控制结果 vin-eventId:RecordId
+    public static final String remoteControlSet_hashmap_name="remoteControlSet-results";//远程控制参数设置结果 vin-eventId:Result
+    public static final String tboxkey_hashmap_name="tbox-aeskeys";//存储AES加密的key vin:AesKeyValue
 
     public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
     public static final long msgCurrentStatus_ttl=600l;

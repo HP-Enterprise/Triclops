@@ -151,6 +151,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         //连接断开 从map移除连接
         String vin=connections.get(ch.remoteAddress().toString());
         connections.remove(ch.remoteAddress().toString());
+        socketRedis.deleteHashString(dataTool.connection_online_imei_hashmap_name, ch.remoteAddress().toString());
         if(vin!=null){
             socketRedis.deleteHashString(dataTool.connection_hashmap_name, vin);//连接从redis中清除
             channels.remove(vin);

@@ -3,9 +3,7 @@ package com.hp.triclops.acquire;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.utils.AES128Tool;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +14,14 @@ import static io.netty.buffer.Unpooled.buffer;
 /**
  * Created by jackl on 2016/9/23.
  */
-public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
+public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
     private DataTool dataTool;
     private SocketRedis socketRedis;
     private ConcurrentHashMap<String,String> connections;
-    private Logger _logger= LoggerFactory.getLogger(AESUpDataHandler.class);
+    private Logger _logger= LoggerFactory.getLogger(AESDownDataHandler.class);
     private RequestHandler requestHandler;
 
-    public AESUpDataHandler(SocketRedis s,ConcurrentHashMap<String,String> connections,RequestHandler requestHandler,DataTool dataTool){
+    public AESDownDataHandler(SocketRedis s, ConcurrentHashMap<String, String> connections, RequestHandler requestHandler, DataTool dataTool){
         this.socketRedis=s;
         this.connections=connections;
         this.requestHandler=requestHandler;
@@ -31,33 +29,33 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         Channel ch=ctx.channel();
         ByteBuf m = (ByteBuf) msg;
-        byte[] receiveData=dataTool.getBytesFromByteBuf(m.copy());
-        String receiveDataHexString=dataTool.bytes2hex(receiveData);
-        _logger.info("Receive date from " + ch.remoteAddress() + ">>>A:" + receiveDataHexString);
-
-        String encodeStr=dataTool.bytes2hex(upDatafilter(receiveData,ch));
+        byte[] sendData=dataTool.getBytesFromByteBuf(m.copy());
+        String sendDataHexString=dataTool.bytes2hex(sendData);
+        _logger.info("sending date to " + ch.remoteAddress() + ">>>A:" + sendDataHexString);
+        String encodeStr=dataTool.bytes2hex(downDatafilter(sendData, ch));
         ByteBuf fire=dataTool.getByteBuf(encodeStr);
-
-        ctx.fireChannelRead(fire);
+        _logger.info("sending date to " + ch.remoteAddress() + ">>>B:" + encodeStr);
+        super.write(ctx, fire, promise);
     }
+
     /**
-     * 上行数据解密 Tbox->平台
+     * 下行数据加密  平台->Tbox
      * @param content
      * @return
      */
-    public  byte[] upDatafilter(byte[]  content,Channel ch) {
+    public  byte[] downDatafilter(byte[]  content,Channel ch) {
         //todo 判断数据类型，检查是否需要解密，解密密文，与明文拼接返回
         String aesKey="";
         byte[] re;//原文
-        byte[] data=new byte[content.length-33-1];
-        byte[] head=new byte[33];
+        byte[] data=new byte[content.length-11-1];
+        byte[] head=new byte[11];
         byte dataType=dataTool.getApplicationType(content);//业务类型，判断是否需要加密
-        String imei=dataTool.getImeiFromReqData(content);
+        String imei="";
         if(dataType==0x11||dataType==0x12||dataType==0x13) {//这些业务的key依赖于从imei获取
-            socketRedis.saveHashString(dataTool.connection_online_imei_hashmap_name, ch.remoteAddress().toString(), imei, -1);
+          imei=getImeiFromRedis(ch);
         }
         if(dataType==0x11||dataType==0x12){//OX11无需密钥，0x12激活报文内容使用密钥（IMEI）
             aesKey=imei;
@@ -80,14 +78,14 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
         if(dataType!=0x11){//除了电检业务 其他都需要加解密
             ByteBuf tmp=buffer(1024);
             ByteBuf orginial=dataTool.getByteBuf(dataTool.bytes2hex(content));
-            orginial.readBytes(head, 0, 5 + 28);//包头部分 明文
+            orginial.readBytes(head, 0, 5 + 6);//包头部分 明文
             tmp.writeBytes(head);
             orginial.readBytes(data, 0, data.length);//待加解密data长度=总长度-包头33-checkSum1
             //todo 数据写入完毕 计算报文长度 计算checkSum
             if(dataType==0x13) {
-                tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//
+                tmp.writeBytes(AES128Tool.encrypt(data, aesKey));//
             }else{
-                tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//如果要生成测试数据只需要把这一段改为加密即可
+                tmp.writeBytes(AES128Tool.encrypt(data, aesKey));//如果要生成测试数据只需要把这一段改为加密即可
             }
             tmp.markWriterIndex();
             int newLength=tmp.readableBytes()-5;//包头不计
@@ -97,7 +95,7 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
             byte[] withOutCheckSum=dataTool.getBytesFromByteBuf(tmp);//without checkSum
             tmp.writeByte(dataTool.getCheckSum(withOutCheckSum));//checkSum
             re=dataTool.getBytesFromByteBuf(tmp);//
-            }else{
+        }else{
             re=content;
         }
         return re;
@@ -110,6 +108,12 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
         return vin;
     }
 
-
-
+    public String getImeiFromRedis(Channel ch){
+        String imei=socketRedis.getHashString(dataTool.connection_online_imei_hashmap_name,ch.remoteAddress().toString());
+        if(imei==null||imei.equals("")||imei.length()!=15){
+            _logger.info("get imei from redis [error],please check redis,connection:"+ch.remoteAddress());
+            imei="";
+        }
+        return imei;
+    }
 }
