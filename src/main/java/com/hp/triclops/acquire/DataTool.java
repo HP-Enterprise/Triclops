@@ -36,7 +36,11 @@ public class DataTool {
     public static final String remoteControlRef_preStr="remoteControlRef:";//远程控制event引用的远程控制db id
     public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
-    public static final String connection_hashmap_name="tbox-connections";
+    public static final String connection_hashmap_name="tbox-connections";//Tbox连接标志 vin:remoteAddress
+    public static final String connection_online_imei_hashmap_name="tbox-connections-imei";//Tbox在线连接标志 remoteAddress:imei 用于提取imei下行报文加密时使用
+    public static final String remoteControl_hashmap_name="remoteControl-results";//远程控制结果 vin-eventId:RecordId
+    public static final String remoteControlSet_hashmap_name="remoteControlSet-results";//远程控制参数设置结果 vin-eventId:Result
+    public static final String tboxkey_hashmap_name="tbox-aeskeys";//存储AES加密的key vin:AesKeyValue
 
     public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
     public static final long msgCurrentStatus_ttl=600l;
@@ -208,7 +212,10 @@ public class DataTool {
         return speed;
     }
     public float getTrueAvgOil(int a){
-        //得到真实油耗值
+        //得到真实油耗值 0x1ff=511无效值
+        if(a>=511){
+            return 0.0f;
+        }
         String  avgOil=a/10+"."+a%10;
         return Float.valueOf(avgOil);
     }
@@ -489,8 +496,27 @@ public class DataTool {
         //基于netty
         byte[] result = new byte[buf.readableBytes()];
         buf.readBytes(result, 0, buf.readableBytes());
+        buf.readerIndex(0);
         return result;
     }
+
+    public  String getImeiFromReqData(byte[] data)
+    {
+        //解析TBOX上行数据包,提取imei
+        //imei:37,15
+        //vin         :51,17
+        String imei="";
+        if(data!=null){
+            if(data.length>33) {
+                imei=new String(data, 11, 15);//serialNum在字节数组中的位置
+                ByteBuffer bb= ByteBuffer.allocate(1024);
+                bb.put(data);
+                bb.flip();
+            }
+        }
+        return imei;
+    }
+
     public   HashMap<String,String> getVinDataFromRegBytes(byte[] data)
     {
         //解析注册数据包,提取vin和SerialNumber
@@ -667,6 +693,8 @@ public class DataTool {
             re=3;
         }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
             re=3;
+        }else if(applicationId.equals("50")&&messageId.equals("1")) {//远程控制设置指令
+            re=3;
         }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
             re=3;
         }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
@@ -684,6 +712,8 @@ public class DataTool {
         //某一消息的下发超时时间（秒） 参考文档
         int re=60;
         if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
+            re=30;
+        } if(applicationId.equals("50")&&messageId.equals("1")){//远程控制参数设置
             re=30;
         }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
             re=30;
@@ -1138,9 +1168,8 @@ public class DataTool {
         buf.readBytes(imeiBytes);
         warningMessage.setImei(new String(imeiBytes));
         warningMessage.setProtocolVersionNumber((short) buf.readByte());
-        byte[] vehicleIDBytes=new byte[2];
-        buf.readBytes(vehicleIDBytes);
-        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setVehicleID((short) buf.readByte());
+        warningMessage.setVehicleModel((short) buf.readByte());
         warningMessage.setTripID((int) buf.readShort());
         warningMessage.setReserved((int) buf.readShort());
         warningMessage.setIsLocation((short) buf.readByte());
@@ -1149,8 +1178,9 @@ public class DataTool {
         warningMessage.setSpeed((int) buf.readShort());
         warningMessage.setHeading((int) buf.readShort());
         warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setCrashWarning(buf.readByte());
         warningMessage.setAtaWarning(buf.readByte());
-        if(warningMessage.getSrsWarning()==(byte)1) {
+       // if(warningMessage.getSrsWarning()==(byte)1) { 协议0627改为始终发送车速报文
             warningMessage.setSafetyBeltCount((short) buf.readByte());
             byte[] speedLastBytes = new byte[300];
             Integer[] speeds = new Integer[150];
@@ -1160,7 +1190,7 @@ public class DataTool {
                 speeds[i]=(int)bu.readShort();
             }
             warningMessage.setVehicleSpeedLast(speeds);
-        }
+       // }
         return warningMessage;
     }
 
@@ -1183,9 +1213,8 @@ public class DataTool {
         buf.readBytes(imeiBytes);
         warningMessage.setImei(new String(imeiBytes));
         warningMessage.setProtocolVersionNumber((short) buf.readByte());
-        byte[] vehicleIDBytes=new byte[2];
-        buf.readBytes(vehicleIDBytes);
-        warningMessage.setVehicleID(vehicleIDBytes);
+        warningMessage.setVehicleID((short) buf.readByte());
+        warningMessage.setVehicleModel((short) buf.readByte());
         warningMessage.setTripID((int) buf.readShort());
         warningMessage.setReserved((int) buf.readShort());
         warningMessage.setIsLocation((short) buf.readByte());
@@ -1194,8 +1223,9 @@ public class DataTool {
         warningMessage.setSpeed((int) buf.readShort());
         warningMessage.setHeading((int) buf.readShort());
         warningMessage.setSrsWarning(buf.readByte());
+        warningMessage.setCrashWarning(buf.readByte());
         warningMessage.setAtaWarning(buf.readByte());
-        if(warningMessage.getSrsWarning()==(byte)1) {
+       // if(warningMessage.getSrsWarning()==(byte)1) {协议0627改为始终发送车速报文
             warningMessage.setSafetyBeltCount((short) buf.readByte());
             byte[] speedLastBytes = new byte[300];
             Integer[] speeds = new Integer[150];
@@ -1205,7 +1235,7 @@ public class DataTool {
                 speeds[i]=(int)bu.readShort();
             }
             warningMessage.setVehicleSpeedLast(speeds);
-        }
+     //   }
         return warningMessage;
     }
 
@@ -1220,5 +1250,16 @@ public class DataTool {
         bd   =  bd.setScale(num,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留 num 位小数
        float re=bd.floatValue();
         return re;
+    }
+
+    public  String getRandomString(int length) { //length表示生成字符串的长度
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        return sb.toString();
     }
 }

@@ -67,6 +67,10 @@ public class VehicleDataService {
     @Autowired
     SMSHttpTool smsHttpTool;
 
+    private int wakeUpWaitSeconds=50;//唤醒等待时间，超过即为唤醒失败
+    private int remoteControlTimeOut=40;//远程控制API返回超时秒数（唤醒成功后等待时间）
+    private int remoteSettingTimeOut=40;//远程设置超时秒数(唤醒成功后等待时间)
+
     /**
      * 下发远程控制命令
      * @param uid user id
@@ -83,10 +87,10 @@ public class VehicleDataService {
         RemoteControl rc=new RemoteControl();
         if(remoteControlBody==null){
             rc=remoteControlRepository.findOne(id);
-            eventId=Long.parseLong(rc.getSessionId().split("-")[1]);
+            eventId=Long.parseLong(rc.getSessionId());
         }else{
             rc.setUid(uid);
-            rc.setSessionId(49 + "-" + eventId);//根据application和eventid生成的session_id
+            rc.setSessionId(String.valueOf(eventId));//根据application和eventid生成的session_id
             rc.setVin(vin);
             rc.setRefId(remoteControlBody.getRefId());
             rc.setSendingTime(new Date());
@@ -126,7 +130,7 @@ public class VehicleDataService {
         }
         if(!hasConnection(vin)){
             _logger.info("vin:"+vin+" have not connection,do wake up...");
-            int wakeUpResult=remoteWakeUp(vin,50);
+            int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
             _logger.info("vin:"+vin+" wake up result(success-1 failed-0):"+wakeUpResult);
         }
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
@@ -142,8 +146,11 @@ public class VehicleDataService {
             rc.setRemarkEn("Remote wake up failed, unable to send remote control command!");
             rc.setStatus((short)0);
             remoteControlRepository.save(rc);
+            String key=vin+"-"+eventId;
+            String value=String.valueOf(rc.getId());
+            socketRedis.saveHashString(dataTool.remoteControl_hashmap_name, key, value, -1);
         }
-        return null;
+        return rc;
         //命令下发成功，返回保存后的rc  否则返回null
     }
 
@@ -197,7 +204,7 @@ public class VehicleDataService {
         //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         if(!hasConnection(diagnosticData.getVin())){
             _logger.info("vin:"+diagnosticData.getVin()+" have not connection,do wake up...");
-            int wakeUpResult=remoteWakeUp(diagnosticData.getVin(),50);
+            int wakeUpResult=remoteWakeUp(diagnosticData.getVin(),wakeUpWaitSeconds);
             _logger.info("vin:" + diagnosticData.getVin() + " wake up result(success-1 failed-0):" + wakeUpResult);
 
         }
@@ -215,6 +222,30 @@ public class VehicleDataService {
         return null;//TBox不在线 Controller通知出去
     }
 
+    /**
+     * 检测redis是否有结果数据
+     * @param hashName
+     * @param key
+     * @param checkCount
+     * @return 1有结果 0无结果
+     */
+    public int checkResultFromRedis(String hashName,String key,int checkCount){
+        //远程唤醒动作
+        _logger.info("check Result From Redis......(timeout seconds):"+checkCount);
+        int count=0;
+        while (count<checkCount){
+            //发送一次短信，然后间隔1s检测是否产生结果信息是否建立
+            count++;
+            try{
+                Thread.sleep(1*1000);//唤醒后等待1s循环检测
+            }catch (InterruptedException e){e.printStackTrace(); }
+            //检测连接是否已经建立
+            if(socketRedis.existHashString(hashName,key)){
+                return 1;
+            }
+        }
+        return 0;
+    }
 
     /**
      * 远程唤醒流程 最多三次 每次唤醒后等待10s检测结果
@@ -341,6 +372,85 @@ public class VehicleDataService {
                 re=true;
         }
         return re;
+    }
+
+
+    /**
+     *
+     * @param remoteControlSettingShow 设置参数
+     * @param vin 目标vin
+     * @return 0设置成功 1唤醒失败 2 设置失败 3响应超时
+     */
+    public int sendRemoteSetting( RemoteControlSettingShow remoteControlSettingShow,String vin){
+        if(!hasConnection(vin)){
+            //如果不在线，先唤醒
+            _logger.info("vin:"+vin+" have not connection,do wake up...");
+            int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
+            _logger.info("vin:" + vin + " wake up result(success-1 failed-0):" + wakeUpResult);
+            if(wakeUpResult==0){
+                return 1;//唤醒失败
+            }
+        }
+        long eventId=dataTool.getCurrentSeconds();
+        //唤醒成功
+        if(hasConnection(vin)){
+            _logger.info("vin:"+vin+" have connection,sending command...");
+            //保存到数据库
+            String byteStr=outputHexService.getRemoteControlSettingReqHex(remoteControlSettingShow,eventId);
+            outputHexService.saveCmdToRedis(vin,byteStr);//发送命令
+         }
+        //1有结果 0无结果
+        String key=vin+"-"+eventId;
+        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControlSet_hashmap_name, key, remoteSettingTimeOut);
+        if(checkResultUntilTimeOut==1){
+            //读取结果并返回至api
+            String settingResult=socketRedis.getHashString(dataTool.remoteControlSet_hashmap_name,key);
+            if(settingResult!=null){
+                if(settingResult.equals("0")){
+                    return 0;//设置成功
+                }
+            }
+         return 2;//设置失败
+        }
+        return 3;//响应超时
+    }
+
+
+    /**
+     *
+     * @param eventId 设置参数
+     * @param vin 目标vin
+     * @return  >null超时导致 非null包含结果信息
+     */
+    public RemoteControl getRemoteControlResult(String eventId,String vin){
+      long resultId=checkRemoteControlResult(eventId,vin);
+        _logger.info("exist resultId:" + resultId);
+        if(resultId>0){
+            RemoteControl remoteControl=remoteControlRepository.findOne(resultId);
+            return remoteControl;
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param eventId 设置参数
+     * @param vin 目标vin
+     * @return  >0成功的结果id 0响应超时
+     */
+    public long checkRemoteControlResult(String eventId,String vin){
+        //1有结果 0无结果
+        String key=vin+"-"+eventId;
+        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControl_hashmap_name,key,remoteControlTimeOut);
+        if(checkResultUntilTimeOut==1){
+            //读取结果并返回至api
+            String resultId=socketRedis.getHashString(dataTool.remoteControl_hashmap_name,key);
+            if(resultId!=null){
+                return Long.parseLong(resultId);
+            }
+          }
+        return 0;//响应超时
     }
 
     /**

@@ -54,7 +54,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         byte[] receiveData=dataTool.getBytesFromByteBuf(m);
 
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
-        _logger.info("Receive date from " + ch.remoteAddress() + ">>>:" + receiveDataHexString);
+        _logger.info("Receive date from " + ch.remoteAddress() + ">>>B:" + receiveDataHexString);
 
 
         if(!dataTool.checkByteArray(receiveData)) {
@@ -74,6 +74,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     break;
                 case 0x14://远程唤醒
                     scheduledService.schedule(  new RequestTask(channels,connections,maxDistance,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    break;
+                case 0x15://流量查询请求
+                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x21://固定数据上报
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
@@ -102,7 +105,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     ch.writeAndFlush(buf);//心跳流程直接回消息
                     break;
                 case 0x27://休眠请求
-                    scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, connections, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x28://故障数据上报
                     scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
@@ -111,6 +114,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x31://远程控制响应(上行)包含mid 2 4 5
+                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    break;
+                case 0x32://远程控制设置响应(上行)包含mid 2
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 case 0x41://参数查询响应(上行)
@@ -145,8 +151,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         //连接断开 从map移除连接
         String vin=connections.get(ch.remoteAddress().toString());
         connections.remove(ch.remoteAddress().toString());
-        socketRedis.deleteHashString(dataTool.connection_hashmap_name, vin);//连接从redis中清除
+        socketRedis.deleteHashString(dataTool.connection_online_imei_hashmap_name, ch.remoteAddress().toString());
         if(vin!=null){
+            socketRedis.deleteHashString(dataTool.connection_hashmap_name, vin);//连接从redis中清除
             channels.remove(vin);
         }
         _logger.info("Redis HashMap"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));

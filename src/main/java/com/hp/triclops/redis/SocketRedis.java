@@ -58,6 +58,24 @@ public class SocketRedis {
     }
 
     /**
+     * 删除 HASH 下面的所有key
+     * @param hashName 键
+     */
+    public void deleteHashAllString(String hashName){
+        this.stringRedisTemplate.delete(hashName);
+    }
+
+    /**
+     * 读取值 HASH key
+     * @param hashName 键
+     * @param key 值
+     */
+    public String getHashString(String hashName,String key){
+        this.hashOpts = this.stringRedisTemplate.opsForHash();
+        return hashOpts.get(hashName, key);
+    }
+
+    /**
      * 是否存在 HASH key
      * @param hashName 键
      * @param key 值

@@ -6,10 +6,7 @@ import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
-import com.hp.triclops.repository.DiagnosticDataRepository;
-import com.hp.triclops.repository.GpsDataRepository;
-import com.hp.triclops.repository.RealTimeReportDataRespository;
-import com.hp.triclops.repository.TBoxParmSetRepository;
+import com.hp.triclops.repository.*;
 import com.hp.triclops.service.OutputHexService;
 import com.hp.triclops.service.TboxService;
 import com.hp.triclops.service.VehicleDataService;
@@ -49,9 +46,24 @@ public class RequestHandler {
     VehicleDataService vehicleDataService;
     @Autowired
     GpsTool gpsTool;
-
+    @Autowired
+    TBoxRepository tBoxRepository;
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
+
+    /**
+     * 注册使用的aeskey来时
+     * @param imei
+     * @return
+     */
+    public String getRegAesKeyByImei(String imei){
+        String key=null;
+        TBox tBox=tBoxRepository.findByImei(imei);
+        if(tBox!=null){
+            key=tBox.getT_sn()+""+tBox.getVin();
+        }
+        return key;
+    }
 
     /**
      * @param reqString 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
@@ -103,6 +115,34 @@ public class RequestHandler {
         return null;
     }
 
+    /**
+     *
+     * @param reqString 远程唤醒请求hex
+     * @return 远程唤醒响应hex
+     */
+    public String getFlowResp(String reqString){
+
+        //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        FlowReq bean=dp.loadBean(FlowReq.class);
+        //请求解析到bean
+        //远程唤醒响应
+        FlowResp resp=new FlowResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getEventID());
+        resp.setTotalSize(500l);
+        resp.setUsedSize(123l);
+        DataPackage dpw=new DataPackage("8995_21_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
 
     /**
      *
@@ -147,7 +187,7 @@ public class RequestHandler {
         DiaRequest bean=dp.loadBean(DiaRequest.class);
         //请求解析到bean
         //单项为0成功，全部为0测试成功返回0否则失败返回1
-        int result=bean.getCanActionTest()+bean.getFarmTest()+bean.getGprsTest()+bean.getGpsTest()+bean.getLedTest()+bean.getResetBatteryMapArrayTest()+bean.getSdTest()+bean.getServerCommTest();
+       // int result=bean.getCanActionTest()+bean.getFarmTest()+bean.getGprsTest()+bean.getGpsTest()+bean.getLedTest()+bean.getResetBatteryMapArrayTest()+bean.getSdTest()+bean.getServerCommTest();
         //电检响应
         DiaResp resp=new DiaResp();
         resp.setHead(bean.getHead());
@@ -156,7 +196,7 @@ public class RequestHandler {
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
         resp.setEventID(bean.getEventID());
-        resp.setDiaReportResp(result > 0 ? (short) 1 : (short) 0);
+      //  resp.setDiaReportResp(result > 0 ? (short) 1 : (short) 0);
 
         DataPackage dpw=new DataPackage("8995_17_2");
         dpw.fillBean(resp);
@@ -171,7 +211,7 @@ public class RequestHandler {
      * @param checkRegister 注册是否通过
      * @return 响应hex
      */
-    public String getRegisterResp(String reqString,boolean checkRegister){
+    public String getRegisterResp(String reqString,String vin,boolean checkRegister){
         //根据注册请求的16进制字符串，生成响应的16进制字符串
         ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
         DataPackage dp=conversionTBox.generate(bb);
@@ -186,6 +226,13 @@ public class RequestHandler {
         resp.setEventID(bean.getEventID());
         short registerResult = checkRegister ? (short)0 : (short)1;
         resp.setRegisterResult(registerResult);
+        resp.setTotalSize(500l);
+        resp.setUsedSize(123l);
+        String randomKey="0123456789abcdef";
+       // randomKey=dataTool.getRandomString(16);
+        _logger.info("AES key for vin:" + randomKey);
+        socketRedis.saveHashString(dataTool.tboxkey_hashmap_name,vin,randomKey,-1);
+        resp.setKeyInfo(randomKey.getBytes());
         //注册响应
         DataPackage dpw=new DataPackage("8995_19_2");
         dpw.fillBean(resp);
@@ -214,6 +261,161 @@ public class RequestHandler {
         resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_38_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
+     * @param reqString 实时数据请求hex
+     * @return 实时数据响应hex
+     */
+    public String getRealTimeDataResp(String reqString){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        RealTimeReportMes bean=dp.loadBean(RealTimeReportMes.class);
+        //请求解析到bean
+        RealTimeReportMesResp resp=new RealTimeReportMesResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getSendingTime());
+        //响应
+        DataPackage dpw=new DataPackage("8995_34_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
+     * @param reqString 补发实时数据请求hex
+     * @return 补发实时数据响应hex
+     */
+    public String getResendRealTimeDataResp(String reqString){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendRealTimeMes bean=dp.loadBean(DataResendRealTimeMes.class);
+        //请求解析到bean
+        DataResendRealTimeMesResp resp=new DataResendRealTimeMesResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getSendingTime());
+        //响应
+        DataPackage dpw=new DataPackage("8995_35_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
+     * @param reqString 报警数据请求hex
+     * @return 报警数据响应hex
+     */
+    public String getWarningMessageResp(String reqString){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        WarningMessage bean=dataTool.decodeWarningMessage(reqString);
+        //请求解析到bean
+        WarningMessageResp resp=new WarningMessageResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getSendingTime());
+        //响应
+        DataPackage dpw=new DataPackage("8995_36_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
+     * @param reqString 补发报警数据请求hex
+     * @return 补发报警数据响应hex
+     */
+    public String getDataResendWarningDataResp(String reqString){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataResendWarningMes bean=dataTool.decodeResendWarningMessage(reqString);
+       //请求解析到bean
+        DataResendWarningMesResp resp=new DataResendWarningMesResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getSendingTime());
+        //响应
+        DataPackage dpw=new DataPackage("8995_37_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+
+    /**
+     *
+     * @param reqString 故障数据请求hex
+     * @return 故障数据响应hex
+     */
+    public String getFailureDataResp(String reqString){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        FailureMessage bean=dp.loadBean(FailureMessage.class);
+        //请求解析到bean
+        FailureMessageResp resp=new FailureMessageResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getSendingTime());
+        //响应
+        DataPackage dpw=new DataPackage("8995_40_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
+     * @param reqString 补发故障数据请求hex
+     * @return 补发故障数据响应hex
+     */
+    public String getResendFailureDataResp(String reqString){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
+        //请求解析到bean
+        DataResendFailureDataResp resp=new DataResendFailureDataResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getSendingTime());
+        //响应
+        DataPackage dpw=new DataPackage("8995_41_2");
         dpw.fillBean(resp);
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr=PackageEntityManager.getByteString(bbw);
@@ -456,6 +658,25 @@ public class RequestHandler {
     }
 
 
+    /**
+     *
+     * @param reqString 远程控制上行hex mid=2,4,5
+     * @param vin vin码
+     */
+    public void handleRemoteControlSettingRequest(String reqString,String vin) {
+        byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId=dataTool.getMessageId(bytes);
+        if(messageId==0x02){
+            //todo 记录远程控制设置结果
+            ByteBuffer bb=PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp=conversionTBox.generate(bb);
+            RemoteSettingResp bean=dp.loadBean(RemoteSettingResp.class);
+            String key=vin+"-"+bean.getEventID();
+            String val=String.valueOf(bean.getResponse());
+            _logger.info("handle RemoteControl Setting resp"+key+":"+val);
+            socketRedis.saveHashString(dataTool.remoteControlSet_hashmap_name,key,val,-1);
+        }
+    }
 
     /**
      * 校验,是否发送远程指令
@@ -512,9 +733,9 @@ public class RequestHandler {
             if(remoteControlPreconditionResp.getVehicleSpeed()==0){
                 vehicleSpeedCheck=true;
             }
-            byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();
+            byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();//要求P挡位 参考0627协议
             char[] transmissionGearPosition_char=dataTool.getBitsFromByte(transmissionGearPosition);
-            if(transmissionGearPosition_char[6]=='0'&&transmissionGearPosition_char[7]=='1'){
+            if(transmissionGearPosition_char[4]=='0'&&transmissionGearPosition_char[5]=='0'&&transmissionGearPosition_char[6]=='1'&&transmissionGearPosition_char[7]=='1'){
                 transmissionGearPositionCheck=true;
             }
             byte handBrake=remoteControlPreconditionResp.getEpb_status();

@@ -9,4 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface RemoteControlRepository extends CrudRepository<RemoteControl, Long> {
 
     RemoteControl findByVinAndSessionId(String vin,String sessionId);
+    RemoteControl findByRefId(long refId);
 }

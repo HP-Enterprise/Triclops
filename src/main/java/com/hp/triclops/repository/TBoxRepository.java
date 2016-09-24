@@ -19,4 +19,6 @@ public interface TBoxRepository  extends CrudRepository<TBox, Long> {
 
     TBox findByVin(String vin);
 
+    TBox findByImei(String imei);
+
 }

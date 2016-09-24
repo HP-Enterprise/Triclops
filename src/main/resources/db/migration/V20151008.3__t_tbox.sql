@@ -8,5 +8,6 @@ activation_time DATETIME COMMENT '激活时间',
 imei varchar(15) COMMENT 'IMEI',
 mobile varchar(15)  COMMENT '手机号码',
 remark varchar(200) COMMENT '备注',
-PRIMARY KEY (id)
+PRIMARY KEY (id),
+UNIQUE key (imei)
 ) DEFAULT CHARSET=utf8 COMMENT='TBOX表';

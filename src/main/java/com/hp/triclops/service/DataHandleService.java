@@ -57,17 +57,21 @@ public class DataHandleService {
                 saveDataResendRealTimeMes(vin, msg);
                 break;
             case 0x24://报警数据
-                outputHexService.getWarningMessageAndPush(vin, msg,true);
-                outputHexService.getWarningMessageAndPush(vin, msg, false);
-                outputHexService.getWarningMessageAndSms(vin, msg, true);
-                outputHexService.getWarningMessageAndSms(vin, msg,false);
+                outputHexService.getWarningMessageAndPush(vin, msg,1);
+                outputHexService.getWarningMessageAndPush(vin, msg, 2);
+                outputHexService.getWarningMessageAndPush(vin, msg, 3);
+                outputHexService.getWarningMessageAndSms(vin, msg, 1);
+                outputHexService.getWarningMessageAndSms(vin, msg, 2);
+                outputHexService.getWarningMessageAndSms(vin, msg, 3);
                 saveWarningMessage(vin, msg);
                 break;
             case 0x25://补发报警数据
-                outputHexService.getResendWarningMessageAndPush(vin, msg,true);
-                outputHexService.getResendWarningMessageAndPush(vin, msg,false);
-                outputHexService.getResendWarningMessageAndSms(vin, msg,true);
-                outputHexService.getResendWarningMessageAndSms(vin, msg,false);
+                outputHexService.getResendWarningMessageAndPush(vin, msg,1);
+                outputHexService.getResendWarningMessageAndPush(vin, msg,2);
+                outputHexService.getResendWarningMessageAndPush(vin, msg,3);
+                outputHexService.getResendWarningMessageAndSms(vin, msg, 1);
+                outputHexService.getResendWarningMessageAndSms(vin, msg,2);
+                outputHexService.getResendWarningMessageAndSms(vin, msg,3);
                 saveDataResendWarningMessage(vin, msg);
                 break;
             case 0x28://故障数据
@@ -135,15 +139,15 @@ public class DataHandleService {
         rd.setSendingTime(receiveDate);//服务器时间
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil(bean.getFuelOil() * 1f);
+        rd.setFuelOil((bean.getFuelOil() > 254 ? 0 : bean.getFuelOil()) * 1f);//0xff无效值
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(bean.getServiceIntervall() - 32768);//分辨率1KM， 偏移量-32768， 显示范围： -32768 KM-32767KM  上报数据范围：0-65535
 
-        rd.setLeftFrontTirePressure(bean.getLeftFrontTirePressure() * 2.8f);
-        rd.setLeftRearTirePressure(bean.getLeftRearTirePressure() * 2.8f);
-        rd.setRightFrontTirePressure(bean.getRightFrontTirePressure() * 2.8f);
-        rd.setRightRearTirePressure(bean.getRightRearTirePressure() * 2.8f);
+        rd.setLeftFrontTirePressure((bean.getLeftFrontTirePressure()>125?0:bean.getLeftFrontTirePressure()) * 2.8f);//有效值0-125
+        rd.setLeftRearTirePressure((bean.getLeftRearTirePressure()>125?0:bean.getLeftRearTirePressure()) * 2.8f);
+        rd.setRightFrontTirePressure((bean.getRightFrontTirePressure()>125?0:bean.getRightFrontTirePressure()) * 2.8f);
+        rd.setRightRearTirePressure((bean.getRightRearTirePressure()>125?0:bean.getRightRearTirePressure()) * 2.8f);
         char[] windows=dataTool.getBitsFromShort(bean.getWindowInformation());//
         rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[6]) + String.valueOf(windows[7])));
         rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5])));
@@ -172,8 +176,8 @@ public class DataHandleService {
         rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
         rd.setVoltage(bean.getVoltage() * 0.0009765625f + 3.0f);//pdf 0625 part5.4
-        rd.setAverageSpeedA(bean.getAverageSpeedA());
-        rd.setAverageSpeedB(bean.getAverageSpeedB());
+        rd.setAverageSpeedA(bean.getAverageSpeedA()>260?0:bean.getAverageSpeedA());
+        rd.setAverageSpeedB(bean.getAverageSpeedB()>260?0:bean.getAverageSpeedB());
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -289,6 +293,7 @@ public class DataHandleService {
         wd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         wd.setHeading(bean.getHeading());
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
@@ -318,14 +323,11 @@ public class DataHandleService {
         wd.setHeading(bean.getHeading());
 
         wd.setSrsWarning(dataTool.getWarningInfoFromByte(bean.getSrsWarning()));
+        wd.setCrashWarning(dataTool.getWarningInfoFromByte(bean.getCrashWarning()));
         wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
-        if(bean.getSrsWarning()==(byte)1) {
-            wd.setSafetyBeltCount(bean.getSafetyBeltCount());
-            wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
-        }else{
-            wd.setSafetyBeltCount((short)0);
-            wd.setVehicleHitSpeed(0);
-        }
+        wd.setSafetyBeltCount(bean.getSafetyBeltCount());
+        wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
+
         warningMessageDataRespository.save(wd);
     }
 

@@ -58,7 +58,9 @@ public class NettySender extends Thread{
             //ch.writeAndFlush(dataTool.getByteBuf(msg));
             new CommandHandler(ch,scKey,socketRedis,dataTool,msg).start();
         }else{
+            //一般情况下，不会出现此种情况，出现此情况是由于连接判断和连接实际情况不一致导致，比如异常的连接断开单服务端没有收到任何信息，依然认为连接可用。
             _logger.info("Connection is Dead"+scKey);
+            socketRedis.deleteHashString(dataTool.connection_hashmap_name,scKey);//从redis里面清除连接记录
             //socketRedis.saveSetString(k, msg,-1);发送时异常不返回redis，执行结果依靠响应数据来判断
         }
     }

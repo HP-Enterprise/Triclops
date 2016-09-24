@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS  t_data_warning_message (
   speed float NOT NULL COMMENT '速度',
   heading int(11) NOT NULL COMMENT '方向',
   srs_warning smallint(1) NOT NULL COMMENT '安全气囊报警 0未触发 1触发',
+  crash_warning smallint(1) NOT NULL COMMENT '碰撞报警 0未触发 1触发',
   ata_warning smallint(1) NOT NULL COMMENT '车辆防盗报警 0未触发 1触发',
   safety_belt_count smallint(1) DEFAULT 0 COMMENT '安全带',
   vehicle_hit_speed int(11) NOT NULL COMMENT '碰撞速度',
