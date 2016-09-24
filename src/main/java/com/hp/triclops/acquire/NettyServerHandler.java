@@ -54,7 +54,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         byte[] receiveData=dataTool.getBytesFromByteBuf(m);
 
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
-        _logger.info("Receive date from " + ch.remoteAddress() + ">>>:" + receiveDataHexString);
+        _logger.info("Receive date from " + ch.remoteAddress() + ">>>B:" + receiveDataHexString);
 
 
         if(!dataTool.checkByteArray(receiveData)) {

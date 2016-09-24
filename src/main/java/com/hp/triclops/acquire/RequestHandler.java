@@ -6,10 +6,7 @@ import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
-import com.hp.triclops.repository.DiagnosticDataRepository;
-import com.hp.triclops.repository.GpsDataRepository;
-import com.hp.triclops.repository.RealTimeReportDataRespository;
-import com.hp.triclops.repository.TBoxParmSetRepository;
+import com.hp.triclops.repository.*;
 import com.hp.triclops.service.OutputHexService;
 import com.hp.triclops.service.TboxService;
 import com.hp.triclops.service.VehicleDataService;
@@ -49,9 +46,24 @@ public class RequestHandler {
     VehicleDataService vehicleDataService;
     @Autowired
     GpsTool gpsTool;
-
+    @Autowired
+    TBoxRepository tBoxRepository;
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
+
+    /**
+     * 注册使用的aeskey来时
+     * @param imei
+     * @return
+     */
+    public String getRegAesKeyByImei(String imei){
+        String key=null;
+        TBox tBox=tBoxRepository.findByImei(imei);
+        if(tBox!=null){
+            key=tBox.getT_sn()+""+tBox.getVin();
+        }
+        return key;
+    }
 
     /**
      * @param reqString 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
@@ -217,8 +229,8 @@ public class RequestHandler {
         resp.setTotalSize(500l);
         resp.setUsedSize(123l);
         String randomKey="0123456789abcdef";
-        randomKey=dataTool.getRandomString(16);
-        _logger.info("AES key from vin:" + randomKey);
+       // randomKey=dataTool.getRandomString(16);
+        _logger.info("AES key for vin:" + randomKey);
         socketRedis.saveHashString(dataTool.tboxkey_hashmap_name,vin,randomKey,-1);
         resp.setKeyInfo(randomKey.getBytes());
         //注册响应

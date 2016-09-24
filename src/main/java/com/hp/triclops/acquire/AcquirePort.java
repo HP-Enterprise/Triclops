@@ -79,6 +79,7 @@ public class AcquirePort {
 
     public   void main(){
 
+        socketRedis.deleteHashAllString(dataTool.connection_hashmap_name);//清理redis里面的全部连接记录
         //生成数据
         ScheduledExecutorService  nettyServerScheduledService = Executors.newScheduledThreadPool(_nettyServerThreadPoolSize);
         ScheduledExecutorService  dataHandlerScheduledService = Executors.newScheduledThreadPool(_dataHandlerThreadPoolSize);

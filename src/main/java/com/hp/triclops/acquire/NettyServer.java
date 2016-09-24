@@ -65,7 +65,7 @@ public class NettyServer {
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024, 2, 2, 2, 0));
-                                ch.pipeline().addLast(new AESUpDataHandler(socketRedis,connections,dataTool));
+                                ch.pipeline().addLast(new AESUpDataHandler(socketRedis,connections,requestHandler,dataTool));
                                 ch.pipeline().addLast(new NettyServerHandler(channels, connections, maxDistance,socketRedis, dataTool, requestHandler, outputHexService, scheduledService));
                                 connectionCount++;
                                 // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);

@@ -31,7 +31,7 @@ public class TboxService {
     private Logger _logger = LoggerFactory.getLogger(TboxService.class);
     public boolean activationTBox(String vin,String t_sn,String imei,String iccid){
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
-        TBox tb=tBoxRepository.findByVinAndT_sn(vin, t_sn);
+        TBox tb=tBoxRepository.findByImei(imei);
         Vehicle sVehicle=null;
         //先查询有没有记录，有记录则激活没有记录新增记录
         if(_vehicle==null){//没有车辆新增车辆
@@ -47,6 +47,8 @@ public class TboxService {
         if(tb!=null){//已经存在TBox 激活TBox
             tb.setIs_activated(1);
             tb.setActivation_time(new Date());
+            tb.setVin(vin);
+            tb.setT_sn(t_sn);
             if(iccid!=null){
                 IccidPhone iccidPhone=iccidPhoneRepository.findByIccid(iccid);
                 if(iccidPhone!=null){
