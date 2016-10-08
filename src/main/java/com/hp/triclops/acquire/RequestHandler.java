@@ -11,6 +11,7 @@ import com.hp.triclops.service.OutputHexService;
 import com.hp.triclops.service.TboxService;
 import com.hp.triclops.service.VehicleDataService;
 import com.hp.triclops.utils.GpsTool;
+import com.hp.triclops.utils.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,7 @@ public class RequestHandler {
         TBox tBox=tBoxRepository.findByImei(imei);
         if(tBox!=null){
             key=tBox.getT_sn()+""+tBox.getVin();
+            key= MD5.MD5To16UpperCase(key);
         }
         return key;
     }
@@ -230,8 +232,10 @@ public class RequestHandler {
         resp.setUsedSize(123l);
         String randomKey="0123456789abcdef";
        // randomKey=dataTool.getRandomString(16);
-        _logger.info("AES key for vin:" + randomKey);
-        socketRedis.saveHashString(dataTool.tboxkey_hashmap_name,vin,randomKey,-1);
+        if(checkRegister) {
+            _logger.info("AES key for vin:" + randomKey);
+            socketRedis.saveHashString(dataTool.tboxkey_hashmap_name, vin, randomKey, -1);
+        }
         resp.setKeyInfo(randomKey.getBytes());
         //注册响应
         DataPackage dpw=new DataPackage("8995_19_2");

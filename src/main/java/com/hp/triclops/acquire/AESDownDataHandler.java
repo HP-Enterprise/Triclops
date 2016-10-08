@@ -64,6 +64,8 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
             if(aesKey==null){
                 _logger.info("aeskey for register [error],please check in db,imei:"+imei);
                 aesKey="";
+            }else{
+                _logger.info("aeskey for register imei:"+imei+",aesKey:"+aesKey);
             }
         }else{
             String vin=geVinByAddress(ch.remoteAddress().toString());
