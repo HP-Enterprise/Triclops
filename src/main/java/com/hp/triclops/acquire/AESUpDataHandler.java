@@ -66,6 +66,8 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
             if(aesKey==null){
                 _logger.info("aeskey for register [error],please check in db,imei:"+imei);
                 aesKey="";
+            }else{
+                _logger.info("aeskey for register imei:"+imei+",aesKey:"+aesKey);
             }
         }else{
             String vin=geVinByAddress(ch.remoteAddress().toString());
@@ -84,10 +86,14 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
             tmp.writeBytes(head);
             orginial.readBytes(data, 0, data.length);//待加解密data长度=总长度-包头33-checkSum1
             //todo 数据写入完毕 计算报文长度 计算checkSum
-            if(dataType==0x13) {
+            if (dataType == 0x13) {//注册业务如果解码失败，直接断开连接
                 tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//
-            }else{
-                tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//如果要生成测试数据只需要把这一段改为加密即可
+            } else {
+                try{
+                    tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//如果要生成测试数据只需要把这一段改为加密即可
+                }catch (Exception e){
+                    _logger.info("aes128 decrypt error:"+e);
+                }
             }
             tmp.markWriterIndex();
             int newLength=tmp.readableBytes()-5;//包头不计

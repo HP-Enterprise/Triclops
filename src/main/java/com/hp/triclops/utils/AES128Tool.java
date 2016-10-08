@@ -4,6 +4,7 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 
 /**
@@ -14,13 +15,23 @@ public class AES128Tool {
     /**
      *
      * @param byteContent 需要加密的内容
-     * @param password 加密密码
+     * @param password 加密密码 不足16补0xFF
      * @return
      */
     public static byte[] encrypt(byte[] byteContent, String password) {
+        byte[] pwdBytes=password.getBytes();
+        if(password.length()<16) {
+            pwdBytes= Arrays.copyOf(pwdBytes, 16);
+            Arrays.fill(pwdBytes, password.length(),16,(byte) 0xff);
+        }
+        //System.out.println("AA:"+parseByte2HexStr(pwdBytes));
+        return encrypt(byteContent,pwdBytes);
+    }
+
+
+    public static byte[] encrypt(byte[] byteContent, byte[] password) {
         try {
-            byte[] raw = password.getBytes();
-            SecretKeySpec key = new SecretKeySpec(raw, "AES");
+            SecretKeySpec key = new SecretKeySpec(password, "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");// 创建密码器
             cipher.init(Cipher.ENCRYPT_MODE, key);// 初始化
             byte[] result = cipher.doFinal(byteContent);
@@ -41,13 +52,23 @@ public class AES128Tool {
 
     /**解密
      * @param content  待解密内容
-     * @param password 解密密钥
+     * @param password 解密密钥 不足16补0xFF
      * @return
      */
     public static byte[] decrypt(byte[] content, String password) {
+        byte[] pwdBytes=password.getBytes();
+        if(password.length()<16) {
+            pwdBytes=Arrays.copyOf(pwdBytes, 16);
+            Arrays.fill(pwdBytes, password.length(),16,(byte) 0xff);
+        }
+        return decrypt(content, pwdBytes);
+    }
+
+
+    public static byte[] decrypt(byte[] content, byte[] password) {
         try {
 
-            SecretKeySpec key = new SecretKeySpec(password.getBytes(), "AES");
+            SecretKeySpec key = new SecretKeySpec(password, "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");// 创建密码器
             cipher.init(Cipher.DECRYPT_MODE, key);// 初始化
             byte[] result = cipher.doFinal(content);
@@ -65,6 +86,7 @@ public class AES128Tool {
         }
         return null;
     }
+
 
   /*  public static void main(String[] args){
         String content = "testvcasljdhcejwfdhsljcxbouwaehdasol";
