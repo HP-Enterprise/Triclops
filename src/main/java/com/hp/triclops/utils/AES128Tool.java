@@ -2,10 +2,9 @@ package com.hp.triclops.utils;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+
 
 /**
  * Created by jackl on 2016/9/23.
@@ -13,22 +12,18 @@ import java.security.SecureRandom;
 public class AES128Tool {
 
     /**
-     * 加密
      *
-     * @param content 需要加密的内容
-     * @param password  加密密码
+     * @param byteContent 需要加密的内容
+     * @param password 加密密码
      * @return
      */
-    public static byte[] encrypt(byte[]  content, String password) {
+    public static byte[] encrypt(byte[] byteContent, String password) {
         try {
-            KeyGenerator kgen = KeyGenerator.getInstance("AES");
-            kgen.init(128, new SecureRandom(password.getBytes()));
-            SecretKey secretKey = kgen.generateKey();
-            byte[] enCodeFormat = secretKey.getEncoded();
-            SecretKeySpec key = new SecretKeySpec(enCodeFormat, "AES");
-            Cipher cipher = Cipher.getInstance("AES");// 创建密码器
+            byte[] raw = password.getBytes();
+            SecretKeySpec key = new SecretKeySpec(raw, "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");// 创建密码器
             cipher.init(Cipher.ENCRYPT_MODE, key);// 初始化
-            byte[] result = cipher.doFinal(content);
+            byte[] result = cipher.doFinal(byteContent);
             return result; // 加密
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -36,7 +31,7 @@ public class AES128Tool {
             e.printStackTrace();
         } catch (InvalidKeyException e) {
             e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
+        }  catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         } catch (BadPaddingException e) {
             e.printStackTrace();
@@ -51,12 +46,9 @@ public class AES128Tool {
      */
     public static byte[] decrypt(byte[] content, String password) {
         try {
-            KeyGenerator kgen = KeyGenerator.getInstance("AES");
-            kgen.init(128, new SecureRandom(password.getBytes()));
-            SecretKey secretKey = kgen.generateKey();
-            byte[] enCodeFormat = secretKey.getEncoded();
-            SecretKeySpec key = new SecretKeySpec(enCodeFormat, "AES");
-            Cipher cipher = Cipher.getInstance("AES");// 创建密码器
+
+            SecretKeySpec key = new SecretKeySpec(password.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");// 创建密码器
             cipher.init(Cipher.DECRYPT_MODE, key);// 初始化
             byte[] result = cipher.doFinal(content);
             return result; // 加密
