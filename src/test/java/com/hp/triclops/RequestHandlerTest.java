@@ -86,14 +86,14 @@ public class RequestHandlerTest {
     }
 
 
-    @Test
+   /* @Test
       public void test_getRegisterResp() {
         //注册测试
         String byteString="23 23 00 4D 01 55 D2 0F E7 13 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 39 31 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 55 ";
         System.out.println("request.:"+byteString);
         System.out.println("response:"+requestHandler.getRegisterResp(byteString, true));
 
-    }
+    }*/
 
     @Test
     public void test_getApplicationIdAndMessageIdFromDownBytes() {
