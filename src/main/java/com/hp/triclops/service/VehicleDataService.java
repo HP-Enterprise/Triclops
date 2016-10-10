@@ -442,7 +442,7 @@ public class VehicleDataService {
     public long checkRemoteControlResult(String eventId,String vin){
         //1有结果 0无结果
         String key=vin+"-"+eventId;
-        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControl_hashmap_name,key,remoteControlTimeOut);
+        int checkResultUntilTimeOut=checkResultFromRedis(dataTool.remoteControl_hashmap_name, key, remoteControlTimeOut);
         if(checkResultUntilTimeOut==1){
             //读取结果并返回至api
             String resultId=socketRedis.getHashString(dataTool.remoteControl_hashmap_name,key);
@@ -699,7 +699,7 @@ public class VehicleDataService {
     public DiagnosticData getDiagDataFromFailure(String vin){
         //todo 转换逻辑暂缺
         short[] info=new short[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-        FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderByReceiveTimeDesc(vin);
+        FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
         if(failureMessageData!=null){
             String[] array=failureMessageData.getIdArray();
             if(array!=null){

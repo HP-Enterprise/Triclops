@@ -9,5 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface FailureMessageDataRespository extends CrudRepository<FailureMessageData, Long> {
     //FailureMessageData findTopByVinOrderBySendingTimeDesc(String vin);
 
-    FailureMessageData findTopByVinOrderByReceiveTimeDesc(String vin);
+    FailureMessageData findTopByVinOrderByReceiveTimeDescIdDesc(String vin);
 }
