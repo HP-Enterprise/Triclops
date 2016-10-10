@@ -35,7 +35,7 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
         byte[] sendData=dataTool.getBytesFromByteBuf(m.copy());
         String sendDataHexString=dataTool.bytes2hex(sendData);
         _logger.info("sending date to " + ch.remoteAddress() + ">>>A:" + sendDataHexString);
-        String encodeStr=dataTool.bytes2hex(downDatafilter(sendData, ch));
+        String encodeStr=dataTool.bytes2hex(downDataFilter(sendData, ch));
         ByteBuf fire=dataTool.getByteBuf(encodeStr);
         _logger.info("sending date to " + ch.remoteAddress() + ">>>B:" + encodeStr);
         super.write(ctx, fire, promise);
@@ -46,7 +46,7 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
      * @param content
      * @return
      */
-    public  byte[] downDatafilter(byte[]  content,Channel ch) {
+    public  byte[] downDataFilter(byte[]  content,Channel ch) {
         //todo 判断数据类型，检查是否需要解密，解密密文，与明文拼接返回
         String aesKey="";
         byte[] re;//原文
@@ -77,7 +77,7 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
             }
             //从redis取出之前生成的密钥
         }
-        if(dataType!=0x11){//除了电检业务 其他都需要加解密
+        if(dataType!=0x11 && dataType!=0x26 && dataType!=0x61){//除了电检/心跳/失败报告 业务 其他都需要加解密
             ByteBuf tmp=buffer(1024);
             ByteBuf orginial=dataTool.getByteBuf(dataTool.bytes2hex(content));
             orginial.readBytes(head, 0, 5 + 6);//包头部分 明文

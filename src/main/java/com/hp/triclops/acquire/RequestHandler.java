@@ -273,6 +273,25 @@ public class RequestHandler {
 
     /**
      *
+     * @return 解密失败报告hex
+     */
+    public String getInvalidReport(){
+        InvalidReport report=new InvalidReport();
+        report.setTestFlag((short) 0);
+        report.setSendingTime((long)dataTool.getCurrentSeconds());
+        report.setApplicationID((short) 97);//>>>
+        report.setMessageID((short) 1);//>>>
+        report.setEventID(report.getSendingTime());
+        //响应
+        DataPackage dpw=new DataPackage("8995_97_1");
+        dpw.fillBean(report);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
      * @param reqString 实时数据请求hex
      * @return 实时数据响应hex
      */
