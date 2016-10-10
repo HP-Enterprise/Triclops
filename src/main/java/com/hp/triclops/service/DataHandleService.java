@@ -344,7 +344,7 @@ public class DataHandleService {
         DataPackage dp=conversionTBox.generate(bb);
         FailureMessage bean=dp.loadBean(FailureMessage.class);
         String info=dataTool.getFailureMesId(bean);//当前故障消息
-        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDesc(vin);
+        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
         if(lastData!=null){
             if(lastData.getInfo().equals(info)){
                 result=true;
@@ -393,7 +393,7 @@ public class DataHandleService {
         DataPackage dp=conversionTBox.generate(bb);
         DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
         String info=dataTool.getDataResendFailureMesId(bean);//当前故障消息
-        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDesc(vin);
+        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
         if(lastData!=null){
             if(lastData.getInfo().equals(info)){
                 result=true;
