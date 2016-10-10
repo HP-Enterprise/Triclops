@@ -286,6 +286,10 @@ public class RequestTask  implements Runnable{
                 _vin=chKey;
                 requestHandler.handleParmSetAck(receiveDataHexString, _vin);
                 break;
+            case 0x61://解密失败报告(上行)
+                _logger.info("receive InvalidReport,disconnect...");
+                ch.close();
+                break;
             default:
                 _logger.info(">>other request dave,log to file" + receiveDataHexString);
                 //一般数据，判断是否已注册，注册的数据保存

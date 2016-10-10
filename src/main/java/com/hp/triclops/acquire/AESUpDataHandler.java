@@ -37,18 +37,20 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
         byte[] receiveData=dataTool.getBytesFromByteBuf(m.copy());
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
         _logger.info("Receive date from " + ch.remoteAddress() + ">>>A:" + receiveDataHexString);
+        byte[] filterBytes=upDataFilter(receiveData,ch);
+        if(filterBytes!=null){//如果解码失败，则不将报文透传
+            String encodeStr=dataTool.bytes2hex(upDataFilter(receiveData,ch));
+            ByteBuf fire=dataTool.getByteBuf(encodeStr);
+            ctx.fireChannelRead(fire);
+        }
 
-        String encodeStr=dataTool.bytes2hex(upDatafilter(receiveData,ch));
-        ByteBuf fire=dataTool.getByteBuf(encodeStr);
-
-        ctx.fireChannelRead(fire);
     }
     /**
      * 上行数据解密 Tbox->平台
      * @param content
      * @return
      */
-    public  byte[] upDatafilter(byte[]  content,Channel ch) {
+    public  byte[] upDataFilter(byte[]  content,Channel ch) {
         //todo 判断数据类型，检查是否需要解密，解密密文，与明文拼接返回
         String aesKey="";
         byte[] re;//原文
@@ -79,12 +81,12 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
             }
             //从redis取出之前生成的密钥
         }
-        if(dataType!=0x11){//除了电检业务 其他都需要加解密
+        if(dataType!=0x11 && dataType!=0x26 && dataType!=0x61){//除了电检/心跳/失败报告 业务 其他都需要加解密
             ByteBuf tmp=buffer(1024);
-            ByteBuf orginial=dataTool.getByteBuf(dataTool.bytes2hex(content));
-            orginial.readBytes(head, 0, 5 + 28);//包头部分 明文
+            ByteBuf rawData=dataTool.getByteBuf(dataTool.bytes2hex(content));
+            rawData.readBytes(head, 0, 5 + 28);//包头部分 明文
             tmp.writeBytes(head);
-            orginial.readBytes(data, 0, data.length);//待加解密data长度=总长度-包头33-checkSum1
+            rawData.readBytes(data, 0, data.length);//待加解密data长度=总长度-包头33-checkSum1
             //todo 数据写入完毕 计算报文长度 计算checkSum
             if (dataType == 0x13) {//注册业务如果解码失败，直接断开连接
                 tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//
@@ -92,7 +94,15 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
                 try{
                     tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//如果要生成测试数据只需要把这一段改为加密即可
                 }catch (Exception e){
-                    _logger.info("aes128 decrypt error:"+e);
+                    _logger.info("aes128 decrypt error:" + e);
+                   // ch.writeAndFlush(rawData);
+                    String  reportStr=requestHandler.getInvalidReport();
+                    ByteBuf buf=dataTool.getByteBuf(reportStr);
+                    ch.writeAndFlush(buf);
+                    tmp.release();
+                    rawData.release();
+                    ch.close();
+                    return null;
                 }
             }
             tmp.markWriterIndex();
