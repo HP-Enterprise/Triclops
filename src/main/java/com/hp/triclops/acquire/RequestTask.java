@@ -113,7 +113,10 @@ public class RequestTask  implements Runnable{
                 if(checkVinAndSerNumWake){
                     channels.put(vinWake, ch);
                     connections.put(ch.remoteAddress().toString(),vinWake);
-                    _logger.info("wake up success,Save Connection" + vinWake+":"+ch.remoteAddress() + " to HashMap");
+                    socketRedis.saveHashString(dataTool.connection_hashmap_name, vinWake, ch.remoteAddress().toString(), -1);//连接名称保存到redis
+                    _logger.info("wake up success,Save Connection" + vinWake + ":" + ch.remoteAddress() + " to HashMap");
+                    _logger.info("Connections in   Redis"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+                    _logger.info("Connections in HashMap"+channels.entrySet());
                     afterRegisterSuccess(vinWake);
                 }else{
                     _logger.info("wake up failed,close Connection");
