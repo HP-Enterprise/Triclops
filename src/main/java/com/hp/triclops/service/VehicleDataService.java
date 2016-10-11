@@ -67,8 +67,8 @@ public class VehicleDataService {
     @Autowired
     SMSHttpTool smsHttpTool;
 
-    private int wakeUpWaitSeconds=50;//唤醒等待时间，超过即为唤醒失败
-    private int remoteControlTimeOut=40;//远程控制API返回超时秒数（唤醒成功后等待时间）
+    private int wakeUpWaitSeconds=90;//唤醒等待时间，超过即为唤醒失败
+    private int remoteControlTimeOut=70;//远程控制API返回超时秒数（唤醒成功后等待时间）
     private int remoteSettingTimeOut=40;//远程设置超时秒数(唤醒成功后等待时间)
 
     /**
