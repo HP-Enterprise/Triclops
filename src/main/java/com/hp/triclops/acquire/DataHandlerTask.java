@@ -30,7 +30,7 @@ public class DataHandlerTask implements Runnable{
 
     public void HandleMessage(String vin,String message){
         //将input:{vin}对应的十六进制字符串处理入库
-        _logger.info("handle msg>>>>>:" + message);
+        _logger.info("[0x21][0x22][0x23][0x24][0x25][0x28][0x29]处理数据>>>>>:" + message);
         if(msg!=null&&!msg.equalsIgnoreCase("null")){
             dataHandleService.saveMessage(vin,message);
         }

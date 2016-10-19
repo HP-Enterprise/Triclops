@@ -309,7 +309,7 @@ public class OutputHexService {
                 _remoteFindCar[3]=(byte)(_remoteFindB*4+_remoteFindA);
                 break;
             default:
-                _logger.info("unknown cType"+remoteControl.getControlType().intValue());
+                _logger.info("[0x31]未知的远程控制类别"+remoteControl.getControlType().intValue());
                 break;
         }
         remoteControlCmd.setRemoteControlType(_cType);
@@ -343,12 +343,12 @@ public class OutputHexService {
         if(tpss.size()>0){
             TBoxParmSet tps=tpss.get(0);
             String byteString=getParmSetCmdHex(tps);
-            _logger.info("ParmSet for TBox:"+vin+" will be send>"+byteString);
+            _logger.info("即将下发参数设置给vin:"+vin+" >"+byteString);
             saveCmdToRedis(vin,byteString);
             tps.setStatus((short)1);//参数设置指令向tbox发出 消息状态由0->1
             tBoxParmSetRepository.save(tps);
         }else{
-            _logger.info("No ParmSet for TBox:"+vin+" will be send>");
+            _logger.info("没有vin:"+vin+" 的参数设置需要下发>");
         }
 
     }
@@ -453,7 +453,7 @@ public class OutputHexService {
 
             }
         }else{
-            _logger.info("no user to push message");
+            _logger.info("[0x24]没有找到关联用户，无法推送消息");
         }
     }
 
@@ -475,10 +475,13 @@ public class OutputHexService {
                 if(oneFirst==SRSFIRST){//
                     phone=u.getContactsPhone();
                 }
-                _logger.info("try send  waring sms to"+phone+"|oneFirst:"+oneFirst);
+                _logger.info("[0x24]准备发送报警短信给"+phone+"|oneFirst:"+oneFirst);
                 sendWarningMessageSms(vin, msg, phone,oneFirst);
+            }else{
+                _logger.info("[0x24]没有找到关联用户，无法发送短信");
             }
-
+        }else{
+            _logger.info("[0x24]没有找到关联用户，无法发送短信");
         }
     }
 
@@ -503,7 +506,7 @@ public class OutputHexService {
                 }
             }
         }else{
-            _logger.info("no user to push message");
+            _logger.info("[0x25]没有找到关联用户，无法推送消息");
         }
 
     }
@@ -526,10 +529,13 @@ public class OutputHexService {
                 if(oneFirst==SRSFIRST){
                     phone=u.getContactsPhone();
                 }
-                _logger.info("try send srs waring sms to"+phone+"|oneFirst:"+oneFirst);
+                _logger.info("[0x25]准备发送报警短信给"+phone+"|oneFirst:"+oneFirst);
                 sendResendWarningMessageSms(vin, msg, phone, oneFirst);
+            }else{
+                _logger.info("[0x25]没有找到关联用户，无法发送短信");
             }
-
+        }else{
+            _logger.info("[0x25]没有找到关联用户，无法发送短信");
         }
     }
 
@@ -589,7 +595,7 @@ public class OutputHexService {
      * @param pushMsg 文本报警信息
      */
     public void pushMessageToUser(String vin,Map<String,Object> pushMsg){
-        _logger.info("push message:"+pushMsg);
+        _logger.info("[0x24][0x25][0x28][0x29]准备推送消息:"+pushMsg);
         if(pushMsg==null){
             return;
         }
@@ -603,7 +609,7 @@ public class OutputHexService {
                 if(userVehicleRelatived.getVflag()==1){
                 int uid = userVehicleRelatived.getUid().getId();
                 //int uid=iterator.next().getUid().getId();
-                _logger.info("push to:"+uid+":"+pushMsg);
+                _logger.info("[0x24][0x25][0x28][0x29]推送:"+uid+":"+pushMsg);
                 try {
                     //this.mqService.pushToUser(uid, pushMsg);
 /*                    * @param sourceId    发送用户id<br>
@@ -631,7 +637,7 @@ public class OutputHexService {
                 }
             }
         }else{
-            _logger.info("can not push  message,because no user found for vin:"+vin);
+            _logger.info("[0x24][0x25][0x28][0x29]无法推送消息，没有找到vin:"+vin+"对应的用户");
         }
     }
 
@@ -645,7 +651,7 @@ public class OutputHexService {
      */
     public Map<String,Object> getWarningMessageForPush(String vin,String msg,User user,int onefirst){
         //报警数据保存
-        _logger.info(">>get WarningMessage For Push:"+msg);
+        _logger.info("[0x24]处理报警数据，看是否需要推送:"+msg);
         WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
@@ -690,7 +696,7 @@ public class OutputHexService {
      */
     public void sendWarningMessageSms(String vin,String msg,String phone,int oneFirst){
         //报警数据保存
-        _logger.info(">>get WarningMessage For SMS:"+msg);
+        _logger.info("[0x24]处理报警数据，看是否需要短信:"+msg);
         WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
@@ -724,8 +730,8 @@ public class OutputHexService {
             lastCrashWarning=wmd.getCrashWarning();
             lastAtaWarning=wmd.getAtaWarning();
         }
-        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
-        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
+        _logger.info("[0x24]lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("[0x24]nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
 
         if(oneFirst==SRSFIRST){
             if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
@@ -754,7 +760,7 @@ public class OutputHexService {
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
                 sb.append(shortUrl);*/
                 String smsStr = sb.toString();
-                _logger.info("send sms:" + phone + ":" + smsStr);
+                _logger.info("[0x24]发送短信:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
@@ -785,7 +791,7 @@ public class OutputHexService {
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
                 sb.append(shortUrl);*/
                 String smsStr = sb.toString();
-                _logger.info("send sms:" + phone + ":" + smsStr);
+                _logger.info("[0x24]发送短信:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
@@ -816,7 +822,7 @@ public class OutputHexService {
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
                 sb.append(shortUrl);*/
                 String smsStr = sb.toString();
-                _logger.info("send sms:" + phone + ":" + smsStr);
+                _logger.info("[0x24]发送短信:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
@@ -834,7 +840,7 @@ public class OutputHexService {
      */
     public void sendResendWarningMessageSms(String vin,String msg,String phone,int oneFirst){
         //报警数据保存
-        _logger.info(">>get WarningMessage For SMS:"+msg);
+        _logger.info("[0x25]处理补发报警数据，看是否需要短信:"+msg);
         DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
 
@@ -872,8 +878,8 @@ public class OutputHexService {
             lastCrashWarning=wmd.getCrashWarning();
             lastAtaWarning=wmd.getAtaWarning();
         }
-        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
-        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
+        _logger.info("[0x25]lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("[0x25]nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
 
         if(oneFirst==SRSFIRST){
             if(lastSrsWarning==(short)0 && wd.getSrsWarning()==(short)1){
@@ -902,7 +908,7 @@ public class OutputHexService {
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
                 sb.append(shortUrl);*/
                 String smsStr = sb.toString();
-                _logger.info("send sms:" + phone + ":" + smsStr);
+                _logger.info("[0x25]发送短信:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
@@ -933,7 +939,7 @@ public class OutputHexService {
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
                 sb.append(shortUrl);*/
                 String smsStr = sb.toString();
-                _logger.info("send sms:" + phone + ":" + smsStr);
+                _logger.info("[0x25]发送短信:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
@@ -964,7 +970,7 @@ public class OutputHexService {
                 String shortUrl =   smsHttpTool.getShortUrl(longU.toString());
                 sb.append(shortUrl);*/
                 String smsStr = sb.toString();
-                _logger.info("send sms:" + phone + ":" + smsStr);
+                _logger.info("[0x25]发送短信:" + phone + ":" + smsStr);
                 //调用工具类发起 http请求
                 smsHttpTool.doHttp(phone, smsStr);
             }
@@ -983,7 +989,7 @@ public class OutputHexService {
      */
     public Map<String,Object> getResendWarningMessageForPush(String vin,String msg,User user,int oneFirst){
         //报警数据保存
-        _logger.info(">>get Resend WarningMessage For Push:"+msg);
+        _logger.info("[0x25]处理补发报警数据，看是否需要推送:"+msg);
         DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
@@ -1026,7 +1032,7 @@ public class OutputHexService {
      */
     public Map<String,Object> getFailureMessageForPush(String vin,String msg){
         //故障数据
-        _logger.info(">>get FailureMessage For Push:"+msg);
+        _logger.info("[0x28][0x29]生成报警推送消息:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         FailureMessage bean=dp.loadBean(FailureMessage.class);
@@ -1068,7 +1074,7 @@ public class OutputHexService {
      */
     public Map<String,Object> getResendFailureMessageForPush(String vin,String msg){
         //报警数据保存
-        _logger.info(">>get Resend FailureMessage For Push:"+msg);
+        _logger.info("[0x29]生成补发报警推送消息:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
@@ -1126,8 +1132,8 @@ public class OutputHexService {
             lastCrashWarning=wmd.getCrashWarning();
             lastAtaWarning=wmd.getAtaWarning();
         }
-        _logger.info("lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
-        _logger.info("nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
+        _logger.info("[0x24][0x25]lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
+        _logger.info("[0x24][0x25]nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
         //sb.append("车辆报警信息: ");
         if(wd.getIsLocation()==(short)0){
             //0有效 1无效
@@ -1148,7 +1154,7 @@ public class OutputHexService {
             positionMap.put("heading","");
         }
         if(oneFirst==SRSFIRST){
-            _logger.info("handle srs warning only");
+            _logger.info("[0x24][0x25]仅处理气囊");
             //仅处理气囊
             if(wd.getSrsWarning()==(short)1){
                 //安全气囊报警 0未触发 1触发
@@ -1185,7 +1191,7 @@ public class OutputHexService {
                 return null;
             }
         }else   if(oneFirst==CRASHFIRST){
-            _logger.info("handle crash warning only");
+            _logger.info("[0x24][0x25]仅处理碰撞");
             //仅处理气囊
             if(wd.getCrashWarning()==(short)1){
                 //安全气囊报警 0未触发 1触发
@@ -1222,7 +1228,7 @@ public class OutputHexService {
                 return null;
             }
         }else if(oneFirst==ATAFIRST){
-            _logger.info("handle ata warning only");
+            _logger.info("[0x24][0x25]仅处理防盗");
             //仅处理防盗
             if(wd.getAtaWarning()==(short)1){
                 //防盗报警 0未触发 1触发
@@ -1407,7 +1413,7 @@ public class OutputHexService {
         String sessionId=String.valueOf(eventId);
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
-            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
+            _logger.info("[0x31]No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
             return null;
         }else{
             return rc;
@@ -1474,7 +1480,7 @@ public class OutputHexService {
     public  RemoteControl getRemoteCmdValueFromDb(long id){
         RemoteControl rc=remoteControlRepository.findOne(id);
         if (rc == null) {
-            _logger.info("No RemoteControl found in db,id:"+id);
+            _logger.info("[0x31]没有在数据库找到远程控制记录,id:"+id);
             return null;
         }else{
             return rc;
@@ -1491,23 +1497,23 @@ public class OutputHexService {
         String sessionId=String.valueOf(eventId);
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
-            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
+            _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId);
         }else{
             //持久化远程控制记录状态，push to sender
-            _logger.info("RemoteControl PreconditionResp persistence and push start");
+            _logger.info("[0x31]远程控制Precondition响应处理开始");
             //返回无效才更新db记录
             rc.setRemark(message);
             rc.setRemarkEn(messageEn);
             rc.setStatus((short)0);
             remoteControlRepository.save(rc);
             String pushMsg=message;
-            _logger.info("RemoteControl PreconditionResp  push message>:"+pushMsg);
+            _logger.info("[0x31]远程控制Precondition响应推送消息>:"+pushMsg);
             if(push){
                 try{
                     this.pushRemoteControlResult(rc.getId(),rc.getVin(),String.valueOf(eventId), 0, pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
-            _logger.info("RemoteControl PreconditionResp persistence and push success");
+            _logger.info("[0x31]远程控制Precondition响应处理结束");
               }
     }
 
@@ -1522,11 +1528,11 @@ public class OutputHexService {
         //  Rst 0：无效 1：命令已接收
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
-            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
+            _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
             //持久化远程控制记录状态，push to sender
            if(result==(short)0){
-               _logger.info("RemoteControl Ack persistence and push start");
+               _logger.info("[0x31]远程控制应答处理开始");
                //返回无效才更新db记录 不阻塞
                rc.setRemark("TBOX提示命令无效");
                rc.setRemarkEn("TBOX prompt invalid command");
@@ -1538,7 +1544,7 @@ public class OutputHexService {
                        this.pushRemoteControlResult(rc.getId(),rc.getVin(),String.valueOf(eventId),0,pushMsg);
                    }catch (RuntimeException e){_logger.info(e.getMessage());}
                }
-               _logger.info("RemoteControl Ack persistence and push success");
+               _logger.info("[0x31]远程控制应答处理结束");
            }
 
         }
@@ -1552,11 +1558,11 @@ public class OutputHexService {
     public void handleRefRemoteControlAck(long id,Short result){
         RemoteControl rc=remoteControlRepository.findOne(id);
         if (rc == null) {
-            _logger.info("No RemoteControl found in db id:"+id+"  "+"result:"+ result);
+            _logger.info("[0x31]没有在数据库找到远程控制记录， id:"+id+"  "+"result:"+ result);
         }else{
             //持久化远程控制记录状态，push to sender
             if(result==(short)0){//Rst 0：无效 1：命令已接收
-                _logger.info("RemoteControl Ack persistence and push start");
+                _logger.info("[0x31]关联远程控制应答处理开始");
                 //返回无效才更新db记录 不阻塞
                 rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
                 rc.setRemarkEn("Command execution failed, dependent remote start engine command execution failed: TBOX prompt command is invalid");
@@ -1566,7 +1572,7 @@ public class OutputHexService {
                 try {
                     this.pushRemoteControlResult(rc.getId(),rc.getVin(),rc.getSessionId(),0,pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
-                _logger.info("RemoteControl Ack persistence and push success");
+                _logger.info("[0x31]关联远程控制应答处理结束");
             }
 
         }
@@ -1599,10 +1605,10 @@ public class OutputHexService {
         }
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
-            _logger.info("No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
+            _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
             //持久化远程控制记录状态，push to sender
-            _logger.info("RemoteControl Rst persistence and push start");
+            _logger.info("[0x31]远程控制结果处理开始");
             rc.setStatus(dbResult);
             Vehicle vehicle=vehicleRepository.findByVin(vin);
             if(vehicle!=null){
@@ -1671,7 +1677,7 @@ public class OutputHexService {
                     this.pushRemoteControlResult(rc.getId(), rc.getVin(), String.valueOf(eventId),rc.getStatus(),pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
             }
-            _logger.info("RemoteControl Rst persistence and push success");
+            _logger.info("[0x31]远程控制结果处理结束");
         }
     }
 
@@ -1683,10 +1689,10 @@ public class OutputHexService {
     public void handleRefRemoteControlRst(long id,Short result){
         RemoteControl rc=remoteControlRepository.findOne(id);
         if (rc == null) {
-            _logger.info("No RemoteControl found in db id:"+id+"  "+"result:"+ result);
+            _logger.info("[0x31]没有在数据库找到远程控制记录， id:"+id+"  "+"result:"+ result);
         }else{
             //持久化远程控制记录状态，push to sender
-            _logger.info("RemoteControl Rst persistence and push start");
+            _logger.info("[0x31]关联远程控制结果处理开始");
             Vehicle vehicle=vehicleRepository.findByVin(rc.getVin());
             if(vehicle!=null){
                 int currentCount=0;
@@ -1757,7 +1763,7 @@ public class OutputHexService {
             try{
                 this.pushRemoteControlResult(rc.getId(),rc.getVin(), rc.getSessionId(),rc.getStatus(), pushMsg);
             }catch (RuntimeException e){_logger.info(e.getMessage());}
-            _logger.info("RemoteControl Rst persistence and push success");
+            _logger.info("[0x31]关联远程控制结果处理结束");
         }
     }
 
@@ -1775,7 +1781,7 @@ public class OutputHexService {
         try{
             this.pushRemoteControlResult(rc.getId(),rc.getVin(), rc.getSessionId(),rc.getStatus(), pushMsg);
         }catch (RuntimeException e){_logger.info(e.getMessage());}
-        _logger.info("RemoteControl Rst persistence and push success");
+        _logger.info("[0x31]更新远程控制结果成功");
     }
 
 

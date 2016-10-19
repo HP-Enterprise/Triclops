@@ -83,7 +83,7 @@ public class RequestHandler {
         }
         if(messageId==0x01){
             //Active Request
-            _logger.info("Active Request>>>>>");
+            _logger.info("[0x12]收到激活请求>>>>>");
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp=conversionTBox.generate(bb);
             ActiveReq bean=dp.loadBean(ActiveReq.class);
@@ -112,7 +112,7 @@ public class RequestHandler {
             return byteStr;
         }else if(messageId==0x03){
             //Active Result
-            _logger.info("Active Result>>>>> no response");
+            _logger.info("[0x12]收到激活结果>>>>> 无需回复");
                   }
         return null;
     }
@@ -233,7 +233,7 @@ public class RequestHandler {
         String randomKey="0123456789abcdef";
        // randomKey=dataTool.getRandomString(16);
         if(checkRegister) {
-            _logger.info("AES key for vin:" + randomKey);
+            _logger.info("[0x13]注册时给vin:" + vin+"生成的AES key:"+randomKey);
             socketRedis.saveHashString(dataTool.tboxkey_hashmap_name, vin, randomKey, -1);
         }
         resp.setKeyInfo(randomKey.getBytes());
@@ -481,7 +481,7 @@ public class RequestHandler {
         byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
         byte messageId=dataTool.getMessageId(bytes);
         if(messageId==0x02){
-            _logger.info("RemoteControlPreconditionResp handle...");
+            _logger.info("[0x31]远程控制Precondition响应处理...");
             //RemoteControlPreconditionResp
             //根据预处理响应判断是否下发控制指令
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
@@ -493,18 +493,18 @@ public class RequestHandler {
             socketRedis.saveValueString(statusKey, statusValue, -1);
             RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin, bean.getEventID());
             if(dbRc==null){
-                _logger.info("get RemoteCmd Value From db return null..."+vin+"--"+bean.getEventID());
+                _logger.info("[0x31]通过vin和EventId没有找到对应的远程控制记录..."+vin+"--"+bean.getEventID());
                 return;
             }
-            _logger.info(dbRc.getId()+":update statusValue "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
+            _logger.info("[0x31] "+dbRc.getId()+":变更状态标记 "+"statusKey:"+statusKey+"|"+"statusValue"+statusValue);
             //取出redis暂存的控制参数 生成指令
             long currentRefId=dbRc.getRefId();
-            _logger.info("[debug] currentRefId:"+currentRefId);
+            _logger.info("[0x31][debug] 引用记录ID:"+currentRefId);
             int preconditionRespCheck=0;
             if(currentRefId!=-2){//普通报文才做check ,-2 check直接通过
                preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType());
             }
-            _logger.info("[debug] preconditionRespCheck:"+preconditionRespCheck);
+            _logger.info("[0x31][debug] precondition响应校验结果:"+preconditionRespCheck);
             //0 通过   1~6 各种异常
             //boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
             if(preconditionRespCheck==0){
@@ -512,7 +512,7 @@ public class RequestHandler {
                 long eventId=bean.getEventID();
                 //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                 String cmdByteString=outputHexService.getRemoteControlCmdHex(dbRc,eventId);
-                _logger.info("verify RemoteControl PreconditionResp success,we will send RemoteCommand:" + cmdByteString);
+                _logger.info("[0x31]Precondition响应校验通过,即将下发控制指令:" + cmdByteString);
                 outputHexService.saveCmdToRedis(vin, cmdByteString);
             }else{
                 String msg="";
@@ -537,10 +537,10 @@ public class RequestHandler {
                         outputHexService.modifyRemoteControl(dbRc);
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
+                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
                     }else{
-                        _logger.info("command already has a ref remote control->"+currentRefId);
+                        _logger.info("[0x31]命令已经存在关联的远程控制记录->"+currentRefId);
                     }
                 }
                 if(preconditionRespCheck==5){
@@ -551,7 +551,7 @@ public class RequestHandler {
                         outputHexService.modifyRemoteControl(dbRc);
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
+                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
                     }
                 }
@@ -563,7 +563,7 @@ public class RequestHandler {
                         outputHexService.modifyRemoteControl(dbRc);
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
+                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
                     }
                 }
@@ -575,7 +575,7 @@ public class RequestHandler {
                         outputHexService.modifyRemoteControl(dbRc);
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("we will send a ref startEngine RemoteCommand:" + cmdByteString);
+                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
                         outputHexService.saveCmdToRedis(vin, cmdByteString);
                     }
                 }
@@ -585,7 +585,7 @@ public class RequestHandler {
                 }
                 if(preconditionRespCheck==4||preconditionRespCheck==5||preconditionRespCheck==6||preconditionRespCheck==7){
                     if(currentRefId<=0){
-                        _logger.info("trying start engine...");
+                        _logger.info("[0x31]正在尝试启动发动机...");
                     }
                 }else{//除了4 5 6 7之外的失败会导致流程结束，而4 5 6 7会尝试启动发动机
                     if(currentRefId>0) {//存在ref记录
@@ -597,17 +597,17 @@ public class RequestHandler {
                         outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn,true);//普通单条，推送
                     }
 
-                    _logger.info("verify RemoteControl PreconditionResp failed,we will not send RemoteCommand");
+                    _logger.info("[0x31]Precondition响应校验未通过,无法下发控制指令。");
                 }
             }
         }else if(messageId==0x04){
-            _logger.info("receive RemoteControlAck,start  handle...");
+            _logger.info("[0x31]收到远程控制应答,开始处理...");
             //RemoteControlAck
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp=conversionTBox.generate(bb);
             RemoteControlAck bean=dp.loadBean(RemoteControlAck.class);
             //请求解析到bean
-            _logger.info("RemoteControlAck status:>>>>>>>>>>>" + bean.getRemoteControlAck());//0：无效 1：命令已接收
+            _logger.info("[0x31]远程控制应答:>" + bean.getRemoteControlAck()+" (参考值 0:无效 1:命令已接收)");//0：无效 1：命令已接收
             //变更消息状态 不会当作失败而重试
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
@@ -615,7 +615,7 @@ public class RequestHandler {
             //todo 《失败时》需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，更新失败原因
             RemoteControl rc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
             if(rc==null){
-                _logger.info("get RemoteCmd Value From DB return null...");
+                _logger.info("[0x31]通过vin和eventId没有在数据库找到控制记录..."+vin+"|"+bean.getEventID());
                 return;
             }
             long refId=rc.getRefId();
@@ -628,15 +628,15 @@ public class RequestHandler {
                     outputHexService.handleRemoteControlAck(vin, bean.getEventID(), bean.getRemoteControlAck(),true);
                 }
             }
-            _logger.info("handle remote Control Ack finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
+            _logger.info("[0x31]远程控制应答处理结束:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
         }else if(messageId==0x05){
-            _logger.info("RemoteControlRst handle...");
+            _logger.info("[0x31]收到远程控制结果,开始处理...");
             //RemoteControlRst
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp=conversionTBox.generate(bb);
             RemoteControlRst bean=dp.loadBean(RemoteControlRst.class);
             //请求解析到bean
-            _logger.info("RemoteControlRst>>>>>>>>>>>" + bean.getRemoteControlAck());//0：成功 1：失败
+            _logger.info("[0x31]收到远程控制结果：>" + bean.getRemoteControlAck()+" (参考值 0：成功 1：失败 ...大于1:其它文档中定义的原因)");//0：成功 1：失败
             String key="Result:"+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID()+"-"+bean.getMessageID();
             //变更消息状态
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
@@ -649,7 +649,7 @@ public class RequestHandler {
             //todo 不存在ref 成功或者失败 持久化消息
             RemoteControl rc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
             if(rc==null){
-                _logger.info("get RemoteCmd Value From DB return null...");
+                _logger.info("[0x31]通过vin和eventId没有在数据库找到控制记录..."+vin+"|"+bean.getEventID());
                 return;
             }
             long refId=rc.getRefId();
@@ -661,7 +661,7 @@ public class RequestHandler {
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),false);
                     //存在ref记录
                         //RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
-                       _logger.info("start Executing the original command");
+                       _logger.info("[0x31]关联的启动发动机执行成功，开始执行原始控制指令");
                         new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
                     }
                 else{
@@ -676,7 +676,7 @@ public class RequestHandler {
                     outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),true);
                 }
                 }
-            _logger.info("handle remote Control Rst finished:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
+            _logger.info("[0x31]远程控制结果处理结束:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
         }
     }
 
@@ -883,15 +883,15 @@ public class RequestHandler {
                 }
             }
         }
-        _logger.info("status:tmpCheck-clampCheck-remoteKeyCheck-hazardLightsCheck-vehicleSpeedCheck"
+        _logger.info("[0x31]status:tmpCheck-clampCheck-remoteKeyCheck-hazardLightsCheck-vehicleSpeedCheck"
                 +"-transmissionGearPositionCheck-handBrakeCheck-sunroofCheck-windowsCheck"
                 +"-doorsCheck-trunkCheck-bonnetCheck-centralLockCheck-crashStatusCheck"
                 +"-remainingFuelCheck");
-        _logger.info("status:"+tmpCheck +"-"+ clampCheck +"-"+ remoteKeyCheck +"-"+ hazardLightsCheck +"-"+ vehicleSpeedCheck
+        _logger.info("[0x31]status:"+tmpCheck +"-"+ clampCheck +"-"+ remoteKeyCheck +"-"+ hazardLightsCheck +"-"+ vehicleSpeedCheck
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
                 +"-"+ remainingFuelCheck);
-        _logger.info("verifyRemoteControlPreconditionResp result:"+reint);
+        _logger.info("[0x31]Precondition响应校验结果:"+reint);
         return reint;
     }
     /**

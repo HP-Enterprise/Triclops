@@ -36,10 +36,10 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
         ByteBuf m = (ByteBuf) msg;
         byte[] receiveData=dataTool.getBytesFromByteBuf(m.copy());
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
-        _logger.info("Receive date from " + ch.remoteAddress() + ">>>A:" + receiveDataHexString);
+        _logger.info("收到报文 " + ch.remoteAddress() + ">>>原始:" + receiveDataHexString);
         byte[] filterBytes=upDataFilter(receiveData,ch);
         if(filterBytes!=null){//如果解码失败，则不将报文透传
-            String encodeStr=dataTool.bytes2hex(upDataFilter(receiveData,ch));
+            String encodeStr=dataTool.bytes2hex(filterBytes);
             ByteBuf fire=dataTool.getByteBuf(encodeStr);
             ctx.fireChannelRead(fire);
         }

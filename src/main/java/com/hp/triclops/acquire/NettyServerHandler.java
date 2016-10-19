@@ -54,11 +54,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         byte[] receiveData=dataTool.getBytesFromByteBuf(m);
 
         String receiveDataHexString=dataTool.bytes2hex(receiveData);
-        _logger.info("Receive date from " + ch.remoteAddress() + ">>>B:" + receiveDataHexString);
-
+        _logger.info("收到报文 " + ch.remoteAddress() + ">>>处理:" + receiveDataHexString);
 
         if(!dataTool.checkByteArray(receiveData)) {
-            _logger.info(">>>>>bytes data is invalid,we will not handle them");
+            _logger.info(">>>>>报文非法，不处理");
         }else{
             byte dataType=dataTool.getApplicationType(receiveData);
             switch(dataType)
@@ -94,10 +93,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x26://心跳
-                    _logger.info("Heartbeat request");
+                    _logger.info("[0x26]收到心跳请求");
                     chKey=geVinByAddress(ch.remoteAddress().toString());
                     if(chKey==null){
-                        _logger.info("Connection is not registered,no response");
+                        _logger.info("报文对应的连接没有注册，不处理报文");
                         return;
                     }
                     respStr=requestHandler.getHeartbeatResp(receiveDataHexString);
@@ -137,7 +136,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
                     break;
                 default:
-                    _logger.info(">>unknown request ,log to log" + receiveDataHexString);
+                    _logger.info("未知类型的数据，记录到日志：" + receiveDataHexString);
                     //一般数据，判断是否已注册，注册的数据保存
                     break;
             }
@@ -146,20 +145,20 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     @Override
     public void channelRegistered(ChannelHandlerContext ctx){
         Channel ch=ctx.channel();
-        _logger.info("Register" + ch.remoteAddress());
+        _logger.info("Socket连接:" + ch.remoteAddress());
     }
     public void channelUnregistered(ChannelHandlerContext ctx){
         Channel ch=ctx.channel();
-        _logger.info("UnRegister" + ch.remoteAddress());
+        _logger.info("Socket断连:" + ch.remoteAddress());
         //连接断开 从map移除连接
-        String vin=connections.get(ch.remoteAddress().toString());
+        String vin = connections.get(ch.remoteAddress().toString());
         connections.remove(ch.remoteAddress().toString());
         socketRedis.deleteHashString(dataTool.connection_online_imei_hashmap_name, ch.remoteAddress().toString());
         if(vin!=null){
             socketRedis.deleteHashString(dataTool.connection_hashmap_name, vin);//连接从redis中清除
             channels.remove(vin);
         }
-        _logger.info("Redis HashMap"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+        _logger.info("连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
        }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
@@ -177,9 +176,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
                 socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
-                _logger.info("Save data to Redis:" + inputKey);
+                _logger.info("保存数据到Redis:" + inputKey);
             }else{
-                _logger.info("can not find the scKey,data is invalid，do not save!");
+                _logger.info("未能找到对应的vin，无法保存数据!");
             }
         }
     }

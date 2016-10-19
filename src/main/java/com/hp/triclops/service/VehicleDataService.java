@@ -117,11 +117,11 @@ public class VehicleDataService {
                 rc.setAvailable((short) 0);
             }
             remoteControlRepository.save(rc);
-            _logger.info("save RemoteControl to db"+rc.getId());
+            _logger.info("[0x31]保存远程控制记录到数据库，id:"+rc.getId());
         }
         //20160525取消T平台对控制次数的检查
         if(!initCheck(vin,rc.getControlType())){
-            _logger.info("vin:"+vin+" initCheck failed,abort remote Control");
+            _logger.info("[0x31]vin:"+vin+" initCheck失败,无法继续远程控制");
             rc.setRemark("车辆初始状态不满足控制条件，无法下发远程控制指令！");
             rc.setRemarkEn("can not send command,because init check failed.");
             rc.setStatus((short)0);
@@ -129,17 +129,17 @@ public class VehicleDataService {
             return null;
         }
         if(!hasConnection(vin)){
-            _logger.info("vin:"+vin+" have not connection,do wake up...");
+            _logger.info("[0x31]vin:"+vin+" 当前不在线，正在唤醒...");
             int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
-            _logger.info("vin:"+vin+" wake up result(success-1 failed-0):"+wakeUpResult);
+            _logger.info("[0x31]vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
         }
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
         if(hasConnection(vin)){
-            _logger.info("vin:"+vin+" have connection,sending command...");
+            _logger.info("[0x31]vin:"+vin+" 在线,发送Precondition请求...");
             //保存到数据库
             String byteStr=outputHexService.getRemoteControlPreHex(rc,eventId);
             outputHexService.saveCmdToRedis(vin,byteStr);//发送预命令
-            _logger.info("pre command hex:"+byteStr);
+            _logger.info("[0x31]Precondition请求hex:"+byteStr);
             return rc;
         }else{
             rc.setRemark("远程唤醒失败，无法下发远程控制命令！");
@@ -203,9 +203,9 @@ public class VehicleDataService {
         //参数数据保存到数据库表
         //先检测是否有连接，如果没有连接。需要先执行唤醒，通知TBOX发起连接
         if(!hasConnection(diagnosticData.getVin())){
-            _logger.info("vin:"+diagnosticData.getVin()+" have not connection,do wake up...");
+            _logger.info("[0x14]vin:"+diagnosticData.getVin()+" 当前不在线，正在唤醒...");
             int wakeUpResult=remoteWakeUp(diagnosticData.getVin(),wakeUpWaitSeconds);
-            _logger.info("vin:" + diagnosticData.getVin() + " wake up result(success-1 failed-0):" + wakeUpResult);
+            _logger.info("[0x14]vin:"+diagnosticData.getVin()+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
 
         }
         if(hasConnection(diagnosticData.getVin())){
@@ -231,7 +231,7 @@ public class VehicleDataService {
      */
     public int checkResultFromRedis(String hashName,String key,int checkCount){
         //远程唤醒动作
-        _logger.info("check Result From Redis......(timeout seconds):"+checkCount);
+        _logger.info("[0x31][0x32]从Redis检查 "+key+"是否有结果返回......(超时时间"+checkCount+"s)");
         int count=0;
         while (count<checkCount){
             //发送一次短信，然后间隔1s检测是否产生结果信息是否建立
@@ -253,7 +253,7 @@ public class VehicleDataService {
      */
     public int remoteWakeUp(String vin,int checkCount){
         //远程唤醒动作
-        _logger.info("doing wake up......");
+        _logger.info("[0x31]正在唤醒......(超时时间"+checkCount+"s)");
         wakeup(vin);
         int count=0;
         while (count<checkCount){
@@ -276,13 +276,13 @@ public class VehicleDataService {
      */
     public void wakeup(String vin){
         //本部分代码为调用外部唤醒接口
-        _logger.info(" wake up tbox"+vin);
+        _logger.info("[0x31]准备向vin:"+vin+"的T-Box手机号发送短信");
         TBox tBox=tBoxRepository.findByVin(vin);
         if(tBox!=null){
             String tboxMobile=tBox.getMobile();
             smsHttpTool.doHttp(tboxMobile,"WAKEUP");
         }else{
-            _logger.info("can not find phone for vin:"+vin);
+            _logger.info("[0x31]无法找到vin:"+vin+"对应T-Box的手机号");
         }
     }
 
@@ -294,7 +294,7 @@ public class VehicleDataService {
     private boolean hasConnection(String vin){
         //检测对应vin是否有连接可用
         boolean re=false;
-        _logger.info("check hasConnection  in redis"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+        _logger.info("[0x31]从redis检查vin:"+vin+"是否在线"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
         re=socketRedis.existHashString(dataTool.connection_hashmap_name,vin);
         return re;
     }
@@ -352,9 +352,9 @@ public class VehicleDataService {
             }
         }
         //右后车窗信息 0开1半开2关3信号异常
-        _logger.info("initCheck:"+vehicleSpeedCheck +"-"+ sunroofCheck +"-"+ windowsCheck +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck);
+        _logger.info("[0x31]initCheck:"+vehicleSpeedCheck +"-"+ sunroofCheck +"-"+ windowsCheck +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck);
         boolean re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
-        _logger.info("initCheck result:"+re);
+        _logger.info("[0x31]initCheck result:"+re);
         return re;
     }
 
@@ -384,9 +384,9 @@ public class VehicleDataService {
     public int sendRemoteSetting( RemoteControlSettingShow remoteControlSettingShow,String vin){
         if(!hasConnection(vin)){
             //如果不在线，先唤醒
-            _logger.info("vin:"+vin+" have not connection,do wake up...");
+            _logger.info("vin:"+vin+" 当前不在线，正在唤醒...");
             int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
-            _logger.info("vin:" + vin + " wake up result(success-1 failed-0):" + wakeUpResult);
+            _logger.info("vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
             if(wakeUpResult==0){
                 return 1;//唤醒失败
             }
@@ -394,7 +394,7 @@ public class VehicleDataService {
         long eventId=dataTool.getCurrentSeconds();
         //唤醒成功
         if(hasConnection(vin)){
-            _logger.info("vin:"+vin+" have connection,sending command...");
+            _logger.info("vin:"+vin+" 在线，即将发送命令...");
             //保存到数据库
             String byteStr=outputHexService.getRemoteControlSettingReqHex(remoteControlSettingShow,eventId);
             outputHexService.saveCmdToRedis(vin,byteStr);//发送命令
@@ -461,9 +461,9 @@ public class VehicleDataService {
     public RealTimeDataShow getRealTimeData(String vin){
         if(!hasConnection(vin)){
             //如果不在线，先唤醒
-            _logger.info("vin:"+vin+" have not connection,do wake up...");
+            _logger.info("vin:"+vin+" 当前不在线，正在唤醒...");
             int wakeUpResult=remoteWakeUp(vin,1);
-            _logger.info("vin:" + vin + " wake up result(success-1 failed-0):" + wakeUpResult);
+            _logger.info("vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
         }
         RealTimeReportData rd=null;
         GpsData gd=null;
