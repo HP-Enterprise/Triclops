@@ -80,7 +80,7 @@ public class DataHandleService {
                     saveFailureMessage(vin, msg);
                     outputHexService.getFailureMessageAndPush(vin, msg);
                 }else{
-                    _logger.info(">>Duplicate FailureMessage>");
+                    _logger.info("[0x28]>>重复的故障数据，不处理");
                 }
                 break;
             case 0x29://补发故障数据
@@ -89,7 +89,7 @@ public class DataHandleService {
                     saveDataResendFailureMessage(vin, msg);
                     outputHexService.getResendFailureMessageAndPush(vin, msg);
                 }else{
-                    _logger.info(">>Duplicate ResendFailureMessage>");
+                    _logger.info("[0x29]>>重复的补发故障数据，不处理");
                 }
                 break;
             default:
@@ -99,7 +99,7 @@ public class DataHandleService {
     }
 
     public void saveRegularReportMes(String vin,String msg){
-        _logger.info(">>save RegularReportMes:"+msg);
+        _logger.info("[0x21]>>保存上报的固定数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         RegularReportMes bean=dp.loadBean(RegularReportMes.class);
@@ -126,7 +126,7 @@ public class DataHandleService {
         regularReportDataRespository.save(rd);
     }
     public void saveRealTimeReportMes(String vin,String msg){
-        _logger.info(">>save RealTimeReportMes:"+msg);
+        _logger.info("[0x22]>>保存上报的实时数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         RealTimeReportMes bean=dp.loadBean(RealTimeReportMes.class);
@@ -201,7 +201,7 @@ public class DataHandleService {
 
     public void saveDataResendRealTimeMes(String vin,String msg){
         //补发数据保存
-        _logger.info(">>save DataResend RealTime Mes:"+msg);
+        _logger.info("[0x23]>>保存上报的补发实时数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         DataResendRealTimeMes bean=dp.loadBean(DataResendRealTimeMes.class);
@@ -274,7 +274,7 @@ public class DataHandleService {
     }
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
-        _logger.info(">>save WarningMessage:" + msg);
+        _logger.info("[0x24]>>保存上报的报警数据:" + msg);
         WarningMessage bean=dataTool.decodeWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
@@ -303,7 +303,7 @@ public class DataHandleService {
 
     public void saveDataResendWarningMessage(String vin,String msg){
         //报警数据保存
-        _logger.info(">>save DataResend WarningMessage:"+msg);
+        _logger.info("[0x25]>>保存上报的补发报警数据:"+msg);
         DataResendWarningMes bean=dataTool.decodeResendWarningMessage(msg);
         WarningMessageData wd=new WarningMessageData();
         wd.setVin(vin);
@@ -339,7 +339,7 @@ public class DataHandleService {
      */
     public boolean isDuplicateFailureMessage(String vin,String msg){
         boolean result=false;
-        _logger.info(">>check isDuplicateFailureMessage:"+msg);
+        _logger.info("[0x28]>>检查是否是重复的故障数据");
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         FailureMessage bean=dp.loadBean(FailureMessage.class);
@@ -355,7 +355,7 @@ public class DataHandleService {
 
     public void saveFailureMessage(String vin,String msg){
         //故障数据保存
-        _logger.info(">>save FailureMessage:"+msg);
+        _logger.info("[0x28]>>保存上报的故障数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         FailureMessage bean=dp.loadBean(FailureMessage.class);
@@ -388,7 +388,7 @@ public class DataHandleService {
      */
     public boolean isDuplicateResendFailureMessage(String vin,String msg){
         boolean result=false;
-        _logger.info(">>check isDuplicateResendFailureMessage:"+msg);
+        _logger.info("[0x29]>>检查是否是重复的补发故障数据");
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
@@ -403,7 +403,7 @@ public class DataHandleService {
     }
     public void saveDataResendFailureMessage(String vin,String msg){
         //补发故障数据保存
-        _logger.info(">>save DataResend FailureMessage:"+msg);
+        _logger.info("[0x29]>>保存上报的补发故障数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
         DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);

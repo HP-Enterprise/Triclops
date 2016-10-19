@@ -34,10 +34,10 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
         ByteBuf m = (ByteBuf) msg;
         byte[] sendData=dataTool.getBytesFromByteBuf(m.copy());
         String sendDataHexString=dataTool.bytes2hex(sendData);
-        _logger.info("sending date to " + ch.remoteAddress() + ">>>A:" + sendDataHexString);
+        _logger.info("发送报文 " + ch.remoteAddress() + ">>>原始:" + sendDataHexString);
         String encodeStr=dataTool.bytes2hex(downDataFilter(sendData, ch));
         ByteBuf fire=dataTool.getByteBuf(encodeStr);
-        _logger.info("sending date to " + ch.remoteAddress() + ">>>B:" + encodeStr);
+        _logger.info("发送报文 " + ch.remoteAddress() + ">>>处理:" + encodeStr);
         super.write(ctx, fire, promise);
     }
 

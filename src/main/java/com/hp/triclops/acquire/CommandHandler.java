@@ -47,10 +47,10 @@ public class CommandHandler extends Thread{
         int maxSendCount=dataTool.getMaxSendCount(applicationId,messageId);//基于applicationId-messageId和参考文档得出同一event最多发送的次数
         int sendCount=getCurrentSendCount(vin, eventId, messageId);//从redis取出，这一event已经发了的次数
         if(sendCount<maxSendCount){
-            _logger.info("vin:" + vin+" Send message from CommandHandler>>:" + message);
+            _logger.info("[0x31]vin:" + vin+" 准备发送报文>>:" + message);
             channel.writeAndFlush(dataTool.getByteBuf(message));
         }else{
-            _logger.info("max send count reached!");
+            _logger.info("[0x31]最大重发次数"+maxSendCount+"达到!");
             return;
         }
 
@@ -76,16 +76,16 @@ public class CommandHandler extends Thread{
         if(!currentValue.equals(statusValue)){
             _logger.info("Client has received the command successfully! So I have nothing to do!");
         }else{
-            _logger.info("maybe I need Resend the Command!");
+            _logger.info("[0x31]发出的报文没有应答，准备重发!");
             //将数据放入redis，作为另外一条命令处理，本次处理结束
             //在此之前需要判断重发次数是否已经达到
              sendCount=getCurrentSendCount(vin, eventId, messageId);//从redis取出，这一event已经发了的次数
             if(sendCount<maxSendCount){
-                _logger.info("sendCount"+sendCount+"<maxSendCount"+maxSendCount+",I will ReTry...");
+                _logger.info("[0x31]已重试次数"+sendCount+"<最大重试"+maxSendCount+",正在重发...");
                 socketRedis.saveSetString("output:" + vin,message,-1);
                 //这里是原样将消息再次发送还是重新设置SendTime待考虑，暂时原样重发，无论如何EventId应该是一样的
             }else{
-                _logger.info("max send count reached!");
+                _logger.info("[0x31]最大重发次数"+maxSendCount+"达到!");
             }
 
         }
