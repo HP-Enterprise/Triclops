@@ -1367,18 +1367,17 @@ public class OutputHexService {
             positionMap.put("speed", new StringBuilder().append(wd.getSpeed()).append("km/h;").toString());
             positionMap.put("heading", new StringBuilder().append(wd.getHeading()).toString());
         }*/
-        Iterator<WarningMessageConversion> iterator=warningMessageConversionRepository.findAll().iterator();
-        HashMap<String,String> messages=dataTool.messageIteratorToMap(iterator);
-
+        List<WarningMessageConversion> allList=warningMessageConversionRepository.findAll();
         String[] failureId=wd.getIdArray();//包含故障信息ID的数组
 
         for (int i = 0; i <failureId.length ; i++) {
-            String _info=messages.get(failureId[i]);
-            if(_info!=null){
-                failInfo.add(_info);
+            for(int j=0;j<allList.size();j++){
+                WarningMessageConversion warningMessageConversion=allList.get(j);
+                if(warningMessageConversion.getMessageId().equals(failureId[i])){
+                    failInfo.add(warningMessageConversion.getGroupMessage());
+                }
             }
         }
-
         //jsonMap.put("position",positionMap);
         jsonMap.put("failure_info",failInfo);
         jsonMap.put("failure_num",failInfo.size());

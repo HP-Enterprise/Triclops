@@ -8,11 +8,12 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh,group_
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('5','','','3','车身控制器故障');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('6','','','4','电子稳定系统故障');
-      insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('10','','','4','电子稳定系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('10','','','4','电子稳定系统故障');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('11','','','5','制动系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('12','','','5','制动系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('105','','','5','制动系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('10','','','5','制动系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('120','','','5','制动系统故障');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('18','','','6','变速器系统故障');
@@ -28,6 +29,7 @@ insert into t_warning_message_conversion(message_id,message_en,message_zh,group_
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('145','','','7','发动机系统故障');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('9','','','8','刹车防抱死系统故障');
+insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('10','','','8','刹车防抱死系统故障');
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('13','','','9','电动助力转向系统故障');
 
 insert into t_warning_message_conversion(message_id,message_en,message_zh,group_id,group_message) values('16','','','10','无钥匙进入系统故障');

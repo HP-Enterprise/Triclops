@@ -735,7 +735,7 @@ public class DataTool {
      * 报警消息转换
      * @param iterator 报警消息集合
      * @return 报警消息hashmap
-     */
+     *//*
     public HashMap<String,String> messageIteratorToMap(Iterator<WarningMessageConversion> iterator){
         HashMap<String,String> messages=new HashMap<String,String>();
         while (iterator.hasNext()){
@@ -744,7 +744,7 @@ public class DataTool {
         }
         return messages;
     }
-
+*/
     /**
      * 从bean得到包含的故障ID
      * @param bean
