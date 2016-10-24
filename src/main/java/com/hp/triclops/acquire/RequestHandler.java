@@ -146,36 +146,7 @@ public class RequestHandler {
         return byteStr;
     }
 
-    /**
-     *
-     * @param reqString 远程唤醒请求hex
-     * @param checkVinAndSerNumWake 唤醒校验
-     * @return 远程唤醒响应hex
-     */
-    public String getRemoteWakeUpResp(String reqString,boolean checkVinAndSerNumWake){
 
-        //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
-        DataPackage dp=conversionTBox.generate(bb);
-        RemoteWakeUpReq bean=dp.loadBean(RemoteWakeUpReq.class);
-        //请求解析到bean
-        //远程唤醒响应
-        RemoteWakeUpResp resp=new RemoteWakeUpResp();
-        resp.setHead(bean.getHead());
-        resp.setTestFlag(bean.getTestFlag());
-        resp.setSendingTime((long) dataTool.getCurrentSeconds());
-        resp.setApplicationID(bean.getApplicationID());
-        resp.setMessageID((short) 2);
-        resp.setEventID(bean.getEventID());
-        short wakeUpResult = checkVinAndSerNumWake ? (short)0 : (short)1;
-        resp.setRegisterResult(wakeUpResult);//0唤醒成功 1唤醒失败
-
-        DataPackage dpw=new DataPackage("8995_20_2");
-        dpw.fillBean(resp);
-        ByteBuffer bbw=conversionTBox.generate(dpw);
-        String byteStr=PackageEntityManager.getByteString(bbw);
-        return byteStr;
-    }
 
     /**
      *
@@ -247,6 +218,46 @@ public class RequestHandler {
 
     /**
      *
+     * @param reqString 远程唤醒请求hex
+     * @param checkVinAndSerNumWake 唤醒校验
+     * @return 远程唤醒响应hex
+     */
+    public String getRemoteWakeUpResp(String reqString,String vin,boolean checkVinAndSerNumWake){
+
+        //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        RemoteWakeUpReq bean=dp.loadBean(RemoteWakeUpReq.class);
+        //请求解析到bean
+        //远程唤醒响应
+        RemoteWakeUpResp resp=new RemoteWakeUpResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getEventID());
+        short wakeUpResult = checkVinAndSerNumWake ? (short)0 : (short)1;
+        resp.setRegisterResult(wakeUpResult);//0唤醒成功 1唤醒失败
+        resp.setTotalSize(500l);
+        resp.setUsedSize(123l);
+        String randomKey="0123456789abcdef";
+        // randomKey=dataTool.getRandomString(16);
+        if(checkVinAndSerNumWake) {
+            _logger.info("[0x13]注册时给vin:" + vin+"生成的AES key:"+randomKey);
+            socketRedis.saveHashString(dataTool.tboxkey_hashmap_name, vin, randomKey, -1);
+        }
+        resp.setKeyInfo(randomKey.getBytes());
+
+        DataPackage dpw=new DataPackage("8995_20_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
      * @param reqString 心跳请求hex
      * @return 心跳响应hex
      */
@@ -307,7 +318,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_34_2");
         dpw.fillBean(resp);
@@ -333,7 +344,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_35_2");
         dpw.fillBean(resp);
@@ -358,7 +369,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_36_2");
         dpw.fillBean(resp);
@@ -383,7 +394,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_37_2");
         dpw.fillBean(resp);
@@ -410,7 +421,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_40_2");
         dpw.fillBean(resp);
@@ -436,7 +447,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_41_2");
         dpw.fillBean(resp);

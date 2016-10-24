@@ -58,12 +58,12 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
         byte[] head=new byte[33];
         byte dataType=dataTool.getApplicationType(content);//业务类型，判断是否需要加密
         String imei=dataTool.getImeiFromReqData(content);
-        if(dataType==0x11||dataType==0x12||dataType==0x13) {//这些业务的key依赖于从imei获取
+        if(dataType==0x11||dataType==0x12||dataType==0x13||dataType==0x14) {//这些业务的key依赖于从imei获取
             socketRedis.saveHashString(dataTool.connection_online_imei_hashmap_name, ch.remoteAddress().toString(), imei, -1);
         }
         if(dataType==0x11||dataType==0x12){//OX11无需密钥，0x12激活报文内容使用密钥（IMEI）
             aesKey=imei;
-        }else if(dataType==0x13){//注册报文使用密钥（Serial Number+VIN）
+        }else if(dataType==0x13||dataType==0x14){//注册报文使用密钥（Serial Number+VIN）
             aesKey=requestHandler.getRegAesKeyByImei(imei);//t通过imei找到密钥
             if(aesKey==null){
                 _logger.info("aeskey for register [error],please check in db,imei:"+imei);
