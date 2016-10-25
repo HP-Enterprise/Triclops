@@ -106,7 +106,7 @@ public class RequestTask  implements Runnable{
 
                 //通过vin和tboxsn验证t_vehicle表中是否存在
                 boolean checkVinAndSerNumWake= dataTool.checkVinAndSerialNum(vinWake, serialNumWake);
-                respStr=requestHandler.getRemoteWakeUpResp(receiveDataHexString,checkVinAndSerNumWake);
+                respStr=requestHandler.getRemoteWakeUpResp(receiveDataHexString,vinWake,checkVinAndSerNumWake);
 
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息

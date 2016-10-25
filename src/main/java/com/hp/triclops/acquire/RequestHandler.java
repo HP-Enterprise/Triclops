@@ -146,36 +146,7 @@ public class RequestHandler {
         return byteStr;
     }
 
-    /**
-     *
-     * @param reqString 远程唤醒请求hex
-     * @param checkVinAndSerNumWake 唤醒校验
-     * @return 远程唤醒响应hex
-     */
-    public String getRemoteWakeUpResp(String reqString,boolean checkVinAndSerNumWake){
 
-        //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
-        DataPackage dp=conversionTBox.generate(bb);
-        RemoteWakeUpReq bean=dp.loadBean(RemoteWakeUpReq.class);
-        //请求解析到bean
-        //远程唤醒响应
-        RemoteWakeUpResp resp=new RemoteWakeUpResp();
-        resp.setHead(bean.getHead());
-        resp.setTestFlag(bean.getTestFlag());
-        resp.setSendingTime((long) dataTool.getCurrentSeconds());
-        resp.setApplicationID(bean.getApplicationID());
-        resp.setMessageID((short) 2);
-        resp.setEventID(bean.getEventID());
-        short wakeUpResult = checkVinAndSerNumWake ? (short)0 : (short)1;
-        resp.setRegisterResult(wakeUpResult);//0唤醒成功 1唤醒失败
-
-        DataPackage dpw=new DataPackage("8995_20_2");
-        dpw.fillBean(resp);
-        ByteBuffer bbw=conversionTBox.generate(dpw);
-        String byteStr=PackageEntityManager.getByteString(bbw);
-        return byteStr;
-    }
 
     /**
      *
@@ -247,6 +218,46 @@ public class RequestHandler {
 
     /**
      *
+     * @param reqString 远程唤醒请求hex
+     * @param checkVinAndSerNumWake 唤醒校验
+     * @return 远程唤醒响应hex
+     */
+    public String getRemoteWakeUpResp(String reqString,String vin,boolean checkVinAndSerNumWake){
+
+        //根据远程唤醒请求的16进制字符串，生成响应的16进制字符串
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+        DataPackage dp=conversionTBox.generate(bb);
+        RemoteWakeUpReq bean=dp.loadBean(RemoteWakeUpReq.class);
+        //请求解析到bean
+        //远程唤醒响应
+        RemoteWakeUpResp resp=new RemoteWakeUpResp();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getEventID());
+        short wakeUpResult = checkVinAndSerNumWake ? (short)0 : (short)1;
+        resp.setRegisterResult(wakeUpResult);//0唤醒成功 1唤醒失败
+        resp.setTotalSize(500l);
+        resp.setUsedSize(123l);
+        String randomKey="0123456789abcdef";
+        // randomKey=dataTool.getRandomString(16);
+        if(checkVinAndSerNumWake) {
+            _logger.info("[0x13]注册时给vin:" + vin+"生成的AES key:"+randomKey);
+            socketRedis.saveHashString(dataTool.tboxkey_hashmap_name, vin, randomKey, -1);
+        }
+        resp.setKeyInfo(randomKey.getBytes());
+
+        DataPackage dpw=new DataPackage("8995_20_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
      * @param reqString 心跳请求hex
      * @return 心跳响应hex
      */
@@ -307,7 +318,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_34_2");
         dpw.fillBean(resp);
@@ -333,7 +344,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_35_2");
         dpw.fillBean(resp);
@@ -358,7 +369,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_36_2");
         dpw.fillBean(resp);
@@ -383,7 +394,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_37_2");
         dpw.fillBean(resp);
@@ -410,7 +421,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_40_2");
         dpw.fillBean(resp);
@@ -436,7 +447,7 @@ public class RequestHandler {
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
         resp.setApplicationID(bean.getApplicationID());
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getSendingTime());
+        resp.setEventID(bean.getEventID());
         //响应
         DataPackage dpw=new DataPackage("8995_41_2");
         dpw.fillBean(resp);
@@ -710,6 +721,11 @@ public class RequestHandler {
     public int verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp,short controlType){
         //目前逻辑 根据0619协议
         boolean re=false;
+        short vehicleModel=remoteControlPreconditionResp.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
+        boolean isM8X=true;
+        if(vehicleModel>(short)2){
+            isM8X=false;
+        }
         int reint=-1;
         boolean tmpCheck=false;
         boolean clampCheck=false;
@@ -741,41 +757,80 @@ public class RequestHandler {
             }
             byte remoteKey=remoteControlPreconditionResp.getSesam_hw_status();
             char[] remoteKey_char=dataTool.getBitsFromByte(remoteKey);
-            if(remoteKey_char[5]=='0' && remoteKey_char[6]=='0' && remoteKey_char[7]=='1'){
-                remoteKeyCheck=true;//0x1 Key outside Vehicle
+            if(isM8X){
+                if(remoteKey_char[5]=='0' && remoteKey_char[6]=='0' && remoteKey_char[7]=='1'){
+                    remoteKeyCheck=true;//0x1 Key outside Vehicle
+                }
+                if(remoteKey_char[5]=='0' && remoteKey_char[6]=='1' && remoteKey_char[7]=='0'){
+                    remoteKeyCheck=true;//0x2 Key out of range
+                }
+            }else{
+                _logger.info("F60 Sesam_hw_status 尚未定义");
+                //尚未定义 false
+               /* if(remoteKey_char[5]=='0' && remoteKey_char[6]=='0' && remoteKey_char[7]=='1'){
+                    remoteKeyCheck=true;//0x1 Key outside Vehicle
+                }
+                if(remoteKey_char[5]=='0' && remoteKey_char[6]=='1' && remoteKey_char[7]=='0'){
+                    remoteKeyCheck=true;//0x2 Key out of range
+                }*/
             }
-            if(remoteKey_char[5]=='0' && remoteKey_char[6]=='1' && remoteKey_char[7]=='0'){
-                remoteKeyCheck=true;//0x2 Key out of range
-            }
+
+
+
             byte hazardLight=remoteControlPreconditionResp.getBcm_Stat_Central_Lock2();
             char[] hazardLight_char=dataTool.getBitsFromByte(hazardLight);
             if(hazardLight_char[5]=='0' && hazardLight_char[6]=='0' && hazardLight_char[7]=='0'){
                 hazardLightsCheck=true;
             }
-            //根据0619协议 车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
+            //根据0628协议 M8X车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
+            //F60:分辨率0.05625，偏移量0，显示范围： 0 ~296kmh 上报数据范围： 0~5263 缺省值： 0x0000无效值
             if(remoteControlPreconditionResp.getVehicleSpeed()==0){
-                vehicleSpeedCheck=true;
+                if(isM8X) {
+                    vehicleSpeedCheck = true;
+                }else{
+                    vehicleSpeedCheck = true;
+                }
             }
-            byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();//要求P挡位 参考0627协议
+            byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();//要求P挡位 参考0628协议
             char[] transmissionGearPosition_char=dataTool.getBitsFromByte(transmissionGearPosition);
-            if(transmissionGearPosition_char[4]=='0'&&transmissionGearPosition_char[5]=='0'&&transmissionGearPosition_char[6]=='1'&&transmissionGearPosition_char[7]=='1'){
-                transmissionGearPositionCheck=true;
+            if(isM8X) {//M8X 0x3 P挡
+                if (transmissionGearPosition_char[4] == '0' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '1' && transmissionGearPosition_char[7] == '1') {
+                    transmissionGearPositionCheck = true;
+                }
+            }else{//F6O 0x1 P挡
+                if (transmissionGearPosition_char[4] == '0' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '0' && transmissionGearPosition_char[7] == '1') {
+                    transmissionGearPositionCheck = true;
+                }
             }
+
             byte handBrake=remoteControlPreconditionResp.getEpb_status();
             char[] shandBrake_char=dataTool.getBitsFromByte(handBrake);
+            if(isM8X){
             if(shandBrake_char[6]=='0'&&shandBrake_char[7]=='1'){
                 handBrakeCheck=true;
+            }
+            }else{
+                //尚未定义
+                _logger.info("F60 Epb_status 尚未定义");
             }
             byte sunroof=remoteControlPreconditionResp.getBcm_Stat_window2();
             char[] sunroof_char=dataTool.getBitsFromByte(sunroof);
             //if(sunroof_char[6]=='0'&&sunroof_char[7]=='1'){
-                sunroofCheck=true;
+                sunroofCheck = true;
             //}
-            byte windows=remoteControlPreconditionResp.getBcm_Stat_window();
-            char[] windows_char=dataTool.getBitsFromByte(windows);
-            //if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
+
+            byte[] windows=remoteControlPreconditionResp.getBcm_Stat_window();
+            char[] windows_char = dataTool.getBitsFrom2Byte(windows);
+            if(isM8X){
+            //if(windows_char[14]=='1'&&windows_char[15]=='0' && windows_char[12]=='1'&&windows_char[13]=='0' && windows_char[10]=='1'&&windows_char[11]=='0' && windows_char[8]=='1'&&windows_char[9]=='0'){
                 windowsCheck=true;
             //}
+            }else{
+                //if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
+                windowsCheck=true;
+                //}
+            }
+
             byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
             char[] doors_char=dataTool.getBitsFrom2Byte(doors);
             if(doors_char[14]=='0'&&doors_char[15]=='0' && doors_char[12]=='0'&&doors_char[13]=='0' && doors_char[10]=='0'&&doors_char[11]=='0' && doors_char[8]=='0'&&doors_char[9]=='0'){
@@ -803,6 +858,10 @@ public class RequestHandler {
             }
             byte remoteStartestatus=remoteControlPreconditionResp.getStat_remote_start();
             char[] remoteStartStatus_char=dataTool.getBitsFromByte(remoteStartestatus);
+            boolean isRemoteStart=false;
+            if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能远程关闭
+                isRemoteStart=true;
+            }
             /*
             控制类别  0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：闪灯 11：鸣笛
             */
@@ -823,7 +882,7 @@ public class RequestHandler {
                     reint=1;
                 }
             }else if(controlType==(short)1){//1：远程关闭发动机
-                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能远程关闭
+                if(isRemoteStart){//必须是远程启动发动机才能远程关闭
                     re=true;
                 }
                 if(re){
@@ -839,7 +898,7 @@ public class RequestHandler {
                     reint=3;
                 }
             }else if(controlType==(short)4){//4：空调开启
-                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启空调
+                if(isRemoteStart){//必须是远程启动发动机才能开启空调
                     re=true;
                 }
                 if(re){
@@ -848,7 +907,7 @@ public class RequestHandler {
                     reint=4;
                 }
             }else if(controlType==(short)5){//5：空调关闭
-                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能关闭空调
+                if(isRemoteStart){//必须是远程启动发动机才能关闭空调
                     re=true;
                 }
                 if(re){
@@ -857,7 +916,7 @@ public class RequestHandler {
                     reint=5;
                 }
             }else if(controlType==(short)6){//6：座椅加热
-                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能开启座椅加热
+                if(isRemoteStart){//必须是远程启动发动机才能开启座椅加热
                     re=true;
                 }
                 if(re){
@@ -866,7 +925,7 @@ public class RequestHandler {
                     reint=6;
                 }
             }else if(controlType==(short)7){//6：座椅加热关闭
-                if(remoteStartStatus_char[2]=='0'&&remoteStartStatus_char[3]=='1'){//必须是远程启动发动机才能关闭座椅加热
+                if(isRemoteStart){//必须是远程启动发动机才能关闭座椅加热
                     re=true;
                 }
                 if(re){
@@ -891,7 +950,7 @@ public class RequestHandler {
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
                 +"-"+ remainingFuelCheck);
-        _logger.info("[0x31]Precondition响应校验结果:"+reint);
+        _logger.info("[0x31]Precondition响应校验结果:"+reint+" 车型:"+vehicleModel+"(0:M82;1:M82;2:M85;3:F60;4:F70;5:F60电动车) 是否M8X:"+isM8X);
         return reint;
     }
     /**
