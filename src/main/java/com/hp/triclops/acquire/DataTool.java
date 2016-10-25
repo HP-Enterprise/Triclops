@@ -224,6 +224,8 @@ public class DataTool {
         //分辨率 0.5A，偏移量40，
         //显示范围： -40°C ~+80°C
         //上报数据范围： 0~240
+        a=a>240?240:a;
+        a=a<0?0:a;
         short t=(short)(a-(short)80);
         return t*0.5f;
     }
@@ -231,6 +233,8 @@ public class DataTool {
         //分辨率 0.5A，偏移量40，
         //显示范围： -40°C ~+80°C
         //上报数据范围： 0~240
+        a=a>252?252:a;
+        a=a<0?0:a;
         short t=(short)(a-(short)80);
         return t*0.5f;
     }
