@@ -138,7 +138,10 @@ public class VehicleDataService {
             _logger.info("[0x31]vin:"+vin+" 在线,发送Precondition请求...");
             //保存到数据库
             String byteStr=outputHexService.getRemoteControlPreHex(rc,eventId);
-            outputHexService.saveCmdToRedis(vin,byteStr);//发送预命令
+            //读取connection val 确定写入的key
+            String _val=socketRedis.getHashString(dataTool.connection_hashmap_name,vin);
+            String _serverId=_val.split("-")[0];
+            outputHexService.saveCmdToRedis(_serverId,vin,byteStr);//发送预命令
             _logger.info("[0x31]Precondition请求hex:"+byteStr);
             return rc;
         }else{
@@ -186,7 +189,9 @@ public class VehicleDataService {
         if(hasConnection(tBoxParmSet.getVin())){
             String byteStr=outputHexService.getParmSetCmdHex(tBoxParmSet);
             //生成output数据包并进入redis
-            outputHexService.saveCmdToRedis(tBoxParmSet.getVin(),byteStr);
+            String _val=socketRedis.getHashString(dataTool.connection_hashmap_name,tBoxParmSet.getVin());
+            String _serverId=_val.split("-")[0];
+            outputHexService.saveCmdToRedis(_serverId,tBoxParmSet.getVin(),byteStr);
             tBoxParmSet.setStatus((short)1);//参数设置指令向tbox发出 消息状态由0->1
             tBoxParmSetRepository.save(tBoxParmSet);
             return tBoxParmSet;
@@ -216,7 +221,9 @@ public class VehicleDataService {
             String byteStr=outputHexService.getDiagCmdHex(diagnosticData);
             //生成output数据包并进入redis
             _logger.info(byteStr);
-            outputHexService.saveCmdToRedis(diagnosticData.getVin(), byteStr);
+            String _val=socketRedis.getHashString(dataTool.connection_hashmap_name,diagnosticData.getVin());
+            String _serverId=_val.split("-")[0];
+            outputHexService.saveCmdToRedis(_serverId,diagnosticData.getVin(), byteStr);
             return diagnosticData;
         }
         return null;//TBox不在线 Controller通知出去
@@ -397,7 +404,9 @@ public class VehicleDataService {
             _logger.info("vin:"+vin+" 在线，即将发送命令...");
             //保存到数据库
             String byteStr=outputHexService.getRemoteControlSettingReqHex(remoteControlSettingShow,eventId);
-            outputHexService.saveCmdToRedis(vin,byteStr);//发送命令
+            String _val=socketRedis.getHashString(dataTool.connection_hashmap_name,vin);
+            String _serverId=_val.split("-")[0];
+            outputHexService.saveCmdToRedis(_serverId,vin,byteStr);//发送命令
          }
         //1有结果 0无结果
         String key=vin+"-"+eventId;

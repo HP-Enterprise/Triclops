@@ -36,8 +36,9 @@ public class NettyServer {
     private  ScheduledExecutorService scheduledService;
     private int backlog;
     private int maxDistance;
+    private String serverId;
 
-    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,int maxDistance,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,ScheduledExecutorService scheduledService) {
+    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,int maxDistance,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,String serverId,ScheduledExecutorService scheduledService) {
         this.channels=cs;
         this.connections=connections;
         this.maxDistance=maxDistance;
@@ -47,6 +48,7 @@ public class NettyServer {
         this.requestHandler=rh;
         this.outputHexService=ohs;
         this.port = port;
+        this.serverId=serverId;
         this.scheduledService=scheduledService;
         this._logger = LoggerFactory.getLogger(NettyServer.class);
     }
@@ -66,7 +68,7 @@ public class NettyServer {
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024, 2, 2, 2, 0));
                                 ch.pipeline().addLast(new AESUpDataHandler(socketRedis,connections,requestHandler,dataTool));
-                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, maxDistance,socketRedis, dataTool, requestHandler, outputHexService, scheduledService));
+                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, maxDistance,socketRedis, dataTool, requestHandler, outputHexService, serverId,scheduledService));
                                 ch.pipeline().addLast(new AESDownDataHandler(socketRedis,connections,requestHandler,dataTool));
                                 connectionCount++;
                                 // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);

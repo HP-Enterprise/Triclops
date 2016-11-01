@@ -68,6 +68,8 @@ public class OutputHexService {
     SMSHttpTool smsHttpTool;
     @Autowired
     WarningMessageDataRespository warningMessageDataRespository;
+    @Value("${com.hp.acquire.serverId}")
+    private String _serverId;//serverId集群依赖这个值
 
     private final int SRSFIRST=1;
     private final int CRASHFIRST=2;
@@ -344,7 +346,7 @@ public class OutputHexService {
             TBoxParmSet tps=tpss.get(0);
             String byteString=getParmSetCmdHex(tps);
             _logger.info("即将下发参数设置给vin:"+vin+" >"+byteString);
-            saveCmdToRedis(vin,byteString);
+            saveCmdToRedis(_serverId,vin,byteString);
             tps.setStatus((short)1);//参数设置指令向tbox发出 消息状态由0->1
             tBoxParmSetRepository.save(tps);
         }else{
@@ -1784,8 +1786,8 @@ public class OutputHexService {
     }
 
 
-    public  void saveCmdToRedis(String vin,String hexStr){
-        socketRedis.saveSetString(dataTool.out_cmd_preStr + vin, hexStr, -1);//代发命令的TTL为-1 由处理程序取出
+    public  void saveCmdToRedis(String serverId,String vin,String hexStr){
+        socketRedis.saveSetString(serverId+"-"+dataTool.out_cmd_preStr + vin, hexStr, -1);//代发命令的TTL为-1 由处理程序取出
         //保存到redis
 
 

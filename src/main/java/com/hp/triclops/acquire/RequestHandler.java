@@ -15,6 +15,7 @@ import com.hp.triclops.utils.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
@@ -49,6 +50,9 @@ public class RequestHandler {
     GpsTool gpsTool;
     @Autowired
     TBoxRepository tBoxRepository;
+    @Value("${com.hp.acquire.serverId}")
+    private String _serverId;//serverId集群依赖这个值
+
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
 
@@ -524,7 +528,7 @@ public class RequestHandler {
                 //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                 String cmdByteString=outputHexService.getRemoteControlCmdHex(dbRc,eventId);
                 _logger.info("[0x31]Precondition响应校验通过,即将下发控制指令:" + cmdByteString);
-                outputHexService.saveCmdToRedis(vin, cmdByteString);
+                outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
             }else{
                 String msg="";
                 String msgEn="";
@@ -549,7 +553,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }else{
                         _logger.info("[0x31]命令已经存在关联的远程控制记录->"+currentRefId);
                     }
@@ -563,7 +567,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }
                 }
                 if(preconditionRespCheck==6){
@@ -575,7 +579,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }
                 }
                 if(preconditionRespCheck==7){
@@ -587,7 +591,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }
                 }
                 if(preconditionRespCheck==10){
