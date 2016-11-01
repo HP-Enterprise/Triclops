@@ -505,7 +505,7 @@ public class RequestHandler {
             //已经收到响应 变更消息状态 不会当作失败而重试
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
-            socketRedis.saveValueString(statusKey, statusValue, -1);
+            socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);
             RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin, bean.getEventID());
             if(dbRc==null){
                 _logger.info("[0x31]通过vin和EventId没有找到对应的远程控制记录..."+vin+"--"+bean.getEventID());
@@ -626,7 +626,7 @@ public class RequestHandler {
             //变更消息状态 不会当作失败而重试
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
-            socketRedis.saveValueString(statusKey, statusValue, -1);
+            socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
             //todo 《失败时》需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，更新失败原因
             RemoteControl rc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
             if(rc==null){
@@ -656,7 +656,7 @@ public class RequestHandler {
             //变更消息状态
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
-            socketRedis.saveValueString(statusKey, statusValue,-1);
+            socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);
             socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
             //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
             //todo 需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，参照0x02 resp处理下发
@@ -999,7 +999,7 @@ public class RequestHandler {
         //变更消息状态 不会当作失败而重试
         String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
         String statusValue=String.valueOf(bean.getMessageID());
-        socketRedis.saveValueString(statusKey, statusValue, -1);
+        socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
 
         List<TBoxParmSet> tpss=tBoxParmSetRepository.findByVinAndEventId(vin, bean.getEventID());
         if(tpss.size()>0){
@@ -1042,7 +1042,7 @@ public class RequestHandler {
         //变更消息状态 不会当作失败而重试
         String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+66+"-"+bean.getEventID();//0X42=66 ACK mid=2
         String statusValue=String.valueOf(2);//ACK mid=2
-        socketRedis.saveValueString(statusKey, statusValue, -1);
+        socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
         if(diagnosticData==null){
             _logger.info("no record found for vin:" + vin + "eventId:" + bean.getEventID());
         }else{
