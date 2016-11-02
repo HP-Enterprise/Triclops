@@ -657,7 +657,7 @@ public class RequestHandler {
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
             socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);
-            socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
+            //socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
             //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
             //todo 需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，参照0x02 resp处理下发
             //todo 存在ref  成功:找到remote记录，下发0x03命令  失败：持久化失败消息

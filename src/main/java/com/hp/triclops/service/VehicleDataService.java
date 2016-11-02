@@ -151,7 +151,7 @@ public class VehicleDataService {
             remoteControlRepository.save(rc);
             String key=vin+"-"+eventId;
             String value=String.valueOf(rc.getId());
-            socketRedis.saveHashString(dataTool.remoteControl_hashmap_name, key, value, -1);
+            socketRedis.saveHashString(dataTool.remoteControl_hashmap_name, key, value, dataTool.remoteControlResult_ttl);
         }
         return rc;
         //命令下发成功，返回保存后的rc  否则返回null

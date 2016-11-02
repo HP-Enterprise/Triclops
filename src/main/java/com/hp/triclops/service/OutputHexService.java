@@ -583,7 +583,7 @@ public class OutputHexService {
         }
         String key=vin+"-"+eventId;
         String value=String.valueOf(id);
-        socketRedis.saveHashString(dataTool.remoteControl_hashmap_name,key,value,-1);
+        socketRedis.saveHashString(dataTool.remoteControl_hashmap_name,key,value,dataTool.remoteControlResult_ttl);
         Map<String,Object> dataMap = new HashMap<String,Object>();
         dataMap.put("pType", 1);
         dataMap.put("rs", result);

@@ -43,7 +43,8 @@ public class DataTool {
     public static final String tboxkey_hashmap_name="tbox-aeskeys";//存储AES加密的key vin:AesKeyValue
 
     public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
-    public static final long msgCurrentStatus_ttl=600l;
+    public static final long msgCurrentStatus_ttl=600l;//消息发送标志ttl
+    public static final long remoteControlResult_ttl=600l;//控制结果ttl
     public static final long remote_cmd_value_ttl=600l;
 
 
