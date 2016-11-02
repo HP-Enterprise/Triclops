@@ -29,8 +29,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     private Logger _logger;
     private ScheduledExecutorService scheduledService;
     private int maxDistance;
+    private String serverId;
 
-    public NettyServerHandler(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,int maxDistance,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,ScheduledExecutorService scheduledService ){
+    public NettyServerHandler(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,int maxDistance,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String serverId,ScheduledExecutorService scheduledService ){
         this.channels=cs;
         this.connections=connections;
         this.maxDistance=maxDistance;
@@ -38,6 +39,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         this.dataTool=dt;
         this.requestHandler=rh;
         this.outputHexService=ohs;
+        this.serverId=serverId;
         this.scheduledService=scheduledService;
         this._logger = LoggerFactory.getLogger(NettyServerHandler.class);
     }
@@ -63,35 +65,18 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
             switch(dataType)
             {
                 case 0x11://电检
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x12://激活
-                    scheduledService.schedule(  new RequestTask(channels,connections,maxDistance,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x13://注册
-                    scheduledService.schedule(  new RequestTask(channels,connections,maxDistance,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x14://远程唤醒
-                    scheduledService.schedule(  new RequestTask(channels,connections,maxDistance,ch,socketRedis,dataTool,requestHandler,outputHexService,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x15://流量查询请求
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x21://固定数据上报
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x22://实时数据上报
-                    scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x23://补发实时数据上报
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x24://报警数据上报
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x25://补发报警数据上报
-                    scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
+
                 case 0x26://心跳
                     _logger.info("[0x26]收到心跳请求");
                     chKey=geVinByAddress(ch.remoteAddress().toString());
@@ -104,36 +89,26 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                     ch.writeAndFlush(buf);//心跳流程直接回消息
                     break;
                 case 0x27://休眠请求
-                    scheduledService.schedule(new RequestTask(channels, connections, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x28://故障数据上报
-                    scheduledService.schedule(new RequestTask(channels,connections, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x29://补发故障数据上报
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x31://远程控制响应(上行)包含mid 2 4 5
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x32://远程控制设置响应(上行)包含mid 2
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 case 0x41://参数查询响应(上行)
                     _logger.info("ParamStatus Ack");
                     saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                     break;
                 case 0x42://远程车辆诊断响应(上行)
-                    scheduledService.schedule(new RequestTask(channels, connections, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, connections, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                  case 0x51://上报数据设置响应(上行)
                     _logger.info("SignalSetting Ack");
                     saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                     break;
                 case 0x52://参数设置响应(上行)
-                    scheduledService.schedule(new RequestTask(channels, connections, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
-                    break;
                 case 0x61://解密失败报告
-                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, receiveDataHexString), 10, TimeUnit.MILLISECONDS);
+                    scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
                     break;
                 default:
                     _logger.info("未知类型的数据，记录到日志：" + receiveDataHexString);

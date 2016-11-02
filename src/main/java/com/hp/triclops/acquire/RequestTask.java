@@ -24,8 +24,9 @@ public class RequestTask  implements Runnable{
     private OutputHexService outputHexService;
     private Logger _logger;
     private int maxDistance;
+    private String serverId;
 
-    public RequestTask(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,int maxDistance,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String receiveDataHexString){
+    public RequestTask(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,int maxDistance,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String serverId,String receiveDataHexString){
         super();
         this.channels=cs;
         this.connections=connections;
@@ -35,6 +36,7 @@ public class RequestTask  implements Runnable{
         this.dataTool=dt;
         this.requestHandler=rh;
         this.outputHexService=ohs;
+        this.serverId=serverId;
         this.receiveDataHexString = receiveDataHexString;
         this._logger = LoggerFactory.getLogger(RequestTask.class);
     }
@@ -83,7 +85,7 @@ public class RequestTask  implements Runnable{
                 if(checkVinAndSerNum){
                     channels.put(vin, ch);
                     connections.put(ch.remoteAddress().toString(),vin);
-                    socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, ch.remoteAddress().toString(), -1);//连接名称保存到redis
+                    socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
                     ch.writeAndFlush(buf);//回发数据直接回消息,此处2016.1.15修改，客户端发起数据之前确定已有连接注册记录
                     _logger.info("[0x13]注册成功，保存连接:" + vin + "" + ch.remoteAddress());
                     _logger.info("[0x13]连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
@@ -91,7 +93,7 @@ public class RequestTask  implements Runnable{
                     afterRegisterSuccess(vin);
                 }else{
                     ch.writeAndFlush(buf);//回发数据直接回消息
-                    _logger.info("[0x13]注册失败，断开连接。");
+                    _logger.info("[0x13]注册失败，断开连接。vin:"+vin);
                     ch.close();//关闭连接
                 }
                 break;
@@ -114,7 +116,7 @@ public class RequestTask  implements Runnable{
                 if(checkVinAndSerNumWake){
                     channels.put(vinWake, ch);
                     connections.put(ch.remoteAddress().toString(),vinWake);
-                    socketRedis.saveHashString(dataTool.connection_hashmap_name, vinWake, ch.remoteAddress().toString(), -1);//连接名称保存到redis
+                    socketRedis.saveHashString(dataTool.connection_hashmap_name, vinWake, serverId+"-"+ch.remoteAddress().toString(), -1);//连接名称保存到redis
                     _logger.info("[0x14]唤醒成功，保存连接" + vinWake + "" + ch.remoteAddress());
                     _logger.info("[0x14]连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
                     _logger.info("[0x14]连接信息HashMap:"+channels.entrySet());

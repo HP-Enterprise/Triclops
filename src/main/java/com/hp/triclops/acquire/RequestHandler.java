@@ -15,6 +15,7 @@ import com.hp.triclops.utils.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
@@ -49,6 +50,9 @@ public class RequestHandler {
     GpsTool gpsTool;
     @Autowired
     TBoxRepository tBoxRepository;
+    @Value("${com.hp.acquire.serverId}")
+    private String _serverId;//serverId集群依赖这个值
+
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
 
@@ -501,7 +505,7 @@ public class RequestHandler {
             //已经收到响应 变更消息状态 不会当作失败而重试
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
-            socketRedis.saveValueString(statusKey, statusValue, -1);
+            socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);
             RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin, bean.getEventID());
             if(dbRc==null){
                 _logger.info("[0x31]通过vin和EventId没有找到对应的远程控制记录..."+vin+"--"+bean.getEventID());
@@ -524,7 +528,7 @@ public class RequestHandler {
                 //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                 String cmdByteString=outputHexService.getRemoteControlCmdHex(dbRc,eventId);
                 _logger.info("[0x31]Precondition响应校验通过,即将下发控制指令:" + cmdByteString);
-                outputHexService.saveCmdToRedis(vin, cmdByteString);
+                outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
             }else{
                 String msg="";
                 String msgEn="";
@@ -549,7 +553,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }else{
                         _logger.info("[0x31]命令已经存在关联的远程控制记录->"+currentRefId);
                     }
@@ -563,7 +567,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }
                 }
                 if(preconditionRespCheck==6){
@@ -575,7 +579,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }
                 }
                 if(preconditionRespCheck==7){
@@ -587,7 +591,7 @@ public class RequestHandler {
                         RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
                         _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(vin, cmdByteString);
+                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }
                 }
                 if(preconditionRespCheck==10){
@@ -622,7 +626,7 @@ public class RequestHandler {
             //变更消息状态 不会当作失败而重试
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
-            socketRedis.saveValueString(statusKey, statusValue, -1);
+            socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
             //todo 《失败时》需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，更新失败原因
             RemoteControl rc=outputHexService.getRemoteControlRecord(vin,bean.getEventID());
             if(rc==null){
@@ -652,8 +656,8 @@ public class RequestHandler {
             //变更消息状态
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
-            socketRedis.saveValueString(statusKey, statusValue,-1);
-            socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
+            socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);
+            //socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
             //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
             //todo 需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，参照0x02 resp处理下发
             //todo 存在ref  成功:找到remote记录，下发0x03命令  失败：持久化失败消息
@@ -995,7 +999,7 @@ public class RequestHandler {
         //变更消息状态 不会当作失败而重试
         String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
         String statusValue=String.valueOf(bean.getMessageID());
-        socketRedis.saveValueString(statusKey, statusValue, -1);
+        socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
 
         List<TBoxParmSet> tpss=tBoxParmSetRepository.findByVinAndEventId(vin, bean.getEventID());
         if(tpss.size()>0){
@@ -1038,7 +1042,7 @@ public class RequestHandler {
         //变更消息状态 不会当作失败而重试
         String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+66+"-"+bean.getEventID();//0X42=66 ACK mid=2
         String statusValue=String.valueOf(2);//ACK mid=2
-        socketRedis.saveValueString(statusKey, statusValue, -1);
+        socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
         if(diagnosticData==null){
             _logger.info("no record found for vin:" + vin + "eventId:" + bean.getEventID());
         }else{
