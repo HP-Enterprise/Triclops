@@ -81,16 +81,10 @@ public class RequestTask  implements Runnable{
                 //发往客户端的注册结果数据，根据验证结果+收到的数据生成
                 respStr=requestHandler.getRegisterResp(receiveDataHexString, vin,checkVinAndSerNum);
                 buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息,此处2016.1.15修改，客户端发起数据之前确定已有连接注册记录
                 //如果注册成功记录连接，后续可以通过redis主动发消息，不成功不记录连接
-                if(checkVinAndSerNum){
-                    channels.put(vin, ch);
-                    connections.put(ch.remoteAddress().toString(),vin);
-                    socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
-                    ch.writeAndFlush(buf);//回发数据直接回消息,此处2016.1.15修改，客户端发起数据之前确定已有连接注册记录
-                    _logger.info("[0x13]注册成功，保存连接:" + vin + "" + ch.remoteAddress());
-                    _logger.info("[0x13]连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
-                    _logger.info("[0x13]连接map:"+channels.entrySet());
-                    afterRegisterSuccess(vin);
+                if (checkVinAndSerNum){
+                    saveConnection(vin,ch, "[0x13]", "注册");
                 }else{
                     ch.writeAndFlush(buf);//回发数据直接回消息
                     _logger.info("[0x13]注册失败，断开连接。vin:"+vin);
@@ -113,14 +107,8 @@ public class RequestTask  implements Runnable{
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
                 //如果远程唤醒成功连接，后续可以通过redis主动发消息，不成功不记录连接
-                if(checkVinAndSerNumWake){
-                    channels.put(vinWake, ch);
-                    connections.put(ch.remoteAddress().toString(),vinWake);
-                    socketRedis.saveHashString(dataTool.connection_hashmap_name, vinWake, serverId+"-"+ch.remoteAddress().toString(), -1);//连接名称保存到redis
-                    _logger.info("[0x14]唤醒成功，保存连接" + vinWake + "" + ch.remoteAddress());
-                    _logger.info("[0x14]连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
-                    _logger.info("[0x14]连接信息HashMap:"+channels.entrySet());
-                    afterRegisterSuccess(vinWake);
+                if(checkVinAndSerNumWake) {
+                    saveConnection(vinWake,ch,"[0x14]","唤醒");
                 }else{
                     _logger.info("[0x14]唤醒失败，断开连接");
                     ch.close();//关闭连接
@@ -303,6 +291,28 @@ public class RequestTask  implements Runnable{
                 break;
     }
     }
+
+    private void saveConnection(String vin,Channel ch,String hexLabel,String title){
+        Channel oldConn=channels.get(vin);
+        channels.put(vin, ch);//如果之前存在vin对应的会被覆盖
+        boolean isExistOldAddr=socketRedis.existHashString(dataTool.connection_hashmap_name, vin);//已经存在连接
+        if(isExistOldAddr){
+            String _val=socketRedis.getHashString(dataTool.connection_hashmap_name, vin);
+            String _addr=_val.split("-")[1];
+            connections.remove(_addr);
+            _logger.info("从连接Map（connections）移除:"+_addr +">"+ channels.entrySet());
+        }
+        if(oldConn!=null){//需要在旧的addr被移除后才能close
+            oldConn.close();
+        }
+        socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
+        connections.put(ch.remoteAddress().toString(), vin);
+        _logger.info(hexLabel+title+"成功，保存连接:" + vin + "" + ch.remoteAddress());
+        _logger.info(hexLabel+"连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+        _logger.info(hexLabel+"连接map:"+channels.entrySet());
+        afterRegisterSuccess(vin);
+    }
+
     public void saveBytesToRedis(String scKey,byte[] bytes){
         //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
         if(dataTool.checkByteArray(bytes)){
