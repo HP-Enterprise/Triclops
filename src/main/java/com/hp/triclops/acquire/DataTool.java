@@ -1209,6 +1209,7 @@ public class DataTool {
         warningMessage.setVehicleModel((short) buf.readByte());
         warningMessage.setTripID((int) buf.readShort());
         warningMessage.setReserved((int) buf.readShort());
+        warningMessage.setEventID((long) buf.readInt());
         warningMessage.setIsLocation((short) buf.readByte());
         warningMessage.setLatitude((long) buf.readInt());
         warningMessage.setLongitude((long) buf.readInt());
@@ -1254,6 +1255,7 @@ public class DataTool {
         warningMessage.setVehicleModel((short) buf.readByte());
         warningMessage.setTripID((int) buf.readShort());
         warningMessage.setReserved((int) buf.readShort());
+        warningMessage.setEventID((long) buf.readInt());
         warningMessage.setIsLocation((short) buf.readByte());
         warningMessage.setLatitude((long) buf.readInt());
         warningMessage.setLongitude((long) buf.readInt());
