@@ -1,6 +1,7 @@
 package com.hp.triclops.acquire;
 
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.service.OutputHexService;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +26,14 @@ public class CommandHandler extends Thread{
     private String applicationId;
     private HashMap<String,Object> datas;
     private String serverId;
+    private OutputHexService outputHexService;
 
-
-    public CommandHandler(Channel ch, String vin, SocketRedis socketRedis, DataTool dt, String serverId,String msg){
+    public CommandHandler(Channel ch, String vin, SocketRedis socketRedis, DataTool dt,OutputHexService outputHexService, String serverId,String msg){
         this.channel=ch;
         this.vin=vin;
         this.socketRedis=socketRedis;
         this.dataTool=dt;
+        this.outputHexService=outputHexService;
         this.serverId=serverId;
         this.message=msg;
         this._logger = LoggerFactory.getLogger(CommandHandler.class);
@@ -52,6 +54,7 @@ public class CommandHandler extends Thread{
             channel.writeAndFlush(dataTool.getByteBuf(message));
         }else{
             _logger.info("[0x31]最大重发次数"+maxSendCount+"达到!");
+            outputHexService.handleFailedData(vin,eventId,applicationId,messageId);
             return;
         }
 
@@ -87,6 +90,7 @@ public class CommandHandler extends Thread{
                 //这里是原样将消息再次发送还是重新设置SendTime待考虑，暂时原样重发，无论如何EventId应该是一样的
             }else{
                 _logger.info("[0x31]最大重发次数"+maxSendCount+"达到!");
+                outputHexService.handleFailedData(vin,eventId,applicationId,messageId);
             }
 
         }

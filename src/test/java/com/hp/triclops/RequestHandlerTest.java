@@ -50,14 +50,14 @@ public class RequestHandlerTest {
         System.out.println("request.:"+resultString);
         System.out.println("response:"+requestHandler.getActiveHandle(resultString));
     }
-    @Test
+   /* @Test
     public void test_getRemoteWakeUpResp() {
         //远程唤醒测试
         String byteString="23 23 00 4C 01 56 04 AD 8C 14 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 00 00 00 00 00 00 00 55 BE E2 58 31 32 33 34 35 36 37 38 39 31 39 39 31 32 33 34 35 36 37 38 39 31 39 39 39 31 32 33 34 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 47 ";
         System.out.println("request.:"+byteString);
         System.out.println("response:"+requestHandler.getRemoteWakeUpResp(byteString,true));
 
-    }
+    }*/
     @Test
     public void test_getDiagResp() {
         //电检测试
