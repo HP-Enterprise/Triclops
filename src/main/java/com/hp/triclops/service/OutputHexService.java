@@ -1793,4 +1793,38 @@ public class OutputHexService {
 
     }
 
+    /**
+     * 处理下发失败的数据，更新数据库状态
+     * @param vin
+     * @param eventId
+     * @param applicationId
+     * @param messageId
+     */
+    public void handleFailedData(String vin,String eventId,String applicationId,String messageId){
+        _logger.info("[0x31]报文下发失败，同步数据库状态>"+vin+"-"+eventId+"-"+applicationId+"-"+messageId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, eventId);
+        if(rc!=null){
+            String _dbReMark="";
+            String _dbReMarkEn="";
+            if(applicationId.equals("49")){
+                if(messageId.equals("1")){
+                    _dbReMark="Precondition重发3次后仍没有收到回复，远程控制操作失败。";
+                    _dbReMarkEn="Precondition repeat 3 times still did not receive a reply, the remote control operation failed.";
+                }else if(messageId.equals("3")){
+                    _dbReMark="远程控制命令重发3次后仍没有收到回复，远程控制操作失败。";
+                    _dbReMarkEn="Remote control commands repeat 3 times still did not receive a reply, the remote control operation failed.";
+                }
+                rc.setRemark(_dbReMark);
+                rc.setRemarkEn(_dbReMarkEn);
+                remoteControlRepository.save(rc);
+                _logger.info("[0x31]报文下发失败，同步数据库信息>" + _dbReMark);
+            } else {
+                _logger.info("[0x31]报文下发失败，同步数据库信息>尚未定义");
+            }
+
+        }else{
+            _logger.info("[0x31]同步数据库状态失败，没有找到记录>"+vin+"-"+eventId);
+        }
+    }
+
 }

@@ -92,7 +92,7 @@ public class AcquirePort {
         //生成数据
         ScheduledExecutorService  nettyServerScheduledService = Executors.newScheduledThreadPool(_nettyServerThreadPoolSize);
         ScheduledExecutorService  dataHandlerScheduledService = Executors.newScheduledThreadPool(_dataHandlerThreadPoolSize);
-        new NettySender(channels,socketRedis,_serverId,dataTool).start();    //netty发数据线程，根据需要 可以新建多个
+        new NettySender(channels,socketRedis,_serverId,dataTool,outputHexService).start();    //netty发数据线程，根据需要 可以新建多个
 
         //多层开关，通过配置文件控制，支持部署专门的数据解析服务器
         if(!_datahandlerDisabled){

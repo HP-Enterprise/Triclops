@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -46,6 +47,8 @@ public class VehicleDataService {
     RealTimeReportDataRespository realTimeReportDataRespository;
     @Autowired
     FailureMessageDataRespository failureMessageDataRespository;
+    @Autowired
+    WarningMessageConversionRepository warningMessageConversionRepository;
     @Autowired
     GpsDataRepository gpsDataRepository;
     @Autowired
@@ -238,7 +241,7 @@ public class VehicleDataService {
      */
     public int checkResultFromRedis(String hashName,String key,int checkCount){
         //远程唤醒动作
-        _logger.info("[0x31][0x32]从Redis检查 "+key+"是否有结果返回......(超时时间"+checkCount+"s)");
+        _logger.info("[0x31][0x32]从Redis检查 " + key + "是否有结果返回......(超时时间" + checkCount + "s)");
         int count=0;
         while (count<checkCount){
             //发送一次短信，然后间隔1s检测是否产生结果信息是否建立
@@ -247,7 +250,7 @@ public class VehicleDataService {
                 Thread.sleep(1*1000);//唤醒后等待1s循环检测
             }catch (InterruptedException e){e.printStackTrace(); }
             //检测连接是否已经建立
-            if(socketRedis.existHashString(hashName,key)){
+            if(socketRedis.existHashString(hashName, key)){
                 return 1;
             }
         }
@@ -432,7 +435,7 @@ public class VehicleDataService {
      * @return  >null超时导致 非null包含结果信息
      */
     public RemoteControl getRemoteControlResult(String eventId,String vin){
-      long resultId=checkRemoteControlResult(eventId,vin);
+      long resultId=checkRemoteControlResult(eventId, vin);
         _logger.info("exist resultId:" + resultId);
         if(resultId>0){
             RemoteControl remoteControl=remoteControlRepository.findOne(resultId);
@@ -671,135 +674,58 @@ public class VehicleDataService {
      * @param vin 目标vin
      * @return DiagnosticData或者null
      */
-    public DiagnosticDataShow getDiagDataShowFromFailure(String vin){
-        DiagnosticData diagnosticData=getDiagDataFromFailure(vin);
-        if(diagnosticData==null){
+    public DiagnosticDataShow getDiagDataShowFromFailure(String vin,int lang){
+        ///{lang} 1中文 2英文
+        FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
+        if(failureMessageData==null){
             return null;
         }
         DiagnosticDataShow diagnosticDataShow=new DiagnosticDataShow();
-        diagnosticDataShow.setId(diagnosticData.getId());
-        diagnosticDataShow.setVin(diagnosticData.getVin());
-        diagnosticDataShow.setEventId(diagnosticData.getEventId());
-        diagnosticDataShow.setSendDate(diagnosticData.getSendDate());
-        diagnosticDataShow.setReceiveDate(diagnosticData.getReceiveDate());
-        diagnosticDataShow.setHasAck(diagnosticData.getHasAck());
-        diagnosticDataShow.setMessage1(String.valueOf(diagnosticData.getMessage1()));
-        diagnosticDataShow.setMessage2(String.valueOf(diagnosticData.getMessage2()));
-        diagnosticDataShow.setMessage3(String.valueOf(diagnosticData.getMessage3()));
-        diagnosticDataShow.setMessage4(String.valueOf(diagnosticData.getMessage4()));
-        diagnosticDataShow.setMessage5(String.valueOf(diagnosticData.getMessage5()));
-        diagnosticDataShow.setMessage6(String.valueOf(diagnosticData.getMessage6()));
-        diagnosticDataShow.setMessage7(String.valueOf(diagnosticData.getMessage7()));
-        diagnosticDataShow.setMessage8(String.valueOf(diagnosticData.getMessage8()));
-        diagnosticDataShow.setMessage9(String.valueOf(diagnosticData.getMessage9()));
-        diagnosticDataShow.setMessage10(String.valueOf(diagnosticData.getMessage10()));
-        diagnosticDataShow.setMessage11(String.valueOf(diagnosticData.getMessage11()));
-        diagnosticDataShow.setMessage12(String.valueOf(diagnosticData.getMessage12()));
-        diagnosticDataShow.setMessage13(String.valueOf(diagnosticData.getMessage13()));
-        diagnosticDataShow.setMessage14(String.valueOf(diagnosticData.getMessage14()));
+        diagnosticDataShow.setId(failureMessageData.getId());
+        diagnosticDataShow.setVin(failureMessageData.getVin());
+        diagnosticDataShow.setHasAck((short) 1);
+        diagnosticDataShow.setEventId((long) dataTool.getCurrentSeconds());
+        diagnosticDataShow.setSendDate(failureMessageData.getSendingTime());
+        diagnosticDataShow.setReceiveDate(failureMessageData.getSendingTime());
+        HashMap<String,String>  content=getDiagDataFromFailure(failureMessageData,lang);
+        diagnosticDataShow.setList(content);
         return  diagnosticDataShow;
     }
 
     /**
      * 获取诊断数据，来自故障数据转换
-     * @param vin 目标vin
+     * @param failureMessageData 故障数据
      * @return DiagnosticData或者null
      */
-    public DiagnosticData getDiagDataFromFailure(String vin){
+    public HashMap<String,String> getDiagDataFromFailure(FailureMessageData failureMessageData,int lang){
         //todo 转换逻辑暂缺
-        short[] info=new short[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-        FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
         if(failureMessageData!=null){
+            List<WarningMessageConversion> allList=warningMessageConversionRepository.findAll();
+            String[] failureId=failureMessageData.getIdArray();//包含故障信息ID的数组
             String[] array=failureMessageData.getIdArray();
-            if(array!=null){
-                for (int i = 0; i <array.length ; i++) {
-                    if(array[i].equals("")){
-                        continue;
-                    }
-                    int _id=Integer.parseInt(array[i]);
-                    if(_id==1){
-                        info[0]=1;
-                        _logger.info("info 1 failure");
-                    }
-                    if(_id==3){
-                        info[1]=1;
-                        _logger.info("info 2 failure");
-                    }
-                    if(_id==4){
-                        info[2]=1;
-                        _logger.info("info 3 failure");
-                    }
-                    if(_id==6){
-                        info[3]=1;
-                        _logger.info("info 4 failure");
-                    }
-                    if(_id==9){
-                        info[4]=1;
-                        _logger.info("info 5 failure");
-                    }
-                    if(_id==11||_id==12){
-                        info[5]=1;
-                        _logger.info("info 6 failure");
-                    }
-                    if(_id==23){
-                        info[6]=1;
-                        _logger.info("info 7 failure");
-                    }
-                    if(_id==50){
-                        info[7]=1;
-                        _logger.info("info 8 failure");
-                    }
-                    if(_id==51){
-                        info[8]=1;
-                        _logger.info("info 9 failure");
-                    }
-                    if(_id==87){
-                        info[9]=1;
-                        _logger.info("info 10 failure");
-                    }
-                    if(_id==88||_id==90||_id==97||_id==22){
-                        info[10]=1;
-                        _logger.info("info 11 failure");
-                    }
-                    if(_id==105){
-                        info[11]=1;
-                        _logger.info("info 12 failure");
-                    }
-                    if(_id==200){
-                        info[12]=1;
-                        _logger.info("info 13 failure");
-                    }
-                    if(_id==201){
-                        info[13]=1;
-                        _logger.info("info 14 failure");
-                    }
+            HashMap<String,String>  content=new HashMap<>();
 
+            for(int i=0;i<allList.size();i++){
+                WarningMessageConversion warningMessageConversion=allList.get(i);
+                if(lang==1){
+                    content.put(warningMessageConversion.getGroupMessage(), "0");
+                }else{
+                    content.put(warningMessageConversion.getGroupMessageEn(), "0");
                 }
             }
-            DiagnosticData diagnosticData=new DiagnosticData();
-            diagnosticData.setId(failureMessageData.getId());
-            diagnosticData.setVin(failureMessageData.getVin());
-            diagnosticData.setHasAck((short) 1);
-            diagnosticData.setEventId((long)dataTool.getCurrentSeconds());
-            diagnosticData.setSendDate(failureMessageData.getSendingTime());
-            diagnosticData.setReceiveDate(failureMessageData.getSendingTime());
-            diagnosticData.setMessage1(info[0]);
-            diagnosticData.setMessage2(info[1]);
-            diagnosticData.setMessage3(info[2]);
-            diagnosticData.setMessage4(info[3]);
-            diagnosticData.setMessage5(info[4]);
-            diagnosticData.setMessage6(info[5]);
-            diagnosticData.setMessage7(info[6]);
-            diagnosticData.setMessage8(info[7]);
-            diagnosticData.setMessage9(info[8]);
-            diagnosticData.setMessage10(info[9]);
-            diagnosticData.setMessage11(info[10]);
-            diagnosticData.setMessage12(info[11]);
-            diagnosticData.setMessage13(info[12]);
-            diagnosticData.setMessage14(info[13]);
-            diagnosticData.setMessage15(info[14]);
-            diagnosticData.setMessage16(info[15]);
-            return  diagnosticData;
+            for (int i = 0; i <failureId.length ; i++) {
+                for(int j=0;j<allList.size();j++){
+                    WarningMessageConversion warningMessageConversion=allList.get(j);
+                    if(warningMessageConversion.getMessageId().equals(failureId[i])){
+                        if(lang==1){
+                            content.put(warningMessageConversion.getGroupMessage(), "1");
+                        }else{
+                            content.put(warningMessageConversion.getGroupMessageEn(), "1");
+                        }
+                    }
+                }
+            }
+            return content;
         }else{
             _logger.info("no failure data exist!");
             return null;//没有故障数据
