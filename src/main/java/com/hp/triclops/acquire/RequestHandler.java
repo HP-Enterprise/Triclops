@@ -656,7 +656,7 @@ public class RequestHandler {
             //变更消息状态
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
-            socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);
+            socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
             //socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
             //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
             //todo 需要判断是否存在ref控制指令（常见ref：远程启动空调需要远程启动发动机），如果存在这种情况，需要找到原始指令，参照0x02 resp处理下发
@@ -769,14 +769,16 @@ public class RequestHandler {
                     remoteKeyCheck=true;//0x2 Key out of range
                 }
             }else{
-                _logger.info("F60 Sesam_hw_status 尚未定义");
                 //尚未定义 false
-               /* if(remoteKey_char[5]=='0' && remoteKey_char[6]=='0' && remoteKey_char[7]=='1'){
-                    remoteKeyCheck=true;//0x1 Key outside Vehicle
-                }
                 if(remoteKey_char[5]=='0' && remoteKey_char[6]=='1' && remoteKey_char[7]=='0'){
-                    remoteKeyCheck=true;//0x2 Key out of range
-                }*/
+                    remoteKeyCheck=true;//0x2: Valid key outside right
+                }
+                if(remoteKey_char[5]=='0' && remoteKey_char[6]=='1' && remoteKey_char[7]=='1'){
+                    remoteKeyCheck=true;//0x3: Valid key outside left
+                }
+                if(remoteKey_char[5]=='1' && remoteKey_char[6]=='0' && remoteKey_char[7]=='0'){
+                    remoteKeyCheck=true;//0x4: Valid key outside trunk
+                }
             }
 
 
@@ -808,14 +810,15 @@ public class RequestHandler {
             }
 
             byte handBrake=remoteControlPreconditionResp.getEpb_status();
-            char[] shandBrake_char=dataTool.getBitsFromByte(handBrake);
+            char[] handBrake_char=dataTool.getBitsFromByte(handBrake);
             if(isM8X){
-            if(shandBrake_char[6]=='0'&&shandBrake_char[7]=='1'){
+            if(handBrake_char[6]=='0'&&handBrake_char[7]=='1'){
                 handBrakeCheck=true;
             }
             }else{
-                //尚未定义
-                _logger.info("F60 Epb_status 尚未定义");
+                if(handBrake_char[6]=='0'&&handBrake_char[7]=='1'){ //0x2
+                    handBrakeCheck=true;
+                }
             }
             byte sunroof=remoteControlPreconditionResp.getBcm_Stat_window2();
             char[] sunroof_char=dataTool.getBitsFromByte(sunroof);
