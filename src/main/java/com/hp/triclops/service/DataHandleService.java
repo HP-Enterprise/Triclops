@@ -265,15 +265,15 @@ public class DataHandleService {
         }
         char[] windows=dataTool.getBitsFromInteger(bean.getWindowInformation());//
         if(isM8X) {
+            rd.setLeftFrontWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[13]) +String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[10]) +String.valueOf(windows[11]) + String.valueOf(windows[12])));
+            rd.setLeftRearWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[5]) +String.valueOf(windows[6]) + String.valueOf(windows[7])));
+            rd.setRightRearWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[2]) +String.valueOf(windows[3]) + String.valueOf(windows[4])));
+        }else{//在协议0628中F60无此数据 预留
             rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[14]) + String.valueOf(windows[15])));
             rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[12]) + String.valueOf(windows[13])));
             rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11])));
             rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[8]) + String.valueOf(windows[9])));
-        }else{//在协议0628中F60无此数据 预留
-            rd.setLeftFrontWindowInformation("3");
-            rd.setRightFrontWindowInformation("3");
-            rd.setLeftRearWindowInformation("3");
-            rd.setRightRearWindowInformation("3");
         }
         rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//
         rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
@@ -301,13 +301,17 @@ public class DataHandleService {
             rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         }
         rd.setParkingState("0");
+        char[] vBytes=dataTool.getBitsFromInteger(bean.getVoltage());
         if(isM8X) {
-            rd.setVoltage(bean.getVoltage() * 0.0009765625f + 3.0f);//pdf 0628 part5.4 No24
+            //长度： 14bit
+            int value=dataTool.getValueFromBytes(vBytes,14);
+            rd.setVoltage(value * 0.0009765625f + 3.0f);//pdf 0628 part5.4 No24
         }else{
-            //F60
-            int a=bean.getVoltage()>0xff?0xff:bean.getVoltage();
+            //F60 长度： 8bit
+            int value=dataTool.getValueFromBytes(vBytes,8);
+            int a=value>0xff?0xff:value;
             a=a<0?0:a;
-            rd.setVoltage(a * 0.079f);
+            rd.setVoltage(a * 0.1f);
         }
         rd.setAverageSpeedA(bean.getAverageSpeedA()>260?0:bean.getAverageSpeedA());
         rd.setAverageSpeedB(bean.getAverageSpeedB()>260?0:bean.getAverageSpeedB());

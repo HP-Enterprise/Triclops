@@ -262,6 +262,27 @@ public class DataTool {
         return re;
     }
 
+    public String getF60WindowStatus(String bita_b){
+        //得到车窗状态 传入3个bit的字符表示,
+        // 数据库 车窗信息 0开1半开2关3信号异常
+        // 车窗信息 0,1,2,3 开 4关
+        //参考0.613
+        //0x0： 000
+        //0x1： 001
+        //0x2： 010
+        //0x3： 011
+        //0x4： 100
+        String re="3";
+        if(bita_b!=null){
+            if(bita_b.equals("000")||bita_b.equals("001")||bita_b.equals("010")||bita_b.equals("011")){
+                re="0";
+            }else if(bita_b.equals("100")){
+                re="2";
+            }
+        }
+        return re;
+    }
+
     public String getSkyWindowStatus(String bita_b){
         //得到天窗状态 传入两个bit的字符表示,
         // 数据库 天窗信息 0开 1半开 2关 3信号异常
@@ -1300,5 +1321,26 @@ public class DataTool {
             sb.append(base.charAt(number));
         }
         return sb.toString();
+    }
+
+
+
+    /**
+     * 从给定的数组中去length位的值，从低位到高位
+     * @param datas
+     * @param length
+     * @return
+     */
+    public int getValueFromBytes(char[] datas,int length){
+        if(datas.length<length){
+            _logger.info("getValueFromBytes参数错误"+datas+">"+length);
+            return 0;
+        }
+        int re=0;
+        for(int i=0;i<length;i++){
+            int a=(int)(Math.pow((double)2,(double)i));
+            re+=a*Integer.parseInt(String.valueOf((datas[datas.length-1-i])));
+        }
+        return re;
     }
 }
