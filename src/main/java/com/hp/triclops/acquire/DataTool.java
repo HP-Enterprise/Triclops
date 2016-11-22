@@ -34,6 +34,8 @@ public class DataTool {
     public static final String msgCurrentStatus_preStr="msgCurrentStatus:";
     public static final String remote_cmd_value_preStr="remoteCommand";
     public static final String out_cmd_preStr="output:";
+    public static final String onlineDeviceHash="tricheer-online-device";
+    public static final String outCmdPreStr="output:tricheer:";
 
     public static final long msgSendCount_ttl=600l;//数据存储redis中的ttl 10*60s
     public static final long msgCurrentStatus_ttl=600l;
@@ -1090,7 +1092,7 @@ public class DataTool {
         }
         int _suffixes_size=suffixes.size();
         if(_suffixes_size>0){
-            String[] suffixesArray = suffixes.toArray(new String[_suffixes_size-1]);
+            String[] suffixesArray = suffixes.toArray(new String[_suffixes_size - 1]);
             int max=_suffixes_size;
             int min=0;
             Random random = new Random();
@@ -1201,5 +1203,53 @@ public class DataTool {
         bd   =  bd.setScale(num,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留 num 位小数
        float re=bd.floatValue();
         return re;
+    }
+
+
+    /**
+     * 生成一个序列ID，标识会话
+     * @return
+     */
+    public  static String getSequenceId(){
+        StringBuilder sb=new StringBuilder();
+        sb.append(new Date().getTime());
+        sb.append(getNoBetween(10000,99999));
+        return sb.toString();
+
+    }
+    public static int getNoBetween(int a,int b){
+        return (int)(a+Math.random()*(b-a+1));
+    }
+
+
+    /**
+     * 获取控制指令描述信息
+     * @param command
+     * @param operate
+     * @return
+     */
+    public static String getCommandDesc(String command,String operate){
+        //106 NAVIGATE
+        StringBuilder sb=new StringBuilder();
+        if(command!=null){
+            if(command.equals("101")){
+                sb.append("获取设备信息");
+            }else if(command.equals("103")){
+                sb.append("获取状态信息");
+            }else if(command.equals("106")){
+                sb.append("控制");
+                if(operate!=null){
+                    if(operate.equalsIgnoreCase("NAVIGATE")){
+                        sb.append("导航");
+                    }else if(operate.equalsIgnoreCase("VIDEO")){
+                        sb.append("录像");
+                    }else if(operate.equalsIgnoreCase("PHOTO")){
+                        sb.append("拍照");
+                    }
+                }
+            }
+        }
+
+        return sb.toString();
     }
 }

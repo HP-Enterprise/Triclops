@@ -36,6 +36,7 @@ dependencies {
     compile("redis.clients:jedis:2.7.+")
     compile("com.notnoop.apns:apns:1.0.+")
     compile("com.alibaba:fastjson:1.2.+")
+    compile("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2")
     compile("com.rabbitmq:amqp-client:3.5.+")
     compile("commons-lang:commons-lang:2.+")
     compile("joda-time:joda-time:2.9.+")

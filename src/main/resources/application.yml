@@ -20,6 +20,19 @@ com.hp.acquire:
     nettyServerTcpBacklog: 100000
     dataHandlerThreadPoolSize: 20
 
+# 后视镜通讯使用的MQTT配置
+lct.mqtt:
+    clientId: server
+    host: 127.0.0.1
+    port: 1883
+    userName:
+    password:
+    subscribeTopic:
+    publishTopicPrefix:
+
+# 后视镜文件上传路径
+lct.upload.path: upload
+
 #remoteControl maxDistance
 com.hp.remoteControl.maxDistance: 2000
 
