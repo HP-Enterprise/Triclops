@@ -68,7 +68,7 @@ public class LctDataService {
                 re=0;
             }
         }else{
-            //re=new JsonResult(1,"参数无效");
+            //re=new JsonResult(2,"参数无效");
             re=2;
         }
 

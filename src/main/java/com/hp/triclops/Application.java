@@ -1,6 +1,7 @@
 package com.hp.triclops;
 
 import com.hp.triclops.acquire.*;
+import com.hp.triclops.mqtt.MqttMain;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.boot.CommandLineRunner;
@@ -25,10 +26,21 @@ public class Application implements CommandLineRunner {
     @Value("${com.hp.acquire.disabled}")
     private boolean _disabled;
 
+
+    @Autowired
+    private MqttMain mqttMain;
+
+    @Value("${lct.mqtt.disabled}")
+    private boolean _mqttDisabled;
+
     public void run(String... args) throws Exception{
         this._logger = LoggerFactory.getLogger(Application.class);
         this._logger.info("Application is running...");
 
+        if(!_mqttDisabled){
+            this._logger.info("启动后视镜服务端程序...");
+            mqttMain.start();
+        }
         // 启动数据接收端口
         if(_disabled){
             return;

@@ -1,10 +1,10 @@
 package com.hp.triclops.mqtt;
 
 import com.alibaba.fastjson.JSON;
-import com.hp.triclops.entity.Body;
-import com.hp.triclops.entity.CommandParam;
-import com.hp.triclops.entity.Head;
-import com.hp.triclops.entity.MsgBean;
+import com.hp.triclops.entity.LctBody;
+import com.hp.triclops.entity.LctCommandParam;
+import com.hp.triclops.entity.LctHead;
+import com.hp.triclops.entity.LctMsgBean;
 import com.hp.triclops.service.MsgHandler;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.utils.RedisTool;
@@ -132,7 +132,7 @@ public class MsgServerTask implements Runnable{
         String command=ss[3];
         String sequenceId=ss[4];
 
-        Body body=null;
+        LctBody body=null;
         String replayMsg=null;
         if(command.equals("101")){
             replayMsg=buildResp(1,Long.parseLong(sequenceId),subscribeTopic,101,1,"",null);
@@ -140,9 +140,9 @@ public class MsgServerTask implements Runnable{
             replayMsg=buildResp(1,Long.parseLong(sequenceId),subscribeTopic,103,1,"",null);
         }else  if(command.equals("106")){
             String[] vals=msg.split(",");
-            body=new Body();
+            body=new LctBody();
             body.setOperate(vals[0]);
-            CommandParam commandParam=new CommandParam();
+            LctCommandParam commandParam=new LctCommandParam();
             if(vals[0].equals("VIDEO")){
                 commandParam.setTime(vals[1]);
             }else  if(vals[0].equals("NAVIGATE")){
@@ -157,11 +157,11 @@ public class MsgServerTask implements Runnable{
         }
     }
 
-    public String buildResp(int version,long id, String from,int code, int type, String msg,Body body){
+    public String buildResp(int version,long id, String from,int code, int type, String msg,LctBody body){
         String replayStr=null;
-        Head head=new Head(version,id,from,code,type,msg);
+        LctHead head=new LctHead(version,id,from,code,type,msg);
 
-        MsgBean msgBean=new MsgBean(head,body);
+        LctMsgBean msgBean=new LctMsgBean(head,body);
         try {
             replayStr = JSON.toJSONString(msgBean);
         }catch (Exception e){e.printStackTrace();}

@@ -3,7 +3,7 @@ package com.hp.triclops.entity;
 /**
  * Created by jackl on 2016/11/15.
  */
-public  class App{
+public  class LctApp {
     private String appId;
     private String version;
     private String url;
@@ -11,11 +11,11 @@ public  class App{
     private String md5;
     private String desc;
 
-    public App(){
+    public LctApp(){
 
     }
 
-    public App(String appId, String version, String url, int size, String md5, String desc) {
+    public LctApp(String appId, String version, String url, int size, String md5, String desc) {
         this.appId = appId;
         this.version = version;
         this.url = url;

@@ -3,7 +3,7 @@ package com.hp.triclops.entity;
 /**
  * Created by jackl on 2016/11/14.
  */
-public class Head {
+public class LctHead {
 
     private int version;
     private long id;
@@ -12,11 +12,11 @@ public class Head {
     private int type;
     private String msg;
 
-    public Head(){
+    public LctHead(){
 
     }
 
-    public Head(int version, long id, String from, int code, int type, String msg) {
+    public LctHead(int version, long id, String from, int code, int type, String msg) {
         this.version = version;
         this.id = id;
         this.from = from;

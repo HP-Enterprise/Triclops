@@ -54,9 +54,9 @@ public class MsgHandler {
     public String handleReq (MqttClient client,String msg){
         _logger.info("收到的消息:" +msg);
         String replayMsg=null;
-        MsgBean bean =null;
+        LctMsgBean bean =null;
         try {
-            bean = JSON.parseObject(msg, MsgBean.class);
+            bean = JSON.parseObject(msg, LctMsgBean.class);
         }catch (Exception e){
             //e.printStackTrace();
         }
@@ -84,17 +84,17 @@ public class MsgHandler {
 
                 case 6:
                     //设备查询APP升级信息
-                    List<App> reqApps=bean.getBody().getApps();
-                    List<App> respApps=new ArrayList<App>();
+                    List<LctApp> reqApps=bean.getBody().getApps();
+                    List<LctApp> respApps=new ArrayList<LctApp>();
                     for (int i = 0; i <reqApps.size(); i++) {
-                        App app=reqApps.get(i);
+                        LctApp app=reqApps.get(i);
                         LctAppVersion lctAppVersion = lctAppVersionRepository.findTopByAppIdAndVersionGreaterThanOrderByPublishTimeDesc(app.getAppId(), app.getVersion());
                         if(lctAppVersion !=null) {
-                            App _app = new App(lctAppVersion.getAppId(), lctAppVersion.getVersion(), lctAppVersion.getUrl(), lctAppVersion.getAppSize(), lctAppVersion.getMd5(), lctAppVersion.getAppDesc());
+                            LctApp _app = new LctApp(lctAppVersion.getAppId(), lctAppVersion.getVersion(), lctAppVersion.getUrl(), lctAppVersion.getAppSize(), lctAppVersion.getMd5(), lctAppVersion.getAppDesc());
                             respApps.add(_app);
                         }
                     }
-                    Body body=new Body();
+                    LctBody body=new LctBody();
                     body.setApps(respApps);
                     replayMsg = buildResp(version, id, subscribeTopic, code, 2, "OK", body);
                     break;
@@ -162,7 +162,7 @@ public class MsgHandler {
                             lctRemoteControlRepository.save(lctRemoteControl);
                             _logger.info("更新远程控制状态. sequenceId>"+ lctRemoteControl.getSequenceId());
                         }else{
-                            _logger.info("没有在数据库找到控制记录，无法更新状态. sequenceId>"+ lctRemoteControl.getSequenceId());
+                            _logger.info("没有在数据库找到控制记录，无法更新状态. sequenceId>"+ bean.getHead().getId());
                         }
                     }
                     break;
@@ -237,11 +237,11 @@ public class MsgHandler {
         }
     }
 
-    public String buildResp(int version,long id, String from,int code, int type, String msg,Body body){
+    public String buildResp(int version,long id, String from,int code, int type, String msg,LctBody body){
         String replayStr=null;
-        Head head=new Head(version,id,from,code,type,msg);
+        LctHead head=new LctHead(version,id,from,code,type,msg);
 
-        MsgBean msgBean=new MsgBean(head,body);
+        LctMsgBean msgBean=new LctMsgBean(head,body);
         try {
             replayStr = JSON.toJSONString(msgBean);
         }catch (Exception e){e.printStackTrace();}

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by jackl on 2016/11/14.
  */
-public class Body {
+public class LctBody {
 
     private String imei;
     private Double longitude;
@@ -27,14 +27,14 @@ public class Body {
 
     private String operation;//PHOTO,VIDEO,NAVIGATE
     private String operate;
-    private CommandParam param;
+    private LctCommandParam param;
     private String result;
     private String moveTime;
     private String sleepTime;
 
     private String collisionTime;
 
-    private List<App> apps;
+    private List<LctApp> apps;
 
     public String getImei() {
         return imei;
@@ -222,19 +222,19 @@ public class Body {
         this.result = result;
     }
 
-    public List<App> getApps() {
+    public List<LctApp> getApps() {
         return apps;
     }
 
-    public void setApps(List<App> apps) {
+    public void setApps(List<LctApp> apps) {
         this.apps = apps;
     }
 
-    public CommandParam getParam() {
+    public LctCommandParam getParam() {
         return param;
     }
 
-    public void setParam(CommandParam param) {
+    public void setParam(LctCommandParam param) {
         this.param = param;
     }
 }

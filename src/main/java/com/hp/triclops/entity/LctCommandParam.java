@@ -3,7 +3,7 @@ package com.hp.triclops.entity;
 /**
  * Created by jackl on 2016/11/16.
  */
-public class CommandParam {
+public class LctCommandParam {
     private String dest;
     private String time;
 
