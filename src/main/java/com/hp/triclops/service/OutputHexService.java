@@ -274,8 +274,7 @@ public class OutputHexService {
             case 10://远程寻车 通过闪灯鸣笛次数判断是属于哪种模式 （闪灯鸣笛/仅闪灯/仅鸣笛）
                 //todo 明确时间 byte[2]时间 byte[3]模式 开关 ok
                 _cType=2;
-                _remoteFindCar[0]=remoteControl.getLightNum().byteValue();
-                _remoteFindCar[1]=remoteControl.getHornNum().byteValue();
+
                 Integer _actTime=(int)(remoteControl.getActTime()*10);//0.2~0.5-> 0x02~0x05
                 if(_actTime<2){
                     _actTime=2;
@@ -303,6 +302,15 @@ public class OutputHexService {
                     //2 仅鸣笛
                     _remoteFindA=2;
                 }
+                short lNum=remoteControl.getLightNum();
+                short hNum=remoteControl.getHornNum();
+                lNum=lNum<0x01?0x01:lNum;
+                lNum=lNum>0x1E?0x1E:lNum;
+                hNum=hNum<0x01?0x01:hNum;
+                hNum=hNum>0x1E?0x1E:hNum;
+                _remoteFindCar[0]=(byte)lNum;
+                _remoteFindCar[1]=(byte)hNum;
+
                 if(remoteControl.getDeActive()!=null){
                     if(remoteControl.getDeActive()==(short)1){
                         _remoteFindB=0;
