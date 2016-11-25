@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.repository.LctRemoteControlRepository;
 import com.hp.triclops.repository.LctRepository;
+import com.hp.triclops.repository.LctRepositoryDAO;
 import com.hp.triclops.repository.LctStatusDataRepository;
 import com.hp.triclops.acquire.DataTool;
+import com.hp.triclops.utils.Page2;
 import com.hp.triclops.utils.RedisTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,9 @@ public class LctDataService {
     private LctStatusDataRepository lctStatusDataRepository;
     @Value("${lct.upload.path}")
     private  String uploadPath;
+
+    @Autowired
+    private LctRepositoryDAO lctRepositoryDAO;
 
     private Logger _logger = LoggerFactory.getLogger(LctDataService.class);
 
@@ -217,6 +222,33 @@ public class LctDataService {
         }else{
             return null;
         }
+    }
+
+    public Page2<Lct> findLctByKeys(Integer id, String model, Integer isbind,  String imei, String brandName, Integer total, String orderByProperty, String ascOrDesc, Integer fuzzy, Integer pageSize, Integer currentPage){
+        currentPage = currentPage == null ? 1 : currentPage;
+        pageSize = pageSize == null ? 10 : pageSize;
+        id = id == null ? 0 : id;
+        total = total == null ? 0 :total;
+        fuzzy = fuzzy == null ? 0 : fuzzy;
+        isbind = isbind == null ? 0 : isbind;
+        orderByProperty=(orderByProperty==null)?"id":orderByProperty;
+        ascOrDesc=(ascOrDesc==null)?"ASC":ascOrDesc;
+        return lctRepositoryDAO.findLctByKeys(id, model, isbind, imei, brandName, total, orderByProperty, ascOrDesc, fuzzy, pageSize, currentPage);
+    }
+
+    public Lct addLct(Lct lct){
+        lct.setReceiveTime(new Date());
+        Lct reLct= lctRepository.save(lct);
+        return reLct;
+    }
+    public Lct findLctById(long id){
+        Lct reLct= lctRepository.findOne(id);
+        return reLct;
+    }
+    public Long deleteLctById(int id){
+
+        Long reLct= lctRepository.deleteById(id);
+        return reLct;
     }
 
 

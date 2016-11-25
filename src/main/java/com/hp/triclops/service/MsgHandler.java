@@ -132,7 +132,7 @@ public class MsgHandler {
                             lctRemoteControlRepository.save(lctRemoteControl);
                             _logger.info("更新远程控制状态. sequenceId>"+ lctRemoteControl.getSequenceId());
                         }else{
-                            _logger.info("没有在数据库找到控制记录，无法更新状态. sequenceId>"+ lctRemoteControl.getSequenceId());
+                            _logger.info("没有在数据库找到控制记录，无法更新状态. sequenceId>"+ bean.getHead().getId());
                         }
                     }
                     break;
