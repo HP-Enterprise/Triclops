@@ -610,7 +610,7 @@ public class VehicleDataService {
         List<GpsData> gdList=gpsDataRepository.findLatestByVin(vin);
         if(gdList!=null&&gdList.size()>0){
             gd=gdList.get(0);
-            gd=gpsTool.convertToGCJ02(gd);
+            //gd=gpsTool.convertToGCJ02(gd); //2016.11.28取消服务端坐标系统转换
         }
         return gd;
     }
