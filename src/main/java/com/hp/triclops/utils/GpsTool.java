@@ -60,10 +60,21 @@ public class GpsTool {
         }
         mgLat=Double.parseDouble(df.format(mgLat));
         mgLon=Double.parseDouble(df.format(mgLon));
-
-        gpsData.setLatitude(mgLat);
-        gpsData.setLongitude(mgLon);
-        return gpsData;
+        GpsData result=new GpsData();//当心Hibernate自动提交!!!这是一个坑
+        result.setId(gpsData.getId());
+        result.setVin(gpsData.getVin());
+        result.setImei(gpsData.getImei());
+        result.setApplicationId(gpsData.getApplicationId());
+        result.setMessageId(gpsData.getMessageId());
+        result.setSendingTime(gpsData.getSendingTime());
+        result.setIsLocation(gpsData.getIsLocation());
+        result.setLatitude(mgLat);
+        result.setLongitude(mgLon);
+        result.setHeading(gpsData.getHeading());
+        result.setEastWest(gpsData.getEastWest());
+        result.setNorthSouth(gpsData.getNorthSouth());
+        result.setSpeed(gpsData.getSpeed());
+        return result;
       }
 
     /**
