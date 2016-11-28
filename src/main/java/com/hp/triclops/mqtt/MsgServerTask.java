@@ -118,7 +118,9 @@ public class MsgServerTask implements Runnable{
             while (keys.hasNext()){
                 //遍历待发数据,处理
                 String k=(String)keys.next();
-                handleCommand(k);
+                try {
+                    handleCommand(k);
+                }catch(Exception e){e.printStackTrace();}
             }
         }
     }
