@@ -18,10 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by jackl on 2016/11/15.
@@ -204,6 +201,8 @@ public class LctDataService {
                 }
             }
         }
+        Collections.sort(result);
+        Collections.reverse(result);
         return result;
     }
 
@@ -245,10 +244,10 @@ public class LctDataService {
         Lct reLct= lctRepository.findOne(id);
         return reLct;
     }
-    public Long deleteLctById(int id){
+    public void deleteLctById(long id){
 
-        Long reLct= lctRepository.deleteById(id);
-        return reLct;
+         lctRepository.delete(id);
+
     }
 
 

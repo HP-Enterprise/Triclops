@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface LctRepository extends CrudRepository<Lct,Long> {
     Lct findByImei(String imei);
 
-    Long deleteById(int id);
+    Long deleteById(Long id);
 }
