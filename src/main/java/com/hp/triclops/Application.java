@@ -40,10 +40,12 @@ public class Application implements CommandLineRunner {
         if(!_mqttDisabled){
             this._logger.info("启动后视镜服务端程序...");
             mqttMain.start();
+        }else{
+            this._logger.info("不启动后视镜服务端程序，如果需要启动请修改配置lct.mqtt.disabled=false");
         }
         // 启动数据接收端口
         if(_disabled){
-            return;
+            this._logger.info("不启动TBOX服务端程序，如果需要启动请修改配置com.hp.acquire.disabled=false");
         }else{
              this._acquirePort.main();
         }
