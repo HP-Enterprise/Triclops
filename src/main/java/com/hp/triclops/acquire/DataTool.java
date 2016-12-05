@@ -214,17 +214,34 @@ public class DataTool {
     }
     public float getTrueAvgOil(int a){
         //得到真实油耗值 0x1ff=511无效值
-        if(a>=511){
-            return 0.0f;
+        if(a==0x1ff){
+            return -200f;
         }
         String  avgOil=a/10+"."+a%10;
         return Float.valueOf(avgOil);
+    }
+    public float getTrueTirePressure(int a){
+        //得到真实胎压耗值 0xff=无效值
+        if(a==0xff){
+            return -200f;
+        }
+       return a * 2.8f;
+    }
+    public int getTrueAvgSpeed(int a){
+        //得到真实平均车速 0x1ff=无效值
+        if(a==0x1ff){
+            return -200;
+        }
+        return a;
     }
     public float getInternTrueTmp(short a){
         //得到车内真实温度
         //分辨率 0.5A，偏移量40，
         //显示范围： -40°C ~+80°C
         //上报数据范围： 0~240
+        if(a==0xff){
+            return -200f;
+        }
         a=a>240?240:a;
         a=a<0?0:a;
         short t=(short)(a-(short)80);
@@ -234,6 +251,9 @@ public class DataTool {
         //分辨率 0.5A，偏移量40，
         //显示范围： -40°C ~+80°C
         //上报数据范围： 0~240
+        if(a==0xff){
+            return -200f;
+        }
         a=a>252?252:a;
         a=a<0?0:a;
         short t=(short)(a-(short)80);
@@ -329,10 +349,13 @@ public class DataTool {
         return re;
     }
     public int getDriveRangeFrom3Bytes(byte[] bytes){
-        //从3个字节读出数字
+        //从3个字节读出数字 无效值0xffffff
         int km=0;
         ByteBuf buf=getByteBuf(bytes2hex(bytes));
         km=buf.readUnsignedMedium();
+        if(km==0xffffff){
+            km=-200;
+        }
         return km;
     }
     public String getLengthString(String str,int length){
