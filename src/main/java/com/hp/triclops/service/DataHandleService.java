@@ -144,15 +144,15 @@ public class DataHandleService {
         rd.setSendingTime(receiveDate);//服务器时间
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil((bean.getFuelOil() > 254 ? 254 : bean.getFuelOil()) * 1f);//0xff无效值
+        rd.setFuelOil(bean.getFuelOil()==0xff?-200:bean.getFuelOil()* 1f);//0xff无效值
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
-        rd.setServiceIntervall(0);//在协议0628已经删除此项数据
+        rd.setServiceIntervall(-200);//在协议0628已经删除此项数据
         if(isM8X) {
-            rd.setLeftFrontTirePressure((bean.getLeftFrontTirePressure() > 125 ? 125 : bean.getLeftFrontTirePressure()) * 2.8f);//有效值0-125
-            rd.setLeftRearTirePressure((bean.getLeftRearTirePressure() > 125 ? 125 : bean.getLeftRearTirePressure()) * 2.8f);
-            rd.setRightFrontTirePressure((bean.getRightFrontTirePressure() > 125 ? 125 : bean.getRightFrontTirePressure()) * 2.8f);
-            rd.setRightRearTirePressure((bean.getRightRearTirePressure() > 125 ? 125 : bean.getRightRearTirePressure()) * 2.8f);
+            rd.setLeftFrontTirePressure(dataTool.getTrueTirePressure(bean.getLeftFrontTirePressure()));//有效值0-125
+            rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
+            rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
+            rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
         }else{//在协议0628中F60无此数据 预留
             rd.setLeftFrontTirePressure(0.0f);
             rd.setLeftRearTirePressure(0.0f);
@@ -185,7 +185,7 @@ public class DataHandleService {
         rd.setDrivingTime(0);
         rd.setOilLife((short) 0);
         rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
-        rd.setMileageRange(bean.getDrivingRange());//续航里程
+        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
@@ -197,16 +197,18 @@ public class DataHandleService {
             rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         }
         rd.setParkingState("0");
+        char[] vBytes=dataTool.getBitsFromInteger(bean.getVoltage());
         if(isM8X) {
-            rd.setVoltage(bean.getVoltage() * 0.0009765625f + 3.0f);//pdf 0628 part5.4 No24
+            //长度： 14bit
+            int value=dataTool.getValueFromBytes(vBytes,14);
+            rd.setVoltage(value==0x3ff?-200:(value * 0.0009765625f + 3.0f));//pdf 0628 part5.4 No24
         }else{
-            //F60
-            int a=bean.getVoltage()>0xff?0xff:bean.getVoltage();
-            a=a<0?0:a;
-            rd.setVoltage(a * 0.079f);
+            //F60 长度： 8bit
+            int value=dataTool.getValueFromBytes(vBytes,8);
+            rd.setVoltage(value==0xff?-200:(value * 0.079f));
         }
-        rd.setAverageSpeedA(bean.getAverageSpeedA()>260?0:bean.getAverageSpeedA());
-        rd.setAverageSpeedB(bean.getAverageSpeedB()>260?0:bean.getAverageSpeedB());
+        rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
+        rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -248,15 +250,15 @@ public class DataHandleService {
         rd.setSendingTime(receiveDate);//服务器时间
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil((bean.getFuelOil() > 254 ? 254 : bean.getFuelOil()) * 1f);//0xff无效值
+        rd.setFuelOil(bean.getFuelOil()==0xff?-200:bean.getFuelOil()* 1f);//0xff无效值
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(0);//在协议0628已经删除此项数据
         if(isM8X) {
-            rd.setLeftFrontTirePressure((bean.getLeftFrontTirePressure() > 125 ? 125 : bean.getLeftFrontTirePressure()) * 2.8f);//有效值0-125
-            rd.setLeftRearTirePressure((bean.getLeftRearTirePressure() > 125 ? 125 : bean.getLeftRearTirePressure()) * 2.8f);
-            rd.setRightFrontTirePressure((bean.getRightFrontTirePressure() > 125 ? 125 : bean.getRightFrontTirePressure()) * 2.8f);
-            rd.setRightRearTirePressure((bean.getRightRearTirePressure() > 125 ? 125 : bean.getRightRearTirePressure()) * 2.8f);
+            rd.setLeftFrontTirePressure(dataTool.getTrueTirePressure(bean.getLeftFrontTirePressure()));//有效值0-125
+            rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
+            rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
+            rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
         }else{//在协议0628中F60无此数据 预留
             rd.setLeftFrontTirePressure(0.0f);
             rd.setLeftRearTirePressure(0.0f);
@@ -289,7 +291,7 @@ public class DataHandleService {
         rd.setDrivingTime(0);
         rd.setOilLife((short) 0);
         rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
-        rd.setMileageRange(bean.getDrivingRange());//续航里程
+        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
@@ -305,16 +307,14 @@ public class DataHandleService {
         if(isM8X) {
             //长度： 14bit
             int value=dataTool.getValueFromBytes(vBytes,14);
-            rd.setVoltage(value * 0.0009765625f + 3.0f);//pdf 0628 part5.4 No24
+            rd.setVoltage(value==0x3ff?-200:(value * 0.0009765625f + 3.0f));//pdf 0628 part5.4 No24
         }else{
             //F60 长度： 8bit
             int value=dataTool.getValueFromBytes(vBytes,8);
-            int a=value>0xff?0xff:value;
-            a=a<0?0:a;
-            rd.setVoltage(a * 0.1f);
+            rd.setVoltage(value==0xff?-200:(value * 0.079f));
         }
-        rd.setAverageSpeedA(bean.getAverageSpeedA()>260?0:bean.getAverageSpeedA());
-        rd.setAverageSpeedB(bean.getAverageSpeedB()>260?0:bean.getAverageSpeedB());
+        rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
+        rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
