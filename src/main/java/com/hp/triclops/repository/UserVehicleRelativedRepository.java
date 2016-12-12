@@ -23,7 +23,7 @@ public interface UserVehicleRelativedRepository extends CrudRepository<UserVehic
     @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.iflag=1  and Uvr.vid = ?1")
     List<UserVehicleRelatived> findOwnerByVid(Vehicle vid);
 
-    UserVehicleRelatived findById(int id);
+    List<UserVehicleRelatived> findByUidAndVflag(User uid,int vflag);
 
     List<UserVehicleRelatived> findByParentuser(User user);
 

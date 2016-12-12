@@ -1,13 +1,7 @@
 package com.hp.triclops.service;
 
-import com.hp.triclops.entity.IccidPhone;
-import com.hp.triclops.entity.TBox;
-import com.hp.triclops.entity.TBoxEx;
-import com.hp.triclops.entity.Vehicle;
-import com.hp.triclops.repository.IccidPhoneRepository;
-import com.hp.triclops.repository.TBoxExRepository;
-import com.hp.triclops.repository.TBoxRepository;
-import com.hp.triclops.repository.VehicleRepository;
+import com.hp.triclops.entity.*;
+import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +22,10 @@ public class TboxService {
     TBoxExRepository tBoxExRepository;
     @Autowired
     IccidPhoneRepository iccidPhoneRepository;
+    @Autowired
+    VehicleModelConfigRepository vehicleModelConfigRepository;
     private Logger _logger = LoggerFactory.getLogger(TboxService.class);
-    public boolean activationTBox(String vin,String t_sn,String imei,String iccid){
+    public boolean activationTBox(String vin,Short modelId,String t_sn,String imei,String iccid){
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByImei(imei);
         Vehicle sVehicle=null;
@@ -38,10 +34,27 @@ public class TboxService {
             Vehicle vehicle=new Vehicle();
             vehicle.setVin(vin);
             vehicle.setProduct_date(new Date(0));
+            VehicleModelConfig vehicleModelConfig=vehicleModelConfigRepository.findByModelId(modelId);
+            if(vehicleModelConfig!=null){
+                vehicle.setModel(vehicleModelConfig.getModelName());
+                _logger.info("更新车辆对应的车型信息:"+modelId+" "+vehicleModelConfig.getModelName());
+            }else{
+                _logger.info("没有查询到对应的车型信息:"+modelId);
+            }
+
             vehicle.setTboxsn(t_sn);
             vehicle.setSecurity_pwd("14427FF4F90B790CAED65FC2DD854351");
             vehicle.setSecurity_salt("a5pb");
             sVehicle=vehicleRepository.save(vehicle);
+        }else{
+            VehicleModelConfig vehicleModelConfig=vehicleModelConfigRepository.findByModelId(modelId);
+            if(vehicleModelConfig!=null){
+                _vehicle.setModel(vehicleModelConfig.getModelName());
+                _logger.info("更新车辆对应的车型信息:"+modelId+" "+vehicleModelConfig.getModelName());
+                sVehicle=vehicleRepository.save(_vehicle);
+            }else{
+                _logger.info("没有查询到对应的车型信息:"+modelId);
+            }
         }
             //更新TBox信息
         if(tb!=null){//已经存在TBox 激活TBox
