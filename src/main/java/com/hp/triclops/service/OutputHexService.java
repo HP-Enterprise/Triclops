@@ -138,7 +138,7 @@ public class OutputHexService {
             case 0://
                _cType=0;
                 //todo
-                _remoteStartEngine=(byte)0;
+                _remoteStartEngine=(byte)1;
                 break;
             case 1://远程关闭发动机
                 _cType=1;
