@@ -439,7 +439,7 @@ public class VehicleDataService {
       long resultId=checkRemoteControlResult(eventId, vin);
         _logger.info("exist resultId:" + resultId);
         if(resultId>0){
-            RemoteControl remoteControl=remoteControlRepository.findOne(resultId);
+            RemoteControl remoteControl=remoteControlRespositoryDao.findById(resultId);
             return remoteControl;
         }else{
             return null;
