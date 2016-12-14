@@ -5,7 +5,7 @@ import com.hp.triclops.utils.EscapeStringUtil;
 import com.hp.triclops.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import org.hibernate.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -100,6 +100,13 @@ public class RemoteControlRespositoryDao {
             }
         }
         return state;
+    }
+
+    public RemoteControl findById(Long id){
+        Session session = em.unwrap(org.hibernate.Session.class);
+        RemoteControl remoteControl= em.find(RemoteControl.class, id);
+        session.evict(remoteControl);
+        return  remoteControl;
     }
 
 }
