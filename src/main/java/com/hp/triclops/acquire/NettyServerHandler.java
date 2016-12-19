@@ -91,6 +91,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 case 0x27://休眠请求
                 case 0x28://故障数据上报
                 case 0x29://补发故障数据上报
+                case 0x2A://驾驶行为上报
                 case 0x31://远程控制响应(上行)包含mid 2 4 5
                 case 0x32://远程控制设置响应(上行)包含mid 2
                     scheduledService.schedule(new RequestTask(channels, connections,maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString), 1, TimeUnit.MILLISECONDS);

@@ -1,9 +1,6 @@
 package com.hp.triclops.acquire;
 
-import com.hp.data.bean.tbox.DataResendWarningMes;
-import com.hp.data.bean.tbox.FailureMessage;
-import com.hp.data.bean.tbox.DataResendFailureData;
-import com.hp.data.bean.tbox.WarningMessage;
+import com.hp.data.bean.tbox.*;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
@@ -1321,6 +1318,81 @@ public class DataTool {
      //   }
         return warningMessage;
     }
+
+
+    /**
+     * 解码驾驶行为数据包
+     * @param msg
+     * @return
+     */
+    public DrivingBehaviorMes decodeDrivingBehaviorMes(String msg){
+        DrivingBehaviorMes drivingBehaviorMes=new DrivingBehaviorMes();
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        ByteBuf buf=getByteBuf(bytes2hex(data));
+        drivingBehaviorMes.setHead((int) buf.readShort());
+        drivingBehaviorMes.setLength((int) buf.readShort());
+        drivingBehaviorMes.setTestFlag((short) buf.readByte());
+        drivingBehaviorMes.setSendingTime((long) buf.readInt());
+        drivingBehaviorMes.setApplicationID((short) buf.readByte());
+        drivingBehaviorMes.setMessageID((short) buf.readByte());
+        byte[] imeiBytes=new byte[15];
+        buf.readBytes(imeiBytes);
+        drivingBehaviorMes.setImei(new String(imeiBytes));
+        drivingBehaviorMes.setProtocolVersionNumber((short) buf.readByte());
+        drivingBehaviorMes.setVehicleID((short) buf.readByte());
+        drivingBehaviorMes.setVehicleModel((short) buf.readByte());
+        drivingBehaviorMes.setTripID((int) buf.readShort());
+        drivingBehaviorMes.setReserved((int) buf.readShort());
+        drivingBehaviorMes.setEventID((long) buf.readInt());
+
+        Integer[] lateralAcceleration = new Integer[40];
+        for(int i=0;i<lateralAcceleration.length;i++){
+            lateralAcceleration[i]=(int)buf.readUnsignedShort();//16bit
+        }
+        drivingBehaviorMes.setLateralAcceleration(lateralAcceleration);
+
+        Integer[] driveAcceleration = new Integer[40];
+        for(int i=0;i<driveAcceleration.length;i++){
+            driveAcceleration[i]=(int)buf.readUnsignedShort();//16bit
+        }
+        drivingBehaviorMes.setDriveAcceleration(driveAcceleration);
+
+        Short[] brake = new Short[40];
+        for(int i=0;i<brake.length;i++){
+            brake[i]=(short)buf.readByte();//8bit
+        }
+        drivingBehaviorMes.setBrake(brake);
+
+        Integer[] speed = new Integer[40];
+        for(int i=0;i<speed.length;i++){
+            speed[i]=(int)buf.readUnsignedShort();//16bit
+        }
+        drivingBehaviorMes.setSpeed(speed);
+
+        Integer[] lws = new Integer[40];
+        for(int i=0;i<lws.length;i++){
+            lws[i]=buf.readUnsignedMedium();//24bit
+        }
+        drivingBehaviorMes.setLws(lws);
+
+        Integer[] bcvol = new Integer[40];
+        for(int i=0;i<bcvol.length;i++){
+            bcvol[i]=buf.readUnsignedMedium();//24bit
+        }
+        drivingBehaviorMes.setBcvol(bcvol);
+
+        Short[] cruise = new Short[40];
+        for(int i=0;i<cruise.length;i++){
+            cruise[i]=(short)buf.readByte();//8bit
+        }
+        drivingBehaviorMes.setCruise(cruise);
+
+
+
+        return drivingBehaviorMes;
+    }
+
+
 
     /**
      *四舍五入保留指定小数位数
