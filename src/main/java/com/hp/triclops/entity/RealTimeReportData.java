@@ -47,7 +47,14 @@ public class RealTimeReportData {
     private float voltage;
     private int averageSpeedA;
     private int averageSpeedB;
+    private float tripA;
+    private float tripB;
 
+    private String seatbeltFl;
+    private String seatbeltFr;
+    private String seatbeltRl;
+    private String seatbeltRm;
+    private String seatbeltRr;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -406,5 +413,75 @@ public class RealTimeReportData {
 
     public void setAverageSpeedB(int averageSpeedB) {
         this.averageSpeedB = averageSpeedB;
+    }
+
+    @Basic
+    @Column(name = "trip_a", nullable = false, insertable = true, updatable = true)
+    public float getTripA() {
+        return tripA;
+    }
+
+    public void setTripA(float tripA) {
+        this.tripA = tripA;
+    }
+
+    @Basic
+    @Column(name = "trip_b", nullable = false, insertable = true, updatable = true)
+    public float getTripB() {
+        return tripB;
+    }
+
+    public void setTripB(float tripB) {
+        this.tripB = tripB;
+    }
+
+    @Basic
+    @Column(name = "seatbelt_fl", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getSeatbeltFl() {
+        return seatbeltFl;
+    }
+
+    public void setSeatbeltFl(String seatbeltFl) {
+        this.seatbeltFl = seatbeltFl;
+    }
+
+    @Basic
+    @Column(name = "seatbelt_fr", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getSeatbeltFr() {
+        return seatbeltFr;
+    }
+
+    public void setSeatbeltFr(String seatbeltFr) {
+        this.seatbeltFr = seatbeltFr;
+    }
+
+    @Basic
+    @Column(name = "seatbelt_rl", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getSeatbeltRl() {
+        return seatbeltRl;
+    }
+
+    public void setSeatbeltRl(String seatbeltRl) {
+        this.seatbeltRl = seatbeltRl;
+    }
+
+    @Basic
+    @Column(name = "seatbelt_rm", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getSeatbeltRm() {
+        return seatbeltRm;
+    }
+
+    public void setSeatbeltRm(String seatbeltRm) {
+        this.seatbeltRm = seatbeltRm;
+    }
+
+    @Basic
+    @Column(name = "seatbelt_rr", nullable = false, insertable = true, updatable = true, length = 1)
+    public String getSeatbeltRr() {
+        return seatbeltRr;
+    }
+
+    public void setSeatbeltRr(String seatbeltRr) {
+        this.seatbeltRr = seatbeltRr;
     }
 }

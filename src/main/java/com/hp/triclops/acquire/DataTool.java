@@ -345,6 +345,54 @@ public class DataTool {
         }
         return re;
     }
+
+
+    public String getSeatBeltStatus4M8X(String bita_b){
+        //得到M8X安全带状态 传入两个bit的字符表示,
+        // 数据库 0没系 1系了 2保留 3信号异常
+        //参考0.630
+        //0x0： 00 没系
+        //0x1： 01 系
+        //0x2： 10 保留
+        //0x3： 11 Signal invalid--3
+        String re="1";
+        if(bita_b!=null){
+            if(bita_b.equals("00")){
+                re="0";
+            }else if(bita_b.equals("01")){
+                re="1";
+            }else if(bita_b.equals("10")){
+                re="2";
+            }else if(bita_b.equals("11")){
+                re="3";
+            }
+        }
+        return re;
+    }
+
+    public String getSeatBeltStatus4F60(String bita_b){
+        //得到F60安全带状态 传入两个bit的字符表示,
+        // 数据库 0没系 1系了 2保留 3信号异常
+        //参考0.630
+        //0x0： 00 系
+        //0x1： 01 FAULT
+        //0x2： 10 没系
+        //0x3： 11 保留
+        String re="1";
+        if(bita_b!=null){
+            if(bita_b.equals("00")){
+                re="1";
+            }else if(bita_b.equals("01")){
+                re="3";
+            }else if(bita_b.equals("10")){
+                re="0";
+            }else if(bita_b.equals("11")){
+                re="2";
+            }
+        }
+        return re;
+    }
+
     public int getDriveRangeFrom3Bytes(byte[] bytes){
         //从3个字节读出数字 无效值0xffffff
         int km=0;

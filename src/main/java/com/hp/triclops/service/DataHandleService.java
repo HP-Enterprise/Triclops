@@ -209,6 +209,29 @@ public class DataHandleService {
         }
         rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
         rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
+        long _tripA=bean.getTripA();
+        long _tripB=bean.getTripB();
+        if(isM8X){//M8X 无效值0x1ffff
+            rd.setTripA(_tripA == 0x1ffff ? -200 : (_tripA * 0.1f));
+            rd.setTripB(_tripB == 0x1ffff ? -200 : (_tripB * 0.1f));
+        }else{//F60上报范围0-10000 参考v0630
+            rd.setTripA(_tripA > 10000 ? -200 : (_tripA * 0.1f));
+            rd.setTripB(_tripB > 10000 ? -200 : (_tripB * 0.1f));
+        }
+        char[] seatBeltInfo=dataTool.getBitsFromInteger(bean.getSafeBelt());//安全带状况 大端传输
+        if(isM8X){
+            rd.setSeatbeltFl(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[14]) + String.valueOf(seatBeltInfo[15])));
+            rd.setSeatbeltFr(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[12]) + String.valueOf(seatBeltInfo[13])));
+            rd.setSeatbeltRl(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[10]) + String.valueOf(seatBeltInfo[11])));
+            rd.setSeatbeltRm(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[8]) + String.valueOf(seatBeltInfo[9])));
+            rd.setSeatbeltRr(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
+        }else{
+            rd.setSeatbeltFl(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[14]) + String.valueOf(seatBeltInfo[15])));
+            rd.setSeatbeltFr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[12]) + String.valueOf(seatBeltInfo[13])));
+            rd.setSeatbeltRl(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[10]) + String.valueOf(seatBeltInfo[11])));
+            rd.setSeatbeltRm(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[8]) + String.valueOf(seatBeltInfo[9])));
+            rd.setSeatbeltRr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
+        }
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -315,6 +338,29 @@ public class DataHandleService {
         }
         rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
         rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
+        long _tripA=bean.getTripA();
+        long _tripB=bean.getTripB();
+        if(isM8X){//M8X 无效值0x1ffff
+            rd.setTripA(_tripA == 0x1ffff ? -200 : (_tripA * 0.1f));
+            rd.setTripB(_tripB == 0x1ffff ? -200 : (_tripB * 0.1f));
+        }else{//F60上报范围0-10000 参考v0630
+            rd.setTripA(_tripA > 10000 ? -200 : (_tripA * 0.1f));
+            rd.setTripB(_tripB > 10000 ? -200 : (_tripB * 0.1f));
+        }
+        char[] seatBeltInfo=dataTool.getBitsFromInteger(bean.getSafeBelt());//安全带状况 大端传输
+        if(isM8X){
+            rd.setSeatbeltFl(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[14]) + String.valueOf(seatBeltInfo[15])));
+            rd.setSeatbeltFr(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[12]) + String.valueOf(seatBeltInfo[13])));
+            rd.setSeatbeltRl(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[10]) + String.valueOf(seatBeltInfo[11])));
+            rd.setSeatbeltRm(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[8]) + String.valueOf(seatBeltInfo[9])));
+            rd.setSeatbeltRr(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
+        }else{
+            rd.setSeatbeltFl(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[14]) + String.valueOf(seatBeltInfo[15])));
+            rd.setSeatbeltFr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[12]) + String.valueOf(seatBeltInfo[13])));
+            rd.setSeatbeltRl(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[10]) + String.valueOf(seatBeltInfo[11])));
+            rd.setSeatbeltRm(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[8]) + String.valueOf(seatBeltInfo[9])));
+            rd.setSeatbeltRr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
+        }
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
