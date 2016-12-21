@@ -349,6 +349,13 @@ public class RealTimeDataShow {
     private float batteryVoltage;
     private int averageSpeedA;
     private int averageSpeedB;
+    private float tripA;
+    private float tripB;
+    private String seatbeltFl;
+    private String seatbeltFr;
+    private String seatbeltRl;
+    private String seatbeltRm;
+    private String seatbeltRr;
     public Long getId() {
         return id;
     }
@@ -743,5 +750,61 @@ public class RealTimeDataShow {
 
     public void setAverageSpeedB(int averageSpeedB) {
         this.averageSpeedB = averageSpeedB;
+    }
+
+    public float getTripA() {
+        return tripA;
+    }
+
+    public void setTripA(float tripA) {
+        this.tripA = tripA;
+    }
+
+    public float getTripB() {
+        return tripB;
+    }
+
+    public void setTripB(float tripB) {
+        this.tripB = tripB;
+    }
+
+    public String getSeatbeltFl() {
+        return seatbeltFl;
+    }
+
+    public void setSeatbeltFl(String seatbeltFl) {
+        this.seatbeltFl = seatbeltFl;
+    }
+
+    public String getSeatbeltFr() {
+        return seatbeltFr;
+    }
+
+    public void setSeatbeltFr(String seatbeltFr) {
+        this.seatbeltFr = seatbeltFr;
+    }
+
+    public String getSeatbeltRl() {
+        return seatbeltRl;
+    }
+
+    public void setSeatbeltRl(String seatbeltRl) {
+        this.seatbeltRl = seatbeltRl;
+    }
+
+    public String getSeatbeltRm() {
+        return seatbeltRm;
+    }
+
+    public void setSeatbeltRm(String seatbeltRm) {
+        this.seatbeltRm = seatbeltRm;
+    }
+
+    public String getSeatbeltRr() {
+        return seatbeltRr;
+    }
+
+    public void setSeatbeltRr(String seatbeltRr) {
+        this.seatbeltRr = seatbeltRr;
     }
 }

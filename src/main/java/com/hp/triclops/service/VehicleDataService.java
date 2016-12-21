@@ -527,6 +527,14 @@ public class VehicleDataService {
             data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
             data.setAverageSpeedA(rd.getAverageSpeedA());
                 data.setAverageSpeedB(rd.getAverageSpeedB());
+
+            data.setTripA(rd.getTripA());
+            data.setTripB(rd.getTripB());
+            data.setSeatbeltFl(rd.getSeatbeltFl());
+            data.setSeatbeltFr(rd.getSeatbeltFr());
+            data.setSeatbeltRl(rd.getSeatbeltRl());
+            data.setSeatbeltRm(rd.getSeatbeltRm());
+            data.setSeatbeltRr(rd.getSeatbeltRr());
                 data.setFmax(280);
                 data.setFmin(200);
                 data.setRmax(290);
