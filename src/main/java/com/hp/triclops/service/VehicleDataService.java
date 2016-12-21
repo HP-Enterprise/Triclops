@@ -476,8 +476,15 @@ public class VehicleDataService {
         if(!hasConnection(vin)){
             //如果不在线，先唤醒
             _logger.info("vin:"+vin+" 当前不在线，正在唤醒...");
-            int wakeUpResult=remoteWakeUp(vin,1);
+            int wakeUpResult=remoteWakeUp(vin,1);//唤醒后等待50s
             _logger.info("vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
+            try{
+                _logger.info("vin："+vin+"不在线，发送唤醒请求后，等待一段时间再去获取最新实时数据，目前全过程时间50s");
+                Thread.sleep(49 * 1000);
+                _logger.info("时间到，返回vin："+vin+" 的最新一条实时数据");
+            }catch (InterruptedException e){
+
+            }
         }
         RealTimeReportData rd=null;
         GpsData gd=null;
