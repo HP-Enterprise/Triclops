@@ -759,8 +759,8 @@ public class RequestHandler {
             }
             byte clampStatus=remoteControlPreconditionResp.getSesam_clamp_stat();
             char[] clampStatus_char=dataTool.getBitsFromByte(clampStatus);
-            if(clampStatus_char[2]=='0'&&clampStatus_char[3]=='0'){
-                clampCheck=true;
+            if(clampStatus_char[5]=='0'&&clampStatus_char[6]=='1'&&clampStatus_char[7]=='1'){
+                clampCheck=true;//19. 0x03 Engine start
             }
             byte remoteKey=remoteControlPreconditionResp.getSesam_hw_status();
             char[] remoteKey_char=dataTool.getBitsFromByte(remoteKey);
