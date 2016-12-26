@@ -5,15 +5,12 @@ CREATE TABLE IF NOT EXISTS t_data_driving_behavior (
   application_id int(11) NOT NULL COMMENT 'application id',
   message_id int(11) NOT NULL COMMENT 'message id',
   sending_time DATETIME NOT NULL COMMENT '发送时间',
-  lateral_acceleration VARCHAR(500) NULL COMMENT '横向加速度信息',
-  drive_acceleration VARCHAR(500) NULL COMMENT '行驶方向加速度信息',
-  brake VARCHAR(500) NULL COMMENT '紧急刹车信息',
-  speed VARCHAR(500) NULL COMMENT '车速信息',
-  lws VARCHAR(500) NULL COMMENT '方向盘转角信息',
-  bcvol VARCHAR(500) NULL COMMENT '方向盘开关信息',
-  cruise VARCHAR(500) NULL COMMENT '车辆加速减速信息',
+  receive_time DATETIME NOT NULL COMMENT '接收时间',
+  speed_up smallint(5) DEFAULT 0 COMMENT '急加速次数',
+  speed_down smallint(5) DEFAULT 0 COMMENT '急减速次数',
+  speed_turn smallint(5) DEFAULT 0 COMMENT '急转弯次数',
   PRIMARY KEY (id),
   INDEX idx_vin(vin),
   INDEX idx_sending_time(sending_time)
-) DEFAULT CHARSET=utf8 COMMENT='实时数据表';
+) DEFAULT CHARSET=utf8 COMMENT='急加速急减速急转弯数据表';
 

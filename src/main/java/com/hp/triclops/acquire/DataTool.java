@@ -1486,4 +1486,41 @@ public class DataTool {
         }
         return re;
     }
+
+    /**
+     * 计算急加速 急减速 急转弯值
+     * @param vals
+     * @param mode 1判断急加速（+）  2判断急减速（-）  3判断急转弯（+ -）
+     * @return
+     */
+    public int calcSpeed(Integer[] vals,int mode){
+        int count=0;
+        double temp=0;
+        double baseValA=9.8*3;
+        double baseValB=-9.8*3;
+        if(vals!=null) {
+            for (int i = 0; i <vals.length; i++) {
+                if(vals[i]==0xffff){//无效值0xffff
+                    continue;
+                }
+                temp=vals[i]*0.002-65;
+                if(mode==1){
+                    if(temp>=baseValA){
+                        count++;
+                    }
+                }else  if(mode==2){
+                    if(temp<=baseValB){
+                        count++;
+                    }
+                }else  if(mode==3){
+                    if(temp>=baseValA||temp<=baseValB){
+                        count++;
+                    }
+                }
+
+            }
+        }
+        return count;
+    }
+
 }

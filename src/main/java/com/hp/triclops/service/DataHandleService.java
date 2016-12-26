@@ -31,6 +31,8 @@ public class DataHandleService {
     @Autowired
     FailureMessageDataRespository failureMessageDataRespository;
     @Autowired
+    DrivingBehaviorDataRepository drivingBehaviorDataRepository;
+    @Autowired
     OutputHexService outputHexService;
 
 
@@ -92,6 +94,9 @@ public class DataHandleService {
                     _logger.info("[0x29]>>重复的补发故障数据，不处理");
                 }
                 break;
+            case 0x2A://驾驶行为数据上报
+                saveDrivingBehaviorData(vin,msg);
+                break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
                 break;
@@ -125,6 +130,24 @@ public class DataHandleService {
         rd.setEnterpriseBroadcastPort(bean.getEnterpriseBroadcastPort());
         regularReportDataRespository.save(rd);
     }
+
+    public void saveDrivingBehaviorData(String vin,String msg){
+        _logger.info("[0x21]>>保存上报的驾驶行为数据:"+msg);
+
+        DrivingBehaviorMes bean=dataTool.decodeDrivingBehaviorMes(msg);
+        DrivingBehaviorData dd=new DrivingBehaviorData();
+        dd.setVin(vin);
+        dd.setImei(bean.getImei());
+        dd.setApplicationId(bean.getApplicationID());
+        dd.setMessageId(bean.getMessageID());
+        dd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        dd.setReceiveTime(new Date());
+        dd.setSpeedUp((short) dataTool.calcSpeed(bean.getDriveAcceleration(), 1));//通过行驶方向加速度判断是否存在急加速
+        dd.setSpeedDown((short)dataTool.calcSpeed(bean.getDriveAcceleration(),2));//通过行驶方向加速度判断是否存在急减速
+        dd.setSpeedTurn((short)dataTool.calcSpeed(bean.getLateralAcceleration(),3));//通横向加速度判断是否存在急转弯
+        drivingBehaviorDataRepository.save(dd);
+    }
+
     public void saveRealTimeReportMes(String vin,String msg){
         _logger.info("[0x22]>>保存上报的实时数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
