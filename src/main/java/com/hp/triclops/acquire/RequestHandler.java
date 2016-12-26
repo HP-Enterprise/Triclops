@@ -693,19 +693,22 @@ public class RequestHandler {
                 return;
             }
             long refId=rc.getRefId();
-            if(bean.getRemoteControlAck()==(short)0){//成功了
+            if(bean.getRemoteControlAck()==(short)0||bean.getRemoteControlAck()==0x80){//成功了 0x80响应时，暂时判断为发动机启动成功
                     //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
                    //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
                     //取出redis暂存的控制参数 生成指令
+                    if(bean.getRemoteControlAck()==0x80){
+                        _logger.info("[0x31]0x80响应时，暂时判断为发动机启动成功");
+                    }
                     if(refId>0){
-                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),false);
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), (short)0,false);
                     //存在ref记录
                         //RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
                        _logger.info("[0x31]关联的启动发动机执行成功，开始执行原始控制指令");
                         new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
                     }
                 else{
-                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),true);
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), (short)0,true);
                     }
                 }else{//各种原因未能成功
 
@@ -781,8 +784,8 @@ public class RequestHandler {
             }
             byte clampStatus=remoteControlPreconditionResp.getSesam_clamp_stat();
             char[] clampStatus_char=dataTool.getBitsFromByte(clampStatus);
-            if(clampStatus_char[2]=='0'&&clampStatus_char[3]=='0'){
-                clampCheck=true;
+            if(clampStatus_char[5]=='0'&&clampStatus_char[6]=='1'&&clampStatus_char[7]=='1'){
+                clampCheck=true;//19. 0x03 Engine start
             }
             byte remoteKey=remoteControlPreconditionResp.getSesam_hw_status();
             char[] remoteKey_char=dataTool.getBitsFromByte(remoteKey);
