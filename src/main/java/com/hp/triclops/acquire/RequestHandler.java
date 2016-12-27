@@ -881,10 +881,13 @@ public class RequestHandler {
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
                         && remainingFuelCheck;*/
                 //todo 20160908屏蔽发动机启动的温度检查
-                re= clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+                /*re= clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
                         && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
-                        && remainingFuelCheck;
+                        && remainingFuelCheck;*/
+
+                re= (!clampCheck) && transmissionGearPositionCheck;//P挡位 && 发动机没有启动
+
 
                 if(re){
                     reint=0;
@@ -908,7 +911,7 @@ public class RequestHandler {
                     reint=3;
                 }
             }else if(controlType==(short)4){//4：空调开启
-                if(isRemoteStart){//必须是远程启动发动机才能开启空调
+                if(clampCheck){//必须是远程启动发动机才能开启空调
                     re=true;
                 }
                 if(re){
@@ -917,7 +920,7 @@ public class RequestHandler {
                     reint=4;
                 }
             }else if(controlType==(short)5){//5：空调关闭
-                if(isRemoteStart){//必须是远程启动发动机才能关闭空调
+                if(clampCheck){//必须是远程启动发动机才能关闭空调
                     re=true;
                 }
                 if(re){
@@ -926,7 +929,7 @@ public class RequestHandler {
                     reint=5;
                 }
             }else if(controlType==(short)6){//6：座椅加热
-                if(isRemoteStart){//必须是远程启动发动机才能开启座椅加热
+                if(clampCheck){//必须是远程启动发动机才能开启座椅加热
                     re=true;
                 }
                 if(re){
@@ -935,7 +938,7 @@ public class RequestHandler {
                     reint=6;
                 }
             }else if(controlType==(short)7){//6：座椅加热关闭
-                if(isRemoteStart){//必须是远程启动发动机才能关闭座椅加热
+                if(clampCheck){//必须是远程启动发动机才能关闭座椅加热
                     re=true;
                 }
                 if(re){
