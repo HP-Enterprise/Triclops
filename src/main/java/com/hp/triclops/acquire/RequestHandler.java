@@ -963,7 +963,12 @@ public class RequestHandler {
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
                 +"-"+ remainingFuelCheck);
-        reint=0;//临时处理
+        if(controlType==(short)4||controlType==(short)5||controlType==(short)6||controlType==(short)7){
+
+        }else{
+            _logger.info("除空调、座椅加热外的操作，Precondition校验会直接通过。");
+            reint=0;//临时处理
+        }
         _logger.info("[0x31]Precondition响应校验结果:"+reint+" 车型:"+vehicleModel+"(0:M82;1:M82;2:M85;3:F60;4:F70;5:F60电动车) 是否M8X:"+isM8X);
         return reint;
     }
