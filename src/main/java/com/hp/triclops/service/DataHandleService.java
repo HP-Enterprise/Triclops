@@ -33,6 +33,8 @@ public class DataHandleService {
     @Autowired
     DrivingBehaviorDataRepository drivingBehaviorDataRepository;
     @Autowired
+    DrivingBehaviorOriginalDataRepository drivingBehaviorOriginalDataRepository;
+    @Autowired
     OutputHexService outputHexService;
 
 
@@ -146,6 +148,14 @@ public class DataHandleService {
         dd.setSpeedDown((short)dataTool.calcSpeed(bean.getDriveAcceleration(),2));//通过行驶方向加速度判断是否存在急减速
         dd.setSpeedTurn((short)dataTool.calcSpeed(bean.getLateralAcceleration(),3));//通横向加速度判断是否存在急转弯
         drivingBehaviorDataRepository.save(dd);
+        //---保存原始驾驶行为报文数据--
+        DrivingBehavioOriginalData drivingBehavioOriginalData=new DrivingBehavioOriginalData();
+        drivingBehavioOriginalData.setImei(bean.getImei());
+        drivingBehavioOriginalData.setVin(vin);
+        drivingBehavioOriginalData.setHexString(msg);
+        drivingBehavioOriginalData.setReceiveTime(new Date());
+        drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalData);
+
     }
 
     public void saveRealTimeReportMes(String vin,String msg){
