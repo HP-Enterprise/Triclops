@@ -1052,7 +1052,7 @@ public class DataTool {
        /* if(_tcu[4]== '0'){//bit3 0 warning MID=88
             sb.append(",88");
         }*/
-        if(_tcu[4]== '0'){//bit4 0 warning MID=146
+        if(_tcu[3]== '0'){//bit4 0 warning MID=146
             sb.append(",146");
         }
 
