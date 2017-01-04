@@ -205,7 +205,7 @@ public class DataHandleService {
         }else{
             //F60 长度： 8bit
             int value=dataTool.getValueFromBytes(vBytes,8);
-            rd.setVoltage(value==0xff?-200:(value * 0.079f));
+            rd.setVoltage(value==0xff?-200:(value * 0.1f));
         }
         rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
         rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
@@ -311,7 +311,7 @@ public class DataHandleService {
         }else{
             //F60 长度： 8bit
             int value=dataTool.getValueFromBytes(vBytes,8);
-            rd.setVoltage(value==0xff?-200:(value * 0.079f));
+            rd.setVoltage(value==0xff?-200:(value * 0.1f));
         }
         rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
         rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
