@@ -904,7 +904,7 @@ public class RequestHandler {
                     reint=2;
                 }
             }else if(controlType==(short)2||controlType==(short)3){//2：车门上锁  3：车门解锁
-                re=doorsCheck && clampCheck && trunkCheck && bonnetCheck ;
+                re=doorsCheck  && trunkCheck && bonnetCheck ;
                 if(re){
                     reint=0;
                 }else{
@@ -947,7 +947,7 @@ public class RequestHandler {
                     reint=7;
                 }
             }else if(controlType==(short)10||controlType==(short)11){//10：远程寻车->10闪灯 11鸣笛
-                re=doorsCheck && clampCheck && hazardLightsCheck && trunkCheck && bonnetCheck;
+                re=doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
                 if(re){
                     reint=0;
                 }else{
