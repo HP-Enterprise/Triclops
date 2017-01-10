@@ -920,9 +920,9 @@ public class RequestHandler {
                     reint=4;
                 }
             }else if(controlType==(short)5){//5：空调关闭
-                if(clampCheck){//必须是远程启动发动机才能关闭空调
+               // if(clampCheck){//必须是远程启动发动机才能关闭空调，2017.1.10取消此要求
                     re=true;
-                }
+              //  }
                 if(re){
                     reint=0;
                 }else{
@@ -938,9 +938,9 @@ public class RequestHandler {
                     reint=6;
                 }
             }else if(controlType==(short)7){//6：座椅加热关闭
-                if(clampCheck){//必须是远程启动发动机才能关闭座椅加热
+              //  if(clampCheck){//必须是远程启动发动机才能关闭座椅加热，2017.1.10取消此要求
                     re=true;
-                }
+              //  }
                 if(re){
                     reint=0;
                 }else{
