@@ -234,7 +234,7 @@ public class DataHandleService {
         if(isM8X) {
             //长度： 14bit
             int value=dataTool.getValueFromBytes(vBytes,14);
-            rd.setVoltage(value==0x3ff?-200:(value * 0.0009765625f + 3.0f));//pdf 0628 part5.4 No24
+            rd.setVoltage(value==0x3fff?-200:(value * 0.0009765625f + 3.0f));//pdf 0628 part5.4 No24
         }else{
             //F60 长度： 8bit
             int value=dataTool.getValueFromBytes(vBytes,8);

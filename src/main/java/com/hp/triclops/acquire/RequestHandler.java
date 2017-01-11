@@ -906,10 +906,13 @@ public class RequestHandler {
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
                         && remainingFuelCheck;*/
                 //todo 20160908屏蔽发动机启动的温度检查
-                re= clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
+                /*re= clampCheck && remoteKeyCheck && hazardLightsCheck && vehicleSpeedCheck
                         && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
-                        && remainingFuelCheck;
+                        && remainingFuelCheck;*/
+
+                re= (!clampCheck) && transmissionGearPositionCheck;//P挡位 && 发动机没有启动
+
 
                 if(re){
                     reint=0;
@@ -926,14 +929,14 @@ public class RequestHandler {
                     reint=2;
                 }
             }else if(controlType==(short)2||controlType==(short)3){//2：车门上锁  3：车门解锁
-                re=doorsCheck && clampCheck && trunkCheck && bonnetCheck ;
+                re=doorsCheck  && trunkCheck && bonnetCheck ;
                 if(re){
                     reint=0;
                 }else{
                     reint=3;
                 }
             }else if(controlType==(short)4){//4：空调开启
-                if(isRemoteStart){//必须是远程启动发动机才能开启空调
+                if(clampCheck){//必须是远程启动发动机才能开启空调
                     re=true;
                 }
                 if(re){
@@ -942,16 +945,16 @@ public class RequestHandler {
                     reint=4;
                 }
             }else if(controlType==(short)5){//5：空调关闭
-                if(isRemoteStart){//必须是远程启动发动机才能关闭空调
+               // if(clampCheck){//必须是远程启动发动机才能关闭空调，2017.1.10取消此要求
                     re=true;
-                }
+              //  }
                 if(re){
                     reint=0;
                 }else{
                     reint=5;
                 }
             }else if(controlType==(short)6){//6：座椅加热
-                if(isRemoteStart){//必须是远程启动发动机才能开启座椅加热
+                if(clampCheck){//必须是远程启动发动机才能开启座椅加热
                     re=true;
                 }
                 if(re){
@@ -960,16 +963,16 @@ public class RequestHandler {
                     reint=6;
                 }
             }else if(controlType==(short)7){//6：座椅加热关闭
-                if(isRemoteStart){//必须是远程启动发动机才能关闭座椅加热
+              //  if(clampCheck){//必须是远程启动发动机才能关闭座椅加热，2017.1.10取消此要求
                     re=true;
-                }
+              //  }
                 if(re){
                     reint=0;
                 }else{
                     reint=7;
                 }
             }else if(controlType==(short)10||controlType==(short)11){//10：远程寻车->10闪灯 11鸣笛
-                re=doorsCheck && clampCheck && hazardLightsCheck && trunkCheck && bonnetCheck;
+                re=doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
                 if(re){
                     reint=0;
                 }else{
@@ -985,7 +988,12 @@ public class RequestHandler {
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
                 +"-"+ remainingFuelCheck);
-        reint=0;//临时处理
+        if(controlType==(short)4||controlType==(short)5||controlType==(short)6||controlType==(short)7){
+
+        }else{
+            _logger.info("除空调、座椅加热外的操作，Precondition校验会直接通过。");
+            reint=0;//临时处理
+        }
         _logger.info("[0x31]Precondition响应校验结果:"+reint+" 车型:"+vehicleModel+"(0:M82;1:M82;2:M85;3:F60;4:F70;5:F60电动车) 是否M8X:"+isM8X);
         return reint;
     }
