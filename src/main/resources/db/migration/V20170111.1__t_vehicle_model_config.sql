@@ -1,0 +1,1 @@
+alter table t_vehicle_model_config change funcation function varchar(50) NOT NULL COMMENT '功能';

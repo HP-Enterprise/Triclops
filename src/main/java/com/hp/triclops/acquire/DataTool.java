@@ -866,6 +866,9 @@ public class DataTool {
         if(_acm[2]== '0'){//bit5 0 warning MID=204
             sb.append(",204");
         }
+        if(_acm[1]== '0'){//bit6 0 warning MID=205
+            sb.append(",205");
+        }
 
 
         char[] _ic=getBitsFromInteger(bean.getWarnMsg_ic());
@@ -1413,7 +1416,7 @@ public class DataTool {
 
         Integer[] speed = new Integer[40];
         for(int i=0;i<speed.length;i++){
-            speed[i]=(int)buf.readUnsignedShort();//16bit
+            speed[i] = (int)buf.readUnsignedShort();//16bit
         }
         drivingBehaviorMes.setSpeed(speed);
 
@@ -1425,7 +1428,7 @@ public class DataTool {
 
         Integer[] bcvol = new Integer[40];
         for(int i=0;i<bcvol.length;i++){
-            bcvol[i]=buf.readUnsignedMedium();//24bit
+            bcvol[i] =buf.readUnsignedMedium();//24bit
         }
         drivingBehaviorMes.setBcvol(bcvol);
 

@@ -12,7 +12,7 @@ public class VehicleModelConfig {
     private int id;
     private Short modelId;
     private String modelName;
-    private String funcation;
+    private String function;
 
 
     @Id
@@ -42,11 +42,11 @@ public class VehicleModelConfig {
         this.modelName = modelName;
     }
 
-    public String getFuncation() {
-        return funcation;
+    public String getFunction() {
+        return function;
     }
 
-    public void setFuncation(String funcation) {
-        this.funcation = funcation;
+    public void setFunction(String function) {
+        this.function = function;
     }
 }
