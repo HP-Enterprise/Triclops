@@ -231,6 +231,14 @@ public class DataTool {
         }
         return a;
     }
+    public String getMtGearPostion(byte a){
+        //计算手动挡空挡信息
+        String re="0";
+        if(a==0x1){
+            re="1";//0x1 N actiove
+        }
+        return re;
+    }
     public float getInternTrueTmp(short a){
         //得到车内真实温度
         //分辨率 0.5A，偏移量40，
@@ -1438,7 +1446,13 @@ public class DataTool {
         }
         drivingBehaviorMes.setCruise(cruise);
 
-
+        drivingBehaviorMes.setSafeBelt(buf.readUnsignedShort());//安全带信息 16bit
+        drivingBehaviorMes.setTripA(buf.readUnsignedInt());//小计里程A 32bit
+        drivingBehaviorMes.setTripB(buf.readUnsignedInt());//小计里程B 32bit
+        drivingBehaviorMes.setKilometerMileage(buf.readUnsignedMedium());//行驶里程 24bit
+        drivingBehaviorMes.setFuelOil((short)buf.readByte());//剩余燃油 8bit
+        drivingBehaviorMes.setAvgOilA(buf.readUnsignedShort());//平均油耗A 16bit
+        drivingBehaviorMes.setAvgOilB(buf.readUnsignedShort());//平均油耗B 16bit
 
         return drivingBehaviorMes;
     }
@@ -1517,6 +1531,44 @@ public class DataTool {
                     }
                 }else  if(mode==3){
                     if(temp>=baseValA||temp<=baseValB){
+                        count++;
+                    }
+                }
+
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 计算车速分布
+     * @param vals
+     * @param mode 1： s<=1  2：1<s<=45  3：45<s<=90 4：90<s
+     * @return
+     */
+    public int calcSpeedRang(Integer[] vals,int mode){
+        int count=0;
+        double temp=0;
+        if(vals!=null) {
+            for (int i = 0; i <vals.length; i++) {
+                if(vals[i]==0xffff){//无效值0xffff
+                    continue;
+                }
+                temp=vals[i]*0.15625;
+                if(mode==1){
+                    if(temp<=1){
+                        count++;
+                    }
+                }else  if(mode==2){
+                    if(temp>1 && temp<=45){
+                        count++;
+                    }
+                }else  if(mode==3){
+                    if(temp>45 && temp<=90){
+                        count++;
+                    }
+                }else  if(mode==4){
+                    if(temp>90){
                         count++;
                     }
                 }
