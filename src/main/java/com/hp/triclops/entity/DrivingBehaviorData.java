@@ -35,6 +35,8 @@ public class DrivingBehaviorData {
     private int speed_1_45_count;
     private int speed_45_90_count;
     private int speed_90_count;
+    private int speed_up_count;
+    private int max_speed;
 
 
     @Id
@@ -272,5 +274,25 @@ public class DrivingBehaviorData {
 
     public void setSpeed_90_count(int speed_90_count) {
         this.speed_90_count = speed_90_count;
+    }
+
+    @Basic
+    @Column(name = "speed_up_count", nullable = false, insertable = true, updatable = true)
+    public int getSpeed_up_count() {
+        return speed_up_count;
+    }
+
+    public void setSpeed_up_count(int speed_up_count) {
+        this.speed_up_count = speed_up_count;
+    }
+
+    @Basic
+    @Column(name = "max_speed", nullable = false, insertable = true, updatable = true)
+    public int getMax_speed() {
+        return max_speed;
+    }
+
+    public void setMax_speed(int max_speed) {
+        this.max_speed = max_speed;
     }
 }

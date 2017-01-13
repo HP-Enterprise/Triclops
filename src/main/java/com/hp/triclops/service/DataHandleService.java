@@ -177,13 +177,15 @@ public class DataHandleService {
             dd.setSeatbeltRr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
         }
         dd.setDrivingRange(bean.getKilometerMileage());//行驶里程在bean中已经是int数据
-        dd.setFuelOil(bean.getFuelOil()==0xff?-200:bean.getFuelOil()* 1f);//0xff无效值
+        dd.setFuelOil(bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil() * 1f);//0xff无效值
         dd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         dd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         dd.setSpeed_1_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 1));//计算车速范围
         dd.setSpeed_1_45_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 2));//计算车速范围
         dd.setSpeed_45_90_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 3));//计算车速范围
         dd.setSpeed_90_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 4));//计算车速范围
+        dd.setSpeed_up_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 5));//超速时间
+        dd.setMax_speed((short) dataTool.calcSpeedRang(bean.getSpeed(), 6));//最高车速
 
 
         drivingBehaviorDataRepository.save(dd);

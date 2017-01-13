@@ -1543,7 +1543,7 @@ public class DataTool {
     /**
      * 计算车速分布
      * @param vals
-     * @param mode 1： s<=1  2：1<s<=45  3：45<s<=90 4：90<s
+     * @param mode 1： s<=1  2：1<s<=45  3：45<s<=90 4：90<s  5：s>=120 超速个数 6：最大车速
      * @return
      */
     public int calcSpeedRang(Integer[] vals,int mode){
@@ -1571,8 +1571,13 @@ public class DataTool {
                     if(temp>90){
                         count++;
                     }
+                }else  if(mode==5){
+                    if(temp>=120){
+                        count++;
+                    }
+                }else  if(mode==6){
+                   count=(int)Math.max(count,temp);
                 }
-
             }
         }
         return count;

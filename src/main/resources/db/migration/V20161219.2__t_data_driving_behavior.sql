@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS t_data_driving_behavior (
   speed_1_45_count int(11) DEFAULT 0 COMMENT '车速大于1小于等于45的次数',
   speed_45_90_count int(11) DEFAULT 0 COMMENT '车速大于45小于等于90的次数',
   speed_90_count int(11) DEFAULT 0 COMMENT '车速大于90的次数',
+  speed_up_count int(11) DEFAULT 0 COMMENT '超速的次数',
+  max_speed int(11) DEFAULT 0 COMMENT '最高车速',
   PRIMARY KEY (id),
   INDEX idx_vin(vin),
   INDEX idx_sending_time(sending_time)
