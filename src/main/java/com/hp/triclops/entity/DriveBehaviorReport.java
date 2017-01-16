@@ -24,14 +24,14 @@ public class DriveBehaviorReport {
     private Integer suddenDec;//急减速次数
     private Integer suddenTurn;//急转弯次数
     private Integer tireDriveTimes;//疲劳驾驶次数
-    private Long speedingDrive;//超速时间 单位秒
+    private Double speedingDrive;//超速时间 单位秒
     private Short maxSpeed;//最高超速速度 公里/小时
     private Float avgOil;//平均油耗
     private Integer mailRange;//累计行驶里程
-    private Integer driveTime1;//1速段行驶时间　秒
-    private Integer driveTime2;//1-45速段行驶时间 秒
-    private Integer driveTime3;//40-90速段行驶时间 秒
-    private Integer driveTime4;//90以上速段行驶时间 秒
+    private Double driveTime1;//1速段行驶时间　秒
+    private Double driveTime2;//1-45速段行驶时间 秒
+    private Double driveTime3;//40-90速段行驶时间 秒
+    private Double driveTime4;//90以上速段行驶时间 秒
     private Integer trafficGridlockTimes;//早晚高峰出行次数
     private Integer daybreakOutTimes;//凌晨出行次数
     private Integer score;//评分
@@ -160,11 +160,11 @@ public class DriveBehaviorReport {
         this.tireDriveTimes = tireDriveTimes;
     }
 
-    public Long getSpeedingDrive() {
+    public Double getSpeedingDrive() {
         return speedingDrive;
     }
 
-    public void setSpeedingDrive(Long speedingDrive) {
+    public void setSpeedingDrive(Double speedingDrive) {
         this.speedingDrive = speedingDrive;
     }
 
@@ -192,35 +192,35 @@ public class DriveBehaviorReport {
         this.mailRange = mailRange;
     }
 
-    public Integer getDriveTime1() {
+    public Double getDriveTime1() {
         return driveTime1;
     }
 
-    public void setDriveTime1(Integer driveTime1) {
+    public void setDriveTime1(Double driveTime1) {
         this.driveTime1 = driveTime1;
     }
 
-    public Integer getDriveTime2() {
+    public Double getDriveTime2() {
         return driveTime2;
     }
 
-    public void setDriveTime2(Integer driveTime2) {
+    public void setDriveTime2(Double driveTime2) {
         this.driveTime2 = driveTime2;
     }
 
-    public Integer getDriveTime3() {
+    public Double getDriveTime3() {
         return driveTime3;
     }
 
-    public void setDriveTime3(Integer driveTime3) {
+    public void setDriveTime3(Double driveTime3) {
         this.driveTime3 = driveTime3;
     }
 
-    public Integer getDriveTime4() {
+    public Double getDriveTime4() {
         return driveTime4;
     }
 
-    public void setDriveTime4(Integer driveTime4) {
+    public void setDriveTime4(Double driveTime4) {
         this.driveTime4 = driveTime4;
     }
 
