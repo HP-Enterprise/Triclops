@@ -25,6 +25,8 @@ public interface UserVehicleRelativedRepository extends CrudRepository<UserVehic
 
     List<UserVehicleRelatived> findByUidAndVflag(User uid,int vflag);
 
+    List<UserVehicleRelatived> findByUid(User uid);
+
     List<UserVehicleRelatived> findByParentuser(User user);
 
     @Query("select Uvr from UserVehicleRelatived Uvr where Uvr.uid = ?1 and Uvr.vid = ?2")
