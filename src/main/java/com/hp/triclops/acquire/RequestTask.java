@@ -230,6 +230,20 @@ public class RequestTask  implements Runnable{
                 saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //补发故障数据是否需要push
                 break;
+
+            case 0x2A://驾驶行为数据上报
+                _logger.info("[0x2A]收到驾驶行为数据上报");
+                chKey=geVinByAddress(ch.remoteAddress().toString());
+                if(chKey==null){
+                    _logger.info("[0x2A]报文对应的连接没有注册，不处理报文");
+                    return;
+                }
+                respStr=requestHandler.getDrivingBehaviorMesResp(receiveDataHexString);
+                buf=dataTool.getByteBuf(respStr);
+                ch.writeAndFlush(buf);//回发数据直接回消息
+                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                break;
+
             case 0x31://远程控制响应(上行)包含mid 2 4 5
                 _logger.info("[0x31]收到远程控制响应");
                 chKey=geVinByAddress(ch.remoteAddress().toString());

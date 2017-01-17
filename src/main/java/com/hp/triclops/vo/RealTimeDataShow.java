@@ -349,6 +349,8 @@ public class RealTimeDataShow {
     private float batteryVoltage;
     private int averageSpeedA;
     private int averageSpeedB;
+    private String mtGearPostion;
+
     public Long getId() {
         return id;
     }
@@ -743,5 +745,13 @@ public class RealTimeDataShow {
 
     public void setAverageSpeedB(int averageSpeedB) {
         this.averageSpeedB = averageSpeedB;
+    }
+
+    public String getMtGearPostion() {
+        return mtGearPostion;
+    }
+
+    public void setMtGearPostion(String mtGearPostion) {
+        this.mtGearPostion = mtGearPostion;
     }
 }

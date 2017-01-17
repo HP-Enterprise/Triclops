@@ -31,6 +31,10 @@ public class DataHandleService {
     @Autowired
     FailureMessageDataRespository failureMessageDataRespository;
     @Autowired
+    DrivingBehaviorDataRepository drivingBehaviorDataRepository;
+    @Autowired
+    DrivingBehaviorOriginalDataRepository drivingBehaviorOriginalDataRepository;
+    @Autowired
     OutputHexService outputHexService;
 
 
@@ -92,6 +96,9 @@ public class DataHandleService {
                     _logger.info("[0x29]>>重复的补发故障数据，不处理");
                 }
                 break;
+            case 0x2A://驾驶行为数据上报
+                saveDrivingBehaviorData(vin,msg);
+                break;
             default:
                 _logger.info(">>data is invalid,we will not save them");
                 break;
@@ -125,6 +132,73 @@ public class DataHandleService {
         rd.setEnterpriseBroadcastPort(bean.getEnterpriseBroadcastPort());
         regularReportDataRespository.save(rd);
     }
+
+    public void saveDrivingBehaviorData(String vin,String msg){
+        _logger.info("[0x21]>>保存上报的驾驶行为数据:"+msg);
+
+        DrivingBehaviorMes bean=dataTool.decodeDrivingBehaviorMes(msg);
+        boolean isM8X=true;
+        short vehicleModel=bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
+        if(vehicleModel>(short)2){
+            isM8X=false;
+        }
+        DrivingBehaviorData dd=new DrivingBehaviorData();
+        dd.setVin(vin);
+        dd.setImei(bean.getImei());
+        dd.setApplicationId(bean.getApplicationID());
+        dd.setMessageId(bean.getMessageID());
+        dd.setTripId(bean.getTripID());
+        dd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
+        dd.setReceiveTime(new Date());
+        dd.setSpeedUp((short) dataTool.calcSpeed(bean.getDriveAcceleration(), 1));//通过行驶方向加速度判断是否存在急加速
+        dd.setSpeedDown((short) dataTool.calcSpeed(bean.getDriveAcceleration(), 2));//通过行驶方向加速度判断是否存在急减速
+        dd.setSpeedTurn((short) dataTool.calcSpeed(bean.getLateralAcceleration(), 3));//通横向加速度判断是否存在急转弯
+        long _tripA= bean.getTripA();
+        long _tripB=bean.getTripB();
+        if(isM8X){//M8X 无效值0x1ffff
+            dd.setTripA(_tripA == 0x1ffff ? -200 : (_tripA * 0.1f));
+            dd.setTripB(_tripB == 0x1ffff ? -200 : (_tripB * 0.1f));
+        }else{//F60上报范围0-10000 参考v0630
+            dd.setTripA(_tripA > 10000 ? -200 : (_tripA * 0.1f));
+            dd.setTripB(_tripB > 10000 ? -200 : (_tripB * 0.1f));
+        }
+        char[] seatBeltInfo=dataTool.getBitsFromInteger(bean.getSafeBelt());//安全带状况 大端传输
+        if(isM8X){
+            dd.setSeatbeltFl(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[14]) + String.valueOf(seatBeltInfo[15])));
+            dd.setSeatbeltFr(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[12]) + String.valueOf(seatBeltInfo[13])));
+            dd.setSeatbeltRl(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[10]) + String.valueOf(seatBeltInfo[11])));
+            dd.setSeatbeltRm(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[8]) + String.valueOf(seatBeltInfo[9])));
+            dd.setSeatbeltRr(dataTool.getSeatBeltStatus4M8X(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
+        }else{
+            dd.setSeatbeltFl(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[14]) + String.valueOf(seatBeltInfo[15])));
+            dd.setSeatbeltFr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[12]) + String.valueOf(seatBeltInfo[13])));
+            dd.setSeatbeltRl(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[10]) + String.valueOf(seatBeltInfo[11])));
+            dd.setSeatbeltRm(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[8]) + String.valueOf(seatBeltInfo[9])));
+            dd.setSeatbeltRr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
+        }
+        dd.setDrivingRange(bean.getKilometerMileage());//行驶里程在bean中已经是int数据
+        dd.setFuelOil(bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil() * 1f);//0xff无效值
+        dd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
+        dd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
+        dd.setSpeed_1_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 1));//计算车速范围
+        dd.setSpeed_1_45_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 2));//计算车速范围
+        dd.setSpeed_45_90_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 3));//计算车速范围
+        dd.setSpeed_90_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 4));//计算车速范围
+        dd.setSpeed_up_count((short) dataTool.calcSpeedRang(bean.getSpeed(), 5));//超速时间
+        dd.setMax_speed((short) dataTool.calcSpeedRang(bean.getSpeed(), 6));//最高车速
+
+
+        drivingBehaviorDataRepository.save(dd);
+        //---保存原始驾驶行为报文数据--
+        DrivingBehavioOriginalData drivingBehavioOriginalData=new DrivingBehavioOriginalData();
+        drivingBehavioOriginalData.setImei(bean.getImei());
+        drivingBehavioOriginalData.setVin(vin);
+        drivingBehavioOriginalData.setHexString(msg);
+        drivingBehavioOriginalData.setReceiveTime(new Date());
+        drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalData);
+
+    }
+
     public void saveRealTimeReportMes(String vin,String msg){
         _logger.info("[0x22]>>保存上报的实时数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -205,10 +279,16 @@ public class DataHandleService {
         }else{
             //F60 长度： 8bit
             int value=dataTool.getValueFromBytes(vBytes,8);
-            rd.setVoltage(value==0xff?-200:(value * 0.1f));
+            rd.setVoltage(value == 0xff ? -200 : (value * 0.1f));
         }
         rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
         rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
+        if(isM8X){
+            rd.setMtGearPostion("-200");
+        }else{
+            rd.setMtGearPostion(dataTool.getMtGearPostion(bean.getMt_gear_position()));
+        }
+
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -315,6 +395,12 @@ public class DataHandleService {
         }
         rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
         rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
+        if(isM8X){
+            rd.setMtGearPostion("-200");
+        }else{
+            rd.setMtGearPostion(dataTool.getMtGearPostion(bean.getMt_gear_position()));
+        }
+
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储

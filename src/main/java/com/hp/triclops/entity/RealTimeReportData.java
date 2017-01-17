@@ -47,6 +47,7 @@ public class RealTimeReportData {
     private float voltage;
     private int averageSpeedA;
     private int averageSpeedB;
+    private String mtGearPostion;
 
 
     @Id
@@ -406,5 +407,15 @@ public class RealTimeReportData {
 
     public void setAverageSpeedB(int averageSpeedB) {
         this.averageSpeedB = averageSpeedB;
+    }
+
+    @Basic
+    @Column(name = "mt_gear_postion", nullable = true, insertable = true, updatable = true, length = 1)
+    public String getMtGearPostion() {
+        return mtGearPostion;
+    }
+
+    public void setMtGearPostion(String mtGearPostion) {
+        this.mtGearPostion = mtGearPostion;
     }
 }

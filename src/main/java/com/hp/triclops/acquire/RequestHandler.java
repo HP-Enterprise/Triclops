@@ -462,6 +462,31 @@ public class RequestHandler {
 
     /**
      *
+     * @param reqString 行为数据请求hex
+     * @return 补发故障数据响应hex
+     */
+    public String getDrivingBehaviorMesResp(String reqString){
+        //根据心跳请求的16进制字符串，生成响应的16进制字符串
+
+        DrivingBehaviorMes bean=dataTool.decodeDrivingBehaviorMes(reqString);
+        //请求解析到bean
+        DrivingBehaviorAck resp=new DrivingBehaviorAck();
+        resp.setHead(bean.getHead());
+        resp.setTestFlag(bean.getTestFlag());
+        resp.setSendingTime((long) dataTool.getCurrentSeconds());
+        resp.setApplicationID(bean.getApplicationID());
+        resp.setMessageID((short) 2);
+        resp.setEventID(bean.getEventID());
+        //响应
+        DataPackage dpw=new DataPackage("8995_42_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw=conversionTBox.generate(dpw);
+        String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    /**
+     *
      * @param reqString 休眠请求hex
      * @return 休眠响应hex
      */

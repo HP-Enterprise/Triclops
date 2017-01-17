@@ -533,71 +533,73 @@ public class VehicleDataService {
             data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
             data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
             data.setAverageSpeedA(rd.getAverageSpeedA());
-                data.setAverageSpeedB(rd.getAverageSpeedB());
-                data.setFmax(280);
-                data.setFmin(200);
-                data.setRmax(290);
-                data.setRmin(210);
-                data.setLfok(this.getLfokStatu(rd.getLeftFrontTirePressure()));
-                data.setLrok(this.getLrokStatu(rd.getLeftRearTirePressure()));
-                data.setRfok(this.getRfokStatu(rd.getRightRearTirePressure()));
-                data.setRrok(this.getRrokStatu(rd.getRightRearTirePressure()));
+            data.setAverageSpeedB(rd.getAverageSpeedB());
+            data.setMtGearPostion(rd.getMtGearPostion());
 
-                data.setIsLocation(gd.getIsLocation());//
-                data.setNorthSouth(gd.getNorthSouth());//
-                data.setEastWest(gd.getEastWest());//
-                data.setLatitude(gd.getLatitude());
-                data.setLongitude(gd.getLongitude());
-                data.setSpeed(gd.getSpeed());
-                data.setHeading(gd.getHeading());
-                data.setBatteryVoltage(rd.getVoltage());
-                //数据转换处理
-                int p=100*data.getFuelOil()/64;
-                p=p<0?0:p;
-                p=p>100?100:p;
-                data.setFuelOil(p);//返回百分比整数  64=100%  0-100
-                if(rd.getFuelOil()==-200){//保持无效值返回到api
-                    data.setFuelOil(-200);
-                }
-                float _avgOilA=data.getAvgOilA();
-                BigDecimal bdA  =   new  BigDecimal((double)_avgOilA);
-                bdA   =  bdA.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
-                data.setAvgOilA(bdA.floatValue());
-                if(rd.getAvgOilA()==-200){//保持无效值返回到api
-                    data.setAvgOilA(-200);
-                }
-                float _avgOilB=data.getAvgOilB();
-                BigDecimal bdB  =   new  BigDecimal((double)_avgOilB);
-                bdB   =  bdB.setScale(1,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
-                data.setAvgOilB(bdB.floatValue());
-                if(rd.getAvgOilB()==-200){//保持无效值返回到api
-                    data.setAvgOilB(-200);
-                }
-                float _voltage=data.getBatteryVoltage();
-                BigDecimal bdC  =   new  BigDecimal((double)_voltage);
-                bdC   =  bdC.setScale(2,BigDecimal.ROUND_HALF_DOWN);//四舍五入保留2位小数
-                data.setBatteryVoltage(bdC.floatValue());
-                if(rd.getVoltage()==-200){//保持无效值返回到api
-                    data.setBatteryVoltage(-200);
-                }
-                //胎压处理
-                data.setLeftFrontTirePressure(dataTool.getRoundHalfDown(rd.getLeftFrontTirePressure(),1));
-                if(rd.getLeftFrontTirePressure()==-200){//保持无效值返回到api
-                    data.setLeftFrontTirePressure(-200);
-                }
-                data.setLeftRearTirePressure(dataTool.getRoundHalfDown(rd.getLeftRearTirePressure(),1));
-                if(rd.getLeftRearTirePressure()==-200){//保持无效值返回到api
-                    data.setLeftRearTirePressure(-200);
-                }
-                data.setRightFrontTirePressure(dataTool.getRoundHalfDown(rd.getRightFrontTirePressure(),1));
-                if(rd.getRightFrontTirePressure()==-200){//保持无效值返回到api
-                    data.setRightFrontTirePressure(-200);
-                }
-                data.setRightRearTirePressure(dataTool.getRoundHalfDown(rd.getRightRearTirePressure(),1));
-                if(rd.getRightRearTirePressure()==-200){//保持无效值返回到api
-                    data.setRightRearTirePressure(-200);
-                }
-                return data;
+            data.setFmax(280);
+            data.setFmin(200);
+            data.setRmax(290);
+            data.setRmin(210);
+            data.setLfok(this.getLfokStatu(rd.getLeftFrontTirePressure()));
+            data.setLrok(this.getLrokStatu(rd.getLeftRearTirePressure()));
+            data.setRfok(this.getRfokStatu(rd.getRightRearTirePressure()));
+            data.setRrok(this.getRrokStatu(rd.getRightRearTirePressure()));
+
+            data.setIsLocation(gd.getIsLocation());//
+            data.setNorthSouth(gd.getNorthSouth());//
+            data.setEastWest(gd.getEastWest());//
+            data.setLatitude(gd.getLatitude());
+            data.setLongitude(gd.getLongitude());
+            data.setSpeed(gd.getSpeed());
+            data.setHeading(gd.getHeading());
+            data.setBatteryVoltage(rd.getVoltage());
+            //数据转换处理
+            int p = 100 * data.getFuelOil() / 64;
+            p = p < 0 ? 0 : p;
+            p = p > 100 ? 100 : p;
+            data.setFuelOil(p);//返回百分比整数  64=100%  0-100
+            if (rd.getFuelOil() == -200) {//保持无效值返回到api
+                data.setFuelOil(-200);
+            }
+            float _avgOilA = data.getAvgOilA();
+            BigDecimal bdA = new BigDecimal((double) _avgOilA);
+            bdA = bdA.setScale(1, BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+            data.setAvgOilA(bdA.floatValue());
+            if (rd.getAvgOilA() == -200) {//保持无效值返回到api
+                data.setAvgOilA(-200);
+            }
+            float _avgOilB = data.getAvgOilB();
+            BigDecimal bdB = new BigDecimal((double) _avgOilB);
+            bdB = bdB.setScale(1, BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+            data.setAvgOilB(bdB.floatValue());
+            if (rd.getAvgOilB() == -200) {//保持无效值返回到api
+                data.setAvgOilB(-200);
+            }
+            float _voltage = data.getBatteryVoltage();
+            BigDecimal bdC = new BigDecimal((double) _voltage);
+            bdC = bdC.setScale(2, BigDecimal.ROUND_HALF_DOWN);//四舍五入保留2位小数
+            data.setBatteryVoltage(bdC.floatValue());
+            if (rd.getVoltage() == -200) {//保持无效值返回到api
+                data.setBatteryVoltage(-200);
+            }
+            //胎压处理
+            data.setLeftFrontTirePressure(dataTool.getRoundHalfDown(rd.getLeftFrontTirePressure(), 1));
+            if (rd.getLeftFrontTirePressure() == -200) {//保持无效值返回到api
+                data.setLeftFrontTirePressure(-200);
+            }
+            data.setLeftRearTirePressure(dataTool.getRoundHalfDown(rd.getLeftRearTirePressure(), 1));
+            if (rd.getLeftRearTirePressure() == -200) {//保持无效值返回到api
+                data.setLeftRearTirePressure(-200);
+            }
+            data.setRightFrontTirePressure(dataTool.getRoundHalfDown(rd.getRightFrontTirePressure(), 1));
+            if (rd.getRightFrontTirePressure() == -200) {//保持无效值返回到api
+                data.setRightFrontTirePressure(-200);
+            }
+            data.setRightRearTirePressure(dataTool.getRoundHalfDown(rd.getRightRearTirePressure(), 1));
+            if (rd.getRightRearTirePressure() == -200) {//保持无效值返回到api
+                data.setRightRearTirePressure(-200);
+            }
+            return data;
         }
 
         }

@@ -1,9 +1,6 @@
 package com.hp.triclops.acquire;
 
-import com.hp.data.bean.tbox.DataResendWarningMes;
-import com.hp.data.bean.tbox.FailureMessage;
-import com.hp.data.bean.tbox.DataResendFailureData;
-import com.hp.data.bean.tbox.WarningMessage;
+import com.hp.data.bean.tbox.*;
 import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
 import com.hp.triclops.entity.WarningMessageConversion;
@@ -234,6 +231,14 @@ public class DataTool {
         }
         return a;
     }
+    public String getMtGearPostion(byte a){
+        //计算手动挡空挡信息
+        String re="0";
+        if(a==0x1){
+            re="1";//0x1 N actiove
+        }
+        return re;
+    }
     public float getInternTrueTmp(short a){
         //得到车内真实温度
         //分辨率 0.5A，偏移量40，
@@ -348,6 +353,54 @@ public class DataTool {
         }
         return re;
     }
+
+
+    public String getSeatBeltStatus4M8X(String bita_b){
+        //得到M8X安全带状态 传入两个bit的字符表示,
+        // 数据库 0没系 1系了 2保留 3信号异常
+        //参考0.630
+        //0x0： 00 没系
+        //0x1： 01 系
+        //0x2： 10 保留
+        //0x3： 11 Signal invalid--3
+        String re="1";
+        if(bita_b!=null){
+            if(bita_b.equals("00")){
+                re="0";
+            }else if(bita_b.equals("01")){
+                re="1";
+            }else if(bita_b.equals("10")){
+                re="2";
+            }else if(bita_b.equals("11")){
+                re="3";
+            }
+        }
+        return re;
+    }
+
+    public String getSeatBeltStatus4F60(String bita_b){
+        //得到F60安全带状态 传入两个bit的字符表示,
+        // 数据库 0没系 1系了 2保留 3信号异常
+        //参考0.630
+        //0x0： 00 系
+        //0x1： 01 FAULT
+        //0x2： 10 没系
+        //0x3： 11 保留
+        String re="1";
+        if(bita_b!=null){
+            if(bita_b.equals("00")){
+                re="1";
+            }else if(bita_b.equals("01")){
+                re="3";
+            }else if(bita_b.equals("10")){
+                re="0";
+            }else if(bita_b.equals("11")){
+                re="2";
+            }
+        }
+        return re;
+    }
+
     public int getDriveRangeFrom3Bytes(byte[] bytes){
         //从3个字节读出数字 无效值0xffffff
         int km=0;
@@ -820,6 +873,9 @@ public class DataTool {
         }
         if(_acm[2]== '0'){//bit5 0 warning MID=204
             sb.append(",204");
+        }
+        if(_acm[1]== '0'){//bit6 0 warning MID=205
+            sb.append(",205");
         }
 
 
@@ -1322,6 +1378,87 @@ public class DataTool {
         return warningMessage;
     }
 
+
+    /**
+     * 解码驾驶行为数据包
+     * @param msg
+     * @return
+     */
+    public DrivingBehaviorMes decodeDrivingBehaviorMes(String msg){
+        DrivingBehaviorMes drivingBehaviorMes=new DrivingBehaviorMes();
+        byte[] data=getBytesFromByteBuf(getByteBuf(msg));
+        ByteBuf buf=getByteBuf(bytes2hex(data));
+        drivingBehaviorMes.setHead((int) buf.readShort());
+        drivingBehaviorMes.setLength((int) buf.readShort());
+        drivingBehaviorMes.setTestFlag((short) buf.readByte());
+        drivingBehaviorMes.setSendingTime((long) buf.readInt());
+        drivingBehaviorMes.setApplicationID((short) buf.readByte());
+        drivingBehaviorMes.setMessageID((short) buf.readByte());
+        byte[] imeiBytes=new byte[15];
+        buf.readBytes(imeiBytes);
+        drivingBehaviorMes.setImei(new String(imeiBytes));
+        drivingBehaviorMes.setProtocolVersionNumber((short) buf.readByte());
+        drivingBehaviorMes.setVehicleID((short) buf.readByte());
+        drivingBehaviorMes.setVehicleModel((short) buf.readByte());
+        drivingBehaviorMes.setTripID((int) buf.readShort());
+        drivingBehaviorMes.setReserved((int) buf.readShort());
+        drivingBehaviorMes.setEventID((long) buf.readInt());
+
+        Integer[] lateralAcceleration = new Integer[40];
+        for(int i=0;i<lateralAcceleration.length;i++){
+            lateralAcceleration[i]=(int)buf.readUnsignedShort();//16bit
+        }
+        drivingBehaviorMes.setLateralAcceleration(lateralAcceleration);
+
+        Integer[] driveAcceleration = new Integer[40];
+        for(int i=0;i<driveAcceleration.length;i++){
+            driveAcceleration[i]=(int)buf.readUnsignedShort();//16bit
+        }
+        drivingBehaviorMes.setDriveAcceleration(driveAcceleration);
+
+        Short[] brake = new Short[40];
+        for(int i=0;i<brake.length;i++){
+            brake[i]=(short)buf.readByte();//8bit
+        }
+        drivingBehaviorMes.setBrake(brake);
+
+        Integer[] speed = new Integer[40];
+        for(int i=0;i<speed.length;i++){
+            speed[i] = (int)buf.readUnsignedShort();//16bit
+        }
+        drivingBehaviorMes.setSpeed(speed);
+
+        Integer[] lws = new Integer[40];
+        for(int i=0;i<lws.length;i++){
+            lws[i]=buf.readUnsignedMedium();//24bit
+        }
+        drivingBehaviorMes.setLws(lws);
+
+        Integer[] bcvol = new Integer[40];
+        for(int i=0;i<bcvol.length;i++){
+            bcvol[i] =buf.readUnsignedMedium();//24bit
+        }
+        drivingBehaviorMes.setBcvol(bcvol);
+
+        Short[] cruise = new Short[40];
+        for(int i=0;i<cruise.length;i++){
+            cruise[i]=(short)buf.readByte();//8bit
+        }
+        drivingBehaviorMes.setCruise(cruise);
+
+        drivingBehaviorMes.setSafeBelt(buf.readUnsignedShort());//安全带信息 16bit
+        drivingBehaviorMes.setTripA(buf.readUnsignedInt());//小计里程A 32bit
+        drivingBehaviorMes.setTripB(buf.readUnsignedInt());//小计里程B 32bit
+        drivingBehaviorMes.setKilometerMileage(buf.readUnsignedMedium());//行驶里程 24bit
+        drivingBehaviorMes.setFuelOil((short)buf.readByte());//剩余燃油 8bit
+        drivingBehaviorMes.setAvgOilA(buf.readUnsignedShort());//平均油耗A 16bit
+        drivingBehaviorMes.setAvgOilB(buf.readUnsignedShort());//平均油耗B 16bit
+
+        return drivingBehaviorMes;
+    }
+
+
+
     /**
      *四舍五入保留指定小数位数
      * @param value
@@ -1366,4 +1503,84 @@ public class DataTool {
         }
         return re;
     }
+
+    /**
+     * 计算急加速 急减速 急转弯值
+     * @param vals
+     * @param mode 1判断急加速（+）  2判断急减速（-）  3判断急转弯（+ -）
+     * @return
+     */
+    public int calcSpeed(Integer[] vals,int mode){
+        int count=0;
+        double temp=0;
+        double baseValA=9.8*3;
+        double baseValB=-9.8*3;
+        if(vals!=null) {
+            for (int i = 0; i <vals.length; i++) {
+                if(vals[i]==0xffff){//无效值0xffff
+                    continue;
+                }
+                temp=vals[i]*0.002-65;
+                if(mode==1){
+                    if(temp>=baseValA){
+                        count++;
+                    }
+                }else  if(mode==2){
+                    if(temp<=baseValB){
+                        count++;
+                    }
+                }else  if(mode==3){
+                    if(temp>=baseValA||temp<=baseValB){
+                        count++;
+                    }
+                }
+
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 计算车速分布
+     * @param vals
+     * @param mode 1： s<=1  2：1<s<=45  3：45<s<=90 4：90<s  5：s>=120 超速个数 6：最大车速
+     * @return
+     */
+    public int calcSpeedRang(Integer[] vals,int mode){
+        int count=0;
+        double temp=0;
+        if(vals!=null) {
+            for (int i = 0; i <vals.length; i++) {
+                if(vals[i]==0xffff){//无效值0xffff
+                    continue;
+                }
+                temp=vals[i]*0.15625;
+                if(mode==1){
+                    if(temp<=1){
+                        count++;
+                    }
+                }else  if(mode==2){
+                    if(temp>1 && temp<=45){
+                        count++;
+                    }
+                }else  if(mode==3){
+                    if(temp>45 && temp<=90){
+                        count++;
+                    }
+                }else  if(mode==4){
+                    if(temp>90){
+                        count++;
+                    }
+                }else  if(mode==5){
+                    if(temp>=120){
+                        count++;
+                    }
+                }else  if(mode==6){
+                   count=(int)Math.max(count,temp);
+                }
+            }
+        }
+        return count;
+    }
+
 }

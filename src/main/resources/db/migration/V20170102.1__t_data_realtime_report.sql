@@ -1,0 +1,1 @@
+alter table t_data_realtime_report add mt_gear_postion varchar(5) DEFAULT NULL COMMENT '手动挡是否空挡 0否 1是';

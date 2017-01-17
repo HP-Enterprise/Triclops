@@ -22,7 +22,9 @@ public class VehicleModelConfigService {
     @Autowired
     private UserRepository userRepository;
 
+
     public  List<ModelFunction> getConfigByUser(int userId){
+
         List<ModelFunction> result=new ArrayList<>();
         User u=userRepository.findById(userId);
         if(u!=null){
@@ -33,8 +35,9 @@ public class VehicleModelConfigService {
                     Vehicle vehicle=relatived.getVid();
                     List<VehicleModelConfig> vehicleModelConfigList=vehicleModelConfigRepository.findByModelName(vehicle.getModel());
                     if(vehicleModelConfigList!=null && vehicleModelConfigList.size()>0){
-                        result.add(new ModelFunction(vehicleModelConfigList.get(0).getModelName(),vehicleModelConfigList.get(0).getFuncation()));
+                        result.add(new ModelFunction(vehicleModelConfigList.get(0).getModelName(),vehicleModelConfigList.get(0).getFunction()));
                     }
+
                 }
 
             }
