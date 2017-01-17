@@ -30,5 +30,5 @@ CREATE TABLE IF NOT EXISTS t_data_driving_behavior (
   PRIMARY KEY (id),
   INDEX idx_vin(vin),
   INDEX idx_sending_time(sending_time)
-) DEFAULT CHARSET=utf8 COMMENT='急加速急减速急转弯数据表';
+) DEFAULT CHARSET=utf8 COMMENT='驾驶行为数据表';
 
