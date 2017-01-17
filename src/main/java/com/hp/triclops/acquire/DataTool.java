@@ -225,7 +225,7 @@ public class DataTool {
         if(a==0xff){
             return -200f;
         }
-       return a * 2.8f;
+       return a * 0.028f;
     }
     public int getTrueAvgSpeed(int a){
         //得到真实平均车速 0x1ff=无效值

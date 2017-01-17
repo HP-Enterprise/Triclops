@@ -218,9 +218,7 @@ public class OutputHexService {
             case 5://空调关闭
                 //todo
                  _cType=4;
-                 _sendTemp=(remoteControl.getAcTemperature()-15.5)*2; //真实温度 15.5~32.5
-                 _sendTempInt=(int)_sendTemp;
-                _remoteAc[0]=_sendTempInt.byteValue();//0x00~0x23
+                _remoteAc[0]=(byte)1;//0x00~0x23
                 _ac=0;//空调关
                 _remoteAc[1]=(byte)(_ac+_recir*4+_compr*16);
                 break;
