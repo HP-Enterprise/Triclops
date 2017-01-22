@@ -561,6 +561,10 @@ public class RequestHandler {
                     msg="远程启动发动机条件不符合";
                     msgEn="emote start engine conditions do not meet";
                 }
+                if(preconditionRespCheck==100){
+                    msg="发动机已启动";
+                    msgEn="The engine is started";
+                }
                 if(preconditionRespCheck==2){
                     msg="远程关闭发动机失败,必须是远程启动发动机才能远程关闭";
                     msgEn="Remote shutdown of the engine fails, it must be remote start the engine to remote shutdown";
@@ -701,22 +705,22 @@ public class RequestHandler {
                         _logger.info("[0x31]0x80响应时，暂时判断为发动机启动成功");
                     }
                     if(refId>0){
-                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), (short)0,false);
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(),(short)0,bean.getRemoteControlTime(),false);
                     //存在ref记录
                         //RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
                        _logger.info("[0x31]关联的启动发动机执行成功，开始执行原始控制指令");
                         new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
                     }
                 else{
-                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), (short)0,true);
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(), (short)0,bean.getRemoteControlTime(),true);
                     }
                 }else{//各种原因未能成功
 
                 if(refId>0){
-                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),false);
-                    outputHexService.handleRefRemoteControlRst(refId, bean.getRemoteControlAck());
+                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),false);
+                    outputHexService.handleRefRemoteControlRst(refId, bean.getRemoteControlAck(),bean.getRemoteControlTime());
                 }else {
-                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), bean.getRemoteControlAck(),true);
+                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),true);
                 }
                 }
             _logger.info("[0x31]远程控制结果处理结束:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
@@ -918,6 +922,9 @@ public class RequestHandler {
                     reint=0;
                 }else{
                     reint=1;
+                }
+                if(clampCheck && transmissionGearPositionCheck){//P挡位 && 发动机启动
+                    reint=100;//专门标识发动机运行中
                 }
             }else if(controlType==(short)1){//1：远程关闭发动机
                 if(isRemoteStart){//必须是远程启动发动机才能远程关闭
