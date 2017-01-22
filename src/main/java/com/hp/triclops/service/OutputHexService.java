@@ -1602,17 +1602,21 @@ public class OutputHexService {
      * 处理远程控制结果上行（持久化 push）
      * @param vin vin
      * @param eventId eventId
+     * @param controlType 控制类别 0启动发动机
      * @param result Rst响应结果 0：成功 1：失败
+     * @param remoteControlTime 次数 参见协议0x05
+     * @param push 是否推送
      */
-    public void handleRemoteControlRst(String vin,long eventId,Short result,boolean push){
+    public void handleRemoteControlRst(String vin,long eventId,Short controlType,Short result,Short remoteControlTime,boolean push){
         String sessionId=String.valueOf(eventId);
         Short dbResult=0;//参考建表sql  0失败1成功   ,  Rst 0：成功 1：失败
         if(result==(short)0){
             dbResult=1;
         }
+        _logger.info("[0x31]远程控制结果,vin:"+vin+"|eventId:"+eventId+"|result:"+result+"|remoteControlTime:"+remoteControlTime);
         RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
         if (rc == null) {
-            _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
+            _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId+"|result:"+result+"|remoteControlTime:"+remoteControlTime);
         }else{
             //持久化远程控制记录状态，push to sender
             _logger.info("[0x31]远程控制结果处理开始");
@@ -1629,9 +1633,23 @@ public class OutputHexService {
 
             String pushMsg="";//参考PDF0621 page55
             String pushMsgEn="";
+
             if(result==(short)0){
                 pushMsg="远程命令执行成功";
                 pushMsgEn="Remote command execution success";
+                if(controlType==0){
+                    //启动发动机
+                    //1）第一次启动成功，手机APP提示内容：“发动机启动成功，15分钟后将自动关闭”
+                    //2）第一次启动成功关闭后，第二次启动成功，手机APP提示内容：“发动机第二次启动成功，15分钟后将自动关闭”。
+                    //4）已经完成两次启动，进行第三次启动，手机APP提示内容：“发动机启动已超出允许启动次数2次”
+                    if(remoteControlTime==1){
+                        pushMsg="发动机启动成功，15分钟后将自动关闭";
+                        pushMsgEn="The engine has been started successfully and will be shut down in 15 minutes";
+                    }else if(remoteControlTime==2){
+                        pushMsg="发动机第二次启动成功，15分钟后将自动关闭";
+                        pushMsgEn="The engine started second times successfully, and it will turn off automatically after 15 minutes";
+                    }
+                }
             }else if(result==(short)1){
                 pushMsg="远程命令执行失败";
                 pushMsgEn="Remote command execution failed";
@@ -1675,6 +1693,10 @@ public class OutputHexService {
                 pushMsg="响应等待下次车辆启动";
                 pushMsgEn="In response to waiting for the next vehicle to start";
             }
+            if(controlType==0&& remoteControlTime>=3){
+                pushMsg="发动机启动已超出允许启动次数2次";
+                pushMsgEn="Engine start is more than allowed times 2";
+            }
             String _dbReMark=pushMsg;
             rc.setRemark(_dbReMark);
             rc.setRemarkEn(pushMsgEn);
@@ -1692,11 +1714,12 @@ public class OutputHexService {
      * 处理远程控制结果上行（持久化 push） 仅仅只处理失败的引用情况
      * @param id vin
      * @param result Rst响应结果 0：成功 1：失败  ...
+     * @param remoteControlTime 次数 参见协议0x05
      */
-    public void handleRefRemoteControlRst(long id,Short result){
+    public void handleRefRemoteControlRst(long id,Short result,Short remoteControlTime){
         RemoteControl rc=remoteControlRepository.findOne(id);
         if (rc == null) {
-            _logger.info("[0x31]没有在数据库找到远程控制记录， id:"+id+"  "+"result:"+ result);
+            _logger.info("[0x31]没有在数据库找到远程控制记录， id:"+id+"  "+"result:"+ result+"remoteControlTime:"+ remoteControlTime);
         }else{
             //持久化远程控制记录状态，push to sender
             _logger.info("[0x31]关联远程控制结果处理开始");

@@ -148,8 +148,8 @@ public class VehicleDataService {
             _logger.info("[0x31]Precondition请求hex:"+byteStr);
             return rc;
         }else{
-            rc.setRemark("远程唤醒失败，无法下发远程控制命令！");
-            rc.setRemarkEn("Remote wake up failed, unable to send remote control command!");
+            rc.setRemark("由于网络信号质量差或电瓶电量低，车联网远程控制功能暂时无法使用");
+            rc.setRemarkEn("Due to poor network signal quality or low battery power, car networking remote control function temporarily unavailable");
             rc.setStatus((short)0);
             remoteControlRepository.save(rc);
             String key=vin+"-"+eventId;
@@ -269,6 +269,9 @@ public class VehicleDataService {
         while (count<checkCount){
             //发送一次短信，然后间隔1s检测连接是否建立
             count++;
+            if(count==40){
+                wakeup(vin);//40秒之后后台再retry一次
+            }
             try{
                 Thread.sleep(1*1000);//唤醒后等待1s循环检测
             }catch (InterruptedException e){e.printStackTrace(); }
