@@ -1649,6 +1649,9 @@ public class OutputHexService {
                         pushMsg="发动机第二次启动成功，15分钟后将自动关闭";
                         pushMsgEn="The engine started second times successfully, and it will turn off automatically after 15 minutes";
                     }
+                }else if(controlType==3){
+                    pushMsg="解锁成功，车辆将在20秒后自动上锁。";
+                    pushMsgEn="Unlock successfully, the vehicle will be locked automatically after 20 seconds";
                 }
             }else if(result==(short)1){
                 pushMsg="远程命令执行失败";
