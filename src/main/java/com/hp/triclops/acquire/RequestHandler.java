@@ -573,6 +573,10 @@ public class RequestHandler {
                     msg="操作条件不符合，请检查车辆状态";
                     msgEn="Operating conditions do not meet, please check the state of the vehicle";
                 }
+                if(preconditionRespCheck==300){
+                    msg="发动机已启动，不允许解锁";
+                    msgEn="Engine has been started, not allowed to unlock";
+                }
                 if(preconditionRespCheck==4){
                     //todo 生成启动发动机命令,建立关联关系
                     if(currentRefId==-1){
@@ -941,6 +945,9 @@ public class RequestHandler {
                     reint=0;
                 }else{
                     reint=3;
+                }
+                if(controlType==(short)3 && clampCheck){//车门解锁,判断发动机是否已经启动,如果已经启动，会有特别的提示消息
+                    reint=300;
                 }
             }else if(controlType==(short)4){//4：空调开启
                 if(clampCheck){//必须是远程启动发动机才能开启空调
