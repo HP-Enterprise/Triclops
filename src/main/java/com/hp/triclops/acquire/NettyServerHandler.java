@@ -131,8 +131,17 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         connections.remove(ch.remoteAddress().toString());
         socketRedis.deleteHashString(dataTool.connection_online_imei_hashmap_name, ch.remoteAddress().toString());
         if(vin!=null){
-            socketRedis.deleteHashString(dataTool.connection_hashmap_name, vin);//连接从redis中清除
-            channels.remove(vin);
+            //todo 这里我们加上一个逻辑，断开连接的时候，再清除redis的连接之前，需要判断redis现在保存的和我们当前要处理的是不是同一个 ok?
+            //存储的代码//socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
+            String _val=socketRedis.getHashString(dataTool.connection_hashmap_name, vin);
+            String _addr=_val.split("-")[1];
+            if(_addr.equals(ch.remoteAddress().toString())) {
+                _logger.info("Socket断连处理，通过"+ ch.remoteAddress().toString()+"找到的vin:"+vin+",将会移除该vin在Redis和map中的存储");
+                socketRedis.deleteHashString(dataTool.connection_hashmap_name, vin);//连接从redis中清除
+            }else{
+                _logger.info("Socket断连处理，con@redis:"+_addr+"<>"+ch.remoteAddress().toString()+",将不会清除redis的连接信息，vin "+vin+"已经有了新的连接信息");
+            }
+            channels.remove(vin);//chanels是一个本机的概念，必须清除。
         }
         _logger.info("连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
        }
