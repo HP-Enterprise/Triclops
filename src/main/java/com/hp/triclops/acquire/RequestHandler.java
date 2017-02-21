@@ -577,56 +577,22 @@ public class RequestHandler {
                     msg="发动机已启动，不允许解锁";
                     msgEn="Engine has been started, not allowed to unlock";
                 }
-                if(preconditionRespCheck==4){
+                if(preconditionRespCheck==4 || preconditionRespCheck==5 || preconditionRespCheck==6 || preconditionRespCheck==7){
                     //todo 生成启动发动机命令,建立关联关系
                     if(currentRefId==-1){
                         long refId=dbRc.getId();
-                       //更新原来的命令eventId，后续通过id找回,
+                       //更新原来的命令eventId，后续通过id找回,将原始命令（比如开空调）的refId标识为-2，后续不必再进行precondition检查
                         outputHexService.modifyRemoteControl(dbRc);
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
+                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId,(short)1);
+                        //先发出一条Announce的启动发动机命令
                         String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
+                        _logger.info("[0x31]即将发送一条关联的启动发动机命令(announce):" + cmdByteString);
                         outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                     }else{
-                        _logger.info("[0x31]命令已经存在关联的远程控制记录->"+currentRefId);
+                        _logger.info("[0x31]命令已经存在关联的远程控制记录->" + currentRefId);
                     }
                 }
-                if(preconditionRespCheck==5){
-                    //todo 生成启动发动机命令,建立关联关系
-                    if(currentRefId==-1){
-                        long refId=dbRc.getId();
-                        //更新原来的命令eventId，后续通过id找回,
-                        outputHexService.modifyRemoteControl(dbRc);
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
-                    }
-                }
-                if(preconditionRespCheck==6){
-                    //todo 生成启动发动机命令,建立关联关系
-                    if(currentRefId==-1){
-                        long refId=dbRc.getId();
-                        //更新原来的命令eventId，后续通过id找回,
-                        outputHexService.modifyRemoteControl(dbRc);
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
-                    }
-                }
-                if(preconditionRespCheck==7){
-                    //todo 生成启动发动机命令,建立关联关系
-                    if(currentRefId==-1){
-                        long refId=dbRc.getId();
-                        //更新原来的命令eventId，后续通过id找回,
-                        outputHexService.modifyRemoteControl(dbRc);
-                        RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId);
-                        String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                        _logger.info("[0x31]即将发送一条关联的启动发动机命令:" + cmdByteString);
-                        outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
-                    }
-                }
+
                 if(preconditionRespCheck==10){
                     msg="远程寻车失败，操作条件不满足";
                     msgEn="Remote search failed, the operating conditions are not satisfied";
@@ -708,12 +674,22 @@ public class RequestHandler {
                     if(bean.getRemoteControlAck()==0x80){
                         _logger.info("[0x31]0x80响应时，暂时判断为发动机启动成功");
                     }
+
+
                     if(refId>0){
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(),(short)0,bean.getRemoteControlTime(),false);
                     //存在ref记录
-                        //RemoteControl refRc=outputHexService.getRemoteCmdValueFromDb(rc.getRefId());
-                       _logger.info("[0x31]关联的启动发动机执行成功，开始执行原始控制指令");
-                        new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
+                        if(rc.getIsAnnounce()==1){//刚刚结束的是1条发动机announce命令，现在我们需要做一个真正的启动发动机,将指向的那条原始记录refId传递给perform命令
+                            RemoteControl _perform=outputHexService.getStartEngineRemoteControl(rc.getUid(),vin, dataTool.getCurrentSeconds(),refId,(short)0);
+                            //先发出一条perform的启动发动机命令
+                            _logger.info("[0x31]即将开始发送一条关联的启动发动机命令(perform):id=" + _perform.getId());
+                            new RemoteCommandSender(vehicleDataService,_perform.getId(),rc.getUid(), vin, null,true).start();
+                        }else{
+                            //perform命令执行完毕，开始执行真实命令
+                            _logger.info("[0x31]关联的启动发动机执行成功，开始执行原始控制指令.id="+refId);
+                            new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
+                        }
+
                     }
                 else{
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(), (short)0,bean.getRemoteControlTime(),true);

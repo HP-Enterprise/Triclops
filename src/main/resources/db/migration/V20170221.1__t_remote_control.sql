@@ -1,0 +1,1 @@
+alter table t_remote_control add is_announce smallint(1) NOT NULL DEFAULT 0 COMMENT '远程启动发动机参数，是否是Announce 0否 1是';

@@ -39,6 +39,7 @@ public class RemoteControl {
     private Short slaveStat;//附驾驶加热状态0关闭 1 开启 仅在cType=6 7生效
     private Short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
     private Long refId;
+    private Short isAnnounce;
 
 
     @Id
@@ -293,5 +294,16 @@ public class RemoteControl {
     @Column(name = "ref_id", nullable = false, insertable = true, updatable = true)
     public void setRefId(Long refId) {
         this.refId = refId;
+    }
+
+    @Basic
+    @Column(name = "is_announce", nullable = false, insertable = true, updatable = true)
+
+    public Short getIsAnnounce() {
+        return isAnnounce;
+    }
+
+    public void setIsAnnounce(Short isAnnounce) {
+        this.isAnnounce = isAnnounce;
     }
 }
