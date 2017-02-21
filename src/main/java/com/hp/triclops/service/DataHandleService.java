@@ -227,7 +227,7 @@ public class DataHandleService {
             rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
             rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
             rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
-        }else{//在协议0628中F60无此数据 预留
+        }else{//todo 在协议0628中F60无此数据 预留
             rd.setLeftFrontTirePressure(0.0f);
             rd.setLeftRearTirePressure(0.0f);
             rd.setRightFrontTirePressure(0.0f);
@@ -239,11 +239,12 @@ public class DataHandleService {
             rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[12]) + String.valueOf(windows[13])));
             rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11])));
             rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[8]) + String.valueOf(windows[9])));
-        }else{//在协议0628中F60无此数据 预留
-            rd.setLeftFrontWindowInformation("3");//车窗信息 0开1半开2关3信号异常
-            rd.setRightFrontWindowInformation("3");
-            rd.setLeftRearWindowInformation("3");
-            rd.setRightRearWindowInformation("3");
+        }else{//
+            //车窗信息 0开1半开2关3信号异常
+            rd.setLeftFrontWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[10]) + String.valueOf(windows[11]) + String.valueOf(windows[12])));
+            rd.setLeftRearWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[7]) + String.valueOf(windows[8]) + String.valueOf(windows[9])));
+            rd.setRightRearWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[4]) + String.valueOf(windows[5]) + String.valueOf(windows[6])));
         }
         rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//
         rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));

@@ -382,6 +382,10 @@ public class VehicleDataService {
             }
         }
         //右后车窗信息 0开1半开2关3信号异常
+        sunroofCheck = true;
+        trunkCheck = true;
+        bonnetCheck = true;
+        windowsCheck=true;//todo 关于车窗全部屏蔽检查，后续实车加上
         _logger.info("[0x31]initCheck:"+vehicleSpeedCheck +"-"+ sunroofCheck +"-"+ windowsCheck +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck);
         re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
         if(isM8X) {//todo M8X车型直接忽略check,返回true

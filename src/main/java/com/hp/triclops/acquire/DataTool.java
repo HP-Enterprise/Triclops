@@ -287,6 +287,30 @@ public class DataTool {
         return re;
     }
 
+    public String getWindowStatusFrom3Bits(String bita_b_c){
+        //得到车窗状态 传入两个bit的字符表示,
+        // 数据库 车窗信息 0开1半开2关3信号异常
+        //参考0.613
+        //0x0: stopped                   开
+        //0x1: open moving               开
+        //0x2: close moving              开
+        //0x3: open end (after blocked)  开
+        //0x4: close end (after blocked) 关
+        //0x7:Invalid   对应3 异常
+
+        String re="2";
+        if(bita_b_c!=null){
+            if(bita_b_c.equals("000")||bita_b_c.equals("001")||bita_b_c.equals("010")||bita_b_c.equals("011")){
+                re="0";
+            }else if(bita_b_c.equals("100")){
+                re="2";
+            }else{
+                re="3";
+            }
+        }
+        return re;
+    }
+
     public String getF60WindowStatus(String bita_b){
         //得到车窗状态 传入3个bit的字符表示,
         // 数据库 车窗信息 0开1半开2关3信号异常

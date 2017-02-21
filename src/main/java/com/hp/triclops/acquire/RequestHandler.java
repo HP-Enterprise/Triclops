@@ -865,13 +865,14 @@ public class RequestHandler {
             byte[] windows=remoteControlPreconditionResp.getBcm_Stat_window();
             char[] windows_char = dataTool.getBitsFrom2Byte(windows);
             if(isM8X){
+                //todo 关于车窗全部屏蔽检查，后续实车加上
             //if(windows_char[14]=='1'&&windows_char[15]=='0' && windows_char[12]=='1'&&windows_char[13]=='0' && windows_char[10]=='1'&&windows_char[11]=='0' && windows_char[8]=='1'&&windows_char[9]=='0'){
                 windowsCheck=true;
             //}
             }else{
-                if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
+                //if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
                 windowsCheck=true;
-                }
+                //}
             }
 
             byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
