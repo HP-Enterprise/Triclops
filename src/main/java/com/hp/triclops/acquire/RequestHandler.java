@@ -762,7 +762,7 @@ public class RequestHandler {
         //目前逻辑 根据0619协议
         boolean re=false;
         short vehicleModel=remoteControlPreconditionResp.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
-        boolean isM8X=true;
+        boolean isM8X=true;//区分是否是M8X/F60车型
         if(vehicleModel>(short)2){
             isM8X=false;
         }
@@ -869,9 +869,9 @@ public class RequestHandler {
                 windowsCheck=true;
             //}
             }else{
-                //if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
+                if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
                 windowsCheck=true;
-                //}
+                }
             }
 
             byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
