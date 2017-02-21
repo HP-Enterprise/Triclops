@@ -322,6 +322,9 @@ public class VehicleDataService {
         if(cType!=(short)0){//只有远程启动发动机才需要做initCheck
             return true;
         }
+        boolean re=false;
+        boolean isM8X=true;
+
         boolean vehicleSpeedCheck=false;
         boolean sunroofCheck=false;
         boolean windowsCheck=false;
@@ -330,6 +333,20 @@ public class VehicleDataService {
         boolean bonnetCheck=false;
         RealTimeReportData realData=null;
         GpsData gpsData=null;
+
+        //根据vin获取车型，根据是否是F60决定initCheck的条件
+        Vehicle vehicle=vehicleRepository.findByVin(vin);
+        if(vehicle==null){
+            _logger.info("根据vin:"+vin+"没有找到对应的车辆信息，initCheck无法继续.");
+            return re;
+        }else{
+            String _vehicleModel=vehicle.getModel();
+            if(_vehicleModel.trim().equalsIgnoreCase("F60")){
+                isM8X=false;//F60车型
+            }
+            _logger.info("根据vin:"+vin+"找到对应的车辆信息，车型:"+_vehicleModel+" isM8X:"+isM8X);
+        }
+
         List<RealTimeReportData> realTimeReportDataList=realTimeReportDataRespository.findLatestOneByVin(vin);
         if(realTimeReportDataList!=null){
             if(realTimeReportDataList.size()>0){
@@ -347,13 +364,13 @@ public class VehicleDataService {
                     realData.getRightFrontDoorInformation().equals("1") && realData.getRightRearDoorInformation().equals("1")) {
                 doorsCheck = true;
             }//左前车门信息 0开1关2保留3信号异常
-            //if (realData.getLeftFrontWindowInformation().equals("2") && realData.getLeftRearWindowInformation().equals("2")
-              //      && realData.getRightFrontWindowInformation().equals("2") && realData.getRightRearWindowInformation().equals("2")) {
+           if (realData.getLeftFrontWindowInformation().equals("2") && realData.getLeftRearWindowInformation().equals("2")
+                    && realData.getRightFrontWindowInformation().equals("2") && realData.getRightRearWindowInformation().equals("2")) {
                 windowsCheck = true;
-            //}
-            //if (realData.getSkylightState().equals("2")) {
+            }
+            if (realData.getSkylightState().equals("2")) {
                 sunroofCheck = true;
-            //}
+            }
             if (realData.getTrunkLidState().equals("1")) {
                 trunkCheck = true;
             }
@@ -366,8 +383,10 @@ public class VehicleDataService {
         }
         //右后车窗信息 0开1半开2关3信号异常
         _logger.info("[0x31]initCheck:"+vehicleSpeedCheck +"-"+ sunroofCheck +"-"+ windowsCheck +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck);
-        boolean re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
-        re=true;//临时处理 返回true
+        re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
+        if(isM8X) {//todo M8X车型直接忽略check,返回true
+            re = true;//临时处理 返回true
+        }
         _logger.info("[0x31]initCheck result:"+re);
         return re;
     }
