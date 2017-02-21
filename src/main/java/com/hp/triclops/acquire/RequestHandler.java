@@ -548,12 +548,24 @@ public class RequestHandler {
             //0 通过   1~6 各种异常
             //boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
             if(preconditionRespCheck==0){
-                //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
-                long eventId=bean.getEventID();
-                //RemoteControl _valueRc=outputHexService.getRemoteCmdValueFromRedis(vin,eventId);
-                String cmdByteString=outputHexService.getRemoteControlCmdHex(dbRc,eventId);
-                _logger.info("[0x31]Precondition响应校验通过,即将下发控制指令:" + cmdByteString);
-                outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
+                if(dbRc.getControlType()==0 && currentRefId==-1){
+                //如果是初始的启动发动机命令，需要在precondition成功后构造一个关联的announce发动操作。
+                    long refId=dbRc.getId();//原发动命令
+                    //更新原来的命令eventId，后续通过id找回,将原始命令（比如开空调）的refId标识为-2，后续不必再进行precondition检查
+                    outputHexService.modifyRemoteControl(dbRc);
+                    RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId,(short)1);
+                    //先发出一条Announce的启动发动机命令
+                    String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
+                    _logger.info("[0x31]即将发送一条关联的启动发动机命令(announce):" + cmdByteString);
+                    outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
+                }else{//其他类别的控制按照之前的逻辑处理即可
+                    //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
+                    long eventId=bean.getEventID();
+                    String cmdByteString=outputHexService.getRemoteControlCmdHex(dbRc,eventId);
+                    _logger.info("[0x31]Precondition响应校验通过,即将下发控制指令:" + cmdByteString);
+                    outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
+                }
+
             }else{
                 String msg="";
                 String msgEn="";
