@@ -138,7 +138,12 @@ public class OutputHexService {
             case 0://
                _cType=0;
                 //todo
-                _remoteStartEngine=(byte)1;
+                //0x0 announce      0x1 perform remote start
+                if(remoteControl.getIsAnnounce()==1){//此条命令是否为Announce
+                    _remoteStartEngine=(byte)0;
+                }else {
+                    _remoteStartEngine = (byte) 1;
+                }
                 break;
             case 1://远程关闭发动机
                 _cType=1;
@@ -1448,7 +1453,7 @@ public class OutputHexService {
      * @param vin vin
      * @return 封装远程控制参数的RemoteControl对象
      */
-    public  RemoteControl getStartEngineRemoteControl(int uid,String vin,long eventId,long refId){
+    public  RemoteControl getStartEngineRemoteControl(int uid,String vin,long eventId,long refId,short isAnnounce){
         RemoteControl remoteControl=new RemoteControl();
         String sessionId=String.valueOf(eventId);
         remoteControl.setUid(uid);
@@ -1475,6 +1480,7 @@ public class OutputHexService {
         remoteControl.setRemark("命令下发成功，处理中");
         remoteControl.setRemarkEn("sending command");
         remoteControl.setAvailable((short) 0);
+        remoteControl.setIsAnnounce(isAnnounce);
         remoteControlRepository.save(remoteControl);
         return remoteControl;
     }
