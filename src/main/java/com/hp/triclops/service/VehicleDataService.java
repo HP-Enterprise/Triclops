@@ -458,12 +458,12 @@ public class VehicleDataService {
 
     /**
      *
-     * @param eventId 设置参数
+     * @param id 记录id
      * @param vin 目标vin
      * @return  >null超时导致 非null包含结果信息
      */
-    public RemoteControl getRemoteControlResult(String eventId,String vin){
-      long resultId=checkRemoteControlResult(eventId, vin);
+    public RemoteControl getRemoteControlResult(String id,String vin){
+      long resultId=checkRemoteControlResult(id, vin);
         _logger.info("exist resultId:" + resultId);
         if(resultId>0){
             RemoteControl remoteControl=remoteControlRespositoryDao.findById(resultId);
@@ -476,13 +476,13 @@ public class VehicleDataService {
 
     /**
      *
-     * @param eventId 设置参数
+     * @param id 记录id
      * @param vin 目标vin
      * @return  >0成功的结果id 0响应超时
      */
-    public long checkRemoteControlResult(String eventId,String vin){
+    public long checkRemoteControlResult(String id,String vin){
         //1有结果 0无结果
-        String key=vin+"-"+eventId;
+        String key=vin+"-"+id;
         int checkResultUntilTimeOut = checkResultFromRedis(dataTool.remoteControl_hashmap_name, key, remoteControlTimeOut);
         if(checkResultUntilTimeOut==1){
             //读取结果并返回至api
