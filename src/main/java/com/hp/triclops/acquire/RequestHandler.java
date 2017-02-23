@@ -556,7 +556,7 @@ public class RequestHandler {
                     RemoteControl rc=outputHexService.getStartEngineRemoteControl(dbRc.getUid(),vin, bean.getEventID(),refId,(short)1);
                     //先发出一条Announce的启动发动机命令
                     String cmdByteString=outputHexService.getRemoteControlCmdHex(rc,bean.getEventID());
-                    _logger.info("[0x31]即将发送一条关联的启动发动机命令(announce):" + cmdByteString);
+                    _logger.info("[0x31]即将发送一条关联的启动发动机命令(announce):" + cmdByteString+",它完成后的后续任务是id+"+refId);
                     outputHexService.saveCmdToRedis(_serverId,vin, cmdByteString);
                 }else{//其他类别的控制按照之前的逻辑处理即可
                     //符合控制逻辑 从redis取出远程控制参数 生成控制指令 save redis
@@ -688,14 +688,23 @@ public class RequestHandler {
                     }
 
 
-                    if(refId>0){
+                    if(refId>0){//todo refId大于0的情况是启动发动机或者需要依赖启动发动机的场景
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(),(short)0,bean.getRemoteControlTime(),false);
                     //存在ref记录
                         if(rc.getIsAnnounce()==1){//刚刚结束的是1条发动机announce命令，现在我们需要做一个真正的启动发动机,将指向的那条原始记录refId传递给perform命令
-                            RemoteControl _perform=outputHexService.getStartEngineRemoteControl(rc.getUid(),vin, dataTool.getCurrentSeconds(),refId,(short)0);
-                            //先发出一条perform的启动发动机命令
-                            _logger.info("[0x31]即将开始发送一条关联的启动发动机命令(perform):id=" + _perform.getId());
-                            new RemoteCommandSender(vehicleDataService,_perform.getId(),rc.getUid(), vin, null,true).start();
+                            RemoteControl orginalCommand=outputHexService.getRemoteControlRecord(refId);
+                            //todo 这里需要注意了
+                            if(orginalCommand.getControlType()==(short)0) {
+                                //todo 如果原始命令是启动发动机，则继续处理原始命令(perform)，判断的标准就是原始命令的refId对应的记录的信息
+                                _logger.info("[0x31]关联的启动发动机执行成功，开始执行原始控制指令.id="+refId);
+                                new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
+                            }else{
+                                //todo 如果是原始命令是开启空调（座椅加热），接下来需要作的是来一个真正的发动机perform，并将perform的refId指向原始命令
+                                RemoteControl _perform = outputHexService.getStartEngineRemoteControl(rc.getUid(), vin, dataTool.getCurrentSeconds(), refId, (short) 0);
+                                //先发出一条perform的启动发动机命令
+                                _logger.info("[0x31]即将开始发送一条关联的启动发动机命令(perform):id=" + _perform.getId());
+                                new RemoteCommandSender(vehicleDataService, _perform.getId(), rc.getUid(), vin, null, true).start();
+                            }
                         }else{
                             //perform命令执行完毕，开始执行真实命令
                             _logger.info("[0x31]关联的启动发动机执行成功，开始执行原始控制指令.id="+refId);

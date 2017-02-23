@@ -1599,7 +1599,19 @@ public class OutputHexService {
      */
     public RemoteControl getRemoteControlRecord(String vin,long eventId){
         String sessionId=String.valueOf(eventId);
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin,sessionId);
+        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
+        return rc;
+    }
+
+
+
+    /**
+     * 返回远程控制记录
+     * @param id
+     * @return
+     */
+    public RemoteControl getRemoteControlRecord(long id){
+            RemoteControl rc=remoteControlRepository.findOne(id);
         return rc;
     }
 

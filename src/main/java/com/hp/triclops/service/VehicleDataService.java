@@ -116,6 +116,7 @@ public class VehicleDataService {
             rc.setRemark("命令下发成功，处理中");
             rc.setRemarkEn("sending command");
             rc.setAvailable((short) 1);
+            rc.setIsAnnounce((short)0);//默认要求直接做perform，会在后续处理逻辑处理
             if(isRefCommand){
                 rc.setAvailable((short) 0);
             }
