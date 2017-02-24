@@ -588,11 +588,11 @@ public class OutputHexService {
         查找对应vin-eventId的记录，看看是否有refId=this id
         如果有使用后者的eventId更新到redis
          */
-        RemoteControl originalRemoteControl=remoteControlRepository.findByRefId(id);//判断他是否有指向它的启动发动机命令
+        /*RemoteControl originalRemoteControl=remoteControlRepository.findByRefId(id);//判断他是否有指向它的启动发动机命令
         if(originalRemoteControl!=null){
             eventId=originalRemoteControl.getSessionId();
-        }
-        String key=vin+"-"+eventId;
+        }*/
+        String key=vin+"-"+id;
         String value=String.valueOf(id);
         socketRedis.saveHashString(dataTool.remoteControl_hashmap_name,key,value,dataTool.remoteControlResult_ttl);
         Map<String,Object> dataMap = new HashMap<String,Object>();
