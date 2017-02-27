@@ -530,6 +530,15 @@ public class RequestHandler {
             //已经收到响应 变更消息状态 不会当作失败而重试
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
+            //todo 检查此事件是否做过对应的处理，防止重复报文造成影响
+            String currentStatus=socketRedis.getValueString(statusKey);
+            if(currentStatus!=null){
+                if(currentStatus.equals(statusValue)){
+                    //redis记录的该事件当前值等于此报文携带的业务信息，我们认为这是重复报文，不处理
+                    _logger.info("[0x31]redis记录的该事件当前状态值等于此报文MID，我们认为这是重复报文，不处理..."+vin+"|"+bean.getEventID());
+                    return;
+                }
+            }
             socketRedis.saveValueString(statusKey, statusValue,DataTool.msgCurrentStatus_ttl);
             RemoteControl dbRc=outputHexService.getRemoteControlRecord(vin, bean.getEventID());
             if(dbRc==null){
@@ -667,6 +676,15 @@ public class RequestHandler {
             //变更消息状态
             String statusKey=DataTool.msgCurrentStatus_preStr+vin+"-"+bean.getApplicationID()+"-"+bean.getEventID();
             String statusValue=String.valueOf(bean.getMessageID());
+            //todo 检查此事件是否做过对应的处理，防止重复报文造成影响
+            String currentStatus=socketRedis.getValueString(statusKey);
+            if(currentStatus!=null){
+                if(currentStatus.equals(statusValue)){
+                    //redis记录的该事件当前值等于此报文携带的业务信息，我们认为这是重复报文，不处理
+                    _logger.info("[0x31]redis记录的该事件当前状态值等于此报文MID，我们认为这是重复报文，不处理..."+vin+"|"+bean.getEventID());
+                    return;
+                }
+            }
             socketRedis.saveValueString(statusKey, statusValue, DataTool.msgCurrentStatus_ttl);
             //socketRedis.saveSetString(key, String.valueOf(bean.getRemoteControlAck()), -1);
             //远程控制命令执行结束，此处进一步持久化或者通知到外部接口
