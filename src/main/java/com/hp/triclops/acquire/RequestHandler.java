@@ -718,7 +718,8 @@ public class RequestHandler {
                                 new RemoteCommandSender(vehicleDataService,refId,rc.getUid(), vin, null,true).start();
                             }else{
                                 //todo 如果是原始命令是开启空调（座椅加热），接下来需要作的是来一个真正的发动机perform，并将perform的refId指向原始命令
-                                RemoteControl _perform = outputHexService.getStartEngineRemoteControl(rc.getUid(), vin, dataTool.getCurrentSeconds(), refId, (short) 0);
+                                //避免重复的eventId
+                                RemoteControl _perform = outputHexService.getStartEngineRemoteControl(rc.getUid(), vin, dataTool.getCurrentSeconds()-1800, refId, (short) 0);
                                 //先发出一条perform的启动发动机命令
                                 _logger.info("[0x31]即将开始发送一条关联的启动发动机命令(perform):id=" + _perform.getId());
                                 new RemoteCommandSender(vehicleDataService, _perform.getId(), rc.getUid(), vin, null, true).start();
