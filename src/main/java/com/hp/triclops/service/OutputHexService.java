@@ -1439,7 +1439,7 @@ public class OutputHexService {
      * @return 封装远程控制参数的RemoteControl对象
      */
     public  RemoteControl modifyRemoteControl(RemoteControl rc){
-        String newSessionId=String.valueOf(dataTool.getCurrentSeconds());
+        String newSessionId=String.valueOf(dataTool.getCurrentSeconds()-1500);//避免重复的eventId
         rc.setRefId(-2l);
         rc.setSessionId(newSessionId);
         RemoteControl retRc=remoteControlRepository.save(rc);
