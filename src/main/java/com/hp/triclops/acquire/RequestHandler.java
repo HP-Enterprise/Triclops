@@ -551,7 +551,7 @@ public class RequestHandler {
             _logger.info("[0x31][debug] 引用记录ID:"+currentRefId);
             int preconditionRespCheck=0;
             if(currentRefId!=-2){//普通报文才做check ,-2 check直接通过
-               preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType());
+               preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType(),dbRc.getIsAnnounce());
             }
             _logger.info("[0x31][debug] precondition响应校验结果:"+preconditionRespCheck);
             //0 通过   1~6 各种异常
@@ -772,9 +772,11 @@ public class RequestHandler {
      * 校验,是否发送远程指令
      * @param vin
      * @param remoteControlPreconditionResp 数据bean
+     * @param controlType 控制类型
+     * @param isAnnounce 是否是announce(fc)
      * @return 是否通过
      */
-    public int verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp,short controlType){
+    public int verifyRemoteControlPreconditionResp(String vin,RemoteControlPreconditionResp remoteControlPreconditionResp,short controlType,short isAnnounce){
         //目前逻辑 根据0619协议
         boolean re=false;
         short vehicleModel=remoteControlPreconditionResp.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
@@ -935,9 +937,14 @@ public class RequestHandler {
                         && transmissionGearPositionCheck && handBrakeCheck && sunroofCheck && windowsCheck
                         && doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && crashStatusCheck
                         && remainingFuelCheck;*/
-
-                re= (!clampCheck) && transmissionGearPositionCheck;//P挡位 && 发动机没有启动
-
+                //todo 启动发动机检查要区分是否是fc 区别处理
+                if(isAnnounce==1){
+                    re= doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck;//车门 后备箱 引擎盖 车速
+                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:车门/后备箱/引擎盖/车速--"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+" 检查结果:"+re);
+                }else {
+                    re = (!clampCheck) && transmissionGearPositionCheck;//P挡位 && 发动机没有启动
+                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:P挡位/发动机没有启动--"+transmissionGearPositionCheck+"/"+(!clampCheck)+" 检查结果:"+re);
+                }
 
                 if(re){
                     reint=0;
