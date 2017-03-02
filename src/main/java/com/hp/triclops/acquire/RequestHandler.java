@@ -710,6 +710,7 @@ public class RequestHandler {
                         outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(),(short)0,bean.getRemoteControlTime(),false);
                     //存在ref记录
                         if(rc.getIsAnnounce()==1){//刚刚结束的是1条发动机announce命令，现在我们需要做一个真正的启动发动机,将指向的那条原始记录refId传递给perform命令
+                            _logger.info("[0x31]刚刚结束的是1条发动机FC命令，现在我们需要做一个真正的启动发动机（FD）");
                             RemoteControl orginalCommand=outputHexService.getRemoteControlRecord(refId);
                             //todo 这里需要注意了
                             if(orginalCommand.getControlType()==(short)0) {

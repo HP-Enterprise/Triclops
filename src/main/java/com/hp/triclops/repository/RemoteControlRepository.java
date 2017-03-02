@@ -1,5 +1,6 @@
 package com.hp.triclops.repository;
 
+import com.hp.triclops.entity.FailureMessageData;
 import com.hp.triclops.entity.RemoteControl;
 import org.springframework.data.repository.CrudRepository;
 
@@ -8,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface RemoteControlRepository extends CrudRepository<RemoteControl, Long> {
 
-    RemoteControl findByVinAndSessionId(String vin,String sessionId);
+    RemoteControl findTopByVinAndSessionIdOrderBySendingTimeDesc(String vin,String sessionId);
+
     RemoteControl findByRefId(long refId);
 }

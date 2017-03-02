@@ -1423,7 +1423,7 @@ public class OutputHexService {
      */
     public  RemoteControl getRemoteCmdValueFromDb(String vin,long eventId){
         String sessionId=String.valueOf(eventId);
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
+        RemoteControl rc=remoteControlRepository.findTopByVinAndSessionIdOrderBySendingTimeDesc(vin, sessionId);
         if (rc == null) {
             _logger.info("[0x31]No RemoteControl found in db,vin:"+vin+"|eventId:"+eventId);
             return null;
@@ -1508,7 +1508,7 @@ public class OutputHexService {
      */
     public void handleRemoteControlPreconditionResp(String vin,long eventId,String message,String messageEn,boolean push){
         String sessionId=String.valueOf(eventId);
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
+        RemoteControl rc=remoteControlRepository.findTopByVinAndSessionIdOrderBySendingTimeDesc(vin, sessionId);
         if (rc == null) {
             _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId);
         }else{
@@ -1539,7 +1539,7 @@ public class OutputHexService {
     public void handleRemoteControlAck(String vin,long eventId,Short result,boolean push){
         String sessionId=String.valueOf(eventId);
         //  Rst 0：无效 1：命令已接收
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
+        RemoteControl rc=remoteControlRepository.findTopByVinAndSessionIdOrderBySendingTimeDesc(vin, sessionId);
         if (rc == null) {
             _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId+"|result:"+result);
         }else{
@@ -1599,7 +1599,7 @@ public class OutputHexService {
      */
     public RemoteControl getRemoteControlRecord(String vin,long eventId){
         String sessionId=String.valueOf(eventId);
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
+        RemoteControl rc=remoteControlRepository.findTopByVinAndSessionIdOrderBySendingTimeDesc(vin, sessionId);
         return rc;
     }
 
@@ -1632,12 +1632,12 @@ public class OutputHexService {
             dbResult=1;
         }
         _logger.info("[0x31]远程控制结果,vin:"+vin+"|eventId:"+eventId+"|result:"+result+"|remoteControlTime:"+remoteControlTime);
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, sessionId);
+        RemoteControl rc=remoteControlRepository.findTopByVinAndSessionIdOrderBySendingTimeDesc(vin, sessionId);
         if (rc == null) {
             _logger.info("[0x31]没有在数据库找到远程控制记录,vin:"+vin+"|eventId:"+eventId+"|result:"+result+"|remoteControlTime:"+remoteControlTime);
         }else{
             //持久化远程控制记录状态，push to sender
-            _logger.info("[0x31]远程控制结果处理开始");
+            _logger.info("[0x31]远程控制结果处理开始.id="+rc.getId());
             rc.setStatus(dbResult);
             Vehicle vehicle=vehicleRepository.findByVin(vin);
             if(vehicle!=null){
@@ -1852,7 +1852,7 @@ public class OutputHexService {
      */
     public void handleFailedData(String vin,String eventId,String applicationId,String messageId){
         _logger.info("[0x31]报文下发失败，同步数据库状态>"+vin+"-"+eventId+"-"+applicationId+"-"+messageId);
-        RemoteControl rc=remoteControlRepository.findByVinAndSessionId(vin, eventId);
+        RemoteControl rc=remoteControlRepository.findTopByVinAndSessionIdOrderBySendingTimeDesc(vin, eventId);
         if(rc!=null){
             String _dbReMark="";
             String _dbReMarkEn="";
