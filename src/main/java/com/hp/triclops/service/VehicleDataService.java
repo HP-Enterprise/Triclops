@@ -389,9 +389,9 @@ public class VehicleDataService {
         windowsCheck=true;//todo 关于车窗全部屏蔽检查，后续实车加上
         _logger.info("[0x31]initCheck:"+vehicleSpeedCheck +"-"+ sunroofCheck +"-"+ windowsCheck +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck);
         re=vehicleSpeedCheck && sunroofCheck && windowsCheck && doorsCheck && trunkCheck && bonnetCheck;
-        if(isM8X) {//todo M8X车型直接忽略check,返回true
+       /* if(isM8X) {//todo M8X车型直接忽略check,返回true
             re = true;//临时处理 返回true
-        }
+        }*/
         _logger.info("[0x31]initCheck result:"+re);
         return re;
     }
