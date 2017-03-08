@@ -124,14 +124,14 @@ public class VehicleDataService {
             _logger.info("[0x31]保存远程控制记录到数据库，id:"+rc.getId());
         }
         //20160525取消T平台对控制次数的检查
-        if(!initCheck(vin,rc.getControlType())){
+       /* if(!initCheck(vin,rc.getControlType())){
             _logger.info("[0x31]vin:"+vin+" initCheck失败,无法继续远程控制");
             rc.setRemark("车辆初始状态不满足控制条件，无法下发远程控制指令！");
             rc.setRemarkEn("can not send command,because init check failed.");
             rc.setStatus((short)0);
             remoteControlRepository.save(rc);
             return null;
-        }
+        }*///取消基于历史数据的initCheck，改为precondition判断
         if(!hasConnection(vin)){
             _logger.info("[0x31]vin:"+vin+" 当前不在线，正在唤醒...");
             int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
