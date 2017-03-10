@@ -1715,8 +1715,8 @@ public class OutputHexService {
                 pushMsgEn="In response to waiting for the next vehicle to start";
             }
             if(controlType==0&& remoteControlTime>2){
-                pushMsg="发动机启动已超出允许启动次数2次";
-                pushMsgEn="Engine start is more than allowed times 2";
+                pushMsg="发动机启动次数已超出2次，启动请求无效";
+                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
             }
             String _dbReMark=pushMsg;
             rc.setRemark(_dbReMark);
