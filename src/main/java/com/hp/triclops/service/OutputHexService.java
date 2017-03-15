@@ -68,6 +68,9 @@ public class OutputHexService {
     SMSHttpTool smsHttpTool;
     @Autowired
     WarningMessageDataRespository warningMessageDataRespository;
+    @Autowired
+    FailureMessageDataRespository failureMessageDataRespository;
+
     @Value("${com.hp.acquire.serverId}")
     private String _serverId;//serverId集群依赖这个值
 
@@ -1446,6 +1449,17 @@ public class OutputHexService {
         return rc;
 
     }
+    /**
+     * 更新远程控制记录的eventId
+     * @param rc 远程控制对象
+     * @return 封装远程控制参数的RemoteControl对象
+     */
+    public  RemoteControl modifyOrignalRemoteControl(RemoteControl rc){
+        RemoteControl retRc=remoteControlRepository.save(rc);
+        return rc;
+
+    }
+
 
 
     /**
@@ -1840,7 +1854,7 @@ public class OutputHexService {
 
 
     public  void saveCmdToRedis(String serverId,String vin,String hexStr){
-        socketRedis.saveSetString(serverId+"-"+dataTool.out_cmd_preStr + vin, hexStr, -1);//代发命令的TTL为-1 由处理程序取出
+        socketRedis.saveSetString(serverId + "-" + dataTool.out_cmd_preStr + vin, hexStr, -1);//代发命令的TTL为-1 由处理程序取出
         //保存到redis
 
 
@@ -1854,7 +1868,7 @@ public class OutputHexService {
      * @param messageId
      */
     public void handleFailedData(String vin,String eventId,String applicationId,String messageId){
-        _logger.info("[0x31]报文下发失败，同步数据库状态>"+vin+"-"+eventId+"-"+applicationId+"-"+messageId);
+        _logger.info("[0x31]报文下发失败，同步数据库状态>" + vin + "-" + eventId + "-" + applicationId + "-" + messageId);
         RemoteControl rc=remoteControlRepository.findTopByVinAndSessionIdOrderBySendingTimeDesc(vin, eventId);
         if(rc!=null){
             String _dbReMark="";
@@ -1879,5 +1893,16 @@ public class OutputHexService {
             _logger.info("[0x31]同步数据库状态失败，没有找到记录>"+vin+"-"+eventId);
         }
     }
+
+    /**
+     * 获取最近一条故障信息
+     * @param vin
+     * @return
+     */
+    public FailureMessageData getLatestFailureMessage(String vin){
+        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
+        return lastData;
+    }
+
 
 }
