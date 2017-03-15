@@ -1449,6 +1449,17 @@ public class OutputHexService {
         return rc;
 
     }
+    /**
+     * 更新远程控制记录的eventId
+     * @param rc 远程控制对象
+     * @return 封装远程控制参数的RemoteControl对象
+     */
+    public  RemoteControl modifyOrignalRemoteControl(RemoteControl rc){
+        RemoteControl retRc=remoteControlRepository.save(rc);
+        return rc;
+
+    }
+
 
 
     /**
