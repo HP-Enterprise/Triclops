@@ -556,6 +556,8 @@ public class RequestHandler {
             _logger.info("[0x31][debug] precondition响应校验结果:"+preconditionRespCheck);
             //0 通过   1~6 各种异常
             //boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
+            dbRc.setRemoteStartedCount(dataTool.getRemoteStartedCount(bean.getStat_remote_start()));
+            outputHexService.modifyRemoteControl(dbRc);
             if(preconditionRespCheck==0){
                 if(dbRc.getControlType()==0 && currentRefId==-1){
                 //如果是初始的启动发动机命令，需要在precondition成功后构造一个关联的announce发动操作。

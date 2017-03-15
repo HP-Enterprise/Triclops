@@ -136,6 +136,14 @@ public class VehicleDataService {
             _logger.info("[0x31]vin:"+vin+" 当前不在线，正在唤醒...");
             int wakeUpResult=remoteWakeUp(vin,wakeUpWaitSeconds);
             _logger.info("[0x31]vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
+            if(wakeUpResult==1) {
+                _logger.info("[0x31]vin:"+vin+" 唤醒成功，等待200ms...");
+                try {
+                    Thread.sleep(200l);
+                } catch (InterruptedException e) {
+
+                }
+            }
         }
         //唤醒可能成功也可能失败，只有连接建立才可以发送指令
         if(hasConnection(vin)){
