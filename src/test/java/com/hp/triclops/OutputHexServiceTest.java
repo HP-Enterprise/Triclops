@@ -47,7 +47,7 @@ public class OutputHexServiceTest {
         remoteControl.setAcTemperature(23.0);
         remoteControl.setUid(1);
         remoteControl.setVin("12345678919991234");
-        System.out.println(">>>>>>>"+outputHexService.getRemoteControlPreHex(remoteControl, (long) 1444812349));
+        System.out.println(">>>>>>>"+outputHexService.getRemoteControlPreHex(1444812349l));
     }
 
     @Test

@@ -97,12 +97,12 @@ public class OutputHexService {
         return byteStr;
     }
 
-    public String getRemoteControlPreHex(RemoteControl remoteControl,long eventId){
+    public String getRemoteControlPreHex(long eventId){
         //产生远程控制预指令hex
         RemoteControlPreconditionReq remoteControlCmd=new RemoteControlPreconditionReq();
         remoteControlCmd.setApplicationID((short) 49);
         remoteControlCmd.setMessageID((short) 1);
-        remoteControlCmd.setEventID((long) eventId);
+        remoteControlCmd.setEventID(eventId);
         remoteControlCmd.setSendingTime((long)dataTool.getCurrentSeconds());
         remoteControlCmd.setTestFlag((short) 0);
 

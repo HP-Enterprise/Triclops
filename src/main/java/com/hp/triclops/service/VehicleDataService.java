@@ -149,7 +149,7 @@ public class VehicleDataService {
         if(hasConnection(vin)){
             _logger.info("[0x31]vin:"+vin+" 在线,发送Precondition请求...");
             //保存到数据库
-            String byteStr=outputHexService.getRemoteControlPreHex(rc,eventId);
+            String byteStr=outputHexService.getRemoteControlPreHex(eventId);
             //读取connection val 确定写入的key
             String _val=socketRedis.getHashString(dataTool.connection_hashmap_name,vin);
             String _serverId=_val.split("-")[0];
@@ -520,6 +520,13 @@ public class VehicleDataService {
             }catch (InterruptedException e){
 
             }
+        }else{
+            _logger.info("vin:"+vin+" 当前在线，发送一条Precondition命令以激活CAN...");
+            long eventId=dataTool.getCurrentSeconds();
+            String byteStr=outputHexService.getRemoteControlPreHex(eventId);
+            String _val=socketRedis.getHashString(dataTool.connection_hashmap_name,vin);
+            String _serverId = _val.split("-")[0];
+            outputHexService.saveCmdToRedis(_serverId,vin,byteStr);//发送预命令
         }
         RealTimeReportData rd=null;
         GpsData gd=null;
