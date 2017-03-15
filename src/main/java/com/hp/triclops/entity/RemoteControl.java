@@ -40,6 +40,7 @@ public class RemoteControl {
     private Short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
     private Long refId;
     private Short isAnnounce;
+    private Short remoteStartedCount;
 
 
     @Id
@@ -305,5 +306,15 @@ public class RemoteControl {
 
     public void setIsAnnounce(Short isAnnounce) {
         this.isAnnounce = isAnnounce;
+    }
+
+    @Basic
+    @Column(name = "remote_started_count", nullable = false, insertable = true, updatable = true)
+    public Short getRemoteStartedCount() {
+        return remoteStartedCount;
+    }
+
+    public void setRemoteStartedCount(Short remoteStartedCount) {
+        this.remoteStartedCount = remoteStartedCount;
     }
 }

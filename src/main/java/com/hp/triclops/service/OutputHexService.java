@@ -1660,10 +1660,13 @@ public class OutputHexService {
                     //1）第一次启动成功，手机APP提示内容：“发动机启动成功，15分钟后将自动关闭”
                     //2）第一次启动成功关闭后，第二次启动成功，手机APP提示内容：“发动机第二次启动成功，15分钟后将自动关闭”。
                     //4）已经完成两次启动，进行第三次启动，手机APP提示内容：“发动机启动已超出允许启动次数2次”
-                    if(remoteControlTime==1){
+
+                    remoteControlTime=rc.getRemoteStartedCount();
+                    _logger.info("发动机启动成功,之前已经启动次数："+remoteControlTime);
+                    if(remoteControlTime==0){
                         pushMsg="发动机启动成功，15分钟后将自动关闭";
                         pushMsgEn="The engine has been started successfully and will be shut down in 15 minutes";
-                    }else if(remoteControlTime==2){
+                    }else if(remoteControlTime==1){
                         pushMsg="发动机第二次启动成功，15分钟后将自动关闭";
                         pushMsgEn="The engine started second times successfully, and it will turn off automatically after 15 minutes";
                     }

@@ -1607,4 +1607,22 @@ public class DataTool {
         return count;
     }
 
+    /**
+     * 计算已经做过的远程启动发动机次数
+     * @param b
+     * @return
+     */
+    public short getRemoteStartedCount(byte b){
+        //bit 0~1 0x0 remain 2      0x1 remain 1       0x2 remain 0     0x3 invalid
+        short re=0;
+        char[] chars=getBitsFromByte(b);
+        if(chars[6]=='0'&& chars[7]=='1'){
+            re=1;
+        }else  if(chars[6]=='1'&& chars[7]=='0'){
+            re=2;
+        }else  if(chars[6]=='1'&& chars[7]=='1'){
+            re=-1;
+        }
+        return re;
+    }
 }
