@@ -1639,7 +1639,7 @@ public class OutputHexService {
      * @param remoteControlTime 次数 参见协议0x05
      * @param push 是否推送
      */
-    public void handleRemoteControlRst(String vin,long eventId,Short controlType,Short result,Short remoteControlTime,boolean push){
+    public void handleRemoteControlRst(String vin,long eventId,Short controlType,Short result,Short remoteControlTime,short isAnnounce,boolean push){
         String sessionId=String.valueOf(eventId);
         Short dbResult=0;//参考建表sql  0失败1成功   ,  Rst 0：成功 1：失败
         if(result==(short)0){
@@ -1674,15 +1674,16 @@ public class OutputHexService {
                     //1）第一次启动成功，手机APP提示内容：“发动机启动成功，15分钟后将自动关闭”
                     //2）第一次启动成功关闭后，第二次启动成功，手机APP提示内容：“发动机第二次启动成功，15分钟后将自动关闭”。
                     //4）已经完成两次启动，进行第三次启动，手机APP提示内容：“发动机启动已超出允许启动次数2次”
-
-                    remoteControlTime=rc.getRemoteStartedCount();
-                    _logger.info("发动机启动成功,之前已经启动次数："+remoteControlTime);
-                    if(remoteControlTime==0){
-                        pushMsg="发动机启动成功，15分钟后将自动关闭";
-                        pushMsgEn="The engine has been started successfully and will be shut down in 15 minutes";
-                    }else if(remoteControlTime==1){
-                        pushMsg="发动机第二次启动成功，15分钟后将自动关闭";
-                        pushMsgEn="The engine started second times successfully, and it will turn off automatically after 15 minutes";
+                    if(isAnnounce==0){//对于fc 不需要处理此消息
+                        remoteControlTime = (rc.getRemoteStartedCount() == null) ? 0 : rc.getRemoteStartedCount();
+                        _logger.info("发动机启动成功,之前已经启动次数：" + remoteControlTime);
+                        if (remoteControlTime == 0) {
+                            pushMsg = "发动机启动成功，15分钟后将自动关闭";
+                            pushMsgEn = "The engine has been started successfully and will be shut down in 15 minutes";
+                        } else if (remoteControlTime == 1) {
+                            pushMsg = "发动机第二次启动成功，15分钟后将自动关闭";
+                            pushMsgEn = "The engine started second times successfully, and it will turn off automatically after 15 minutes";
+                        }
                     }
                 }else if(controlType==3){
                     pushMsg="解锁成功，车辆将在20秒后自动上锁。";

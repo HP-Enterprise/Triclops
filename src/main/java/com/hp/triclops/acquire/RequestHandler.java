@@ -743,7 +743,7 @@ public class RequestHandler {
 
 
                     if(refId>0){//todo refId大于0的情况是启动发动机或者需要依赖启动发动机的场景
-                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(),(short)0,bean.getRemoteControlTime(),false);
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(),(short)0,bean.getRemoteControlTime(),rc.getIsAnnounce(),false);
                     //存在ref记录
                         if(rc.getIsAnnounce()==1){//刚刚结束的是1条发动机announce命令，现在我们需要做一个真正的启动发动机,将指向的那条原始记录refId传递给perform命令
                             _logger.info("[0x31]刚刚结束的是1条发动机FC命令，现在我们需要做一个真正的启动发动机（FD）");
@@ -769,15 +769,15 @@ public class RequestHandler {
 
                     }
                 else{
-                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(), (short)0,bean.getRemoteControlTime(),true);
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(),rc.getControlType(), (short)0,bean.getRemoteControlTime(),rc.getIsAnnounce(),true);
                     }
                 }else{//各种原因未能成功
 
                 if(refId>0){
-                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),false);
+                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),false);
                     outputHexService.handleRefRemoteControlRst(refId, bean.getRemoteControlAck(),bean.getRemoteControlTime());
                 }else {
-                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),true);
+                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),true);
                 }
                 }
             _logger.info("[0x31]远程控制结果处理结束:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
