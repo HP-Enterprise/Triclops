@@ -972,6 +972,7 @@ public class RequestHandler {
             }
             FailureMessageData f=outputHexService.getLatestFailureMessage(vin);
             if(f!=null){
+                _logger.info("[0x31]获取到的最新故障数据，id:"+f.getId()+" info:"+f.getInfo());
                 if(f.getInfo()!=null){
                     String[] ids=f.getInfo().split(",");
                     for (int i = 0; i < ids.length; i++) {
