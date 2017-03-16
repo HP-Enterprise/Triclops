@@ -617,6 +617,9 @@ public class RequestHandler {
                 }else if(preconditionRespCheck==0x19){
                     msg="远程启动发动机条件不符合，发动机存在故障";
                     msgEn="emote start engine conditions do not meet，Engine trouble";
+                }else if(preconditionRespCheck==0x1E){
+                    msg="发动机启动次数已超出2次，启动请求无效";
+                    msgEn="Engine start number exceeded 2 times, invalid startup request";
                 }else if(preconditionRespCheck==0x1F){
                     msg="发动机已启动";
                     msgEn="The engine is started";
@@ -839,6 +842,7 @@ public class RequestHandler {
         boolean remainingFuelCheck=false;
         boolean powerStatusCheck=false;//电源开关
         boolean engineFaultCheck=false;//发动机故障
+        boolean remoteStartedCountCheck=false;//发动机故障
 
 
         RemoteControl rc=outputHexService.getRemoteControlRecord(vin, remoteControlPreconditionResp.getEventID());
@@ -989,6 +993,11 @@ public class RequestHandler {
                 }
             }
 
+            short _startedCount=dataTool.getRemoteStartedCount(remoteControlPreconditionResp.getStat_remote_start());
+            if(_startedCount<2){
+                remoteStartedCountCheck=true;//小于2，还可以做远程启动发动机
+            }
+
             /*
             控制类别  0：远程启动发动机  1：远程关闭发动机  2：车门上锁  3：车门解锁  4：空调开启  5：空调关闭  6：座椅加热  7：座椅停止加热  8：远程发动机限制  9：远程发动机限制关闭  10：闪灯 11：鸣笛
             */
@@ -1005,8 +1014,8 @@ public class RequestHandler {
                 //todo 启动发动机检查要区分是否是fc 区别处理
                 if(isAnnounce==1){
                     //Initial Check 检查条件:电源档位、危险警告灯、档位、车门、天窗、后备箱、引擎盖、车速、中控锁、车窗
-                    re= powerStatusCheck && hazardLightsCheck && transmissionGearPositionCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck;//车门 后备箱 引擎盖 车速
-                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:电源档位/危险警告灯/P档位/车门/后备箱/引擎盖/车速/中控锁--"+powerStatusCheck +"/"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+" 检查结果:"+re);
+                    re= powerStatusCheck && hazardLightsCheck && transmissionGearPositionCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck && remoteStartedCountCheck;//车门 后备箱 引擎盖 车速
+                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:电源档位/危险警告灯/P档位/车门/后备箱/引擎盖/车速/中控锁/启动次数是否小于2--"+powerStatusCheck +"/"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+remoteStartedCountCheck+" 检查结果:"+re);
 
                     if(!powerStatusCheck){
                         reint=0x10;
@@ -1024,6 +1033,8 @@ public class RequestHandler {
                         reint=0x16;
                     }else if(!centralLockCheck){
                         reint=0x17;
+                    }else if(!remoteStartedCountCheck){
+                        reint=0x1E;//起动次数超过2
                     }
                 }else {
                     //Final Check  危险警告灯、档位、车门、天窗、后备箱、引擎盖、车速、中控锁、车窗、手刹、发动机无故障
