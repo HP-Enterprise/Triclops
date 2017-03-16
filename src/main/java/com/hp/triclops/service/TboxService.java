@@ -25,6 +25,24 @@ public class TboxService {
     @Autowired
     VehicleModelConfigRepository vehicleModelConfigRepository;
     private Logger _logger = LoggerFactory.getLogger(TboxService.class);
+
+    /**
+     * 更新车型信息
+     */
+    public void modifyVehicleModelInfo(String vin,Short modelId){
+        Vehicle _vehicle=vehicleRepository.findByVin(vin);
+        if(_vehicle!=null){
+            VehicleModelConfig vehicleModelConfig=vehicleModelConfigRepository.findByModelId(modelId);
+            if(vehicleModelConfig!=null){
+                _vehicle.setModel(vehicleModelConfig.getModelName());
+                _logger.info("更新车辆对应的车型信息:"+modelId+" "+vehicleModelConfig.getModelName());
+                vehicleRepository.save(_vehicle);
+            }else{
+                _logger.info("没有查询到对应的车型信息:"+modelId);
+            }
+        }
+    }
+
     public boolean activationTBox(String vin,Short modelId,String t_sn,String imei,String iccid){
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByImei(imei);

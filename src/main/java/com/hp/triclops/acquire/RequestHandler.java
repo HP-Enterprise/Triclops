@@ -208,8 +208,10 @@ public class RequestHandler {
         String randomKey="0123456789abcdef";
        // randomKey=dataTool.getRandomString(16);
         if(checkRegister) {
-            _logger.info("[0x13]注册时给vin:" + vin+"生成的AES key:"+randomKey);
+            _logger.info("[0x13]注册时给vin:" + vin + "生成的AES key:" + randomKey);
             socketRedis.saveHashString(dataTool.tboxkey_hashmap_name, vin, randomKey, -1);
+            //更新车型信息
+            modifyVehicleInfo(vin,bean.getVehicleModel());
         }
         resp.setKeyInfo(randomKey.getBytes());
         //注册响应
@@ -218,6 +220,11 @@ public class RequestHandler {
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr=PackageEntityManager.getByteString(bbw);
         return byteStr;
+    }
+
+
+    public void modifyVehicleInfo(String vin,Short modelId){
+        tboxService.modifyVehicleModelInfo(vin,modelId);
     }
 
     /**
