@@ -1053,7 +1053,7 @@ public class RequestHandler {
                 }else {
                     //Final Check  危险警告灯、档位、车门、天窗、后备箱、引擎盖、车速、中控锁、车窗、手刹、发动机无故障
                     re =  hazardLightsCheck && transmissionGearPositionCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck && handBrakeCheck && (!engineFaultCheck);//
-                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:危险警告灯/P挡位/车门/后备箱/引擎盖/车速/中控锁/手刹/发动机无故障--"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+(!engineFaultCheck)+" 检查结果:"+re);
+                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:危险警告灯/P挡位/车门/后备箱/引擎盖/车速/中控锁/手刹/发动机无故障--"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+handBrakeCheck+"/"+(!engineFaultCheck)+" 检查结果:"+re);
                     if(!hazardLightsCheck){
                         reint=0x11;
                     }else if(!transmissionGearPositionCheck){
