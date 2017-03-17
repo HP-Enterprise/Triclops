@@ -993,18 +993,23 @@ public class RequestHandler {
             if(sesam_clamp_stat2_char[5]=='0'&&sesam_clamp_stat2_char[6]=='0'&&sesam_clamp_stat2_char[7]=='0'){//OFF
                 powerStatusCheck=true;
             }
-            FailureMessageData f=outputHexService.getLatestFailureMessage(vin);
-            if(f!=null){
-                _logger.info("[0x31]获取到的最新故障数据，id:"+f.getId()+" info:"+f.getInfo());
-                if(f.getInfo()!=null){
-                    String[] ids=f.getInfo().split(",");
-                    for (int i = 0; i < ids.length; i++) {
-                        if(ids[i].equals("20")||ids[i].equals("21")||ids[i].equals("23")||ids[i].equals("95")||ids[i].equals("145")){
-                            engineFaultCheck=true;
-                            break;
+
+            if(isM8X) {
+                FailureMessageData f = outputHexService.getLatestFailureMessage(vin);
+                if (f != null) {
+                    _logger.info("[0x31]获取到的最新故障数据，id:" + f.getId() + " info:" + f.getInfo());
+                    if (f.getInfo() != null) {
+                        String[] ids = f.getInfo().split(",");
+                        for (int i = 0; i < ids.length; i++) {
+                            if (ids[i].equals("20") || ids[i].equals("21") || ids[i].equals("23") || ids[i].equals("95") || ids[i].equals("145")) {
+                                engineFaultCheck = true;
+                                break;
+                            }
                         }
                     }
                 }
+            }else{
+                engineFaultCheck = true;//F60车型无需判断发动机故障
             }
 
             short _startedCount=dataTool.getRemoteStartedCount(remoteControlPreconditionResp.getStat_remote_start());
