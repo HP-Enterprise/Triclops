@@ -565,7 +565,22 @@ public class RequestHandler {
             //boolean distanceCheck=verifyRemoteControlDistance(vin, bean.getEventID(),maxDistance);//app与tbox距离校验
             dbRc.setRemoteStartedCount(dataTool.getRemoteStartedCount(bean.getStat_remote_start()));
             outputHexService.modifyOrignalRemoteControl(dbRc);
-            if(preconditionRespCheck==0){
+            String msg="";
+            String msgEn="";
+            boolean fcCheckPass=false;
+            short _startedCount=dataTool.getRemoteStartedCount(bean.getStat_remote_start());
+            if(preconditionRespCheck==0 && dbRc.getControlType()!=0){//远程启动以外的 preconditionRespCheck=0为通过
+                fcCheckPass=true;
+            }else if(preconditionRespCheck==0 && dbRc.getControlType()==0){//远程启动以外的 preconditionRespCheck=0为通过
+                if(_startedCount<2){
+                    fcCheckPass=true;//小于2，还可以做远程启动发动机
+                }else{
+                    msg="发动机启动次数已超出2次，启动请求无效";
+                    msgEn="Engine start number exceeded 2 times, invalid startup request";
+                }
+            }
+
+            if(fcCheckPass){//todo 判断为precondition检查通过
                 if(dbRc.getControlType()==0 && currentRefId==-1){
                 //如果是初始的启动发动机命令，需要在precondition成功后构造一个关联的announce发动操作。
                     long refId=dbRc.getId();//原发动命令
@@ -585,8 +600,7 @@ public class RequestHandler {
                 }
 
             }else{
-                String msg="";
-                String msgEn="";
+
                 if(preconditionRespCheck==0x10){
                     msg="远程启动发动机条件不符合,检查电源开关";
                     msgEn="emote start engine conditions do not meet，Check power switch";
