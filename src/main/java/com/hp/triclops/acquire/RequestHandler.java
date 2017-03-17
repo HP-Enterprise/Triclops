@@ -856,7 +856,7 @@ public class RequestHandler {
         boolean remainingFuelCheck=false;
         boolean powerStatusCheck=false;//电源开关
         boolean engineFaultCheck=false;//发动机故障
-        boolean remoteStartedCountCheck=false;//发动机故障
+        boolean remoteStartedCountCheck=false;
 
 
         RemoteControl rc=outputHexService.getRemoteControlRecord(vin, remoteControlPreconditionResp.getEventID());
@@ -1002,14 +1002,14 @@ public class RequestHandler {
                         String[] ids = f.getInfo().split(",");
                         for (int i = 0; i < ids.length; i++) {
                             if (ids[i].equals("20") || ids[i].equals("21") || ids[i].equals("23") || ids[i].equals("95") || ids[i].equals("145")) {
-                                engineFaultCheck = true;
+                                engineFaultCheck = true;//true有故障
                                 break;
                             }
                         }
                     }
                 }
             }else{
-                engineFaultCheck = true;//F60车型无需判断发动机故障
+                engineFaultCheck = false;//F60车型无需判断发动机故障
             }
 
             short _startedCount=dataTool.getRemoteStartedCount(remoteControlPreconditionResp.getStat_remote_start());
