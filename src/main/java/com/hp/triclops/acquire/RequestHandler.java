@@ -933,7 +933,7 @@ public class RequestHandler {
                 handBrakeCheck=true;
             }
             }else{
-                if(handBrake_char[6]=='1'&&handBrake_char[7]=='1'){ //0x2
+                if(handBrake_char[6]=='1'&&handBrake_char[7]=='0'){ //0x2
                     handBrakeCheck=true;
                 }
             }
