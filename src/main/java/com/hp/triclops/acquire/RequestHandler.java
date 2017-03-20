@@ -1033,15 +1033,13 @@ public class RequestHandler {
                 //todo 启动发动机检查要区分是否是fc 区别处理
                 if(isAnnounce==1){
                     //Initial Check 检查条件:电源档位、危险警告灯、档位、车门、天窗、后备箱、引擎盖、车速、中控锁、车窗
-                    re= powerStatusCheck && hazardLightsCheck && transmissionGearPositionCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck && remoteStartedCountCheck;//车门 后备箱 引擎盖 车速
-                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:电源档位/危险警告灯/P档位/车门/后备箱/引擎盖/车速/中控锁/启动次数是否小于2--"+powerStatusCheck +"/"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+remoteStartedCountCheck+" 检查结果:"+re);
+                    re= powerStatusCheck && hazardLightsCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck && remoteStartedCountCheck;//车门 后备箱 引擎盖 车速
+                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:电源档位/危险警告灯/车门/后备箱/引擎盖/车速/中控锁/启动次数是否小于2--"+powerStatusCheck +"/"+ hazardLightsCheck +"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+remoteStartedCountCheck+" 检查结果:"+re);
 
                     if(!powerStatusCheck){
                         reint=0x10;
                     }else if(!hazardLightsCheck){
                         reint=0x11;
-                    }else if(!transmissionGearPositionCheck){
-                        reint=0x12;
                     }else if(!doorsCheck){
                         reint=0x13;
                     }else if(!trunkCheck){
