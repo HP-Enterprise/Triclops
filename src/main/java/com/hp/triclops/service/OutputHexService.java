@@ -1446,7 +1446,7 @@ public class OutputHexService {
         rc.setRefId(-2l);
         rc.setSessionId(newSessionId);
         RemoteControl retRc=remoteControlRepository.save(rc);
-        return rc;
+        return retRc;
 
     }
     /**

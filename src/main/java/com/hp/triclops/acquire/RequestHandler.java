@@ -557,7 +557,11 @@ public class RequestHandler {
             long currentRefId=dbRc.getRefId();
             _logger.info("[0x31][debug] 引用记录ID:"+currentRefId);
             int preconditionRespCheck=0;
-            if(currentRefId!=-2){//普通报文才做check ,-2 check直接通过
+
+            if(dbRc.getControlType()==0 && dbRc.getRefId()==-1){
+                //初始的启动发动机命令，虽然数据库存储的是IsAnnounce=0，但是我们要当作IsAnnounce=1即FD去做preconditionCheck
+                preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType(),(short)1);
+            }else if(currentRefId!=-2){//普通报文才做check ,-2 check直接通过
                preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType(),dbRc.getIsAnnounce());
             }
             _logger.info("[0x31][debug] precondition响应校验结果:"+preconditionRespCheck);
@@ -572,12 +576,14 @@ public class RequestHandler {
             if(preconditionRespCheck==0 && dbRc.getControlType()!=0){//远程启动以外的 preconditionRespCheck=0为通过
                 fcCheckPass=true;
             }else if(preconditionRespCheck==0 && dbRc.getControlType()==0){//远程启动以外的 preconditionRespCheck=0为通过
-                if(_startedCount<2){
-                    fcCheckPass=true;//小于2，还可以做远程启动发动机
-                }else{
+                if(_startedCount>=2 && dbRc.getIsAnnounce()==0 && dbRc.getRefId()!=-1){//FD要求检查次数 RefId()==-1 是初始命令
+                    fcCheckPass=false;
                     msg="发动机启动次数已超出2次，启动请求无效";
                     msgEn="Engine start number exceeded 2 times, invalid startup request";
+                }else{
+                    fcCheckPass=true;//还可以做远程启动发动机
                 }
+
             }
 
             if(fcCheckPass){//todo 判断为precondition检查通过
