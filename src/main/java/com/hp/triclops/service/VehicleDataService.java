@@ -578,10 +578,10 @@ public class VehicleDataService {
             data.setAverageSpeedB(rd.getAverageSpeedB());
             data.setMtGearPostion(rd.getMtGearPostion());
 
-            data.setFmax(280);
-            data.setFmin(200);
-            data.setRmax(290);
-            data.setRmin(210);
+            data.setFmax(390);
+            data.setFmin(0);
+            data.setRmax(390);
+            data.setRmin(0);
             data.setLfok(this.getLfokStatu(rd.getLeftFrontTirePressure()));
             data.setLrok(this.getLrokStatu(rd.getLeftRearTirePressure()));
             data.setRfok(this.getRfokStatu(rd.getRightRearTirePressure()));
@@ -647,25 +647,25 @@ public class VehicleDataService {
         }
 
     public int getLfokStatu(Float leftFrontTirePressure){
-        if(leftFrontTirePressure>=200 && leftFrontTirePressure<=280){
+        if(leftFrontTirePressure>=0 && leftFrontTirePressure<=390){
             return 0;
         }
         return 1;
     }
     public int getLrokStatu(Float leftRearTirePressure){
-        if(leftRearTirePressure>=210 && leftRearTirePressure<=290){
+        if(leftRearTirePressure>=0 && leftRearTirePressure<=390){
             return 0;
         }
         return 1;
     }
     public int getRfokStatu(Float rightFrontTirePressure){
-        if(rightFrontTirePressure>=200 && rightFrontTirePressure<=280){
+        if(rightFrontTirePressure>=0 && rightFrontTirePressure<=390){
             return 0;
         }
         return 1;
     }
     public int getRrokStatu(Float rightRearTirePressure){
-        if(rightRearTirePressure>=210 && rightRearTirePressure<=290){
+        if(rightRearTirePressure>=0 && rightRearTirePressure<=390){
             return 0;
         }
         return 1;
