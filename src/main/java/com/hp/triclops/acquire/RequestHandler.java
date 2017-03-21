@@ -863,12 +863,13 @@ public class RequestHandler {
         boolean powerStatusCheck=false;//电源开关
         boolean engineFaultCheck=false;//发动机故障
         boolean remoteStartedCountCheck=false;
+        boolean remoteStarted=false;//是否是远程启动的，空调/座椅加热需要判断此条件
 
 
         RemoteControl rc=outputHexService.getRemoteControlRecord(vin, remoteControlPreconditionResp.getEventID());
         if(rc!=null&&remoteControlPreconditionResp!=null){
             //根据0621协议
-            float ambientAirTemperature=dataTool.getInternTrueTmp(remoteControlPreconditionResp.getTempIntern());//偏移40
+            float ambientAirTemperature = dataTool.getInternTrueTmp(remoteControlPreconditionResp.getTempIntern());//偏移40
             if(ambientAirTemperature>-10&&ambientAirTemperature<40){        //温度 -10~40
                 tmpCheck=true;
             }
@@ -877,6 +878,13 @@ public class RequestHandler {
             if(clampStatus_char[5]=='0'&&clampStatus_char[6]=='1'&&clampStatus_char[7]=='1'){
                 clampCheck=true;//19. 0x03 Engine start
             }
+
+            byte remoteStart=remoteControlPreconditionResp.getStat_remote_start();
+            char[] remoteStart_char=dataTool.getBitsFromByte(remoteStart);
+            if(remoteStart_char[5]=='0'&&remoteStart_char[6]=='1'){
+                remoteStarted=true;//7.bit 4~5 0x1 remote start announced
+            }
+
             byte remoteKey=remoteControlPreconditionResp.getSesam_hw_status();
             char[] remoteKey_char=dataTool.getBitsFromByte(remoteKey);
             if(isM8X){
@@ -1110,7 +1118,7 @@ public class RequestHandler {
                     reint=300;
                 }
             }else if(controlType==(short)4){//4：空调开启
-                if(clampCheck){//必须是远程启动发动机才能开启空调
+                if(remoteStarted){//必须是远程启动发动机才能开启空调
                     re=true;
                 }
                 if(re){
@@ -1128,7 +1136,7 @@ public class RequestHandler {
                     reint=5;
                 }
             }else if(controlType==(short)6){//6：座椅加热
-                if(clampCheck){//必须是远程启动发动机才能开启座椅加热
+                if(remoteStarted){//必须是远程启动发动机才能开启座椅加热
                     re=true;
                 }
                 if(re){

@@ -1720,8 +1720,8 @@ public class OutputHexService {
                 pushMsg="请求超时失效";
                 pushMsgEn="Request timeout";
             }else if(result==(short)0x51){
-                pushMsg="请求次数超过3次";
-                pushMsgEn="More than 3 times the number of requests";
+                pushMsg="重复请求";
+                pushMsgEn="Request blocked by repetition block";
             }else if(result==(short)0x60){
                 pushMsg="功能无效，请求被忽略";
                 pushMsgEn="Function is not valid, the request is ignored.";
