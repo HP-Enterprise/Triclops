@@ -561,7 +561,7 @@ public class RequestHandler {
             if(dbRc.getControlType()==0 && dbRc.getRefId()==-1){
                 //初始的启动发动机命令，虽然数据库存储的是IsAnnounce=0，但是我们要当作IsAnnounce=1即FD去做preconditionCheck
                 preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType(),(short)1);
-            }else if(currentRefId!=-2){//普通报文才做check ,-2 check直接通过
+            }else{//所有流程都做check
                preconditionRespCheck=verifyRemoteControlPreconditionResp(vin,bean,dbRc.getControlType(),dbRc.getIsAnnounce());
             }
             _logger.info("[0x31][debug] precondition响应校验结果:"+preconditionRespCheck);
@@ -944,9 +944,10 @@ public class RequestHandler {
             byte handBrake=remoteControlPreconditionResp.getEpb_status();
             char[] handBrake_char=dataTool.getBitsFromByte(handBrake);
             if(isM8X){
-            if(handBrake_char[6]=='0'&&handBrake_char[7]=='1'){
-                handBrakeCheck=true;
-            }
+                //M8X车型不检查手刹
+//                if(handBrake_char[6]=='0'&&handBrake_char[7]=='1'){
+                    handBrakeCheck=true;
+//                }
             }else{
                 if(handBrake_char[6]=='1'&&handBrake_char[7]=='0'){ //0x2
                     handBrakeCheck=true;
