@@ -861,6 +861,7 @@ public class RequestHandler {
         boolean crashStatusCheck=false;
         boolean remainingFuelCheck=false;
         boolean powerStatusCheck=false;//电源开关
+        boolean powerStatusIsOnCheck=false;//电源开关是否在ON挡
         boolean engineFaultCheck=false;//发动机故障
         boolean remoteStartedCountCheck=false;
         boolean remoteStarted=false;//是否是远程启动的，空调/座椅加热需要判断此条件
@@ -1008,6 +1009,10 @@ public class RequestHandler {
                 powerStatusCheck=true;
             }
 
+            if(sesam_clamp_stat2_char[5]=='0'&&sesam_clamp_stat2_char[6]=='1'&&sesam_clamp_stat2_char[7]=='0'){//ON
+                powerStatusIsOnCheck=true;//ON
+            }
+
             if(isM8X) {
                 FailureMessageData f = outputHexService.getLatestFailureMessage(vin);
                 if (f != null) {
@@ -1118,7 +1123,7 @@ public class RequestHandler {
                     reint=300;
                 }
             }else if(controlType==(short)4){//4：空调开启
-                if(remoteStarted){//必须是远程启动发动机才能开启空调
+                if(powerStatusIsOnCheck){//必须是远程启动发动机才能开启空调
                     re=true;
                 }
                 if(re){
@@ -1136,7 +1141,7 @@ public class RequestHandler {
                     reint=5;
                 }
             }else if(controlType==(short)6){//6：座椅加热
-                if(remoteStarted){//必须是远程启动发动机才能开启座椅加热
+                if(powerStatusIsOnCheck){//必须是远程启动发动机才能开启座椅加热
                     re=true;
                 }
                 if(re){
