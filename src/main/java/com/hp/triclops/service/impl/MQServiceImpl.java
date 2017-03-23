@@ -50,6 +50,7 @@ public class MQServiceImpl implements MQService{
         for(UserDevice ud:udList){
             if(ud.getUser().getId()==user.getId()){
                 ud.setActive(1);
+                userRepository.updateDeviceid(deviceId, user.getId());
                 return deviceRepository.save(ud);
             }
         }
@@ -58,6 +59,7 @@ public class MQServiceImpl implements MQService{
         userDevice.setActive(1);
         userDevice.setUser(user);
         userDevice.setDeviceType(deviceType);
+        userRepository.updateDeviceid(deviceId, user.getId());
         return this.deviceRepository.save(userDevice);
     }
 
