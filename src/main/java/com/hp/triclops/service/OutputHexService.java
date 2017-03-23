@@ -1755,7 +1755,7 @@ public class OutputHexService {
      * @param result Rst响应结果 0：成功 1：失败  ...
      * @param remoteControlTime 次数 参见协议0x05
      */
-    public void handleRefRemoteControlRst(long id,Short result,Short remoteControlTime){
+    public void handleRefRemoteControlRst(long id,Short controlType,Short result,Short remoteControlTime){
         RemoteControl rc=remoteControlRepository.findOne(id);
         if (rc == null) {
             _logger.info("[0x31]没有在数据库找到远程控制记录， id:"+id+"  "+"result:"+ result+"remoteControlTime:"+ remoteControlTime);
@@ -1807,8 +1807,8 @@ public class OutputHexService {
                 pushMsg="请求超时失效";
                 pushMsgEn="Request timeout";
             }else if(result==(short)0x51){
-                pushMsg="请求次数超过3次";
-                pushMsgEn="More than 3 times the number of requests";
+                pushMsg="重复请求";
+                pushMsgEn="Request blocked by repetition block";
             }else if(result==(short)0x60){
                 pushMsg="功能无效，请求被忽略";
                 pushMsgEn="Function is not valid, the request is ignored.";
@@ -1818,6 +1818,10 @@ public class OutputHexService {
             }else if(result==(short)0x81){
                 pushMsg="响应等待下次车辆启动";
                 pushMsgEn="In response to waiting for the next vehicle to start";
+            }
+            if(controlType==0&& remoteControlTime>2){
+                pushMsg="发动机启动次数已超出2次，启动请求无效";
+                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
             }
             String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
             rc.setRemark(_dbReMark);

@@ -798,7 +798,7 @@ public class RequestHandler {
 
                 if(refId>0){
                     outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),false);
-                    outputHexService.handleRefRemoteControlRst(refId, bean.getRemoteControlAck(),bean.getRemoteControlTime());
+                    outputHexService.handleRefRemoteControlRst(refId,rc.getControlType(), bean.getRemoteControlAck(),bean.getRemoteControlTime());
                 }else {
                     outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),true);
                 }
