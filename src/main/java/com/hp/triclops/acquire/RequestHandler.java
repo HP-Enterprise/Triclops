@@ -861,7 +861,7 @@ public class RequestHandler {
         boolean crashStatusCheck=false;
         boolean remainingFuelCheck=false;
         boolean powerStatusCheck=false;//电源开关
-        boolean powerStatusIsOnCheck=false;//电源开关是否在ON挡
+        boolean powerStatusIsOnCheck=false;//电源开关是否在ON挡或者Engine Start信号
         boolean engineFaultCheck=false;//发动机故障
         boolean remoteStartedCountCheck=false;
         boolean remoteStarted=false;//是否是远程启动的，空调/座椅加热需要判断此条件
@@ -1010,8 +1010,11 @@ public class RequestHandler {
                 powerStatusCheck=true;
             }
 
-            if(sesam_clamp_stat2_char[5]=='0'&&sesam_clamp_stat2_char[6]=='1'&&sesam_clamp_stat2_char[7]=='0'){//ON
+            if(sesam_clamp_stat2_char[5]=='0'&&sesam_clamp_stat2_char[6]=='1'&&sesam_clamp_stat2_char[7]=='0'){//0x2 ON
                 powerStatusIsOnCheck=true;//ON
+            }
+            if(sesam_clamp_stat2_char[5]=='0'&&sesam_clamp_stat2_char[6]=='1'&&sesam_clamp_stat2_char[7]=='1'){//0x3 Engine start
+                powerStatusIsOnCheck=true;//Engine start
             }
 
             if(isM8X) {
