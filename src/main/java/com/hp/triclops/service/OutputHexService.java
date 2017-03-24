@@ -1688,6 +1688,9 @@ public class OutputHexService {
                 }else if(controlType==3){
                     pushMsg="解锁成功，车辆将在20秒后自动上锁。";
                     pushMsgEn="Unlock successfully, the vehicle will be locked automatically after 20 seconds";
+                }else if(controlType==5){
+                    pushMsg="空调已经关闭，发动机仍在运行中。";
+                    pushMsgEn="Unlock successfully, the vehicle will be locked automatically after 20 seconds";
                 }
             }else if(result==(short)1){
                 pushMsg="远程命令执行失败";
