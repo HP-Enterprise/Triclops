@@ -677,11 +677,11 @@ public class RequestHandler {
                     msg="远程寻车失败，操作条件不满足";
                     msgEn="Remote search failed, the operating conditions are not satisfied";
                 }
-                if(preconditionRespCheck==4||preconditionRespCheck==5||preconditionRespCheck==6||preconditionRespCheck==7){
-                    if(currentRefId<=0){
+                if((preconditionRespCheck==4||preconditionRespCheck==5||preconditionRespCheck==6||preconditionRespCheck==7) && currentRefId!=-2){
+                    if(currentRefId ==-1){//-1的情况
                         _logger.info("[0x31]正在尝试启动发动机...");
                     }
-                }else{//除了4 5 6 7之外的失败会导致流程结束，而4 5 6 7会尝试启动发动机
+                }else{//除了4 5 6 7之外的失败会导致流程结束，而4 5 6 7会尝试启动发动机，当然，如果 4 5 6 7已经有尝试过启动发动机记录，则流程结束
                     if(currentRefId>0) {//存在ref记录
                         outputHexService.handleRemoteControlPreconditionResp(vin,bean.getEventID(),msg,msgEn,false);//关联子操作 不推送
                         String pre="依赖的操作失败:";
