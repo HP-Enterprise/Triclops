@@ -158,28 +158,57 @@ public class RequestHandler {
      * @return 电检响应hex
      */
     public String getDiagResp(String reqString){
-        //根据电检请求的16进制字符串，生成响应的16进制字符串
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
-        DataPackage dp=conversionTBox.generate(bb);
-        DiaRequest bean=dp.loadBean(DiaRequest.class);
-        //请求解析到bean
-        //单项为0成功，全部为0测试成功返回0否则失败返回1
-       // int result=bean.getCanActionTest()+bean.getFarmTest()+bean.getGprsTest()+bean.getGpsTest()+bean.getLedTest()+bean.getResetBatteryMapArrayTest()+bean.getSdTest()+bean.getServerCommTest();
-        //电检响应
-        DiaResp resp=new DiaResp();
-        resp.setHead(bean.getHead());
-        resp.setTestFlag(bean.getTestFlag());
-        resp.setSendingTime((long) dataTool.getCurrentSeconds());
-        resp.setApplicationID(bean.getApplicationID());
-        resp.setMessageID((short) 2);
-        resp.setEventID(bean.getEventID());
-      //  resp.setDiaReportResp(result > 0 ? (short) 1 : (short) 0);
 
-        DataPackage dpw=new DataPackage("8995_17_2");
-        dpw.fillBean(resp);
-        ByteBuffer bbw=conversionTBox.generate(dpw);
-        String byteStr=PackageEntityManager.getByteString(bbw);
-        return byteStr;
+        byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId = dataTool.getMessageId(bytes);
+        if(messageId == 0x01){//电检
+            //根据电检请求的16进制字符串，生成响应的16进制字符串
+            ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            DiaRequest bean=dp.loadBean(DiaRequest.class);
+            //请求解析到bean
+            //单项为0成功，全部为0测试成功返回0否则失败返回1
+            // int result=bean.getCanActionTest()+bean.getFarmTest()+bean.getGprsTest()+bean.getGpsTest()+bean.getLedTest()+bean.getResetBatteryMapArrayTest()+bean.getSdTest()+bean.getServerCommTest();
+            //电检响应
+            DiaResp resp=new DiaResp();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 2);
+            resp.setEventID(bean.getEventID());
+            //  resp.setDiaReportResp(result > 0 ? (short) 1 : (short) 0);
+
+            DataPackage dpw=new DataPackage("8995_17_2");
+            dpw.fillBean(resp);
+            ByteBuffer bbw=conversionTBox.generate(dpw);
+            String byteStr=PackageEntityManager.getByteString(bbw);
+            return byteStr;
+        }else if(messageId == 0x03){//测试注册
+            //根据电检请求的16进制字符串，生成响应的16进制字符串
+            ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            DiagRegisterRequest bean = dp.loadBean(DiagRegisterRequest.class);
+
+            //请求解析到bean 返回成功
+            DiagRegisterResp resp = new DiagRegisterResp();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 4);
+            resp.setEventID(bean.getEventID());
+            resp.setRegisterResult((short) 1);
+
+            DataPackage dpw = new DataPackage("8995_17_4");
+            dpw.fillBean(resp);
+            ByteBuffer bbw = conversionTBox.generate(dpw);
+            String byteStr = PackageEntityManager.getByteString(bbw);
+
+            return byteStr;
+        }else{
+            return null;
+        }
     }
 
     /**
