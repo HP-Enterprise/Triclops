@@ -204,10 +204,10 @@ public class RequestHandler {
             boolean checkVinAndSerNum= dataTool.checkVinAndSerialNum(bean.getVin(), bean.getSerialNumber());
             if(checkVinAndSerNum){
                 _logger.info("[0x11]电检注册成功");
-                resp.setRegisterResult((short) 1);
+                resp.setRegisterResult((short) 0);
             }else{
                 _logger.info("[0x11]电检注册失败");
-                resp.setRegisterResult((short) 0);
+                resp.setRegisterResult((short) 1);
             }
 
             DataPackage dpw = new DataPackage("8995_17_4");
