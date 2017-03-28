@@ -162,6 +162,7 @@ public class RequestHandler {
         byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
         byte messageId = dataTool.getMessageId(bytes);
         if(messageId == 0x01){//电检
+            _logger.info("[0x11]电检结果上报");
             //根据电检请求的16进制字符串，生成响应的16进制字符串
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp = conversionTBox.generate(bb);
@@ -190,7 +191,7 @@ public class RequestHandler {
             DataPackage dp = conversionTBox.generate(bb);
             DiagRegisterRequest bean = dp.loadBean(DiagRegisterRequest.class);
 
-            //请求解析到bean 返回成功
+            //请求解析到bean
             DiagRegisterResp resp = new DiagRegisterResp();
             resp.setHead(bean.getHead());
             resp.setTestFlag(bean.getTestFlag());
@@ -198,7 +199,16 @@ public class RequestHandler {
             resp.setApplicationID(bean.getApplicationID());
             resp.setMessageID((short) 4);
             resp.setEventID(bean.getEventID());
-            resp.setRegisterResult((short) 1);
+
+            //判断数据是否存在
+            boolean checkVinAndSerNum= dataTool.checkVinAndSerialNum(bean.getVin(), bean.getSerialNumber());
+            if(checkVinAndSerNum){
+                _logger.info("[0x11]电检注册成功");
+                resp.setRegisterResult((short) 1);
+            }else{
+                _logger.info("[0x11]电检注册失败");
+                resp.setRegisterResult((short) 0);
+            }
 
             DataPackage dpw = new DataPackage("8995_17_4");
             dpw.fillBean(resp);
@@ -946,12 +956,14 @@ public class RequestHandler {
             }
             //根据0628协议 M8X车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
             //F60:分辨率0.05625，偏移量0，显示范围： 0 ~296kmh 上报数据范围： 0~5263 缺省值： 0x0000无效值
-            if(remoteControlPreconditionResp.getVehicleSpeed()==0){
-                if(isM8X) {
-                    vehicleSpeedCheck = true;
-                }else{
-                    vehicleSpeedCheck = true;
-                }
+            //新增有效值0xFFFF
+            if(remoteControlPreconditionResp.getVehicleSpeed() == 0 || remoteControlPreconditionResp.getVehicleSpeed() == 65535){
+//                if(isM8X) {
+//                    vehicleSpeedCheck = true;
+//                }else{
+//                    vehicleSpeedCheck = true;
+//                }
+                vehicleSpeedCheck = true;
             }
             byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();//要求P挡位 参考0628协议
             char[] transmissionGearPosition_char=dataTool.getBitsFromByte(transmissionGearPosition);
