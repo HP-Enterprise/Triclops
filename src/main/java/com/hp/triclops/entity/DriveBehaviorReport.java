@@ -24,6 +24,7 @@ public class DriveBehaviorReport {
     private Integer suddenDec;//急减速次数
     private Integer suddenTurn;//急转弯次数
     private Integer tireDriveTimes;//疲劳驾驶次数
+    private Integer seatbeltTimes;//未系安全带次数(主驾)
     private Double speedingDrive;//超速时间 单位秒
     private Short maxSpeed;//最高超速速度 公里/小时
     private Float avgOil;//平均油耗
@@ -254,5 +255,13 @@ public class DriveBehaviorReport {
 
     public void setSuggestion(String suggestion) {
         this.suggestion = suggestion;
+    }
+
+    public Integer getSeatbeltTimes() {
+        return seatbeltTimes;
+    }
+
+    public void setSeatbeltTimes(Integer seatbeltTimes) {
+        this.seatbeltTimes = seatbeltTimes;
     }
 }

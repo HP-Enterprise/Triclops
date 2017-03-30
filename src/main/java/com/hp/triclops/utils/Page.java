@@ -45,7 +45,7 @@ public class Page {
     }
 
     public void setRecordCount(Long recordCount) {
-        recordCount = recordCount;
+        this.recordCount = recordCount;
     }
 
     public Integer getPageCount() {
