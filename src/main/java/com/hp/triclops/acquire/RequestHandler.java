@@ -949,9 +949,13 @@ public class RequestHandler {
 
 
 
-            byte hazardLight=remoteControlPreconditionResp.getBcm_Stat_Central_Lock2();
-            char[] hazardLight_char=dataTool.getBitsFromByte(hazardLight);
-            if(hazardLight_char[5]=='0' && hazardLight_char[6]=='0' && hazardLight_char[7]=='0'){
+            byte hazardLight = remoteControlPreconditionResp.getBcm_Stat_Central_Lock2();
+            //协议变更 BCM_Stat_Central_Lock改为BCM_SWITCH_STATUS
+//            char[] hazardLight_char=dataTool.getBitsFromByte(hazardLight);
+//            if(hazardLight_char[5]=='0' && hazardLight_char[6]=='0' && hazardLight_char[7]=='0'){
+//                hazardLightsCheck=true;
+//            }
+            if(hazardLight == 0){
                 hazardLightsCheck=true;
             }
             //根据0628协议 M8X车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
