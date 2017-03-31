@@ -712,7 +712,7 @@ public class RequestHandler {
                     }
                 }
 
-                if(preconditionRespCheck==10){
+                if(preconditionRespCheck == 10 || preconditionRespCheck == 11){
                     msg="远程寻车失败，操作条件不满足";
                     msgEn="Remote search failed, the operating conditions are not satisfied";
                 }
@@ -885,21 +885,21 @@ public class RequestHandler {
         }
         int reint=-1;
         boolean tmpCheck=false;
-        boolean clampCheck=false;
+        boolean clampCheck=false;//发动机状态
         boolean remoteKeyCheck=false;
-        boolean hazardLightsCheck=false;
-        boolean vehicleSpeedCheck=false;
+        boolean hazardLightsCheck=false;//报警灯
+        boolean vehicleSpeedCheck=false;//车速
         boolean transmissionGearPositionCheck=false;
-        boolean handBrakeCheck=false;
-        boolean sunroofCheck=false;
-        boolean windowsCheck=false;
-        boolean doorsCheck=false;
-        boolean trunkCheck=false;
-        boolean bonnetCheck=false;
-        boolean centralLockCheck=false;
+        boolean handBrakeCheck=false;//手刹
+        boolean sunroofCheck=false;//天窗
+        boolean windowsCheck=false;//车窗
+        boolean doorsCheck=false;//四门
+        boolean trunkCheck=false;//后盖
+        boolean bonnetCheck=false;//前盖
+        boolean centralLockCheck=false;//中控锁
         boolean crashStatusCheck=false;
-        boolean remainingFuelCheck=false;
-        boolean powerStatusCheck=false;//电源开关
+        boolean remainingFuelCheck=false;//燃料等级
+        boolean powerStatusCheck=false;//电源开关OFF(true)
         boolean powerStatusIsOnCheck=false;//电源开关是否在ON挡或者Engine Start信号
         boolean engineFaultCheck=false;//发动机故障
         boolean remoteStartedCountCheck=false;
@@ -951,17 +951,17 @@ public class RequestHandler {
 
             byte hazardLight = remoteControlPreconditionResp.getBcm_Stat_Central_Lock2();
             //协议变更 BCM_Stat_Central_Lock改为BCM_SWITCH_STATUS
+            if(hazardLight == 0){
+                hazardLightsCheck = true;
+            }
 //            char[] hazardLight_char=dataTool.getBitsFromByte(hazardLight);
 //            if(hazardLight_char[5]=='0' && hazardLight_char[6]=='0' && hazardLight_char[7]=='0'){
 //                hazardLightsCheck=true;
 //            }
-            if(hazardLight == 0){
-                hazardLightsCheck=true;
-            }
             //根据0628协议 M8X车速分辨率0.015625，偏移量0，显示范围： 0 ~350kmh 上报数据范围:0~22400  5km/h-->320<上传数据>
             //F60:分辨率0.05625，偏移量0，显示范围： 0 ~296kmh 上报数据范围： 0~5263 缺省值： 0x0000无效值
             //新增有效值0xFFFF
-            if(remoteControlPreconditionResp.getVehicleSpeed() == 0 || remoteControlPreconditionResp.getVehicleSpeed() == 65535){
+            if(remoteControlPreconditionResp.getVehicleSpeed() < 3 || remoteControlPreconditionResp.getVehicleSpeed() == 0xFFFF){
 //                if(isM8X) {
 //                    vehicleSpeedCheck = true;
 //                }else{
@@ -1062,7 +1062,8 @@ public class RequestHandler {
                 powerStatusIsOnCheck=true;//Engine start
             }
 
-            if(isM8X) {
+            //不再检查M8X
+            if(1 != 1) {
                 FailureMessageData f = outputHexService.getLatestFailureMessage(vin);
                 if (f != null) {
                     _logger.info("[0x31]获取到的最新故障数据，id:" + f.getId() + " info:" + f.getInfo());
@@ -1161,16 +1162,23 @@ public class RequestHandler {
                 }else{
                     reint=2;
                 }
-            }else if(controlType==(short)2||controlType==(short)3){//2：车门上锁  3：车门解锁
-                re=doorsCheck  && trunkCheck && bonnetCheck ;
+            }else if(controlType==(short)2){//2：车门上锁
+                re = doorsCheck  && trunkCheck && bonnetCheck && powerStatusCheck;
                 if(re){
-                    reint=0;
+                    reint = 0;
                 }else{
-                    reint=3;
+                    reint = 3;
                 }
-                if(controlType==(short)3 && clampCheck){//车门解锁,判断发动机是否已经启动,如果已经启动，会有特别的提示消息
-                    reint=300;
+            }else if(controlType==(short)3){//3：车门解锁
+                re = centralLockCheck && powerStatusCheck;
+                if(re){
+                    reint = 0;
+                }else{
+                    reint = 3;
                 }
+//                if(controlType==(short)3 && clampCheck){//车门解锁,判断发动机是否已经启动,如果已经启动，会有特别的提示消息
+//                    reint=300;
+//                }
             }else if(controlType==(short)4){//4：空调开启
                 if(powerStatusIsOnCheck){//必须是远程启动发动机才能开启空调
                     re=true;
@@ -1207,12 +1215,20 @@ public class RequestHandler {
                 }else{
                     reint=7;
                 }
-            }else if(controlType==(short)10||controlType==(short)11){//10：远程寻车->10闪灯 11鸣笛
-                re=doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
+            }else if(controlType==(short)10){//10：远程寻车->10闪灯
+//                re = doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
+                re = doorsCheck && trunkCheck && bonnetCheck && powerStatusCheck && centralLockCheck;
                 if(re){
-                    reint=0;
+                    reint = 0;
                 }else{
-                    reint=10;
+                    reint = 10;
+                }
+            }else if(controlType==(short)11){//10：远程寻车->11鸣笛
+                re = doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
+                if(re){
+                    reint = 0;
+                }else{
+                    reint = 11;
                 }
             }
         }

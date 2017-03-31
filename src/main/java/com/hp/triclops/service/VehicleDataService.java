@@ -272,13 +272,13 @@ public class VehicleDataService {
      */
     public int remoteWakeUp(String vin,int checkCount){
         //远程唤醒动作
-        _logger.info("[0x31]正在唤醒......(超时时间"+checkCount+"s)");
+        _logger.info("[0x31]正在唤醒......(超时时间" + checkCount + "s)");
         wakeup(vin);
-        int count=0;
+        int count = 0;
         while (count<checkCount){
             //发送一次短信，然后间隔1s检测连接是否建立
             count++;
-            if(count==40){
+            if(count == 40){
                 wakeup(vin);//40秒之后后台再retry一次
             }
             try{
@@ -511,15 +511,15 @@ public class VehicleDataService {
         if(!hasConnection(vin)){
             //如果不在线，先唤醒
             _logger.info("vin:"+vin+" 当前不在线，正在唤醒...");
-            int wakeUpResult=remoteWakeUp(vin,1);//唤醒后等待50s
+            int wakeUpResult = remoteWakeUp(vin,50);//唤醒后等待50s
             _logger.info("vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
-            try{
-                _logger.info("vin："+vin+"不在线，发送唤醒请求后，等待一段时间再去获取最新实时数据，目前全过程时间50s");
-                Thread.sleep(49 * 1000);
-                _logger.info("时间到，返回vin："+vin+" 的最新一条实时数据");
-            }catch (InterruptedException e){
-
-            }
+//            try{
+//                _logger.info("vin："+vin+"不在线，发送唤醒请求后，等待一段时间再去获取最新实时数据，目前全过程时间50s");
+//                Thread.sleep(49 * 1000);
+//                _logger.info("时间到，返回vin："+vin+" 的最新一条实时数据");
+//            }catch (InterruptedException e){
+//
+//            }
         }else{
             _logger.info("vin:"+vin+" 当前在线，发送一条Precondition命令以激活CAN...");
             long eventId=dataTool.getCurrentSeconds();
@@ -644,7 +644,7 @@ public class VehicleDataService {
             return data;
         }
 
-        }
+    }
 
     public int getLfokStatu(Float leftFrontTirePressure){
         if(leftFrontTirePressure>=0 && leftFrontTirePressure<=390){
