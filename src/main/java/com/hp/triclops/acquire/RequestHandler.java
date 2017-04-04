@@ -1240,10 +1240,10 @@ public class RequestHandler {
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
                 +"-"+ remainingFuelCheck);
-        if(controlType==(short)0||controlType==(short)4||controlType==(short)5||controlType==(short)6||controlType==(short)7){
+        if(controlType==(short)0||controlType==(short)4||controlType==(short)5||controlType==(short)6||controlType==(short)7||controlType==(short)2||controlType==(short)3||controlType==(short)10){
 
         }else{
-            _logger.info("除启动发动机、空调、座椅加热外的操作，Precondition校验会直接通过。");
+            _logger.info("除启动发动机、空调、座椅加热、远程解锁、远程寻车外的操作，Precondition校验会直接通过。");
             reint=0;//临时处理
         }
         _logger.info("[0x31]Precondition响应校验结果:"+reint+" 车型:"+vehicleModel+"(0:M82;1:M82;2:M85;3:F60;4:F70;5:F60电动车) 是否M8X:"+isM8X);
