@@ -1019,13 +1019,17 @@ public class RequestHandler {
 
             byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
             char[] doors_char=dataTool.getBitsFrom2Byte(doors);
-            if(doors_char[14]=='0'&&doors_char[15]=='0' && doors_char[12]=='0'&&doors_char[13]=='0' && doors_char[10]=='0'&&doors_char[11]=='0' && doors_char[8]=='0'&&doors_char[9]=='0'){
+//            if(doors_char[14]=='0'&&doors_char[15]=='0' && doors_char[12]=='0'&&doors_char[13]=='0' && doors_char[10]=='0'&&doors_char[11]=='0' && doors_char[8]=='0'&&doors_char[9]=='0'){
+//                doorsCheck=true;
+//            }
+            //四门判断条件修改为0-7位
+            if(doors_char[0]=='0'&&doors_char[1]=='0' && doors_char[2]=='0'&&doors_char[3]=='0' && doors_char[4]=='0'&&doors_char[5]=='0' && doors_char[6]=='0'&&doors_char[7]=='0'){
                 doorsCheck=true;
             }
-            if(doors_char[6]=='0'&&doors_char[7]=='0' ){
+            if(doors_char[14]=='0'&&doors_char[15]=='0' ){
                 bonnetCheck=true;
             }
-            if(doors_char[4]=='0'&&doors_char[5]=='0'){
+            if(doors_char[12]=='0'&&doors_char[13]=='0'){
                 trunkCheck=true;
             }
             byte centralLock=remoteControlPreconditionResp.getBcm_Stat_Central_Lock();
