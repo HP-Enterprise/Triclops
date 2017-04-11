@@ -975,8 +975,8 @@ public class RequestHandler {
                 if (transmissionGearPosition_char[4] == '0' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '1' && transmissionGearPosition_char[7] == '1') {
                     transmissionGearPositionCheck = true;
                 }
-            }else{//F6O 0x1 P挡
-                if (transmissionGearPosition_char[4] == '0' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '0' && transmissionGearPosition_char[7] == '1') {
+            }else{//F6O 0xB P挡
+                if (transmissionGearPosition_char[4] == '1' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '1' && transmissionGearPosition_char[7] == '1') {
                     transmissionGearPositionCheck = true;
                }
             }
