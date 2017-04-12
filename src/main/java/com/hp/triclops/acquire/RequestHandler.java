@@ -889,7 +889,7 @@ public class RequestHandler {
         boolean remoteKeyCheck=false;
         boolean hazardLightsCheck=false;//报警灯
         boolean vehicleSpeedCheck=false;//车速
-        boolean transmissionGearPositionCheck=false;
+        boolean transmissionGearPositionCheck=false;//P档(自动)或者N档(手动)
         boolean handBrakeCheck=false;//手刹
         boolean sunroofCheck=false;//天窗
         boolean windowsCheck=false;//车窗
@@ -904,10 +904,13 @@ public class RequestHandler {
         boolean engineFaultCheck=false;//发动机故障
         boolean remoteStartedCountCheck=false;
         boolean remoteStarted=false;//是否是远程启动的，空调/座椅加热需要判断此条件
+        boolean emsCheck=false;//是否手动档 true 手动 false 自动
+        boolean neutralGearSensorCheck=false;//手动档位空挡信号
 
 
         RemoteControl rc=outputHexService.getRemoteControlRecord(vin, remoteControlPreconditionResp.getEventID());
         if(rc!=null&&remoteControlPreconditionResp!=null){
+
             //根据0621协议
             float ambientAirTemperature = dataTool.getInternTrueTmp(remoteControlPreconditionResp.getTempIntern());//偏移40
             if(ambientAirTemperature>-10&&ambientAirTemperature<40){        //温度 -10~40
@@ -969,6 +972,25 @@ public class RequestHandler {
 //                }
                 vehicleSpeedCheck = true;
             }
+
+            //0636新增字段
+            byte ems = remoteControlPreconditionResp.getEms1_n_vehicleID();
+            //F60才有此信号 是否手动档
+            if(!isM8X){
+                if(ems == 0x02 || ems == 0x04 || ems == 0x05){
+                    emsCheck = true;
+                }
+            }
+
+            //0636新增字段
+            byte neutralGearSensor = remoteControlPreconditionResp.getNeutralGearSensor();
+            //F60才有此信号 是否N档(手动档)
+            if(!isM8X && emsCheck){
+                if(neutralGearSensor == 0x01){
+                    neutralGearSensorCheck = true;
+                }
+            }
+
             byte transmissionGearPosition=remoteControlPreconditionResp.getTcu_ecu_stat();//要求P挡位 参考0628协议
             char[] transmissionGearPosition_char=dataTool.getBitsFromByte(transmissionGearPosition);
             if(isM8X) {//M8X 0x3 P挡
@@ -976,9 +998,15 @@ public class RequestHandler {
                     transmissionGearPositionCheck = true;
                 }
             }else{//F6O 0xB P挡
-                if (transmissionGearPosition_char[4] == '1' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '1' && transmissionGearPosition_char[7] == '1') {
-                    transmissionGearPositionCheck = true;
-               }
+                if (emsCheck) {//手动档
+                    if(neutralGearSensorCheck){
+                        transmissionGearPositionCheck = true;
+                    }
+                }else{
+                    if (transmissionGearPosition_char[4] == '1' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '1' && transmissionGearPosition_char[7] == '1') {
+                        transmissionGearPositionCheck = true;
+                    }
+                }
             }
             /*else{//F6O 0xB P挡
                 if (transmissionGearPosition_char[4] == '1' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '1' && transmissionGearPosition_char[7] == '1') {
@@ -1127,7 +1155,7 @@ public class RequestHandler {
                 }else {
                     //Final Check  危险警告灯、档位、车门、天窗、后备箱、引擎盖、车速、中控锁、车窗、手刹、发动机无故障
                     re =  hazardLightsCheck && transmissionGearPositionCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck && handBrakeCheck && (!engineFaultCheck) && remoteStartedCountCheck;//
-                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:危险警告灯/P挡位/车门/后备箱/引擎盖/车速/中控锁/手刹/发动机无故障/启动次数是否小于2--"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+handBrakeCheck+"/"+(!engineFaultCheck)+"/"+remoteStartedCountCheck+" 检查结果:"+re);
+                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:危险警告灯/自动档P挡位(手动档N档位)/车门/后备箱/引擎盖/车速/中控锁/手刹/发动机无故障/启动次数是否小于2--"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+handBrakeCheck+"/"+(!engineFaultCheck)+"/"+remoteStartedCountCheck+" 检查结果:"+re);
                     if(!hazardLightsCheck){
                         reint=0x11;
                     }else if(!transmissionGearPositionCheck){
