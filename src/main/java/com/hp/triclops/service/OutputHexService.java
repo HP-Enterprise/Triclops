@@ -483,13 +483,17 @@ public class OutputHexService {
         List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
         //一个车对应多个uid
         if(uvr.size()>0) {
-        User u=userRepository.findById(uvr.get(0).getUid().getId());
-            if(u!=null&&u.getContactsPhone()!=null){
+            User u=userRepository.findById(uvr.get(0).getUid().getId());
+            if(u!=null){
                 //取到紧急联系人电话
                 //发送短信
-                  String phone=u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
+                String phone=u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
                 if(oneFirst==SRSFIRST){//
-                    phone=u.getContactsPhone();
+                    if(u.getContactsPhone() != null && !"".equals(u.getContactsPhone())){
+                        phone=u.getContactsPhone();
+                    }else{
+                        _logger.info("[0x24]关联用户的紧急联系人手机号为空，无法发送短信");
+                    }
                 }
                 _logger.info("[0x24]准备发送报警短信给"+phone+"|oneFirst:"+oneFirst);
                 sendWarningMessageSms(vin, msg, phone,oneFirst);
