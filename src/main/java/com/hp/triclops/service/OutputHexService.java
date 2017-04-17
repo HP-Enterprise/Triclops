@@ -1671,7 +1671,7 @@ public class OutputHexService {
             String pushMsgEn="";
 
             if(result==(short)0){
-                pushMsg="远程命令执行成功";
+                pushMsg="远程命令执行成功。";
                 pushMsgEn="Remote command execution success";
                 if(controlType==0){
                     //启动发动机
@@ -1682,11 +1682,12 @@ public class OutputHexService {
                         remoteControlTime = (rc.getRemoteStartedCount() == null) ? 0 : rc.getRemoteStartedCount();
                         _logger.info("发动机启动成功,之前已经启动次数：" + remoteControlTime);
                         if (remoteControlTime == 0) {
-                            pushMsg = "发动机启动成功，15分钟后将自动关闭";
+                            pushMsg = "发动机启动成功，15分钟后将自动关闭。";
                             pushMsgEn = "The engine has been started successfully and will be shut down in 15 minutes";
                         } else if (remoteControlTime == 1) {
-                            pushMsg = "发动机第二次启动成功，15分钟后将自动关闭";
-                            pushMsgEn = "The engine started second times successfully, and it will turn off automatically after 15 minutes";
+//                            pushMsg = "发动机第二次启动成功，15分钟后将自动关闭";
+                            pushMsg = "发动机启动成功，15分钟后将自动关闭。";
+                            pushMsgEn = "The engine has been started successfully and will be shut down in 15 minutes";
                         }
                     }
                 }else if(controlType==3){
@@ -1697,53 +1698,53 @@ public class OutputHexService {
                     pushMsgEn="Unlock successfully, the vehicle will be locked automatically after 20 seconds";
                 }
             }else if(result==(short)1){
-                pushMsg="远程命令执行失败";
+                pushMsg="远程命令执行失败。";
                 pushMsgEn="Remote command execution failed";
             }else if(result==(short)0x20){
-                pushMsg="请求未完成";
-                pushMsgEn="Request not completed";
+                pushMsg="远程指令未执行，请求未完成。";
+                pushMsgEn="remote command not implemented, request not completed";
             }else if(result==(short)0x21){
-                pushMsg="请求的CRC错误";
-                pushMsgEn="Requested CRC error";
+                pushMsg="远程指令未执行，请求的CRC错误。";
+                pushMsgEn="remote command not implemented, requested CRC error";
             }else if(result==(short)0x22){
-                pushMsg="请求的身份验证错误";
-                pushMsgEn="Requested authentication error";
+                pushMsg="远程指令未执行，请求的身份验证错误。";
+                pushMsgEn="remote command not implemented, requested authentication error";
             }else if(result==(short)0x23){
-                pushMsg="请求无效";
-                pushMsgEn="Request message order error";
+                pushMsg="远程指令未执行，请求无效。";
+                pushMsgEn="remote command not implemented, request message order error";
             }else if(result==(short)0x24){
-                pushMsg="请求消息顺序错误";
-                pushMsgEn="请求的CRC错误";
+                pushMsg="远程指令未执行，请求消息顺序错误。";
+                pushMsgEn="remote command not implemented, request messages  received not in order";
             }else if(result==(short)0x30){
-                pushMsg="请求不能执行";
-                pushMsgEn="Request cannot be executed";
+                pushMsg="远程指令未执行，请求不能执行。";
+                pushMsgEn="remote command not implemented, request cannot be executed";
             }else if(result==(short)0x31){
-                pushMsg="请求先决条件无效";
-                pushMsgEn="Request prerequisites are invalid";
+                pushMsg="远程指令未执行，请求先决条件无效。";
+                pushMsgEn="remote command not implemented, request prerequisites are invalid";
             }else if(result==(short)0x40){
-                pushMsg="本地用户终止请求";
-                pushMsgEn="Local user termination request";
+                pushMsg="远程指令未执行，本地用户终止请求。";
+                pushMsgEn="remote command not implemented, local user termination request";
             }else if(result==(short)0x50){
-                pushMsg="请求超时失效";
-                pushMsgEn="Request timeout";
+                pushMsg="远程指令未执行，请求超时失效。";
+                pushMsgEn="remote command not implemented, request timeout";
             }else if(result==(short)0x51){
-                pushMsg="重复请求";
-                pushMsgEn="Request blocked by repetition block";
+                pushMsg="远程指令未执行，重复请求。";
+                pushMsgEn="remote command not implemented, request blocked by repetition block";
             }else if(result==(short)0x60){
-                pushMsg="功能无效，请求被忽略";
-                pushMsgEn="Function is not valid, the request is ignored.";
+                pushMsg="远程指令未执行，功能无效，请求被忽略。";
+                pushMsgEn="remote command not implemented, function is not valid, the request is ignored.";
             }else if(result==(short)0x80){
-                pushMsg="等待响应中，指定时间后再请求";
-                pushMsgEn="Wait for the response, after the specified time to request";
+                pushMsg="远程指令未执行，等待响应中，指定时间后再请求。";
+                pushMsgEn="remote command not implemented, wait for the response, after the specified time to request";
             }else if(result==(short)0x81){
-                pushMsg="响应等待下次车辆启动";
-                pushMsgEn="In response to waiting for the next vehicle to start";
+                pushMsg="远程指令未执行，响应等待下次车辆启动。";
+                pushMsgEn="remote command not implemented, in response to waiting for the next vehicle to start";
             }
             if(controlType==0&& remoteControlTime>2){
 //                pushMsg="发动机启动次数已超出2次，启动请求无效";
 //                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
-                pushMsg = "远程指令未执行,请求未完成";
-                pushMsgEn = "remote command not implemented, request not completed";
+                pushMsg = "远程指令未执行,由于发动机启动已超出允许启动次数2次。";
+                pushMsgEn = "remote command not implemented, engine start is more than allowed times 2";
             }
             String _dbReMark=pushMsg;
             rc.setRemark(_dbReMark);
@@ -1789,44 +1790,44 @@ public class OutputHexService {
                 pushMsg="远程命令执行失败";
                 pushMsgEn="Remote command execution failed";
             }else if(result==(short)0x20){
-                pushMsg="请求未完成";
-                pushMsgEn="Request not completed";
+                pushMsg="远程指令未执行，请求未完成。";
+                pushMsgEn="remote command not implemented, request not completed";
             }else if(result==(short)0x21){
-                pushMsg="请求的CRC错误";
-                pushMsgEn="Requested CRC error";
+                pushMsg="远程指令未执行，请求的CRC错误。";
+                pushMsgEn="remote command not implemented, requested CRC error";
             }else if(result==(short)0x22){
-                pushMsg="请求的身份验证错误";
-                pushMsgEn="Requested authentication error";
+                pushMsg="远程指令未执行，请求的身份验证错误。";
+                pushMsgEn="remote command not implemented, requested authentication error";
             }else if(result==(short)0x23){
-                pushMsg="请求无效";
-                pushMsgEn="Request message order error";
+                pushMsg="远程指令未执行，请求无效。";
+                pushMsgEn="remote command not implemented, request message order error";
             }else if(result==(short)0x24){
-                pushMsg="请求消息顺序错误";
-                pushMsgEn="请求的CRC错误";
+                pushMsg="远程指令未执行，请求消息顺序错误。";
+                pushMsgEn="remote command not implemented, request messages  received not in order";
             }else if(result==(short)0x30){
-                pushMsg="请求不能执行";
-                pushMsgEn="Request cannot be executed";
+                pushMsg="远程指令未执行，请求不能执行。";
+                pushMsgEn="remote command not implemented, request cannot be executed";
             }else if(result==(short)0x31){
-                pushMsg="请求先决条件无效";
-                pushMsgEn="Request prerequisites are invalid";
+                pushMsg="远程指令未执行，请求先决条件无效。";
+                pushMsgEn="remote command not implemented, request prerequisites are invalid";
             }else if(result==(short)0x40){
-                pushMsg="本地用户终止请求";
-                pushMsgEn="Local user termination request";
+                pushMsg="远程指令未执行，本地用户终止请求。";
+                pushMsgEn="remote command not implemented, local user termination request";
             }else if(result==(short)0x50){
-                pushMsg="请求超时失效";
-                pushMsgEn="Request timeout";
+                pushMsg="远程指令未执行，请求超时失效。";
+                pushMsgEn="remote command not implemented, request timeout";
             }else if(result==(short)0x51){
-                pushMsg="重复请求";
-                pushMsgEn="Request blocked by repetition block";
+                pushMsg="远程指令未执行，重复请求。";
+                pushMsgEn="remote command not implemented, request blocked by repetition block";
             }else if(result==(short)0x60){
-                pushMsg="功能无效，请求被忽略";
-                pushMsgEn="Function is not valid, the request is ignored.";
+                pushMsg="远程指令未执行，功能无效，请求被忽略。";
+                pushMsgEn="remote command not implemented, function is not valid, the request is ignored.";
             }else if(result==(short)0x80){
-                pushMsg="等待响应中，指定时间后再请求";
-                pushMsgEn="Wait for the response, after the specified time to request";
+                pushMsg="远程指令未执行，等待响应中，指定时间后再请求。";
+                pushMsgEn="remote command not implemented, wait for the response, after the specified time to request";
             }else if(result==(short)0x81){
-                pushMsg="响应等待下次车辆启动";
-                pushMsgEn="In response to waiting for the next vehicle to start";
+                pushMsg="远程指令未执行，响应等待下次车辆启动。";
+                pushMsgEn="remote command not implemented, in response to waiting for the next vehicle to start";
             }
             if(controlType==0&& remoteControlTime>2){
 //                pushMsg="发动机启动次数已超出2次，启动请求无效";
