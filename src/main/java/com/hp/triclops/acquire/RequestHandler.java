@@ -619,8 +619,8 @@ public class RequestHandler {
                     fcCheckPass=false;
 //                    msg="发动机启动次数已超出2次，启动请求无效";
 //                    msgEn="Engine start number exceeded 2 times, invalid startup request";
-                    msg = "远程指令未执行,请求未完成";
-                    msgEn = "remote command not implemented, request not completed";
+                    msg = "远程指令未执行，由于发动机启动已超出允许次数2次。";
+                    msgEn = "remote command not implemented, due to engine start number exceeded 2 times.";
                 }else{
                     fcCheckPass=true;//还可以做远程启动发动机
                 }
@@ -649,29 +649,48 @@ public class RequestHandler {
             }else{
 
                 if(preconditionRespCheck==0x10){
-                    msg="远程启动发动机条件不符合,检查电源开关";
-                    msgEn="emote start engine conditions do not meet，Check power switch";
+//                    msg="远程启动发动机条件不符合,检查电源开关";
+//                    msgEn="emote start engine conditions do not meet，Check power switch";
+                    msg = "远程指令未执行，由于启动按键未处于OFF档。";
+                    msgEn = "remote command not implemented, due to the start button is not in OFF.";
                 }else if(preconditionRespCheck==0x11){
-                    msg="远程启动发动机条件不符合，检查危险警告灯";
-                    msgEn="emote start engine conditions do not meet，Check hazard warning light";
+//                    msg="远程启动发动机条件不符合，检查危险警告灯";
+//                    msgEn="emote start engine conditions do not meet，Check hazard warning light";
+                    msg = "远程指令未执行，由于危险警告灯未关闭。";
+                    msgEn = "remote command not implemented, due to the danger warning light not truned off.";
                 }else if(preconditionRespCheck==0x12){
-                    msg="远程启动发动机条件不符合，检查档位";
-                    msgEn="emote start engine conditions do not meet，Check gear";
+                    msg = "远程指令未执行，由于档位未处于P档。";
+                    msgEn = "remote command not implemented, due to the gear position is not in P.";
+                }else if(preconditionRespCheck==0x1A){
+//                    msg="远程启动发动机条件不符合，检查档位";
+//                    msgEn="emote start engine conditions do not meet，Check gear";
+                    msg = "远程指令未执行，由于档位未处于N档。";
+                    msgEn = "remote command not implemented, due to the gear position is not in N.";
                 }else if(preconditionRespCheck==0x13){
-                    msg="远程启动发动机条件不符合，检查车门";
-                    msgEn="emote start engine conditions do not meet，Check door";
+//                    msg="远程启动发动机条件不符合，检查车门";
+//                    msgEn="emote start engine conditions do not meet，Check door";
+                    msg = "远程指令未执行，由于车门未关闭";
+                    msgEn = "remote command not implemented, due to the door is not closed.";
                 }else if(preconditionRespCheck==0x14){
-                    msg="远程启动发动机条件不符合，检查后备箱";
-                    msgEn="emote start engine conditions do not meet，Check trunk";
+//                    msg="远程启动发动机条件不符合，检查后备箱";
+//                    msgEn="emote start engine conditions do not meet，Check trunk";
+                    msg = "远程指令未执行，由于后备箱未关闭。";
+                    msgEn = "remote command not implemented, due to the trunk is not closed.";
                 }else if(preconditionRespCheck==0x15){
-                    msg="远程启动发动机条件不符合，检查引擎盖";
-                    msgEn="emote start engine conditions do not meet，Check engine cover";
+//                    msg="远程启动发动机条件不符合，检查引擎盖";
+//                    msgEn="emote start engine conditions do not meet，Check engine cover";
+                    msg = "远程指令未执行，由于前舱盖未关闭。";
+                    msgEn = "remote command not implemented, due to the bonnet is not closed.";
                 }else if(preconditionRespCheck==0x16){
-                    msg="远程启动发动机条件不符合，车速不符合";
-                    msgEn="emote start engine conditions do not meet，Speed does not match";
+//                    msg="远程启动发动机条件不符合，车速不符合";
+//                    msgEn="emote start engine conditions do not meet，Speed does not match";
+                    msg = "远程指令未执行，由于车速不满足条件。";
+                    msgEn = "remote command not implemented, due to the speed is not match.";
                 }else if(preconditionRespCheck==0x17){
-                    msg="远程启动发动机条件不符合，检查中控锁";
-                    msgEn="emote start engine conditions do not meet，Check the lock";
+//                    msg="远程启动发动机条件不符合，检查中控锁";
+//                    msgEn="emote start engine conditions do not meet，Check the lock";
+                    msg = "远程指令未执行，由于车锁未关闭。";
+                    msgEn = "remote command not implemented, due to the central lock is not closed.";
                 }else if(preconditionRespCheck==0x18){
                     msg="远程启动发动机条件不符合，检查手刹";
                     msgEn="emote start engine conditions do not meet，check parking brake adjustment";
@@ -681,8 +700,8 @@ public class RequestHandler {
                 }else if(preconditionRespCheck==0x1E){
 //                    msg="发动机启动次数已超出2次，启动请求无效";
 //                    msgEn="Engine start number exceeded 2 times, invalid startup request";
-                    msg = "远程指令未执行,请求未完成";
-                    msgEn = "remote command not implemented, request not completed";
+                    msg = "远程指令未执行，由于发动机启动已超出允许次数2次。";
+                    msgEn = "remote command not implemented, due to engine start number exceeded 2 times.";
                 }else if(preconditionRespCheck==0x1F){
                     msg="发动机已启动";
                     msgEn="The engine is started";
@@ -692,9 +711,25 @@ public class RequestHandler {
                     msg="远程关闭发动机失败,必须是远程启动发动机才能远程关闭";
                     msgEn="Remote shutdown of the engine fails, it must be remote start the engine to remote shutdown";
                 }
-                if(preconditionRespCheck==3){
-                    msg="操作条件不符合，请检查车辆状态";
-                    msgEn="Operating conditions do not meet, please check the state of the vehicle";
+//                if(preconditionRespCheck==3){
+//                    msg="操作条件不符合，请检查车辆状态";
+//                    msgEn="Operating conditions do not meet, please check the state of the vehicle";
+//                }
+                if(preconditionRespCheck==0x31){
+                    msg = "远程指令未执行，由于车门未关闭";
+                    msgEn = "remote command not implemented, due to the door is not closed.";
+                }else if(preconditionRespCheck==0x32){
+                    msg = "远程指令未执行，由于后备箱未关闭。";
+                    msgEn = "remote command not implemented, due to the trunk is not closed.";
+                }else if(preconditionRespCheck==0x33){
+                    msg = "远程指令未执行，由于前舱盖未关闭。";
+                    msgEn = "remote command not implemented, due to the bonnet is not closed.";
+                }else if(preconditionRespCheck==0x34){
+                    msg = "远程指令未执行，由于启动按键未处于OFF档。";
+                    msgEn = "remote command not implemented, due to the start button is not in OFF.";
+                }else if(preconditionRespCheck==0x35){
+                    msg = "远程指令未执行，由于车锁未关闭。";
+                    msgEn = "remote command not implemented, due to the central lock is not closed.";
                 }
                 if(preconditionRespCheck==300){
                     msg="发动机已启动，不允许解锁";
@@ -716,7 +751,31 @@ public class RequestHandler {
                     }
                 }
 
-                if(preconditionRespCheck == 10 || preconditionRespCheck == 11){
+//                if(preconditionRespCheck == 10 || preconditionRespCheck == 11){
+//                    msg="远程寻车失败，操作条件不满足";
+//                    msgEn="Remote search failed, the operating conditions are not satisfied";
+//                }
+                if(preconditionRespCheck==0x101){
+                    msg = "远程指令未执行，由于车门未关闭";
+                    msgEn = "remote command not implemented, due to the door is not closed.";
+                }else if(preconditionRespCheck==0x102){
+                    msg = "远程指令未执行，由于后备箱未关闭。";
+                    msgEn = "remote command not implemented, due to the trunk is not closed.";
+                }else if(preconditionRespCheck==0x103){
+                    msg = "远程指令未执行，由于前舱盖未关闭。";
+                    msgEn = "remote command not implemented, due to the bonnet is not closed.";
+                }else if(preconditionRespCheck==0x104){
+                    msg = "远程指令未执行，由于启动按键未处于OFF档。";
+                    msgEn = "remote command not implemented, due to the start button is not in OFF.";
+                }else if(preconditionRespCheck==0x105){
+                    msg = "远程指令未执行，由于车锁未关闭。";
+                    msgEn = "remote command not implemented, due to the central lock is not closed.";
+                }
+                if(preconditionRespCheck==300){
+                    msg="发动机已启动，不允许解锁";
+                    msgEn="Engine has been started, not allowed to unlock";
+                }
+                if(preconditionRespCheck == 11){
                     msg="远程寻车失败，操作条件不满足";
                     msgEn="Remote search failed, the operating conditions are not satisfied";
                 }
@@ -839,12 +898,12 @@ public class RequestHandler {
                     }
                 }else{//各种原因未能成功
 
-                if(refId>0){
-                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),false);
-                    outputHexService.handleRefRemoteControlRst(refId,rc.getControlType(), bean.getRemoteControlAck(),bean.getRemoteControlTime());
-                }else {
-                    outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),true);
-                }
+                    if(refId>0){
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),false);
+                        outputHexService.handleRefRemoteControlRst(refId,rc.getControlType(), bean.getRemoteControlAck(),bean.getRemoteControlTime());
+                    }else {
+                        outputHexService.handleRemoteControlRst(vin,bean.getEventID(), rc.getControlType(),bean.getRemoteControlAck(),bean.getRemoteControlTime(),rc.getIsAnnounce(),true);
+                    }
                 }
             _logger.info("[0x31]远程控制结果处理结束:"+bean.getApplicationID()+"-"+bean.getEventID()+" >"+bean.getRemoteControlAck());
         }
@@ -893,7 +952,7 @@ public class RequestHandler {
         boolean remoteKeyCheck=false;
         boolean hazardLightsCheck=false;//报警灯
         boolean vehicleSpeedCheck=false;//车速
-        boolean transmissionGearPositionCheck=false;//P档(自动)或者N档(手动)
+        boolean transmissionGearPositionCheck=false;//P档(自动)
         boolean handBrakeCheck=false;//手刹
         boolean sunroofCheck=false;//天窗
         boolean windowsCheck=false;//车窗
@@ -1002,11 +1061,7 @@ public class RequestHandler {
                     transmissionGearPositionCheck = true;
                 }
             }else{//F6O 0xB P挡
-                if (emsCheck) {//手动档
-                    if(neutralGearSensorCheck){
-                        transmissionGearPositionCheck = true;
-                    }
-                }else{
+                if (!emsCheck) {//自动档
                     if (transmissionGearPosition_char[4] == '1' && transmissionGearPosition_char[5] == '0' && transmissionGearPosition_char[6] == '1' && transmissionGearPosition_char[7] == '1') {
                         transmissionGearPositionCheck = true;
                     }
@@ -1157,13 +1212,31 @@ public class RequestHandler {
                         reint=0x17;
                     }
                 }else {
+                    String msg = "";
+                    boolean gearSensorCheck = false;
+                    if(emsCheck){//手动
+                        msg = "手动档N档位";
+                        if(!neutralGearSensorCheck){
+                            gearSensorCheck = true;
+                        }
+                    }else{//自动
+                        msg = "自动档P挡位";
+                        if(transmissionGearPositionCheck){
+                            gearSensorCheck = true;
+                        }
+                    }
                     //Final Check  危险警告灯、档位、车门、天窗、后备箱、引擎盖、车速、中控锁、车窗、手刹、发动机无故障
-                    re =  hazardLightsCheck && transmissionGearPositionCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck && handBrakeCheck && (!engineFaultCheck) && remoteStartedCountCheck;//
-                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:危险警告灯/自动档P挡位(手动档N档位)/车门/后备箱/引擎盖/车速/中控锁/手刹/发动机无故障/启动次数是否小于2--"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+handBrakeCheck+"/"+(!engineFaultCheck)+"/"+remoteStartedCountCheck+" 检查结果:"+re);
+                    re =  hazardLightsCheck && gearSensorCheck && doorsCheck && trunkCheck && bonnetCheck && vehicleSpeedCheck && centralLockCheck && handBrakeCheck && (!engineFaultCheck) && remoteStartedCountCheck;//
+                    _logger.info("[0x31]启动发动机precondition检查，是否是FC:"+isAnnounce+" 检查条件:危险警告灯/" + msg + "/车门/后备箱/引擎盖/车速/中控锁/手刹/发动机无故障/启动次数是否小于2--"+ hazardLightsCheck +"/"+transmissionGearPositionCheck+"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+vehicleSpeedCheck+"/"+centralLockCheck+"/"+handBrakeCheck+"/"+(!engineFaultCheck)+"/"+remoteStartedCountCheck+" 检查结果:"+re);
                     if(!hazardLightsCheck){
                         reint=0x11;
-                    }else if(!transmissionGearPositionCheck){
-                        reint=0x12;
+                    }else if(!gearSensorCheck){
+                        if(!transmissionGearPositionCheck){
+                            reint=0x12;
+                        }
+                        if(!neutralGearSensorCheck){
+                            reint=0x1A;
+                        }
                     }else if(!doorsCheck){
                         reint=0x13;
                     }else if(!trunkCheck){
@@ -1203,14 +1276,26 @@ public class RequestHandler {
                 if(re){
                     reint = 0;
                 }else{
-                    reint = 3;
+                    if(!doorsCheck){
+                        reint = 0x31;
+                    }else if(!trunkCheck){
+                        reint = 0x32;
+                    }else if(!bonnetCheck){
+                        reint = 0x33;
+                    }else if(!powerStatusCheck){
+                        reint = 0x34;
+                    }
+//                    reint = 3;
                 }
             }else if(controlType==(short)3){//3：车门解锁
                 re = centralLockCheck && powerStatusCheck;
                 if(re){
                     reint = 0;
                 }else{
-                    reint = 3;
+                    if(!centralLockCheck){
+                        reint = 0x35;
+                    }
+//                    reint = 3;
                 }
 //                if(controlType==(short)3 && clampCheck){//车门解锁,判断发动机是否已经启动,如果已经启动，会有特别的提示消息
 //                    reint=300;
@@ -1257,7 +1342,18 @@ public class RequestHandler {
                 if(re){
                     reint = 0;
                 }else{
-                    reint = 10;
+                    if(!doorsCheck){
+                        reint = 0x101;
+                    }else if(!trunkCheck){
+                        reint = 0x102;
+                    }else if(!bonnetCheck){
+                        reint = 0x103;
+                    }else if(!powerStatusCheck){
+                        reint = 0x104;
+                    }else if(!centralLockCheck){
+                        reint = 0x105;
+                    }
+//                    reint = 10;
                 }
             }else if(controlType==(short)11){//10：远程寻车->11鸣笛
                 re = doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
