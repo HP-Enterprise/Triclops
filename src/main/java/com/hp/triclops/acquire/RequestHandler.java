@@ -617,8 +617,10 @@ public class RequestHandler {
             }else if(preconditionRespCheck==0 && dbRc.getControlType()==0){//远程启动以外的 preconditionRespCheck=0为通过
                 if(_startedCount>=2 && dbRc.getIsAnnounce()==0 && dbRc.getRefId()!=-1){//FD要求检查次数 RefId()==-1 是初始命令
                     fcCheckPass=false;
-                    msg="发动机启动次数已超出2次，启动请求无效";
-                    msgEn="Engine start number exceeded 2 times, invalid startup request";
+//                    msg="发动机启动次数已超出2次，启动请求无效";
+//                    msgEn="Engine start number exceeded 2 times, invalid startup request";
+                    msg = "远程指令未执行,请求未完成";
+                    msgEn = "remote command not implemented, request not completed";
                 }else{
                     fcCheckPass=true;//还可以做远程启动发动机
                 }
@@ -677,8 +679,10 @@ public class RequestHandler {
                     msg="远程启动发动机条件不符合，发动机存在故障";
                     msgEn="emote start engine conditions do not meet，Engine trouble";
                 }else if(preconditionRespCheck==0x1E){
-                    msg="发动机启动次数已超出2次，启动请求无效";
-                    msgEn="Engine start number exceeded 2 times, invalid startup request";
+//                    msg="发动机启动次数已超出2次，启动请求无效";
+//                    msgEn="Engine start number exceeded 2 times, invalid startup request";
+                    msg = "远程指令未执行,请求未完成";
+                    msgEn = "remote command not implemented, request not completed";
                 }else if(preconditionRespCheck==0x1F){
                     msg="发动机已启动";
                     msgEn="The engine is started";
