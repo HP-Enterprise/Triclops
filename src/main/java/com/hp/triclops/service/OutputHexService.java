@@ -1740,8 +1740,10 @@ public class OutputHexService {
                 pushMsgEn="In response to waiting for the next vehicle to start";
             }
             if(controlType==0&& remoteControlTime>2){
-                pushMsg="发动机启动次数已超出2次，启动请求无效";
-                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
+//                pushMsg="发动机启动次数已超出2次，启动请求无效";
+//                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
+                pushMsg = "远程指令未执行,请求未完成";
+                pushMsgEn = "remote command not implemented, request not completed";
             }
             String _dbReMark=pushMsg;
             rc.setRemark(_dbReMark);
@@ -1827,8 +1829,10 @@ public class OutputHexService {
                 pushMsgEn="In response to waiting for the next vehicle to start";
             }
             if(controlType==0&& remoteControlTime>2){
-                pushMsg="发动机启动次数已超出2次，启动请求无效";
-                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
+//                pushMsg="发动机启动次数已超出2次，启动请求无效";
+//                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
+                pushMsg = "远程指令未执行,请求未完成";
+                pushMsgEn = "remote command not implemented, request not completed";
             }
             String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
             rc.setRemark(_dbReMark);
