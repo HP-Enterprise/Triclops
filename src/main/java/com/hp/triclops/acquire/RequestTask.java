@@ -307,6 +307,9 @@ public class RequestTask  implements Runnable{
     }
 
     private void saveConnection(String vin,Channel ch,String hexLabel,String title){
+        _logger.info("saveConnection执行之前...channels..." + channels.toString());
+        _logger.info("saveConnection执行之前...connections..." + connections.toString());
+        _logger.info("saveConnection执行之前...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
         Channel oldConn=channels.get(vin);
         channels.put(vin, ch);//如果之前存在vin对应的会被覆盖
         boolean isExistOldAddr=socketRedis.existHashString(dataTool.connection_hashmap_name, vin);//已经存在连接
@@ -321,10 +324,13 @@ public class RequestTask  implements Runnable{
         }
         socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
         connections.put(ch.remoteAddress().toString(), vin);
-        _logger.info(hexLabel+title+"成功，保存连接:" + vin + "" + ch.remoteAddress());
+        _logger.info(hexLabel + title + "成功，保存连接:" + vin + "" + ch.remoteAddress());
         _logger.info(hexLabel+"连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
         _logger.info(hexLabel+"连接map:"+channels.entrySet());
         afterRegisterSuccess(vin);
+        _logger.info("saveConnection执行之后...channels..." + channels.toString());
+        _logger.info("saveConnection执行之后...connections..." + connections.toString());
+        _logger.info("saveConnection执行之后...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
     }
 
     public void saveBytesToRedis(String scKey,byte[] bytes){
