@@ -124,9 +124,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
         _logger.info("Socket连接:" + ch.remoteAddress());
     }
     public void channelUnregistered(ChannelHandlerContext ctx){
-        _logger.info("channelUnregistered执行之前...channels..." + channels.toString());
-        _logger.info("channelUnregistered执行之前...connections..." + connections.toString());
-        _logger.info("channelUnregistered执行之前...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+//        _logger.info("channelUnregistered执行之前...channels..." + channels.toString());
+//        _logger.info("channelUnregistered执行之前...connections..." + connections.toString());
+//        _logger.info("channelUnregistered执行之前...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
         Channel ch=ctx.channel();
         _logger.info("Socket断连:" + ch.remoteAddress());
         //连接断开 从map移除连接
@@ -147,9 +147,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
             }
         }
         _logger.info("连接信息Redis:" + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
-        _logger.info("channelUnregistered执行之后...channels..." + channels.toString());
-        _logger.info("channelUnregistered执行之后...connections..." + connections.toString());
-        _logger.info("channelUnregistered执行之后...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+//        _logger.info("channelUnregistered执行之后...channels..." + channels.toString());
+//        _logger.info("channelUnregistered执行之后...connections..." + connections.toString());
+//        _logger.info("channelUnregistered执行之后...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)

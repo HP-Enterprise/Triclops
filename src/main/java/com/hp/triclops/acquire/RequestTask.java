@@ -4,6 +4,8 @@ import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.service.OutputHexService;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
@@ -307,9 +309,9 @@ public class RequestTask  implements Runnable{
     }
 
     private void saveConnection(String vin,Channel ch,String hexLabel,String title){
-        _logger.info("saveConnection执行之前...channels..." + channels.toString());
-        _logger.info("saveConnection执行之前...connections..." + connections.toString());
-        _logger.info("saveConnection执行之前...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+//        _logger.info("saveConnection执行之前...channels..." + channels.toString());
+//        _logger.info("saveConnection执行之前...connections..." + connections.toString());
+//        _logger.info("saveConnection执行之前...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
         Channel oldConn=channels.get(vin);
         channels.put(vin, ch);//如果之前存在vin对应的会被覆盖
         boolean isExistOldAddr=socketRedis.existHashString(dataTool.connection_hashmap_name, vin);//已经存在连接
@@ -320,17 +322,34 @@ public class RequestTask  implements Runnable{
             _logger.info("从连接Map（connections）移除:"+_addr +">"+ channels.entrySet());
         }
         if(oldConn!=null){//需要在旧的addr被移除后才能close
-            oldConn.close();
+            ChannelFuture future = oldConn.close();
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) {
+                    if(future.isDone()){
+                        socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
+                        connections.put(ch.remoteAddress().toString(), vin);
+                        _logger.info(hexLabel + title + "成功，保存连接:" + vin + "" + ch.remoteAddress());
+                        _logger.info(hexLabel+"连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+                        _logger.info(hexLabel+"连接map:"+channels.entrySet());
+                        afterRegisterSuccess(vin);
+//                        _logger.info("saveConnection执行之后...channels..." + channels.toString());
+//                        _logger.info("saveConnection执行之后...connections..." + connections.toString());
+//                        _logger.info("saveConnection执行之后...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+                    }
+                }
+            });
+        }else{
+            socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
+            connections.put(ch.remoteAddress().toString(), vin);
+            _logger.info(hexLabel + title + "成功，保存连接:" + vin + "" + ch.remoteAddress());
+            _logger.info(hexLabel+"连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
+            _logger.info(hexLabel+"连接map:"+channels.entrySet());
+            afterRegisterSuccess(vin);
+//            _logger.info("saveConnection执行之后...channels..." + channels.toString());
+//            _logger.info("saveConnection执行之后...connections..." + connections.toString());
+//            _logger.info("saveConnection执行之后...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
         }
-        socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
-        connections.put(ch.remoteAddress().toString(), vin);
-        _logger.info(hexLabel + title + "成功，保存连接:" + vin + "" + ch.remoteAddress());
-        _logger.info(hexLabel+"连接信息Redis:"+socketRedis.listHashKeys(dataTool.connection_hashmap_name));
-        _logger.info(hexLabel+"连接map:"+channels.entrySet());
-        afterRegisterSuccess(vin);
-        _logger.info("saveConnection执行之后...channels..." + channels.toString());
-        _logger.info("saveConnection执行之后...connections..." + connections.toString());
-        _logger.info("saveConnection执行之后...redis..." + socketRedis.listHashKeys(dataTool.connection_hashmap_name));
     }
 
     public void saveBytesToRedis(String scKey,byte[] bytes){
