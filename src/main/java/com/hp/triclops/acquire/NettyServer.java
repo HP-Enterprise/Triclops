@@ -3,10 +3,10 @@ package com.hp.triclops.acquire;
 /**
  * Created by luj on 2015/9/21.
  */
+
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.service.OutputHexService;
 import io.netty.bootstrap.ServerBootstrap;
-
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -15,9 +15,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
@@ -30,6 +28,7 @@ public class NettyServer {
     private DataTool dataTool;
     private ConcurrentHashMap<String,Channel> channels;
     private ConcurrentHashMap<String,String> connections;
+    private ConcurrentHashMap<String,String> hearts;
     private RequestHandler requestHandler;
     private OutputHexService outputHexService;
     private Logger _logger;
@@ -38,9 +37,10 @@ public class NettyServer {
     private int maxDistance;
     private String serverId;
 
-    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,int maxDistance,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,String serverId,ScheduledExecutorService scheduledService) {
+    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,ConcurrentHashMap<String, String> hearts,int maxDistance,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,String serverId,ScheduledExecutorService scheduledService) {
         this.channels=cs;
         this.connections=connections;
+        this.hearts=hearts;
         this.maxDistance=maxDistance;
         this.backlog=_backlog;
         this.socketRedis=s;
@@ -68,7 +68,7 @@ public class NettyServer {
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024, 2, 2, 2, 0));
                                 ch.pipeline().addLast(new AESUpDataHandler(socketRedis,connections,requestHandler,dataTool));
-                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, maxDistance,socketRedis, dataTool, requestHandler, outputHexService, serverId,scheduledService));
+                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, hearts, maxDistance,socketRedis, dataTool, requestHandler, outputHexService, serverId,scheduledService));
                                 ch.pipeline().addLast(new AESDownDataHandler(socketRedis,connections,requestHandler,dataTool));
                                 connectionCount++;
                                 // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
