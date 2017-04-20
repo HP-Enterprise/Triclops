@@ -80,6 +80,7 @@ public class AcquirePort {
     //用于保存连接的哈希表<remoteAddress,Channel>
     public static ConcurrentHashMap<String,String> connectionAddress=new ConcurrentHashMap<String,String>();
     //用于保存连接的哈希表<remoteAddress,vin>
+    public static ConcurrentHashMap<String,String> hearts = new ConcurrentHashMap<String,String>();
 
     public   void main(){
         if(!checkServerId(_serverId)){
@@ -98,18 +99,20 @@ public class AcquirePort {
         if(!_datahandlerDisabled){
             List<String> HandleSuffixes=dataTool.getHandleSuffix();
             if(HandleSuffixes.size()==0){
-                new DataHandler(socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(channels, hearts, socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService, _serverId).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
             }else if(HandleSuffixes.size()==1&&HandleSuffixes.get(0).equalsIgnoreCase("ALL")){
-                new DataHandler(socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(channels, hearts, socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService, _serverId).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
+            }else if(HandleSuffixes.size()==1&&HandleSuffixes.get(0).equalsIgnoreCase("HEART")){
+                new DataHandler(channels, hearts, socketRedis,dataHandleService,HandleSuffixes.get(0),_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService, _serverId).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
             }else{
                 for(String k:HandleSuffixes)  {
-                    new DataHandler(socketRedis,dataHandleService,k,_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService).start();
+                    new DataHandler(channels, hearts, socketRedis,dataHandleService,k,_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,dataTool,dataHandlerScheduledService, _serverId).start();
                 }
                  //netty数据处理入库线程，内部采用线程池处理数据入库
             }
         }
         if(!_dataserverDisabled) {
-            new NettyServer(channels, connectionAddress,_maxDistance, _nettyServerTcpBacklog, socketRedis, dataTool, requestHandler, outputHexService, _acquirePort,_serverId, nettyServerScheduledService).run();    //netty收数据程序，收到消息后可能导致阻塞的业务全部交由线程池处理
+            new NettyServer(channels, connectionAddress, hearts, _maxDistance, _nettyServerTcpBacklog, socketRedis, dataTool, requestHandler, outputHexService, _acquirePort,_serverId, nettyServerScheduledService).run();    //netty收数据程序，收到消息后可能导致阻塞的业务全部交由线程池处理
         }
     }
     private boolean checkServerId(String serverId){

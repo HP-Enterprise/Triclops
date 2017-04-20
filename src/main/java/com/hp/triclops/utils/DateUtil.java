@@ -61,6 +61,22 @@ public class DateUtil {
 	}
 
 	/**
+	 * 功能描述：格式化日期
+	 * @param dateStr 字符型日期
+	 * @param format 格式
+	 * @return Date 日期
+	 */
+	public static Date parseStrToDate(String dateStr, String format) {
+		try {
+			dateFormat = new SimpleDateFormat(format);
+			date = (Date) dateFormat.parse(dateStr);
+		} catch (Exception e) {
+			return null;
+		}
+		return date;
+	}
+
+	/**
 	 * 功能描述：格式化输出日期
 	 * @param date 日期
 	 * @param format 格式

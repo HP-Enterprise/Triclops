@@ -2,12 +2,15 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.service.OutputHexService;
+import com.hp.triclops.utils.DateUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,16 +25,18 @@ public class RequestTask  implements Runnable{
     private DataTool dataTool;
     private ConcurrentHashMap<String,Channel> channels;
     private ConcurrentHashMap<String,String> connections;
+    private ConcurrentHashMap<String,String> hearts;
     private Channel ch;
     private OutputHexService outputHexService;
     private Logger _logger;
     private int maxDistance;
     private String serverId;
 
-    public RequestTask(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,int maxDistance,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String serverId,String receiveDataHexString){
+    public RequestTask(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String,String> connections,ConcurrentHashMap<String,String> hearts,int maxDistance,Channel ch,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,String serverId,String receiveDataHexString){
         super();
         this.channels=cs;
         this.connections=connections;
+        this.hearts=hearts;
         this.maxDistance=maxDistance;
         this.ch=ch;
         this.socketRedis=s;
@@ -327,6 +332,7 @@ public class RequestTask  implements Runnable{
                 @Override
                 public void operationComplete(ChannelFuture future) {
                     if(future.isDone()){
+                        hearts.put(vin, DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));//保存心跳信息
                         socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
                         connections.put(ch.remoteAddress().toString(), vin);
                         _logger.info(hexLabel + title + "成功，保存连接:" + vin + "" + ch.remoteAddress());
@@ -340,6 +346,7 @@ public class RequestTask  implements Runnable{
                 }
             });
         }else{
+            hearts.put(vin, DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));//保存心跳信息
             socketRedis.saveHashString(dataTool.connection_hashmap_name, vin, serverId + "-" + ch.remoteAddress().toString(), -1);//连接名称保存到redis
             connections.put(ch.remoteAddress().toString(), vin);
             _logger.info(hexLabel + title + "成功，保存连接:" + vin + "" + ch.remoteAddress());
