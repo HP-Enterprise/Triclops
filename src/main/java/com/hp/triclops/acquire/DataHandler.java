@@ -30,9 +30,11 @@ public class DataHandler extends Thread{
     private ScheduledExecutorService scheduledService;
     private int heartbeatInterval;
     private int heartbeatTTL;
+    private int heartInterval;
+    private int heartTTL;
     private ConcurrentHashMap<String,Channel> channels;
     private ConcurrentHashMap<String,String> hearts;
-    public DataHandler(ConcurrentHashMap<String,Channel> channels,ConcurrentHashMap<String,String> hearts, SocketRedis s,DataHandleService dataHandleService,String keySuffix,int heartbeatInterval,int heartbeatTTL,DataTool dt,ScheduledExecutorService scheduledService, String serverId){
+    public DataHandler(ConcurrentHashMap<String,Channel> channels,ConcurrentHashMap<String,String> hearts, SocketRedis s,DataHandleService dataHandleService,String keySuffix,int heartbeatInterval,int heartbeatTTL,int heartInterval,int heartTTL,DataTool dt,ScheduledExecutorService scheduledService, String serverId){
         this.channels = channels;
         this.hearts = hearts;
         this.socketRedis=s;
@@ -40,19 +42,28 @@ public class DataHandler extends Thread{
         this.keySuffix=keySuffix;
         this.heartbeatInterval=heartbeatInterval;
         this.heartbeatTTL=heartbeatTTL;
+        this.heartInterval=heartInterval;
+        this.heartTTL=heartTTL;
         this.dataTool=dt;
         this.scheduledService=scheduledService;
         this.serverId=serverId;
         this._logger = LoggerFactory.getLogger(DataHandler.class);
         _logger.info(">>>>>>>>>>start data Handler handle key->:input" + keySuffix);
         if(!keySuffix.equals("")){
-            //启动handle 心跳
-            int heartbeat_delay=heartbeatInterval*1000;//Heartbeat T millSeconds
-            long ttl_seconds=heartbeatTTL;//seconds
-            scheduledService.scheduleWithFixedDelay(new DataHandleHeartbeat(keySuffix,ttl_seconds),0,heartbeat_delay,TimeUnit.MILLISECONDS);
-            _logger.info(">>>>>>>>>>start data Handler heartbeat :" + keySuffix + ">>>>>>>>>>ttl_seconds:" + ttl_seconds);
+            if(keySuffix.equals("HEART")){//心跳监控线程
+                //启动handle 心跳
+                int heartbeat_delay=heartbeatInterval*1000;//Heartbeat T millSeconds
+                scheduledService.scheduleWithFixedDelay(new DataHandleHeartTask(heartTTL),0,heartbeat_delay,TimeUnit.MILLISECONDS);
+                _logger.info(">>>>>>>>>>start data Handler heart :" + keySuffix + ">>>>>>>>>>ttl_seconds:" + heartTTL);
+            }else{
+                //启动handle 心跳
+                int heartbeat_delay=heartbeatInterval*1000;//Heartbeat T millSeconds
+                long ttl_seconds=heartbeatTTL;//seconds
+                scheduledService.scheduleWithFixedDelay(new DataHandleHeartbeat(keySuffix,ttl_seconds),0,heartbeat_delay,TimeUnit.MILLISECONDS);
+                _logger.info(">>>>>>>>>>start data Handler heartbeat :" + keySuffix + ">>>>>>>>>>ttl_seconds:" + ttl_seconds);
+            }
         }
-      }
+    }
 
     public  synchronized void run()
     {
@@ -92,53 +103,61 @@ public class DataHandler extends Thread{
         }
         @Override
         public synchronized void run() {
+            socketRedis.saveSetString("available-data-handler",key,ttl_seconds);
+        }
+    }
+
+    class DataHandleHeartTask implements Runnable{
+        private long ttl_seconds;
+
+        public DataHandleHeartTask(long ttl_seconds){
+            this.ttl_seconds=ttl_seconds;
+        }
+        @Override
+        public synchronized void run() {
             //处理心跳数据
-            if("HEART".equals(key)){
-                Set<String> setKey = hearts.keySet();
-                Date date = new Date();
-                Iterator keys = setKey.iterator();
-                while (keys.hasNext()){
-                    //遍历所有的心跳数据
-                    String vin = (String)keys.next();
-                    String conn = socketRedis.getHashString(dataTool.connection_hashmap_name, vin);
-                    //判断连接是否存在
-                    if(conn != null && !"".equals(conn)){
-                        String _serverId = conn.split("-")[0];
-                        //只有当连接处于该机器时才处理
-                        if(serverId.equals(_serverId)){
-                            //获取上一次心跳时间
-                            String dateTime = hearts.get(vin);
-                            if(dateTime != null && !"".equals(dateTime)){
-                                Date redisDate = DateUtil.parseStrToDate(dateTime, "yyyy-MM-dd HH:mm:ss");
-                                long times = (date.getTime() - redisDate.getTime())/1000;//计算当前时间与上次一心跳时间差(单位秒)
-                                //当心跳间隔超出时间，平台主动断开连接
-                                if(times > ttl_seconds){
-                                    Channel channel = channels.get(vin);
-                                    _logger.info("监听心跳:上一次心跳时间[" + dateTime + "] 连接信息:" + conn);
-                                    if(channel!=null){//需要在旧的addr被移除后才能close
-                                        ChannelFuture future = channel.close();
-                                        future.addListener(new ChannelFutureListener() {
-                                            @Override
-                                            public void operationComplete(ChannelFuture future) {
-                                                if(future.isDone()){
-                                                    hearts.remove(vin);
-                                                }
+            Set<String> setKey = hearts.keySet();
+            Date date = new Date();
+            Iterator keys = setKey.iterator();
+            while (keys.hasNext()){
+                //遍历所有的心跳数据
+                String vin = (String)keys.next();
+                String conn = socketRedis.getHashString(dataTool.connection_hashmap_name, vin);
+                //判断连接是否存在
+                if(conn != null && !"".equals(conn)){
+                    String _serverId = conn.split("-")[0];
+                    //只有当连接处于该机器时才处理
+                    if(serverId.equals(_serverId)){
+                        //获取上一次心跳时间
+                        String dateTime = hearts.get(vin);
+                        if(dateTime != null && !"".equals(dateTime)){
+                            Date redisDate = DateUtil.parseStrToDate(dateTime, "yyyy-MM-dd HH:mm:ss");
+                            long times = (date.getTime() - redisDate.getTime())/1000;//计算当前时间与上次一心跳时间差(单位秒)
+                            //当心跳间隔超出时间，平台主动断开连接
+                            if(times > ttl_seconds){
+                                Channel channel = channels.get(vin);
+                                _logger.info("监听心跳:上一次心跳时间[" + dateTime + "] 连接信息:" + conn);
+                                if(channel!=null){//需要在旧的addr被移除后才能close
+                                    ChannelFuture future = channel.close();
+                                    future.addListener(new ChannelFutureListener() {
+                                        @Override
+                                        public void operationComplete(ChannelFuture future) {
+                                            if(future.isDone()){
+                                                hearts.remove(vin);
                                             }
-                                        });
-                                    }
+                                        }
+                                    });
                                 }
                             }
-                        }else{
-                            //连接不在该服务器时直接移除心跳信息
-                            hearts.remove(vin);
                         }
                     }else{
-                        //连接不存在时直接移除心跳信息
+                        //连接不在该服务器时直接移除心跳信息
                         hearts.remove(vin);
                     }
+                }else{
+                    //连接不存在时直接移除心跳信息
+                    hearts.remove(vin);
                 }
-            }else if("ALL".equals(key)){// TODO 其它情况
-
             }
         }
     }
