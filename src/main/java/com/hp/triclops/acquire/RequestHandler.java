@@ -1292,6 +1292,9 @@ public class RequestHandler {
                 if(re){
                     reint = 0;
                 }else{
+                    if(!powerStatusCheck){
+                        reint = 0x34;
+                    }
                     if(!centralLockCheck){
                         reint = 0x35;
                     }
