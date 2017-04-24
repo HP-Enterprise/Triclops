@@ -13,4 +13,6 @@ public interface IccidPhoneRepository  extends CrudRepository<IccidPhone,Integer
 
     IccidPhone findByIccid(String iccid);
 
+    IccidPhone findByPhone(String phone);
+
 }
