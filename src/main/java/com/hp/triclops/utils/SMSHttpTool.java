@@ -44,9 +44,9 @@ public class SMSHttpTool {
 
             StringBuilder sb = new StringBuilder();
             sb.append(smsUrl);
-            sb.append("?phone=");
+            sb.append("?sim=");
             sb.append(phone);
-            sb.append("&message=");
+            sb.append("&msg=");
             sb.append(message);
             URL url = new URL(sb.toString());
 
