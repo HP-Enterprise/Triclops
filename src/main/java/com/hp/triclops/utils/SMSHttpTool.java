@@ -22,8 +22,12 @@ public class SMSHttpTool {
 
     @Value("${com.hp.web.server.host}")
     private String urlLink;
+    @Value("${com.hp.sms.url}")
+    private String smsUrl;
+
     private Logger _logger = LoggerFactory.getLogger(SMSHttpTool.class);
 
+    //新短信接口
     public  void doHttp(String phone,String message){
         if(phone==null){
             _logger.info("phone format error:"+phone);
@@ -39,9 +43,7 @@ public class SMSHttpTool {
             String Enter = "\r\n";
 
             StringBuilder sb = new StringBuilder();
-            sb.append("http://");
-            sb.append(urlLink);
-            sb.append("/api/sms/message");
+            sb.append(smsUrl);
             sb.append("?phone=");
             sb.append(phone);
             sb.append("&message=");
@@ -86,6 +88,70 @@ public class SMSHttpTool {
                 }
         }
     }
+
+    //旧短信接口
+//    public  void doHttp(String phone,String message){
+//        if(phone==null){
+//            _logger.info("phone format error:"+phone);
+//            return;
+//        }
+//        if(phone.length()!=11){
+//            _logger.info("phone format error:"+phone);
+//            return;
+//        }
+//        DataOutputStream dos = null;
+//        try{
+//            String boundary = "Boundary-b1ed-4060-99b9-fca7ff59c113"; //Could be any string
+//            String Enter = "\r\n";
+//
+//            StringBuilder sb = new StringBuilder();
+//            sb.append("http://");
+//            sb.append(urlLink);
+//            sb.append("/api/sms/message");
+//            sb.append("?phone=");
+//            sb.append(phone);
+//            sb.append("&message=");
+//            sb.append(message);
+//            URL url = new URL(sb.toString());
+//
+//            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+//            conn.setDoOutput(true);
+//            conn.setDoInput(true);
+//            conn.setRequestMethod("POST");
+//            conn.setUseCaches(false);
+//            conn.setInstanceFollowRedirects(true);
+//            conn.setRequestProperty("Content-Type","multipart/form-data;boundary=" + boundary);
+//            conn.connect();
+//            dos = new DataOutputStream(conn.getOutputStream());
+//            //part 1
+//            String part1 =  "--" + boundary + Enter
+//                    + "Content-Type: application/octet-stream" + Enter
+//                    + "Content-Disposition: form-data; filename=\""+""+"\"; name=\"file\"" + Enter + Enter;
+//            //part 2
+//            String part2 = Enter
+//                    + "--" + boundary + Enter
+//                    + "Content-Type: text/plain" + Enter
+//                    + "Content-Disposition: form-data; name=\"dataFormat\"" + Enter + Enter
+//                    + "hk" + Enter
+//                    + "--" + boundary + "--";
+//            dos.writeBytes(part1);
+//            dos.writeBytes(part2);
+//            dos.flush();
+//            dos.close();
+//            _logger.info("sms status code: "+conn.getResponseCode());
+//            conn.disconnect();
+//
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }finally {
+//            if(dos!=null)
+//                try {
+//                    dos.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//        }
+//    }
 
     public String getShortUrl(String u){
         //u=  "http://127.0.0.1:8080/baiduMap.html?lon=114.13320540355&lat=30.257868000746";
