@@ -53,12 +53,28 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
         byte[] data=new byte[content.length-11-1];
         byte[] head=new byte[11];
         byte dataType=dataTool.getApplicationType(content);//业务类型，判断是否需要加密
+        byte messageId = dataTool.getMessageId(content);
         String imei="";
         if(dataType==0x11||dataType==0x12||dataType==0x13||dataType==0x14) {//这些业务的key依赖于从imei获取
           imei=getImeiFromRedis(ch);
         }
-        if(dataType==0x11||dataType==0x12){//OX11无需密钥，0x12激活报文内容使用密钥（IMEI）
+//        if(dataType==0x11||dataType==0x12){//OX11无需密钥，0x12激活报文内容使用密钥（IMEI）
+        if(dataType==0x12){//0x12激活报文内容使用密钥（IMEI）
             aesKey=imei;
+//        }else if(dataType==0x13||dataType==0x14){//注册报文使用密钥（Serial Number+VIN）
+        }else if(dataType==0x11){//0x11电检
+            if(messageId == 0x02){//0x02不需要加密
+                aesKey=imei;
+            }if(messageId == 0x04){//0x04需要加密
+                aesKey=requestHandler.getRegAesKeyByImei(imei);//t通过imei找到密钥
+                if(aesKey==null){
+                    _logger.info("aeskey for register [error],please check in db,imei:"+imei);
+                    aesKey="";
+                }else{
+                    _logger.info("aeskey for register imei:"+imei+",aesKey:"+aesKey);
+                }
+            }
+//        }else if(dataType==0x13||dataType==0x14){//注册报文使用密钥（Serial Number+VIN）
         }else if(dataType==0x13||dataType==0x14){//注册报文使用密钥（Serial Number+VIN）
             aesKey=requestHandler.getRegAesKeyByImei(imei);//t通过imei找到密钥
             if(aesKey==null){
@@ -77,14 +93,23 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
             }
             //从redis取出之前生成的密钥
         }
-        if(dataType!=0x11 && dataType!=0x26 && dataType!=0x61){//除了电检/心跳/失败报告 业务 其他都需要加解密
+//        if(dataType!=0x11 && dataType!=0x26 && dataType!=0x61){//除了电检/心跳/失败报告 业务 其他都需要加解密
+        if(dataType!=0x26 && dataType!=0x61){//除了心跳/失败报告 业务 其他都需要加解密
+            if(dataType == 0x11 && messageId == 0x02){
+                return content;
+            }
             ByteBuf tmp=buffer(1024);
             ByteBuf orginial=dataTool.getByteBuf(dataTool.bytes2hex(content));
             orginial.readBytes(head, 0, 5 + 6);//包头部分 明文
             tmp.writeBytes(head);
             orginial.readBytes(data, 0, data.length);//待加解密data长度=总长度-包头33-checkSum1
             //todo 数据写入完毕 计算报文长度 计算checkSum
-            if(dataType==0x13) {
+//            if(dataType==0x13) {
+            if(dataType==0x11) {
+                if(messageId == 0x04){//0x04才需要加密
+                    tmp.writeBytes(AES128Tool.encrypt(data, aesKey));//
+                }
+            }else if(dataType==0x13) {
                 tmp.writeBytes(AES128Tool.encrypt(data, aesKey));//
             }else{
                 tmp.writeBytes(AES128Tool.encrypt(data, aesKey));//如果要生成测试数据只需要把这一段改为加密即可
