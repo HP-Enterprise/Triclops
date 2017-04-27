@@ -65,7 +65,7 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
 //        if(dataType==0x11||dataType==0x12){//OX11无需密钥，0x12激活报文内容使用密钥（IMEI）
         if(dataType==0x12){//0x12激活报文内容使用密钥（IMEI）
             aesKey=imei;
-        }if(dataType==0x11){//0x12激活报文内容使用密钥（IMEI）
+        }else if(dataType==0x11){//0x11电检报文内容使用密钥（IMEI）
             if(messageId == 0x01){//0x01报文不解密
                 aesKey=imei;
             }else if(messageId == 0x03){//0x03报文解密
