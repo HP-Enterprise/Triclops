@@ -44,6 +44,9 @@ public class DataTool {
     public static final long remoteControlResult_ttl=600l;//控制结果ttl
     public static final long remote_cmd_value_ttl=600l;
 
+    @Value("${com.hp.remoteControl.tboxTimeOut}")
+    private int tboxTimeOut;//平台下发消息超时时间
+
 
 
     private Logger _logger = LoggerFactory.getLogger(DataTool.class);
@@ -838,11 +841,11 @@ public class DataTool {
         //某一消息的下发超时时间（秒） 参考文档
         int re=60;
         if(applicationId.equals("49")&&messageId.equals("1")){//远程控制
-            re=30;
+            re = tboxTimeOut;
         } if(applicationId.equals("50")&&messageId.equals("1")){//远程控制参数设置
-            re=30;
+            re = tboxTimeOut;
         }else if(applicationId.equals("49")&&messageId.equals("3")) {//远程控制指令
-            re=30;
+            re = tboxTimeOut;
         }else if(applicationId.equals("65")&&messageId.equals("1")){//参数查询
             re=60;
         }else if(applicationId.equals("66")&&messageId.equals("1")){//远程诊断
