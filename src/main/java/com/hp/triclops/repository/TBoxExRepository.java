@@ -17,5 +17,8 @@ public interface TBoxExRepository  extends CrudRepository<TBoxEx, Long> {
     @Query("select tb from TBoxEx tb where tb.t_sn = ?1")
     TBoxEx findByT_sn(String t_sn);
 
+    @Query("select tb from TBoxEx tb where tb.mobile = ?1")
+    TBoxEx findByMobile(String mobile);
+
     TBoxEx findByIdAndVid(int id,int vid);
 }
