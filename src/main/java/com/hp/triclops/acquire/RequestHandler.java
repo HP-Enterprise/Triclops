@@ -1216,7 +1216,7 @@ public class RequestHandler {
                     boolean gearSensorCheck = false;
                     if(emsCheck){//手动
                         msg = "手动档N档位";
-                        if(!neutralGearSensorCheck){
+                        if(neutralGearSensorCheck){
                             gearSensorCheck = true;
                         }
                     }else{//自动
