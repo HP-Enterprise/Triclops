@@ -359,18 +359,20 @@ public class VehicleDataService {
             _logger.info("根据vin:"+vin+"找到对应的车辆信息，车型:"+_vehicleModel+" isM8X:"+isM8X);
         }
 
-        List<RealTimeReportData> realTimeReportDataList=realTimeReportDataRespository.findLatestOneByVin(vin);
-        if(realTimeReportDataList!=null){
-            if(realTimeReportDataList.size()>0){
-                realData=realTimeReportDataList.get(0);
-            }
-        }
-        List<GpsData> gpsDataList=gpsDataRepository.findLatestByVin(vin);
-        if(gpsDataList!=null){
-            if(gpsDataList.size()>0){
-                gpsData=gpsDataList.get(0);
-            }
-        }
+        realData = realTimeReportDataRespository.getLatestOneByVin(vin);
+//        List<RealTimeReportData> realTimeReportDataList=realTimeReportDataRespository.findLatestOneByVin(vin);
+//        if(realTimeReportDataList!=null){
+//            if(realTimeReportDataList.size()>0){
+//                realData=realTimeReportDataList.get(0);
+//            }
+//        }
+        gpsData = gpsDataRepository.getLatestByVin(vin);
+//        List<GpsData> gpsDataList=gpsDataRepository.findLatestByVin(vin);
+//        if(gpsDataList!=null){
+//            if(gpsDataList.size()>0){
+//                gpsData=gpsDataList.get(0);
+//            }
+//        }
         if(realData!=null&&gpsData!=null) {
             if (realData.getLeftFrontDoorInformation().equals("1") && realData.getLeftRearDoorInformation().equals("1") &&
                     realData.getRightFrontDoorInformation().equals("1") && realData.getRightRearDoorInformation().equals("1")) {
@@ -531,15 +533,22 @@ public class VehicleDataService {
             String _serverId = _val.split("-")[0];
             outputHexService.saveCmdToRedis(_serverId,vin,byteStr);//发送预命令
         }
-        RealTimeReportData rd=null;
+//        RealTimeReportData rd=null;
         GpsData gd=null;
-        List<RealTimeReportData> rdList=realTimeReportDataRespository.findLatestOneByVin(vin);
-        if(rdList!=null&&rdList.size()>0){
-                rd=rdList.get(0);
-                List<GpsData> gdList=gpsDataRepository.findByVinAndSendingTime(vin,rd.getSendingTime());
-                if(gdList!=null&&gdList.size()>0){
-                gd=gdList.get(0);}
+        RealTimeReportData rd = realTimeReportDataRespository.getLatestOneByVin(vin);
+        if(rd != null){
+            List<GpsData> gdList=gpsDataRepository.findByVinAndSendingTime(vin,rd.getSendingTime());
+            if(gdList!=null&&gdList.size()>0){
+                gd = gdList.get(0);
+            }
         }
+//        List<RealTimeReportData> rdList=realTimeReportDataRespository.findLatestOneByVin(vin);
+//        if(rdList!=null&&rdList.size()>0){
+//                rd=rdList.get(0);
+//                List<GpsData> gdList=gpsDataRepository.findByVinAndSendingTime(vin,rd.getSendingTime());
+//                if(gdList!=null&&gdList.size()>0){
+//                gd=gdList.get(0);}
+//        }
         if(rd==null||gd==null){
                 return null;
         }else{
@@ -581,10 +590,14 @@ public class VehicleDataService {
             data.setAverageSpeedB(rd.getAverageSpeedB());
             data.setMtGearPostion(rd.getMtGearPostion());
 
-            data.setFmax(390);
-            data.setFmin(0);
-            data.setRmax(390);
-            data.setRmin(0);
+//            data.setFmax(390);
+//            data.setFmin(0);
+//            data.setRmax(390);
+//            data.setRmin(0);
+            data.setFmax("2.6");
+            data.setFmin("2.3");
+            data.setRmax("2.6");
+            data.setRmin("2.3");
             data.setLfok(this.getLfokStatu(rd.getLeftFrontTirePressure()));
             data.setLrok(this.getLrokStatu(rd.getLeftRearTirePressure()));
             data.setRfok(this.getRfokStatu(rd.getRightRearTirePressure()));
@@ -681,11 +694,12 @@ public class VehicleDataService {
      */
     public GpsData getLatestGpseData(String vin){
         GpsData gd=null;
-        List<GpsData> gdList=gpsDataRepository.findLatestByVin(vin);
-        if(gdList!=null&&gdList.size()>0){
-            gd=gdList.get(0);
-            //gd=gpsTool.convertToGCJ02(gd); //2016.11.28取消服务端坐标系统转换
-        }
+        gd = gpsDataRepository.getLatestByVin(vin);
+//        List<GpsData> gdList=gpsDataRepository.findLatestByVin(vin);
+//        if(gdList!=null&&gdList.size()>0){
+//            gd=gdList.get(0);
+//            //gd=gpsTool.convertToGCJ02(gd); //2016.11.28取消服务端坐标系统转换
+//        }
         return gd;
     }
 

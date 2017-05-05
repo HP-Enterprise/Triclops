@@ -339,10 +339,18 @@ public class RealTimeDataShow {
     private int lrok;
     private int rfok;
     private int rrok;
-    private int fmax;
-    private int fmin;
-    private int rmax;
-    private int rmin;
+
+//    private int fmax;
+//    private int fmin;
+//    private int rmax;
+//    private int rmin;
+    //修改为字符串
+    private String fmax;
+    private String fmin;
+    private String rmax;
+    private String rmin;
+
+
     private int skylightState;
     private int engineDoorInformation;
     private int trunkDoorInformation;
@@ -667,35 +675,35 @@ public class RealTimeDataShow {
         this.rrok = rrok;
     }
 
-    public int getFmax() {
+    public String getFmax() {
         return fmax;
     }
 
-    public void setFmax(int fmax) {
+    public void setFmax(String fmax) {
         this.fmax = fmax;
     }
 
-    public int getFmin() {
+    public String getFmin() {
         return fmin;
     }
 
-    public void setFmin(int fmin) {
+    public void setFmin(String fmin) {
         this.fmin = fmin;
     }
 
-    public int getRmax() {
+    public String getRmax() {
         return rmax;
     }
 
-    public void setRmax(int rmax) {
+    public void setRmax(String rmax) {
         this.rmax = rmax;
     }
 
-    public int getRmin() {
+    public String getRmin() {
         return rmin;
     }
 
-    public void setRmin(int rmin) {
+    public void setRmin(String rmin) {
         this.rmin = rmin;
     }
 

@@ -15,5 +15,8 @@ public interface GpsDataRepository extends CrudRepository<GpsData, Long>{
     @Query("select gd from GpsData gd where gd.vin = ?1 and gd.applicationId = 34 ORDER BY gd.sendingTime DESC")
     List<GpsData> findLatestByVin(String vin);
 
+    @Query("select g from GpsData g where g.id = (select max(gd.id) from GpsData gd where gd.vin = ?1 and gd.applicationId = 34 and latitude > 0 and longitude > 0)")
+    GpsData getLatestByVin(String vin);
+
     //GpsData findTopByVinOrderBySendingTimeDesc(String vin);
 }
