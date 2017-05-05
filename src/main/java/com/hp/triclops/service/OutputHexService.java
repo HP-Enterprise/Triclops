@@ -696,11 +696,12 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
-        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
-        RealTimeReportData rd=null;
-        if(rdList!=null&&rdList.size()>0) {
-            rd = rdList.get(0);
-        }
+        RealTimeReportData rd = realTimeReportDataRespository.getLatestOneByVin(vin);
+//        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+//        RealTimeReportData rd=null;
+//        if(rdList!=null&&rdList.size()>0) {
+//            rd = rdList.get(0);
+//        }
 
         //生成报警信息
         Map<String,Object> warningMessage=buildWarningString(wd,user,rd,onefirst);
@@ -763,7 +764,7 @@ public class OutputHexService {
                 StringBuilder longU = new StringBuilder();
                 String srs = "";
                 try{
-                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
 //                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
@@ -795,7 +796,7 @@ public class OutputHexService {
                 StringBuilder longU = new StringBuilder();
                 String srs = "";
                 try{
-                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
 //                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
@@ -827,7 +828,7 @@ public class OutputHexService {
                 StringBuilder longU = new StringBuilder();
                 String srs = "";
                 try{
-                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"车门被异常开启，建议您尽快确认车辆状态。";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"车门被异常开启，建议您尽快确认车辆状态。";
 //                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
@@ -914,7 +915,7 @@ public class OutputHexService {
                 StringBuilder longU = new StringBuilder();
                 String srs = "";
                 try{
-                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
 //                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
@@ -946,7 +947,7 @@ public class OutputHexService {
                 StringBuilder longU = new StringBuilder();
                 String srs = "";
                 try{
-                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"发生车辆碰撞，建议您尽快确认车辆状态。";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
 //                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
@@ -978,7 +979,7 @@ public class OutputHexService {
                 StringBuilder longU = new StringBuilder();
                 String srs = "";
                 try{
-                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateTime(new Date())+"车门被异常开启，建议您尽快确认车辆状态。";
+                    srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"车门被异常开启，建议您尽快确认车辆状态。";
 //                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
@@ -1040,11 +1041,12 @@ public class OutputHexService {
         wd.setSafetyBeltCount(bean.getSafetyBeltCount());
         wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
-        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
-        RealTimeReportData rd=null;
-        if(rdList!=null&&rdList.size()>0) {
-            rd = rdList.get(0);
-        }
+        RealTimeReportData rd = realTimeReportDataRespository.getLatestOneByVin(vin);
+//        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+//        RealTimeReportData rd=null;
+//        if(rdList!=null&&rdList.size()>0) {
+//            rd = rdList.get(0);
+//        }
         //生成报警信息
         Map<String,Object> warningMessage=buildWarningString(wd, user, rd, oneFirst);
         return warningMessage;
@@ -1080,12 +1082,12 @@ public class OutputHexService {
 
         wd.setInfo(dataTool.getFailureMesId(bean));
 
-
-        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
-        RealTimeReportData rd=null;
-        if(rdList!=null&&rdList.size()>0) {
-            rd = rdList.get(0);
-        }
+        RealTimeReportData rd = realTimeReportDataRespository.getLatestOneByVin(vin);
+//        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+//        RealTimeReportData rd=null;
+//        if(rdList!=null&&rdList.size()>0) {
+//            rd = rdList.get(0);
+//        }
         //RealTimeDataShow realTimeDataShow = vehicleDataService.getRealTimeData(vin);
         //生成故障信息
         Map<String,Object> failureString=buildFailureString(wd, rd);
@@ -1122,12 +1124,12 @@ public class OutputHexService {
 
         wd.setInfo(dataTool.getDataResendFailureMesId(bean));
 
-
-        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
-        RealTimeReportData rd=null;
-        if(rdList!=null&&rdList.size()>0) {
-            rd = rdList.get(0);
-        }
+        RealTimeReportData rd = realTimeReportDataRespository.getLatestOneByVin(vin);
+//        List<RealTimeReportData> rdList = realTimeReportDataRespository.findLatestOneByVin(vin);
+//        RealTimeReportData rd=null;
+//        if(rdList!=null&&rdList.size()>0) {
+//            rd = rdList.get(0);
+//        }
         //生成故障信息
         Map<String,Object> failureString=buildFailureString(wd, rd);
         return failureString;
