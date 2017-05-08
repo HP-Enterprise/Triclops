@@ -765,7 +765,7 @@ public class OutputHexService {
                 String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
-//                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -797,7 +797,7 @@ public class OutputHexService {
                 String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
-//                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -829,7 +829,7 @@ public class OutputHexService {
                 String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"车门被异常开启，建议您尽快确认车辆状态。";
-//                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -916,7 +916,7 @@ public class OutputHexService {
                 String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
-//                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -948,7 +948,7 @@ public class OutputHexService {
                 String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
-//                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
@@ -980,7 +980,7 @@ public class OutputHexService {
                 String srs = "";
                 try{
                     srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"车门被异常开启，建议您尽快确认车辆状态。";
-//                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    srs = java.net.URLEncoder.encode(srs, "UTF-8");
 //                    srs = java.net.URLEncoder.encode(srs, "GB2312");
                 }catch(Exception e){
                     _logger.info(e.getMessage());
