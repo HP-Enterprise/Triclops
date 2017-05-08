@@ -265,7 +265,7 @@ public class DataHandleService {
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
         char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
-        rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+        rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[5]) + String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         rd.setParkingState("0");
         char[] vBytes=dataTool.getBitsFromInteger(bean.getVoltage());
         if(isM8X) {
@@ -373,10 +373,10 @@ public class DataHandleService {
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
         char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
         if(isM8X) {
-            rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+            rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[5]) + String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         }else{
             //F60
-            rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+            rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[5]) + String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
         }
         rd.setParkingState("0");
         char[] vBytes=dataTool.getBitsFromInteger(bean.getVoltage());

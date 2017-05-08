@@ -343,16 +343,29 @@ public class DataTool {
         //0x1： closed--2
         //0x2： opened--0
         //0x3： reserved--3
-
+//        String re="1";
+//        if(bita_b!=null){
+//            if(bita_b.equals("00")){
+//                re="1";
+//            }else if(bita_b.equals("01")){
+//                re="2";
+//            }else if(bita_b.equals("10")){
+//                re="0";
+//            }else if(bita_b.equals("11")){
+//                re="3";
+//            }
+//        }
+        //参考0635
+        //0x1  关--2
+        //0x2 0x3 0x4 0x5  开--0
+        //0x6 0x7  异常--3
         String re="1";
         if(bita_b!=null){
-            if(bita_b.equals("00")){
-                re="1";
-            }else if(bita_b.equals("01")){
+            if(bita_b.equals("001")){
                 re="2";
-            }else if(bita_b.equals("10")){
+            }else if(bita_b.equals("010") || bita_b.equals("011") || bita_b.equals("100") || bita_b.equals("101")){
                 re="0";
-            }else if(bita_b.equals("11")){
+            }else if(bita_b.equals("110") || bita_b.equals("111")){
                 re="3";
             }
         }
