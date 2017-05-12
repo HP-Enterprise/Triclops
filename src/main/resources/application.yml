@@ -39,7 +39,7 @@ com.hp.apns.cer.password:
 com.hp.apns.p12:
 
 # com.hp.push.url
-com.hp.push.url:
+com.hp.push.url: http://localhost:8080/api/message/filePush
 
 # com.hp.web.server.host
 com.hp.web.server.host: 127.0.0.1
