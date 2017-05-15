@@ -487,15 +487,16 @@ public class OutputHexService {
             if(u!=null){
                 //取到紧急联系人电话
                 //发送短信
-                String phone=u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
-                if(oneFirst==SRSFIRST){//
+                String phone = u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
+                if(oneFirst == SRSFIRST|| oneFirst == CRASHFIRST){//
                     if(u.getContactsPhone() != null && !"".equals(u.getContactsPhone())){
-                        phone=u.getContactsPhone();
+                        String contactPhone = u.getContactsPhone();
+                        sendWarningMessageSms(vin, msg, contactPhone,oneFirst);
                     }else{
                         _logger.info("[0x24]关联用户的紧急联系人手机号为空，无法发送短信");
                     }
                 }
-                _logger.info("[0x24]准备发送报警短信给"+phone+"|oneFirst:"+oneFirst);
+                _logger.info("[0x24]准备发送报警短信给" + phone+"|oneFirst:"+oneFirst);
                 sendWarningMessageSms(vin, msg, phone,oneFirst);
             }else{
                 _logger.info("[0x24]没有找到关联用户，无法发送短信");
