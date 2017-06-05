@@ -1737,8 +1737,10 @@ public class OutputHexService {
                 pushMsg="远程指令未执行，请求超时失效。";
                 pushMsgEn="remote command not implemented, request timeout";
             }else if(result==(short)0x51){
-                pushMsg="远程指令未执行，重复请求。";
-                pushMsgEn="remote command not implemented, request blocked by repetition block";
+//                pushMsg="远程指令未执行，重复请求。";
+//                pushMsgEn="remote command not implemented, request blocked by repetition block";
+                pushMsg = "远程指令未执行，由于发动机启动已超出允许次数2次。";
+                pushMsgEn = "remote command not implemented, due to engine start number exceeded 2 times.";
             }else if(result==(short)0x60){
                 pushMsg="远程指令未执行，功能无效，请求被忽略。";
                 pushMsgEn="remote command not implemented, function is not valid, the request is ignored.";
@@ -1826,8 +1828,10 @@ public class OutputHexService {
                 pushMsg="远程指令未执行，请求超时失效。";
                 pushMsgEn="remote command not implemented, request timeout";
             }else if(result==(short)0x51){
-                pushMsg="远程指令未执行，重复请求。";
-                pushMsgEn="remote command not implemented, request blocked by repetition block";
+//                pushMsg="远程指令未执行，重复请求。";
+//                pushMsgEn="remote command not implemented, request blocked by repetition block";
+                pushMsg = "远程指令未执行，由于发动机启动已超出允许次数2次。";
+                pushMsgEn = "remote command not implemented, due to engine start number exceeded 2 times.";
             }else if(result==(short)0x60){
                 pushMsg="远程指令未执行，功能无效，请求被忽略。";
                 pushMsgEn="remote command not implemented, function is not valid, the request is ignored.";
