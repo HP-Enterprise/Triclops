@@ -71,6 +71,7 @@ public class TboxService {
                 _logger.info("更新车辆对应的车型信息:"+modelId+" "+vehicleModelConfig.getModelName());
                 sVehicle=vehicleRepository.save(_vehicle);
             }else{
+                sVehicle = _vehicle;
                 _logger.info("没有查询到对应的车型信息:"+modelId);
             }
         }
@@ -119,6 +120,12 @@ public class TboxService {
             tBox.setImei(imei);
             tBox.setActivation_time(new Date());
             tBoxExRepository.save(tBox);
+
+            //更新车辆表中的sn信息
+            if(!sVehicle.getTboxsn().equals(tBox.getT_sn())){
+                sVehicle.setTboxsn(t_sn);
+                vehicleRepository.save(sVehicle);
+            }
             return true;
         }
     }
