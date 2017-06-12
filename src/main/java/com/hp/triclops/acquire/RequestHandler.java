@@ -1231,11 +1231,14 @@ public class RequestHandler {
                     if(!hazardLightsCheck){
                         reint=0x11;
                     }else if(!gearSensorCheck){
-                        if(!transmissionGearPositionCheck){
-                            reint=0x12;
-                        }
-                        if(!neutralGearSensorCheck){
-                            reint=0x1A;
+                        if(emsCheck){//手动
+                            if(!neutralGearSensorCheck){
+                                reint=0x1A;
+                            }
+                        }else{
+                            if(!transmissionGearPositionCheck){
+                                reint=0x12;
+                            }
                         }
                     }else if(!doorsCheck){
                         reint=0x13;
