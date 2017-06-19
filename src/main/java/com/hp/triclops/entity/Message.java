@@ -25,6 +25,7 @@ public class Message {
     private int available;
     private String playTime;
     private String locationName;
+    private String vin;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -162,5 +163,13 @@ public class Message {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
     }
 }
