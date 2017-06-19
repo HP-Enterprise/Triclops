@@ -649,6 +649,7 @@ public class OutputHexService {
                     pushMsg.put("targetId",uid);
                     pushMsg.put("resourceTo",1);
                     pushMsg.put("funType", 2);
+                    pushMsg.put("vin", vin);
 
                     httpRequestTool.doHttp(urlLink,pushMsg);
 
