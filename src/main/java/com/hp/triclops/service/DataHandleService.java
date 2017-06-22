@@ -226,9 +226,11 @@ public class DataHandleService {
         float val = 0f;
         if(isM8X) {
             if(fuelOil > 0 && fuelOil < 56){
-                val = (float)Math.round((fuelOil/56)*100);
+                val = (float)Math.round(((float)fuelOil/56f)*100f);
             }else if(fuelOil >= 56){
-                val = 1f;
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
             }
             rd.setLeftFrontTirePressure(dataTool.getTrueTirePressure(bean.getLeftFrontTirePressure()));//有效值0-125
             rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
@@ -236,9 +238,11 @@ public class DataHandleService {
             rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
         }else{//todo 在协议0628中F60无此数据 预留
             if(fuelOil > 0 && fuelOil < 52){
-                val = (float)Math.round((fuelOil/52)*100);
+                val = (float)Math.round(((float)fuelOil/52f)*100f);
             }else if(fuelOil >= 52){
-                val = 1f;
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
             }
             rd.setLeftFrontTirePressure(0.0f);
             rd.setLeftRearTirePressure(0.0f);
@@ -339,21 +343,38 @@ public class DataHandleService {
         rd.setSendingTime(receiveDate);//服务器时间
         rd.setTripId(bean.getTripID());
 
-        rd.setFuelOil(bean.getFuelOil()==0xff?-200:bean.getFuelOil()* 1f);//0xff无效值
+//        rd.setFuelOil(bean.getFuelOil()==0xff?-200:bean.getFuelOil()* 1f);//0xff无效值
         rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
         rd.setServiceIntervall(0);//在协议0628已经删除此项数据
+        Short fuelOil = bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil();
+        float val = 0f;
         if(isM8X) {
+            if(fuelOil > 0 && fuelOil < 56){
+                val = (float)Math.round(((float)fuelOil/56f)*100f);
+            }else if(fuelOil >= 56){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
             rd.setLeftFrontTirePressure(dataTool.getTrueTirePressure(bean.getLeftFrontTirePressure()));//有效值0-125
             rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
             rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
             rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
         }else{//在协议0628中F60无此数据 预留
+            if(fuelOil > 0 && fuelOil < 52){
+                val = (float)Math.round(((float)fuelOil/52f)*100f);
+            }else if(fuelOil >= 52){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
             rd.setLeftFrontTirePressure(0.0f);
             rd.setLeftRearTirePressure(0.0f);
             rd.setRightFrontTirePressure(0.0f);
             rd.setRightRearTirePressure(0.0f);
         }
+        rd.setFuelOil(val);
         char[] windows=dataTool.getBitsFromInteger(bean.getWindowInformation());//
         if(isM8X) {
             rd.setLeftFrontWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[13]) +String.valueOf(windows[14]) + String.valueOf(windows[15])));
