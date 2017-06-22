@@ -225,9 +225,9 @@ public class DataHandleService {
         Short fuelOil = bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil();
         float val = 0f;
         if(isM8X) {
-            if(fuelOil > 0 && fuelOil < 100){
-                val = (float)Math.round((fuelOil/56)*100)/100f;
-            }else if(fuelOil >= 100){
+            if(fuelOil > 0 && fuelOil < 56){
+                val = (float)Math.round((fuelOil/56)*10000)/100f;
+            }else if(fuelOil >= 56){
                 val = 1f;
             }
             rd.setLeftFrontTirePressure(dataTool.getTrueTirePressure(bean.getLeftFrontTirePressure()));//有效值0-125
@@ -235,9 +235,9 @@ public class DataHandleService {
             rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
             rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
         }else{//todo 在协议0628中F60无此数据 预留
-            if(fuelOil > 0 && fuelOil < 100){
-                val = (float)Math.round((fuelOil/52)*100)/100f;
-            }else if(fuelOil >= 100){
+            if(fuelOil > 0 && fuelOil < 52){
+                val = (float)Math.round((fuelOil/52)*10000)/100f;
+            }else if(fuelOil >= 52){
                 val = 1f;
             }
             rd.setLeftFrontTirePressure(0.0f);
