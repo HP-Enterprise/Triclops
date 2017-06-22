@@ -226,7 +226,7 @@ public class DataHandleService {
         float val = 0f;
         if(isM8X) {
             if(fuelOil > 0 && fuelOil < 56){
-                val = (float)Math.round((fuelOil/56)*10000)/100f;
+                val = (float)Math.round((fuelOil/56)*100)/10000f;
             }else if(fuelOil >= 56){
                 val = 1f;
             }
@@ -236,7 +236,7 @@ public class DataHandleService {
             rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
         }else{//todo 在协议0628中F60无此数据 预留
             if(fuelOil > 0 && fuelOil < 52){
-                val = (float)Math.round((fuelOil/52)*10000)/100f;
+                val = (float)Math.round((fuelOil/52)*100)/10000f;
             }else if(fuelOil >= 52){
                 val = 1f;
             }
