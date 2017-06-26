@@ -302,6 +302,7 @@ public class RealTimeDataShow {
     private int applicationId;
     private int messageId;
     private Date sendingTime;
+    private String receiveTime;
 
     //private float fuelOil;
     private int fuelOil;//剩余燃油量改为整数
@@ -358,6 +359,14 @@ public class RealTimeDataShow {
     private int averageSpeedA;
     private int averageSpeedB;
     private String mtGearPostion;
+
+    public String getReceiveTime() {
+        return receiveTime;
+    }
+
+    public void setReceiveTime(String receiveTime) {
+        this.receiveTime = receiveTime;
+    }
 
     public Long getId() {
         return id;

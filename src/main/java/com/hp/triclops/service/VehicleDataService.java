@@ -9,6 +9,7 @@ import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
+import com.hp.triclops.utils.DateUtil;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.Page;
 import com.hp.triclops.utils.SMSHttpTool;
@@ -559,8 +560,9 @@ public class VehicleDataService {
             data.setApplicationId(rd.getApplicationId());
             data.setMessageId(rd.getMessageId());
             data.setSendingTime(rd.getSendingTime());
+            data.setReceiveTime(DateUtil.format(rd.getSendingTime(), "yyyy-MM-dd HH:mm:ss"));
 
-            data.setFuelOil((int) rd.getFuelOil());
+            data.setFuelOil(Math.round(rd.getFuelOil()));
             data.setAvgOilA(rd.getAvgOilA());
             data.setAvgOilB(rd.getAvgOilB());
             data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
@@ -612,13 +614,13 @@ public class VehicleDataService {
             data.setHeading(gd.getHeading());
             data.setBatteryVoltage(rd.getVoltage());
             //数据转换处理
-            int p = 100 * data.getFuelOil() / 64;
-            p = p < 0 ? 0 : p;
-            p = p > 100 ? 100 : p;
-            data.setFuelOil(p);//返回百分比整数  64=100%  0-100
-            if (rd.getFuelOil() == -200) {//保持无效值返回到api
-                data.setFuelOil(-200);
-            }
+//            int p = 100 * data.getFuelOil() / 64;
+//            p = p < 0 ? 0 : p;
+//            p = p > 100 ? 100 : p;
+//            data.setFuelOil(p);//返回百分比整数  64=100%  0-100
+//            if (rd.getFuelOil() == -200) {//保持无效值返回到api
+//                data.setFuelOil(-200);
+//            }
             float _avgOilA = data.getAvgOilA();
             BigDecimal bdA = new BigDecimal((double) _avgOilA);
             bdA = bdA.setScale(1, BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
