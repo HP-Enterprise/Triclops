@@ -602,7 +602,7 @@ public class VehicleDataService {
             data.setRmin("2.3");
             data.setLfok(this.getLfokStatu(rd.getLeftFrontTirePressure()));
             data.setLrok(this.getLrokStatu(rd.getLeftRearTirePressure()));
-            data.setRfok(this.getRfokStatu(rd.getRightRearTirePressure()));
+            data.setRfok(this.getRfokStatu(rd.getRightFrontTirePressure()));
             data.setRrok(this.getRrokStatu(rd.getRightRearTirePressure()));
 
             data.setIsLocation(gd.getIsLocation());//
