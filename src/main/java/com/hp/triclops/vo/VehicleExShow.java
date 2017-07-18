@@ -26,6 +26,7 @@ public class VehicleExShow {
     private String security_pwd;
     private String security_salt;
     private Integer vflag;
+    private Integer isUpdate;
 
     public VehicleExShow() {}
 
@@ -47,6 +48,7 @@ public class VehicleExShow {
         this.t_flag = vehicleEx.getT_flag();
         this.security_pwd = vehicleEx.getSecurity_pwd();
         this.security_salt = vehicleEx.getSecurity_salt();
+        this.isUpdate = vehicleEx.getIsUpdate();
     }
 
     /**
@@ -209,5 +211,13 @@ public class VehicleExShow {
 
     public void setVflag(Integer vflag) {
         this.vflag = vflag;
+    }
+
+    public Integer getIsUpdate() {
+        return isUpdate;
+    }
+
+    public void setIsUpdate(Integer isUpdate) {
+        this.isUpdate = isUpdate;
     }
 }
