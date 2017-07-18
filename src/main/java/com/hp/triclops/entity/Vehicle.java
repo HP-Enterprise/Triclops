@@ -126,6 +126,7 @@ public class Vehicle implements Serializable {
     private Set<TBox> tboxSet;
     private Set<UserVehicleRelatived> vinSet;
     private Set<Organization> organizationSet;
+    private Integer isUpdate;
 
     public Vehicle() {
         this.vinSet = new HashSet<UserVehicleRelatived>();
@@ -355,5 +356,15 @@ public class Vehicle implements Serializable {
 
     public void setRemoteCount(Integer remoteCount) {
         this.remoteCount = remoteCount;
+    }
+
+    @Basic
+    @Column(name = "isupdate", nullable = true, insertable = true, updatable = true)
+    public Integer getIsUpdate() {
+        return isUpdate;
+    }
+
+    public void setIsUpdate(Integer isUpdate) {
+        this.isUpdate = isUpdate;
     }
 }
