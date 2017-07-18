@@ -29,6 +29,7 @@ public class VehicleEx {
     private Integer t_flag;
     private String security_pwd;
     private String security_salt;
+    private Integer isUpdate;
 
     public VehicleEx() {
     }
@@ -211,5 +212,15 @@ public class VehicleEx {
 
     public void setSecurity_salt(String security_salt) {
         this.security_salt = security_salt;
+    }
+
+    @Basic
+    @Column(name = "isupdate", nullable = true, insertable = true, updatable = true)
+    public Integer getIsUpdate() {
+        return isUpdate;
+    }
+
+    public void setIsUpdate(Integer isUpdate) {
+        this.isUpdate = isUpdate;
     }
 }
