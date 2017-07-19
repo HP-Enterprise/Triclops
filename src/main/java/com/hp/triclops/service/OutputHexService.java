@@ -69,6 +69,8 @@ public class OutputHexService {
     @Autowired
     WarningMessageDataRespository warningMessageDataRespository;
     @Autowired
+    MessageRepository messageRepository;
+    @Autowired
     FailureMessageDataRespository failureMessageDataRespository;
 
     @Value("${com.hp.acquire.serverId}")
@@ -616,7 +618,7 @@ public class OutputHexService {
      * @param pushMsg 文本报警信息
      */
     public void pushMessageToUser(String vin,Map<String,Object> pushMsg){
-        _logger.info("[0x24][0x25][0x28][0x29]准备推送消息:"+pushMsg);
+        _logger.info("[0x24][0x25][0x28][0x29]准备推送消息:" + pushMsg);
         if(pushMsg==null){
             return;
         }
@@ -747,12 +749,41 @@ public class OutputHexService {
         Short lastSrsWarning=0;
         Short lastCrashWarning=0;
         Short lastAtaWarning=0;
-        WarningMessageData wmd = this.getWarningMessageData(vin);
-        if(wmd!=null){
-            lastSrsWarning=wmd.getSrsWarning();
-            lastCrashWarning=wmd.getCrashWarning();
-            lastAtaWarning=wmd.getAtaWarning();
+//        WarningMessageData wmd = this.getWarningMessageData(vin);
+//        if(wmd!=null){
+//            lastSrsWarning=wmd.getSrsWarning();
+//            lastCrashWarning=wmd.getCrashWarning();
+//            lastAtaWarning=wmd.getAtaWarning();
+//        }
+
+        //判断条件改为通过message表中的上一条报警状态
+        Message srsMsg = this.getWarningMessageData(vin, 8);
+        Message crashMsg = this.getWarningMessageData(vin, 8);
+        Message ataMsg = this.getWarningMessageData(vin, 9);
+        if(srsMsg != null){
+            Integer cleanFlag = srsMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastSrsWarning = 1;
+            }
         }
+
+        if(crashMsg != null){
+            Integer cleanFlag = crashMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastAtaWarning = 1;
+            }
+        }
+
+        if(ataMsg != null){
+            Integer cleanFlag = ataMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastCrashWarning = 1;
+            }
+        }
+
         _logger.info("[0x24]lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
         _logger.info("[0x24]nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
 
@@ -898,12 +929,41 @@ public class OutputHexService {
         Short lastSrsWarning=0;
         Short lastAtaWarning=0;
         Short lastCrashWarning=0;
-        WarningMessageData wmd = this.getWarningMessageData(vin);
-        if(wmd!=null){
-            lastSrsWarning=wmd.getSrsWarning();
-            lastCrashWarning=wmd.getCrashWarning();
-            lastAtaWarning=wmd.getAtaWarning();
+//        WarningMessageData wmd = this.getWarningMessageData(vin);
+//        if(wmd!=null){
+//            lastSrsWarning=wmd.getSrsWarning();
+//            lastCrashWarning=wmd.getCrashWarning();
+//            lastAtaWarning=wmd.getAtaWarning();
+//        }
+
+        //判断条件改为通过message表中的上一条报警状态
+        Message srsMsg = this.getWarningMessageData(vin, 8);
+        Message crashMsg = this.getWarningMessageData(vin, 8);
+        Message ataMsg = this.getWarningMessageData(vin, 9);
+        if(srsMsg != null){
+            Integer cleanFlag = srsMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastSrsWarning = 1;
+            }
         }
+
+        if(crashMsg != null){
+            Integer cleanFlag = crashMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastAtaWarning = 1;
+            }
+        }
+
+        if(ataMsg != null){
+            Integer cleanFlag = ataMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastCrashWarning = 1;
+            }
+        }
+
         _logger.info("[0x25]lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
         _logger.info("[0x25]nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
 
@@ -1156,12 +1216,40 @@ public class OutputHexService {
         Short lastSrsWarning=0;
         Short lastCrashWarning=0;
         Short lastAtaWarning=0;
-        WarningMessageData wmd = this.getWarningMessageData(vin);
-        if(wmd!=null){
-            lastSrsWarning=wmd.getSrsWarning();
-            lastCrashWarning=wmd.getCrashWarning();
-            lastAtaWarning=wmd.getAtaWarning();
+//        WarningMessageData wmd = this.getWarningMessageData(vin);
+//        if(wmd!=null){
+//            lastSrsWarning=wmd.getSrsWarning();
+//            lastCrashWarning=wmd.getCrashWarning();
+//            lastAtaWarning=wmd.getAtaWarning();
+//        }
+        //判断条件改为通过message表中的上一条报警状态
+        Message srsMsg = this.getWarningMessageData(vin, 8);
+        Message crashMsg = this.getWarningMessageData(vin, 8);
+        Message ataMsg = this.getWarningMessageData(vin, 9);
+        if(srsMsg != null){
+            Integer cleanFlag = srsMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastSrsWarning = 1;
+            }
         }
+
+        if(crashMsg != null){
+            Integer cleanFlag = crashMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastAtaWarning = 1;
+            }
+        }
+
+        if(ataMsg != null){
+            Integer cleanFlag = ataMsg.getCleanFlag();
+            //上一条报警消息标志 0报警 1消除
+            if(cleanFlag == 0){
+                lastCrashWarning = 1;
+            }
+        }
+
         _logger.info("[0x24][0x25]lastSrsWarning" + lastSrsWarning + "---lastCrashWarning" + lastCrashWarning+ "---lastAtaWarning" + lastAtaWarning);
         _logger.info("[0x24][0x25]nowSrsWarning"+wd.getSrsWarning() + "---nowCrashWarning"+wd.getCrashWarning() + "---nowAtaWarning"+wd.getAtaWarning());
         //sb.append("车辆报警信息: ");
@@ -1359,6 +1447,11 @@ public class OutputHexService {
             wmd =  list.get(0);
         }
         return wmd;
+    }
+
+    public Message getWarningMessageData(String vin, Integer pType){
+        Message msg = messageRepository.getLatestOneByVin(vin, pType);
+        return msg;
     }
 
     /**
