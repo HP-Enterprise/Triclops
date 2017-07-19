@@ -772,7 +772,7 @@ public class OutputHexService {
             Integer cleanFlag = crashMsg.getCleanFlag();
             //上一条报警消息标志 0报警 1消除
             if(cleanFlag == 0){
-                lastAtaWarning = 1;
+                lastCrashWarning = 1;
             }
         }
 
@@ -780,7 +780,7 @@ public class OutputHexService {
             Integer cleanFlag = ataMsg.getCleanFlag();
             //上一条报警消息标志 0报警 1消除
             if(cleanFlag == 0){
-                lastCrashWarning = 1;
+                lastAtaWarning = 1;
             }
         }
 
@@ -952,7 +952,7 @@ public class OutputHexService {
             Integer cleanFlag = crashMsg.getCleanFlag();
             //上一条报警消息标志 0报警 1消除
             if(cleanFlag == 0){
-                lastAtaWarning = 1;
+                lastCrashWarning = 1;
             }
         }
 
@@ -960,7 +960,7 @@ public class OutputHexService {
             Integer cleanFlag = ataMsg.getCleanFlag();
             //上一条报警消息标志 0报警 1消除
             if(cleanFlag == 0){
-                lastCrashWarning = 1;
+                lastAtaWarning = 1;
             }
         }
 
@@ -1238,7 +1238,7 @@ public class OutputHexService {
             Integer cleanFlag = crashMsg.getCleanFlag();
             //上一条报警消息标志 0报警 1消除
             if(cleanFlag == 0){
-                lastAtaWarning = 1;
+                lastCrashWarning = 1;
             }
         }
 
@@ -1246,7 +1246,7 @@ public class OutputHexService {
             Integer cleanFlag = ataMsg.getCleanFlag();
             //上一条报警消息标志 0报警 1消除
             if(cleanFlag == 0){
-                lastCrashWarning = 1;
+                lastAtaWarning = 1;
             }
         }
 
