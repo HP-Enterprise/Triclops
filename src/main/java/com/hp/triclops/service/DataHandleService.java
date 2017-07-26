@@ -69,7 +69,7 @@ public class DataHandleService {
                 outputHexService.getWarningMessageAndSms(vin, msg, 3);
                 saveWarningMessage(vin, msg);
                 break;
-            case 0x25://补发报警数据
+            case 0x25://补发报警数据0
                 outputHexService.getResendWarningMessageAndPush(vin, msg,1);
                 outputHexService.getResendWarningMessageAndPush(vin, msg,2);
                 outputHexService.getResendWarningMessageAndPush(vin, msg,3);
