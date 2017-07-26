@@ -1,6 +1,8 @@
 package com.hp.triclops.management;
 
+import com.hp.triclops.entity.UserAdvice;
 import com.hp.triclops.entity.UserEx;
+import com.hp.triclops.repository.UserAdviceRepository;
 import com.hp.triclops.repository.UserExRepository;
 import com.hp.triclops.vo.UserExShow;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +27,9 @@ public class UserManagement {
 
     @Autowired
     UserExRepository userExRepository;
+
+    @Autowired
+    UserAdviceRepository userAdviceRepository;
 
     /**
      * 新增用户
@@ -174,7 +180,7 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserExShow> userPage =  readSelect(oid,name,gender,nick,phone,isVerified,currentPage,pageSize);
+        Page<UserExShow> userPage =  readSelect(oid, name, gender, nick, phone, isVerified, currentPage, pageSize);
 
         List<UserExShow> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
@@ -209,7 +215,7 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserEx> userPage =  userExRepository.adminSelect(name,gender,nick,phone,isVerified,p);
+        Page<UserEx> userPage =  userExRepository.adminSelect(name, gender, nick, phone, isVerified, p);
 
         List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
@@ -241,7 +247,7 @@ public class UserManagement {
         pageSize = pageSize<=0?10:pageSize;
         Pageable p = new PageRequest(currentPage-1,pageSize);
 
-        Page<UserEx> userPage =  userExRepository.registSelect(name,gender,nick,phone,isVerified,p);
+        Page<UserEx> userPage =  userExRepository.registSelect(name, gender, nick, phone, isVerified, p);
 
         List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
@@ -282,7 +288,7 @@ public class UserManagement {
         {
             uids.add(0);
         }
-        Page<UserEx> userPage =  userExRepository.particularSelect(uids,name,gender,nick,phone,isVerified,p);
+        Page<UserEx> userPage =  userExRepository.particularSelect(uids, name, gender, nick, phone, isVerified, p);
 
         List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
@@ -323,7 +329,7 @@ public class UserManagement {
         {
             uids.add(0);
         }
-        Page<UserEx> userPage = userExRepository.selectUserAbsent(uids,name,gender,nick,phone,isVerified,p);
+        Page<UserEx> userPage = userExRepository.selectUserAbsent(uids, name, gender, nick, phone, isVerified, p);
 
         List<UserEx> list = userPage.getContent();
         List<UserExShow> returnList = new ArrayList<>();
@@ -335,6 +341,24 @@ public class UserManagement {
         }
 
         return new PageImpl<>(returnList,p,userPage.getTotalElements());
+    }
+
+    /**
+     * 新增用户建议
+     * @param content 用户建议内容
+     * @param userId 用户id
+     * @return 新增后的用户信息
+     */
+    public UserAdvice saveAdvice(String content, int userId)
+    {
+        UserAdvice userAdvice = new UserAdvice();
+        userAdvice.setContent(content);
+        userAdvice.setCreateTime(new Date());
+        userAdvice.setStatus(1);
+        userAdvice.setUserId(userId);
+
+        UserAdvice advice = userAdviceRepository.save(userAdvice);
+        return advice;
     }
 
 }
