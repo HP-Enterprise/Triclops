@@ -1,13 +1,11 @@
 package com.hp.triclops.repository;
 
 import com.hp.triclops.entity.GpsData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import java.util.List;
 
 /**
@@ -23,7 +21,7 @@ public class GpsDataRepositoryDAO {
      * @return gps
      */
     public List findLatest(){
-        String sql = "select g.* from (select gd.* from t_data_gps gd \n" +
+        String sql = "select g.* from (select gd.* from t_data_gps gd left join t_vehicle v on v.vin = gd.vin \n" +
                 "where gd.application_id = 34 and latitude > 0 and longitude > 0 and gd.sending_time >= date_sub(now(), INTERVAL 60 SECOND) order by gd.sending_time desc) g\n" +
                 "group by g.vin";
         Query query = em.createNativeQuery(sql, GpsData.class);
@@ -37,7 +35,9 @@ public class GpsDataRepositoryDAO {
      */
     public List findByVinAndTime(String vin){
         String sql = "select gd.* from t_data_gps gd \n" +
-                "where gd.vin = :vin and gd.application_id = 34 and latitude > 0 and longitude > 0 and gd.sending_time >= date_sub(now(), INTERVAL 60 MINUTE) order by gd.sending_time desc";
+                "left join t_vehicle v on v.vin = gd.vin \n" +
+                "where gd.vin = :vin and gd.application_id = 34 and latitude > 0 and longitude > 0 and gd.sending_time >= date_sub(now(), INTERVAL 60 MINUTE) " +
+                "order by gd.sending_time desc";
         Query query = em.createNativeQuery(sql, GpsData.class);
         query.setParameter("vin", vin);
         List queryList = query.getResultList();
