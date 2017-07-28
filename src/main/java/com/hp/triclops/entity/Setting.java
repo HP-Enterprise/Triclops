@@ -12,14 +12,16 @@ public class Setting {
     private int id;
     private String type;
     private String code;
+    private String name;
     private String value;
 
     public Setting(){}
 
-    public Setting(int id, String type, String code, String value) {
+    public Setting(int id, String type, String code, String name, String value) {
         this.id = id;
         this.type = type;
         this.code = code;
+        this.name = name;
         this.value = value;
     }
 
@@ -59,5 +61,14 @@ public class Setting {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    @Column(name = "name", nullable = false, insertable = true, updatable = true)
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

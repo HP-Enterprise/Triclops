@@ -13,4 +13,7 @@ public interface SettingRepository extends CrudRepository<Setting,Integer> {
 
     @Query("select s from Setting s where s.type = ?1")
     List<Setting> findByType(String type);
+
+    @Query("select s from Setting s")
+    List<Setting> findAll();
 }
