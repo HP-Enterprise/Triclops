@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -445,6 +446,77 @@ public class OutputHexService {
         return byteStr;
     }
 
+    /**
+     * 根据报警hex信息生成文本性质的报警提示 并push or send到对应user
+     * @param vin vin
+     * @param msg 16进制报警信息
+     *  @param oneFirst 气囊/碰撞/防盗优先
+     */
+    public void getWarningMessage(String vin,String msg,int oneFirst) {
+        //推送消息
+        Map<String, Object> pushMsg = getWarningMessageForPush(vin, msg, null, oneFirst);
+        pushMessageToUser(vin, pushMsg);
+
+        //发送短信
+        if (pushMsg != null) {
+            String cleanFlag = (String) pushMsg.get("cleanFlag");
+            //0报警 1清除
+            if ("0".equals(cleanFlag)) {
+                Vehicle vehicle = vehicleRepository.findByVin(vin);
+                List<UserVehicleRelatived> uvr = userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
+
+                StringBuilder sb = new StringBuilder();
+                String srs = "";
+                try {
+                    if (oneFirst == SRSFIRST) {
+                        srs = "【华晨汽车Bri-Air】尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs = java.net.URLEncoder.encode(srs, "UTF-8");
+
+                    }
+                    if (oneFirst == CRASHFIRST) {
+                        srs = "【华晨汽车Bri-Air】尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    }
+                    if (oneFirst == ATAFIRST) {
+                        srs = "【华晨汽车Bri-Air】尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "车门被异常开启，建议您尽快确认车辆状态。";
+                        srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+                String smsStr = sb.toString();
+                //一个车对应多个uid
+                if (uvr.size() > 0) {
+                    User u = userRepository.findById(uvr.get(0).getUid().getId());
+                    if (u != null) {
+                        //取到紧急联系人电话
+                        //发送短信
+                        String phone = u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
+                        if (oneFirst == SRSFIRST || oneFirst == CRASHFIRST) {//
+                            if (u.getContactsPhone() != null && !"".equals(u.getContactsPhone())) {
+                                String contactPhone = u.getContactsPhone();
+                                _logger.info("[0x24]准备发送报警短信给紧急联系人" + contactPhone + "|oneFirst:" + oneFirst);
+                                _logger.info("[0x24]发送短信:" + contactPhone + ":" + smsStr);
+                                //调用工具类发起 http请求
+                                smsHttpTool.doHttp(contactPhone, smsStr);
+                            } else {
+                                _logger.info("[0x24]关联用户的紧急联系人手机号为空，无法发送短信");
+                            }
+                        }
+                        _logger.info("[0x24]准备发送报警短信给" + phone + "|oneFirst:" + oneFirst);
+                        _logger.info("[0x24]发送短信:" + phone + ":" + smsStr);
+                        //调用工具类发起 http请求
+                        smsHttpTool.doHttp(phone, smsStr);
+                    } else {
+                        _logger.info("[0x24]没有找到关联用户，无法发送短信");
+                    }
+                } else {
+                    _logger.info("[0x24]没有找到关联用户，无法发送短信");
+                }
+            }
+        }
+    }
 
 
     /**
@@ -465,7 +537,7 @@ public class OutputHexService {
                 UserVehicleRelatived userVehicleRelatived =  iterator.next();
                 if(userVehicleRelatived.getVflag()==1){
                     User user = userVehicleRelatived.getUid();
-                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user,oneFirst);
+                    Map<String,Object> pushMsg=getWarningMessageForPush(vin, msg, user, oneFirst);
                     pushMessageToUser(vin, pushMsg);
                 }
 
@@ -509,6 +581,78 @@ public class OutputHexService {
     }
 
     /**
+     * 根据补发报警hex信息生成文本性质的报警提示 并push or send到对应user
+     * @param vin vin
+     * @param msg 16进制报警信息
+     * @param oneFirst 气囊/碰撞/防盗优先
+     */
+    public void getResendWarningMessage(String vin,String msg,int oneFirst){
+        //推送消息
+        Map<String,Object> pushMsg = getResendWarningMessageForPush(vin, msg, null, oneFirst);
+        pushMessageToUser(vin, pushMsg);
+
+        //发送短信
+        if(pushMsg != null){
+            String cleanFlag = (String) pushMsg.get("cleanFlag");
+            //0报警 1清除
+            if("0".equals(cleanFlag)){
+                Vehicle vehicle=vehicleRepository.findByVin(vin);
+                List<UserVehicleRelatived> uvr=userVehicleRelativedRepository.findOwnerByVid(vehicle);//找到车主
+
+                StringBuilder sb = new StringBuilder();
+                String srs = "";
+                try {
+                    if(oneFirst == SRSFIRST){
+                        srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs = java.net.URLEncoder.encode(srs, "UTF-8");
+
+                    }
+                    if(oneFirst == CRASHFIRST){
+                        srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    }
+                    if(oneFirst == ATAFIRST){
+                        srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"车门被异常开启，建议您尽快确认车辆状态。";
+                        srs = java.net.URLEncoder.encode(srs, "UTF-8");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    _logger.info(e.getMessage());
+                }
+                sb.append(srs);
+                String smsStr = sb.toString();
+                //一个车对应多个uid
+                if(uvr.size()>0) {
+                    User u=userRepository.findById(uvr.get(0).getUid().getId());
+                    if(u!=null){
+                        //取到紧急联系人电话
+                        //发送短信
+                        String phone = u.getPhone();//防盗报警车主电话，碰撞报警紧急联系人电话
+                        if(oneFirst == SRSFIRST|| oneFirst == CRASHFIRST){//
+                            if(u.getContactsPhone() != null && !"".equals(u.getContactsPhone())){
+                                String contactPhone = u.getContactsPhone();
+                                _logger.info("[0x24]准备发送报警短信给紧急联系人:" + contactPhone + "|oneFirst:"+oneFirst);
+                                _logger.info("[0x24]发送短信:" + contactPhone + ":" + smsStr);
+                                //调用工具类发起 http请求
+                                smsHttpTool.doHttp(contactPhone, smsStr);
+                            }else{
+                                _logger.info("[0x24]关联用户的紧急联系人手机号为空，无法发送短信");
+                            }
+                        }
+                        _logger.info("[0x24]准备发送报警短信给" + phone+"|oneFirst:" + oneFirst);
+                        _logger.info("[0x24]发送短信:" + phone + ":" + smsStr);
+                        //调用工具类发起 http请求
+                        smsHttpTool.doHttp(phone, smsStr);
+                    }else{
+                        _logger.info("[0x24]没有找到关联用户，无法发送短信");
+                    }
+                }else{
+                    _logger.info("[0x24]没有找到关联用户，无法发送短信");
+                }
+            }
+        }
+    }
+
+    /**
      * 根据补发报警hex信息生成文本性质的报警提示 并push到对应user
      * @param vin vin
      * @param msg 16进制报警信息
@@ -531,7 +675,6 @@ public class OutputHexService {
         }else{
             _logger.info("[0x25]没有找到关联用户，无法推送消息");
         }
-
     }
 
     /**
@@ -630,34 +773,34 @@ public class OutputHexService {
             while (iterator.hasNext()){
                 UserVehicleRelatived userVehicleRelatived = iterator.next();
                 if(userVehicleRelatived.getVflag()==1){
-                int uid = userVehicleRelatived.getUid().getId();
-                //int uid=iterator.next().getUid().getId();
-                _logger.info("[0x24][0x25][0x28][0x29]推送:"+uid+":"+pushMsg);
-                try {
-                    //this.mqService.pushToUser(uid, pushMsg);
-/*                    * @param sourceId    发送用户id<br>
-                    * @param resourceFrom  数据来源,1 手机,2 车机<br>
-                    * @param targetType 目标对象类型 ,1 user ,2 organize <br>
-                    * @param targetId 目标对象id<br>
-                    * @param resourceTo 目标类型 ,1 手机,2 车机,3 短信,4 手机,车机 ,短信<br>1
-                    * @param funType 消息类型 ,1 ,即时通讯 ,2 ,推送消息<br>2
-                    * @param pType 推送消息类型,1 远程控制,2 故障提醒,3 保养提醒,4 位置分享,5 智能寻车,6 位置共享,7 发送位置,8 气囊报警,9 防盗报警<br>289
-                    * @param textContent 发送内容文本、经纬度<br>
-                    * @param contentType 发送内容类型 ,1 文本,2 音乐,3 图片,41 位置信息,42 位置共享开始,43 位置共享结束<br>
-                    * @param messageNums 信息条数 count
-                    * @param cleanFlag 消息推送消除标志，仅针对 气囊报警、防盗报警,0报警,1消除
-                    * @param file 上传的附件*/
-                    pushMsg.put("targetType",1);
-                    pushMsg.put("targetId",uid);
-                    pushMsg.put("resourceTo",1);
-                    pushMsg.put("funType", 2);
-                    pushMsg.put("vin", vin);
+                    int uid = userVehicleRelatived.getUid().getId();
+                    //int uid=iterator.next().getUid().getId();
+                    _logger.info("[0x24][0x25][0x28][0x29]推送:"+uid+":"+pushMsg);
+                    try {
+                        //this.mqService.pushToUser(uid, pushMsg);
+    /*                    * @param sourceId    发送用户id<br>
+                        * @param resourceFrom  数据来源,1 手机,2 车机<br>
+                        * @param targetType 目标对象类型 ,1 user ,2 organize <br>
+                        * @param targetId 目标对象id<br>
+                        * @param resourceTo 目标类型 ,1 手机,2 车机,3 短信,4 手机,车机 ,短信<br>1
+                        * @param funType 消息类型 ,1 ,即时通讯 ,2 ,推送消息<br>2
+                        * @param pType 推送消息类型,1 远程控制,2 故障提醒,3 保养提醒,4 位置分享,5 智能寻车,6 位置共享,7 发送位置,8 气囊报警,9 防盗报警<br>289
+                        * @param textContent 发送内容文本、经纬度<br>
+                        * @param contentType 发送内容类型 ,1 文本,2 音乐,3 图片,41 位置信息,42 位置共享开始,43 位置共享结束<br>
+                        * @param messageNums 信息条数 count
+                        * @param cleanFlag 消息推送消除标志，仅针对 气囊报警、防盗报警,0报警,1消除
+                        * @param file 上传的附件*/
+                        pushMsg.put("targetType",1);
+                        pushMsg.put("targetId",uid);
+                        pushMsg.put("resourceTo",1);
+                        pushMsg.put("funType", 2);
+                        pushMsg.put("vin", vin);
 
-                    httpRequestTool.doHttp(urlLink,pushMsg);
+                        httpRequestTool.doHttp(urlLink,pushMsg);
 
-                }catch (RuntimeException e){_logger.info(e.getMessage());} catch (Exception e) {
-                    _logger.info(e.getMessage());
-                }
+                    }catch (RuntimeException e){_logger.info(e.getMessage());} catch (Exception e) {
+                        _logger.info(e.getMessage());
+                    }
                 }
             }
         }else{

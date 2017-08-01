@@ -3,6 +3,7 @@ package com.hp.triclops.entity;
 import com.hp.triclops.vo.VehicleExShow;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "t_vehicle")
-public class VehicleEx {
+public class VehicleEx implements Serializable {
 
     private int id;
     private String vin;
