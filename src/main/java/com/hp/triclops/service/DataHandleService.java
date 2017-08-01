@@ -61,21 +61,27 @@ public class DataHandleService {
                 saveDataResendRealTimeMes(vin, msg);
                 break;
             case 0x24://报警数据
-                outputHexService.getWarningMessageAndPush(vin, msg,1);
-                outputHexService.getWarningMessageAndPush(vin, msg, 2);
-                outputHexService.getWarningMessageAndPush(vin, msg, 3);
-                outputHexService.getWarningMessageAndSms(vin, msg, 1);
-                outputHexService.getWarningMessageAndSms(vin, msg, 2);
-                outputHexService.getWarningMessageAndSms(vin, msg, 3);
+                outputHexService.getWarningMessage(vin, msg, 1);
+                outputHexService.getWarningMessage(vin, msg, 2);
+                outputHexService.getWarningMessage(vin, msg, 3);
+//                outputHexService.getWarningMessageAndPush(vin, msg,1);
+//                outputHexService.getWarningMessageAndPush(vin, msg, 2);
+//                outputHexService.getWarningMessageAndPush(vin, msg, 3);
+//                outputHexService.getWarningMessageAndSms(vin, msg, 1);
+//                outputHexService.getWarningMessageAndSms(vin, msg, 2);
+//                outputHexService.getWarningMessageAndSms(vin, msg, 3);
                 saveWarningMessage(vin, msg);
                 break;
             case 0x25://补发报警数据0
-                outputHexService.getResendWarningMessageAndPush(vin, msg,1);
-                outputHexService.getResendWarningMessageAndPush(vin, msg,2);
-                outputHexService.getResendWarningMessageAndPush(vin, msg,3);
-                outputHexService.getResendWarningMessageAndSms(vin, msg, 1);
-                outputHexService.getResendWarningMessageAndSms(vin, msg,2);
-                outputHexService.getResendWarningMessageAndSms(vin, msg,3);
+                outputHexService.getResendWarningMessage(vin, msg, 1);
+                outputHexService.getResendWarningMessage(vin, msg, 2);
+                outputHexService.getResendWarningMessage(vin, msg, 3);
+//                outputHexService.getResendWarningMessageAndPush(vin, msg,1);
+//                outputHexService.getResendWarningMessageAndPush(vin, msg,2);
+//                outputHexService.getResendWarningMessageAndPush(vin, msg,3);
+//                outputHexService.getResendWarningMessageAndSms(vin, msg, 1);
+//                outputHexService.getResendWarningMessageAndSms(vin, msg,2);
+//                outputHexService.getResendWarningMessageAndSms(vin, msg,3);
                 saveDataResendWarningMessage(vin, msg);
                 break;
             case 0x28://故障数据

@@ -21,9 +21,10 @@ public class GpsDataRepositoryDAO {
      * @return gps
      */
     public List findLatest(){
-        String sql = "select g.* from (select gd.* from t_data_gps gd left join t_vehicle v on v.vin = gd.vin \n" +
-                "where gd.application_id = 34 and latitude > 0 and longitude > 0 and gd.sending_time >= date_sub(now(), INTERVAL 60 SECOND) order by gd.sending_time desc) g\n" +
-                "group by g.vin";
+        String sql = "SELECT A.*, v.* FROM t_data_gps A JOIN" +
+                " (SELECT vin, max(sending_time) lastTime FROM t_data_gps g" +
+                " where g.application_id = 34 and g.latitude > 0 and g.longitude > 0 and g.sending_time >= date_sub(now(), INTERVAL 60 SECOND) GROUP BY vin) B ON A.vin = B.vin and A.sending_time = B.lastTime" +
+                " left join t_vehicle v on v.vin = A.vin";
         Query query = em.createNativeQuery(sql, GpsData.class);
         List queryList = query.getResultList();
         return queryList;
@@ -34,7 +35,7 @@ public class GpsDataRepositoryDAO {
      * @return gps
      */
     public List findByVinAndTime(String vin){
-        String sql = "select gd.* from t_data_gps gd \n" +
+        String sql = "select gd.*, v.* from t_data_gps gd \n" +
                 "left join t_vehicle v on v.vin = gd.vin \n" +
                 "where gd.vin = :vin and gd.application_id = 34 and latitude > 0 and longitude > 0 and gd.sending_time >= date_sub(now(), INTERVAL 60 MINUTE) " +
                 "order by gd.sending_time desc";
