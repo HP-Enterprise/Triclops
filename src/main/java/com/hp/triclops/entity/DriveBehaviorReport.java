@@ -18,7 +18,7 @@ public class DriveBehaviorReport {
     private String brand;//品牌
     private String model;//车型
     private String vin;
-    private Long runTimes;//运行时间 单位秒
+    private Double runTimes;//运行时间 单位秒
     private Integer outTimes;//出行次数
     private Integer suddenUp;//急加速次数
     private Integer suddenDec;//急减速次数
@@ -113,11 +113,11 @@ public class DriveBehaviorReport {
         this.vin = vin;
     }
 
-    public Long getRunTimes() {
+    public Double getRunTimes() {
         return runTimes;
     }
 
-    public void setRunTimes(Long runTimes) {
+    public void setRunTimes(Double runTimes) {
         this.runTimes = runTimes;
     }
 

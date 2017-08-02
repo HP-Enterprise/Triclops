@@ -1571,7 +1571,7 @@ public class DataTool {
         double baseValB=-9.8*3;
         if(vals!=null) {
             for (int i = 0; i <vals.length; i++) {
-                if(vals[i]==0xffff){//无效值0xffff
+                if(vals[i]==0xffff || vals[i]==0x0000){//无效值0xffff 缺少值0x0000
                     continue;
                 }
                 temp=vals[i]*0.002-65;
@@ -1605,7 +1605,7 @@ public class DataTool {
         double temp=0;
         if(vals!=null) {
             for (int i = 0; i <vals.length; i++) {
-                if(vals[i]==0xffff){//无效值0xffff
+                if(vals[i]==0xffff || vals[i]==0x0000){//无效值0xffff 缺少值0x0000
                     continue;
                 }
                 temp=vals[i]*0.15625;
