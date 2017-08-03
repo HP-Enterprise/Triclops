@@ -182,7 +182,7 @@ public class DataHandleService {
             dd.setSeatbeltRm(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[8]) + String.valueOf(seatBeltInfo[9])));
             dd.setSeatbeltRr(dataTool.getSeatBeltStatus4F60(String.valueOf(seatBeltInfo[6]) + String.valueOf(seatBeltInfo[7])));
         }
-        dd.setDrivingRange(bean.getKilometerMileage());//行驶里程在bean中已经是int数据
+        dd.setDrivingRange(bean.getKilometerMileage() == 0xffffff ? 0 : bean.getFuelOil());//行驶里程在bean中已经是int数据
         dd.setFuelOil(bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil() * 1f);//0xff无效值
         dd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
         dd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
