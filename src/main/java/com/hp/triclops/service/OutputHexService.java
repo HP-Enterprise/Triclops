@@ -469,16 +469,16 @@ public class OutputHexService {
                 String srs = "";
                 try {
                     if (oneFirst == SRSFIRST) {
-                        srs = "【华晨汽车Bri-Air】尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs = "[华晨汽车Bri-Air]尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "发生车辆碰撞，建议您尽快确认车辆状态。";
                         srs = java.net.URLEncoder.encode(srs, "UTF-8");
 
                     }
                     if (oneFirst == CRASHFIRST) {
-                        srs = "【华晨汽车Bri-Air】尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs = "[华晨汽车Bri-Air]尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "发生车辆碰撞，建议您尽快确认车辆状态。";
                         srs = java.net.URLEncoder.encode(srs, "UTF-8");
                     }
                     if (oneFirst == ATAFIRST) {
-                        srs = "【华晨汽车Bri-Air】尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "车门被异常开启，建议您尽快确认车辆状态。";
+                        srs = "[华晨汽车Bri-Air]尊敬的用户，您的爱车于" + DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") + "车门被异常开启，建议您尽快确认车辆状态。";
                         srs = java.net.URLEncoder.encode(srs, "UTF-8");
                     }
                 } catch (UnsupportedEncodingException e) {
@@ -603,16 +603,16 @@ public class OutputHexService {
                 String srs = "";
                 try {
                     if(oneFirst == SRSFIRST){
-                        srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs="[华晨汽车Bri-Air]尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
                         srs = java.net.URLEncoder.encode(srs, "UTF-8");
 
                     }
                     if(oneFirst == CRASHFIRST){
-                        srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
+                        srs="[华晨汽车Bri-Air]尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"发生车辆碰撞，建议您尽快确认车辆状态。";
                         srs = java.net.URLEncoder.encode(srs, "UTF-8");
                     }
                     if(oneFirst == ATAFIRST){
-                        srs="【华晨汽车Bri-Air】尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"车门被异常开启，建议您尽快确认车辆状态。";
+                        srs="[华晨汽车Bri-Air]尊敬的用户，您的爱车于"+ DateUtil.formatDateByFormat(new Date(), "yyyy-MM-dd,HH:mm:ss") +"车门被异常开启，建议您尽快确认车辆状态。";
                         srs = java.net.URLEncoder.encode(srs, "UTF-8");
                     }
                 } catch (UnsupportedEncodingException e) {
