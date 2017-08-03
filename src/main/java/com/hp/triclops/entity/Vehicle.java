@@ -128,6 +128,8 @@ public class Vehicle implements Serializable {
     private Set<Organization> organizationSet;
     private Integer isUpdate;
 
+    private int realNameAuthentication;
+
     public Vehicle() {
         this.vinSet = new HashSet<UserVehicleRelatived>();
         this.organizationSet = new HashSet<Organization>();
@@ -366,5 +368,15 @@ public class Vehicle implements Serializable {
 
     public void setIsUpdate(Integer isUpdate) {
         this.isUpdate = isUpdate;
+    }
+
+    public int getRealNameAuthentication() {
+        return realNameAuthentication;
+    }
+
+    @Basic
+    @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
+    public void setRealNameAuthentication(int realNameAuthentication) {
+        this.realNameAuthentication = realNameAuthentication;
     }
 }
