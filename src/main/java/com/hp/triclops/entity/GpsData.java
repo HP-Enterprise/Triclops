@@ -101,7 +101,7 @@ public class GpsData {
     private double longitude;
     private float speed;
     private int heading;
-    private Vehicle vehicle;
+    private VehicleEx vehicle;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -236,11 +236,11 @@ public class GpsData {
 
     @OneToOne
     @JoinColumn(name="vin", referencedColumnName="vin", insertable = false, updatable = false)
-    public Vehicle getVehicle() {
+    public VehicleEx getVehicle() {
         return vehicle;
     }
 
-    public void setVehicle(Vehicle vehicle) {
+    public void setVehicle(VehicleEx vehicle) {
         this.vehicle = vehicle;
     }
 

@@ -1428,61 +1428,75 @@ public class DataTool {
         DrivingBehaviorMes drivingBehaviorMes=new DrivingBehaviorMes();
         byte[] data=getBytesFromByteBuf(getByteBuf(msg));
         ByteBuf buf=getByteBuf(bytes2hex(data));
-        drivingBehaviorMes.setHead((int) buf.readShort());
-        drivingBehaviorMes.setLength((int) buf.readShort());
-        drivingBehaviorMes.setTestFlag((short) buf.readByte());
-        drivingBehaviorMes.setSendingTime((long) buf.readInt());
-        drivingBehaviorMes.setApplicationID((short) buf.readByte());
-        drivingBehaviorMes.setMessageID((short) buf.readByte());
+        drivingBehaviorMes.setHead(buf.readUnsignedShort());
+        drivingBehaviorMes.setLength(buf.readUnsignedShort());
+        drivingBehaviorMes.setTestFlag(buf.readUnsignedByte());
+        drivingBehaviorMes.setSendingTime(buf.readUnsignedInt());
+        drivingBehaviorMes.setApplicationID(buf.readUnsignedByte());
+        drivingBehaviorMes.setMessageID(buf.readUnsignedByte());
         byte[] imeiBytes=new byte[15];
         buf.readBytes(imeiBytes);
         drivingBehaviorMes.setImei(new String(imeiBytes));
-        drivingBehaviorMes.setProtocolVersionNumber((short) buf.readByte());
-        drivingBehaviorMes.setVehicleID((short) buf.readByte());
-        drivingBehaviorMes.setVehicleModel((short) buf.readByte());
-        drivingBehaviorMes.setTripID((int) buf.readShort());
-        drivingBehaviorMes.setReserved((int) buf.readShort());
-        drivingBehaviorMes.setEventID((long) buf.readInt());
+        drivingBehaviorMes.setProtocolVersionNumber(buf.readUnsignedByte());
+        drivingBehaviorMes.setVehicleID(buf.readUnsignedByte());
+        drivingBehaviorMes.setVehicleModel(buf.readUnsignedByte());
+        drivingBehaviorMes.setTripID(buf.readUnsignedShort());
+        drivingBehaviorMes.setReserved(buf.readUnsignedShort());
+        drivingBehaviorMes.setEventID(buf.readUnsignedInt());
 
+        //2
         Integer[] lateralAcceleration = new Integer[40];
         for(int i=0;i<lateralAcceleration.length;i++){
-            lateralAcceleration[i]=(int)buf.readUnsignedShort();//16bit
+            lateralAcceleration[i]=buf.readUnsignedShort();//16bit
         }
         drivingBehaviorMes.setLateralAcceleration(lateralAcceleration);
 
+        //3
         Integer[] driveAcceleration = new Integer[40];
         for(int i=0;i<driveAcceleration.length;i++){
-            driveAcceleration[i]=(int)buf.readUnsignedShort();//16bit
+            driveAcceleration[i]=buf.readUnsignedShort();//16bit
         }
         drivingBehaviorMes.setDriveAcceleration(driveAcceleration);
 
+        //4
         Short[] brake = new Short[40];
         for(int i=0;i<brake.length;i++){
-            brake[i]=(short)buf.readByte();//8bit
+            brake[i]=buf.readUnsignedByte();//8bit
         }
         drivingBehaviorMes.setBrake(brake);
 
+        //5
         Integer[] speed = new Integer[40];
         for(int i=0;i<speed.length;i++){
-            speed[i] = (int)buf.readUnsignedShort();//16bit
+            speed[i] = buf.readUnsignedShort();//16bit
         }
         drivingBehaviorMes.setSpeed(speed);
 
+        //6
         Integer[] lws = new Integer[40];
         for(int i=0;i<lws.length;i++){
-            lws[i]=buf.readUnsignedMedium();//24bit
+            lws[i]=buf.readUnsignedShort();//24bit
         }
         drivingBehaviorMes.setLws(lws);
 
+        //7
+        Short[] steeringSpeed = new Short[40];
+        for(int i=0;i<steeringSpeed.length;i++){
+            steeringSpeed[i]=buf.readUnsignedByte();//8bit
+        }
+        drivingBehaviorMes.setSteeringSpeed(steeringSpeed);
+
+        //8
         Integer[] bcvol = new Integer[40];
         for(int i=0;i<bcvol.length;i++){
-            bcvol[i] =buf.readUnsignedMedium();//24bit
+            bcvol[i] = buf.readUnsignedMedium();//24bit
         }
         drivingBehaviorMes.setBcvol(bcvol);
 
+        //9
         Short[] cruise = new Short[40];
         for(int i=0;i<cruise.length;i++){
-            cruise[i]=(short)buf.readByte();//8bit
+            cruise[i]=buf.readUnsignedByte();//8bit
         }
         drivingBehaviorMes.setCruise(cruise);
 
@@ -1490,7 +1504,7 @@ public class DataTool {
         drivingBehaviorMes.setTripA(buf.readUnsignedInt());//小计里程A 32bit
         drivingBehaviorMes.setTripB(buf.readUnsignedInt());//小计里程B 32bit
         drivingBehaviorMes.setKilometerMileage(buf.readUnsignedMedium());//行驶里程 24bit
-        drivingBehaviorMes.setFuelOil((short)buf.readByte());//剩余燃油 8bit
+        drivingBehaviorMes.setFuelOil(buf.readUnsignedByte());//剩余燃油 8bit
         drivingBehaviorMes.setAvgOilA(buf.readUnsignedShort());//平均油耗A 16bit
         drivingBehaviorMes.setAvgOilB(buf.readUnsignedShort());//平均油耗B 16bit
 
@@ -1557,7 +1571,7 @@ public class DataTool {
         double baseValB=-9.8*3;
         if(vals!=null) {
             for (int i = 0; i <vals.length; i++) {
-                if(vals[i]==0xffff){//无效值0xffff
+                if(vals[i]==0xffff || vals[i]==0x0000){//无效值0xffff 缺少值0x0000
                     continue;
                 }
                 temp=vals[i]*0.002-65;
@@ -1591,7 +1605,7 @@ public class DataTool {
         double temp=0;
         if(vals!=null) {
             for (int i = 0; i <vals.length; i++) {
-                if(vals[i]==0xffff){//无效值0xffff
+                if(vals[i]==0xffff || vals[i]==0x0000){//无效值0xffff 缺少值0x0000
                     continue;
                 }
                 temp=vals[i]*0.15625;
