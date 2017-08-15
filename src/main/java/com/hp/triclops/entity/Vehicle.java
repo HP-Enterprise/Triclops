@@ -128,7 +128,7 @@ public class Vehicle implements Serializable {
     private Set<Organization> organizationSet;
     private Integer isUpdate;
 
-    private int realNameAuthentication; //实名认证状态 0未实名 1已实名 2审核中 3认证失败
+    private int realNameAuthentication; //实名认证状态 0已实名  1不通过   2审核中
 
 
     public Vehicle() {
