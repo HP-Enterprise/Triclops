@@ -1,0 +1,1 @@
+ alter table t_vehicle modify column real_name_authentication varchar(1) DEFAULT 0 COMMENT '实名认证状态 0已实名  1不通过   2审核中';

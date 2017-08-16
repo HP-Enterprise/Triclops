@@ -27,7 +27,7 @@ public class VehicleExShow {
     private String security_salt;
     private Integer vflag;
     private Integer isUpdate;
-    private int realNameAuthentication; //实名认证状态 0未实名 1已实名 2审核中 3认证失败
+    private String realNameAuthentication; //实名认证状态 0已实名  1不通过   2审核中
 
 
     public VehicleExShow() {}
@@ -224,11 +224,11 @@ public class VehicleExShow {
         this.isUpdate = isUpdate;
     }
 
-    public int getRealNameAuthentication() {
+    public String getRealNameAuthentication() {
         return realNameAuthentication;
     }
 
-    public void setRealNameAuthentication(int realNameAuthentication) {
+    public void setRealNameAuthentication(String realNameAuthentication) {
         this.realNameAuthentication = realNameAuthentication;
     }
 }
