@@ -31,7 +31,7 @@ public class VehicleEx implements Serializable {
     private String security_pwd;
     private String security_salt;
     private Integer isUpdate;
-    private int realNameAuthentication; //实名认证状态 0已实名  1不通过   2审核中
+    private String realNameAuthentication; //实名认证状态 0已实名  1不通过   2审核中
 
     public VehicleEx() {
     }
@@ -226,13 +226,13 @@ public class VehicleEx implements Serializable {
         this.isUpdate = isUpdate;
     }
 
-    public int getRealNameAuthentication() {
+    public String getRealNameAuthentication() {
         return realNameAuthentication;
     }
 
     @Basic
     @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
-    public void setRealNameAuthentication(int realNameAuthentication) {
+    public void setRealNameAuthentication(String realNameAuthentication) {
         this.realNameAuthentication = realNameAuthentication;
     }
 }
