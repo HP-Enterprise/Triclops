@@ -283,7 +283,10 @@ public class DataHandleService {
         rd.setDrivingTime(0);
         rd.setOilLife((short) 0);
         rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
-        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
+//        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
+        if(bean.getDrivingRange() == 0xfff || bean.getDrivingRange() < 0x50){
+            rd.setMileageRange(-200);
+        }
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
@@ -407,7 +410,10 @@ public class DataHandleService {
         rd.setDrivingTime(0);
         rd.setOilLife((short) 0);
         rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
-        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
+//        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
+        if(bean.getDrivingRange() == 0xfff || bean.getDrivingRange() < 0x50){
+            rd.setMileageRange(-200);
+        }
         char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
         rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
         rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
