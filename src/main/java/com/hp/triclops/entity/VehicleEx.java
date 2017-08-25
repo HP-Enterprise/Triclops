@@ -33,6 +33,12 @@ public class VehicleEx implements Serializable {
     private Integer isUpdate;
     private String realNameAuthentication; // 实名认证状态 0未实名 1已实名 2审核中 3认证失败
 
+    private Date regTime; //注册时间
+
+    private Integer hwisUpdate; //固件是否升级
+    private String softVersion; //版本号
+    private String hardVersion; //固件版本号
+
     public VehicleEx() {
     }
 
@@ -53,6 +59,11 @@ public class VehicleEx implements Serializable {
         this.t_flag = vehicleExShow.getT_flag();
         this.security_pwd = vehicleExShow.getSecurity_pwd();
         this.security_salt = vehicleExShow.getSecurity_salt();
+        this.realNameAuthentication = vehicleExShow.getRealNameAuthentication();
+        this.regTime = vehicleExShow.getRegTime();
+        this.hwisUpdate = vehicleExShow.getHwisUpdate();
+        this.softVersion = vehicleExShow.getSoftVersion();
+        this.hardVersion = vehicleExShow.getHardVersion();
     }
 
     @Id
@@ -124,6 +135,16 @@ public class VehicleEx implements Serializable {
 
     public void setProduct_date(Date product_date) {
         this.product_date = product_date;
+    }
+
+    @Basic
+    @Column(name = "reg_time", nullable = true, insertable = true, updatable = true)
+    public Date getRegTime() {
+        return regTime;
+    }
+
+    public void setRegTime(Date regTime) {
+        this.regTime = regTime;
     }
 
     @Basic
@@ -234,5 +255,35 @@ public class VehicleEx implements Serializable {
     @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
     public void setRealNameAuthentication(String realNameAuthentication) {
         this.realNameAuthentication = realNameAuthentication;
+    }
+
+    @Basic
+    @Column(name = "hwisupdate", nullable = true, insertable = true, updatable = true)
+    public Integer getHwisUpdate() {
+        return hwisUpdate;
+    }
+
+    public void setHwisUpdate(Integer hwisUpdate) {
+        this.hwisUpdate = hwisUpdate;
+    }
+
+    @Basic
+    @Column(name = "hard_version", nullable = true, insertable = true, updatable = true)
+    public String getHardVersion() {
+        return hardVersion;
+    }
+
+    public void setHardVersion(String hardVersion) {
+        this.hardVersion = hardVersion;
+    }
+
+    @Basic
+    @Column(name = "soft_version", nullable = true, insertable = true, updatable = true)
+    public String getSoftVersion() {
+        return softVersion;
+    }
+
+    public void setSoftVersion(String softVersion) {
+        this.softVersion = softVersion;
     }
 }

@@ -70,6 +70,7 @@ public class TboxService {
             vehicle.setTboxsn(t_sn);
             vehicle.setSecurity_pwd("14427FF4F90B790CAED65FC2DD854351");
             vehicle.setSecurity_salt("a5pb");
+            vehicle.setRegTime(new Date());
             sVehicle=vehicleRepository.save(vehicle);
         }else{
             VehicleModelConfig vehicleModelConfig=vehicleModelConfigRepository.findByModelId(modelId);

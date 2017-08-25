@@ -29,6 +29,11 @@ public class VehicleExShow {
     private Integer isUpdate;
     private String realNameAuthentication; //实名认证状态 0已实名  1不通过   2审核中
 
+    private Date regTime;
+
+    private Integer hwisUpdate; //固件是否升级
+    private String softVersion; //版本号
+    private String hardVersion; //固件版本号
 
     public VehicleExShow() {}
 
@@ -52,6 +57,10 @@ public class VehicleExShow {
         this.security_salt = vehicleEx.getSecurity_salt();
         this.isUpdate = vehicleEx.getIsUpdate();
         this.realNameAuthentication = vehicleEx.getRealNameAuthentication();
+        this.regTime = vehicleEx.getRegTime();
+        this.hwisUpdate = vehicleEx.getHwisUpdate();
+        this.softVersion = vehicleEx.getSoftVersion();
+        this.hardVersion = vehicleEx.getHardVersion();
     }
 
     /**
@@ -230,5 +239,37 @@ public class VehicleExShow {
 
     public void setRealNameAuthentication(String realNameAuthentication) {
         this.realNameAuthentication = realNameAuthentication;
+    }
+
+    public Date getRegTime() {
+        return regTime;
+    }
+
+    public void setRegTime(Date regTime) {
+        this.regTime = regTime;
+    }
+
+    public Integer getHwisUpdate() {
+        return hwisUpdate;
+    }
+
+    public void setHwisUpdate(Integer hwisUpdate) {
+        this.hwisUpdate = hwisUpdate;
+    }
+
+    public String getSoftVersion() {
+        return softVersion;
+    }
+
+    public void setSoftVersion(String softVersion) {
+        this.softVersion = softVersion;
+    }
+
+    public String getHardVersion() {
+        return hardVersion;
+    }
+
+    public void setHardVersion(String hardVersion) {
+        this.hardVersion = hardVersion;
     }
 }

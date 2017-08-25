@@ -130,6 +130,11 @@ public class Vehicle implements Serializable {
 
     private String realNameAuthentication; //实名认证状态 0未实名 1已实名 2审核中 3认证失败
 
+    private Date regTime;  //注册时间
+
+    private Integer hwisUpdate; //固件是否升级
+    private String softVersion; //版本号
+    private String hardVersion; //固件版本号
 
     public Vehicle() {
         this.vinSet = new HashSet<UserVehicleRelatived>();
@@ -137,7 +142,8 @@ public class Vehicle implements Serializable {
         this.tboxSet = new HashSet<TBox>();
     }
 
-    public Vehicle(int id, String vin, String tboxsn, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, Date buydate, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt) {
+    public Vehicle(Date buydate, int id, String vin, String tboxsn, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt, Integer remoteCount, Set<TBox> tboxSet, Set<UserVehicleRelatived> vinSet, Set<Organization> organizationSet, Integer isUpdate, String realNameAuthentication, Date regTime, Integer hwisUpdate, String softVersion, String hardVersion) {
+        this.buydate = buydate;
         this.id = id;
         this.vin = vin;
         this.tboxsn = tboxsn;
@@ -147,13 +153,22 @@ public class Vehicle implements Serializable {
         this.product_date = product_date;
         this.vcolor = vcolor;
         this.buystore = buystore;
-        this.buydate = buydate;
         this.vpurl = vpurl;
         this.vtype = vtype;
         this.license_plate = license_plate;
         this.t_flag = t_flag;
         this.security_pwd = security_pwd;
         this.security_salt = security_salt;
+        this.remoteCount = remoteCount;
+        this.tboxSet = tboxSet;
+        this.vinSet = vinSet;
+        this.organizationSet = organizationSet;
+        this.isUpdate = isUpdate;
+        this.realNameAuthentication = realNameAuthentication;
+        this.regTime = regTime;
+        this.hwisUpdate = hwisUpdate;
+        this.softVersion = softVersion;
+        this.hardVersion = hardVersion;
     }
 
     @Id
@@ -225,6 +240,16 @@ public class Vehicle implements Serializable {
 
     public void setProduct_date(Date product_date) {
         this.product_date = product_date;
+    }
+
+    @Basic
+    @Column(name = "reg_time", nullable = true, insertable = true, updatable = true)
+    public Date getRegTime() {
+        return regTime;
+    }
+
+    public void setRegTime(Date regTime) {
+        this.regTime = regTime;
     }
 
     @Basic
@@ -379,5 +404,35 @@ public class Vehicle implements Serializable {
     @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
     public void setRealNameAuthentication(String realNameAuthentication) {
         this.realNameAuthentication = realNameAuthentication;
+    }
+
+    @Basic
+    @Column(name = "hwisupdate", nullable = true, insertable = true, updatable = true)
+    public Integer getHwisUpdate() {
+        return hwisUpdate;
+    }
+
+    public void setHwisUpdate(Integer hwisUpdate) {
+        this.hwisUpdate = hwisUpdate;
+    }
+
+    @Basic
+    @Column(name = "hard_version", nullable = true, insertable = true, updatable = true)
+    public String getHardVersion() {
+        return hardVersion;
+    }
+
+    public void setHardVersion(String hardVersion) {
+        this.hardVersion = hardVersion;
+    }
+
+    @Basic
+    @Column(name = "soft_version", nullable = true, insertable = true, updatable = true)
+    public String getSoftVersion() {
+        return softVersion;
+    }
+
+    public void setSoftVersion(String softVersion) {
+        this.softVersion = softVersion;
     }
 }
