@@ -44,13 +44,13 @@ public interface VehicleRepository extends CrudRepository<Vehicle, String> {
 
     @Modifying
     @Transactional
-    @Query("update Vehicle a set a.isUpdate = ?1, a.softVersion = ?3  where a.model in ?2")
-    int updateSoftVersionByModels(Integer isUpdate, List<String> model, String version);
+    @Query("update Vehicle a set a.isUpdate = ?1, a.softVersion = ?3  where a.model = ?2")
+    int updateSoftVersionByModels(Integer isUpdate, String model, String version);
 
     @Modifying
     @Transactional
-    @Query("update Vehicle a set a.hwisUpdate = ?1, a.hardVersion = ?3  where a.model in ?2")
-    int updateHardVersionByModels(Integer isUpdate, List<String> vin, String version);
+    @Query("update Vehicle a set a.hwisUpdate = ?1, a.hardVersion = ?3  where a.model = ?2")
+    int updateHardVersionByModels(Integer isUpdate, String vin, String version);
 
     @Modifying
     @Transactional
@@ -59,23 +59,23 @@ public interface VehicleRepository extends CrudRepository<Vehicle, String> {
 
     @Modifying
     @Transactional
-    @Query("update Vehicle a set a.isUpdate = ?1, a.softVersion = ?3  where a.vin in ?2")
-    int updateSoftVersionByVins(Integer isUpdate, List<String> vin, String version);
+    @Query("update Vehicle a set a.isUpdate = ?1, a.softVersion = ?3  where a.vin = ?2")
+    int updateSoftVersionByVins(Integer isUpdate, String vin, String version);
 
     @Modifying
     @Transactional
-    @Query("update Vehicle a set a.hwisUpdate = ?1, a.hardVersion = ?3  where a.vin in ?2")
-    int updateHardVersionByVins(Integer isUpdate, List<String> vin, String version);
+    @Query("update Vehicle a set a.hwisUpdate = ?1, a.hardVersion = ?3  where a.vin = ?2")
+    int updateHardVersionByVins(Integer isUpdate, String vin, String version);
 
     @Modifying
     @Transactional
-    @Query("update Vehicle a set a.isUpdate = ?1, a.softVersion = ?3  where a.softVersion in ?2")
-    int updateSoftVersionByVersions(Integer isUpdate, List<String> vin, String version);
+    @Query("update Vehicle a set a.isUpdate = ?1, a.softVersion = ?3  where a.softVersion = ?2")
+    int updateSoftVersionByVersions(Integer isUpdate, String softVersion, String version);
 
     @Modifying
     @Transactional
-    @Query("update Vehicle a set a.hwisUpdate = ?1, a.hardVersion = ?3  where a.hardVersion in ?2")
-    int updateHardVersionByVersions(Integer isUpdate, List<String> vin, String version);
+    @Query("update Vehicle a set a.hwisUpdate = ?1, a.hardVersion = ?3  where a.hardVersion = ?2")
+    int updateHardVersionByVersions(Integer isUpdate, String hardVersion, String version);
 
     @Modifying
     @Transactional
