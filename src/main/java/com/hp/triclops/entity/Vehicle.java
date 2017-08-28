@@ -396,12 +396,12 @@ public class Vehicle implements Serializable {
         this.isUpdate = isUpdate;
     }
 
+    @Basic
+    @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
     public String getRealNameAuthentication() {
         return realNameAuthentication;
     }
 
-    @Basic
-    @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
     public void setRealNameAuthentication(String realNameAuthentication) {
         this.realNameAuthentication = realNameAuthentication;
     }
