@@ -57,6 +57,7 @@ public class VehicleExShow {
         this.security_salt = vehicleEx.getSecurity_salt();
         this.isUpdate = vehicleEx.getIsUpdate();
         this.realNameAuthentication = vehicleEx.getRealNameAuthentication();
+        this.isUpdate = vehicleEx.getIsUpdate();
         this.regTime = vehicleEx.getRegTime();
         this.hwisUpdate = vehicleEx.getHwisUpdate();
         this.softVersion = vehicleEx.getSoftVersion();

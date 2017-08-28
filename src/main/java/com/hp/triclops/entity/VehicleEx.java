@@ -60,6 +60,7 @@ public class VehicleEx implements Serializable {
         this.security_pwd = vehicleExShow.getSecurity_pwd();
         this.security_salt = vehicleExShow.getSecurity_salt();
         this.realNameAuthentication = vehicleExShow.getRealNameAuthentication();
+        this.isUpdate = vehicleExShow.getIsUpdate();
         this.regTime = vehicleExShow.getRegTime();
         this.hwisUpdate = vehicleExShow.getHwisUpdate();
         this.softVersion = vehicleExShow.getSoftVersion();
@@ -247,12 +248,12 @@ public class VehicleEx implements Serializable {
         this.isUpdate = isUpdate;
     }
 
+    @Basic
+    @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
     public String getRealNameAuthentication() {
         return realNameAuthentication;
     }
 
-    @Basic
-    @Column(name = "real_name_authentication", nullable = true, insertable = true, updatable = true)
     public void setRealNameAuthentication(String realNameAuthentication) {
         this.realNameAuthentication = realNameAuthentication;
     }
