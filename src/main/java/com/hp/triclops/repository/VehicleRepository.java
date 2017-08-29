@@ -34,8 +34,14 @@ public interface VehicleRepository extends CrudRepository<Vehicle, String> {
     @Query("select distinct(v.softVersion) from Vehicle v where v.softVersion is not null and v.softVersion != ''")
     List<Vehicle> findSoftVersionList();
 
+    @Query("select distinct(v.softVersion) from Vehicle v where v.softVersion = ?1")
+    List<Vehicle> findSoftVersionListByVersion(String version);
+
     @Query("select distinct(v.hardVersion) from Vehicle v where v.hardVersion is not null and v.hardVersion != ''")
     List<Vehicle> findHardVersionList();
+
+    @Query("select distinct(v.hardVersion) from Vehicle v where v.hardVersion = ?1")
+    List<Vehicle> findHardVersionListByVersion(String version);
 
     @Modifying
     @Transactional
