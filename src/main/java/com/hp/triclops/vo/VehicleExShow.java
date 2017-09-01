@@ -34,6 +34,7 @@ public class VehicleExShow {
     private Integer hwisUpdate; //固件是否升级
     private String softVersion; //版本号
     private String hardVersion; //固件版本号
+    private String version;//当前已完成升级版本号
 
     public VehicleExShow() {}
 
@@ -62,6 +63,7 @@ public class VehicleExShow {
         this.hwisUpdate = vehicleEx.getHwisUpdate();
         this.softVersion = vehicleEx.getSoftVersion();
         this.hardVersion = vehicleEx.getHardVersion();
+        this.version = vehicleEx.getVersion();
     }
 
     /**
@@ -272,5 +274,13 @@ public class VehicleExShow {
 
     public void setHardVersion(String hardVersion) {
         this.hardVersion = hardVersion;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

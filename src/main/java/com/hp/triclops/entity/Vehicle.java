@@ -135,6 +135,7 @@ public class Vehicle implements Serializable {
     private Integer hwisUpdate; //固件是否升级
     private String softVersion; //版本号
     private String hardVersion; //固件版本号
+    private String version;//当前已完成升级版本号
 
     public Vehicle() {
         this.vinSet = new HashSet<UserVehicleRelatived>();
@@ -142,17 +143,17 @@ public class Vehicle implements Serializable {
         this.tboxSet = new HashSet<TBox>();
     }
 
-    public Vehicle(Date buydate, int id, String vin, String tboxsn, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt, Integer remoteCount, Set<TBox> tboxSet, Set<UserVehicleRelatived> vinSet, Set<Organization> organizationSet, Integer isUpdate, String realNameAuthentication, Date regTime, Integer hwisUpdate, String softVersion, String hardVersion) {
-        this.buydate = buydate;
+    public Vehicle(String tboxsn, int id, String vin, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, Date buydate, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt, Integer remoteCount, Set<TBox> tboxSet, Set<UserVehicleRelatived> vinSet, Set<Organization> organizationSet, Integer isUpdate, String realNameAuthentication, Date regTime, Integer hwisUpdate, String softVersion, String hardVersion, String version) {
+        this.tboxsn = tboxsn;
         this.id = id;
         this.vin = vin;
-        this.tboxsn = tboxsn;
         this.vendor = vendor;
         this.model = model;
         this.displacement = displacement;
         this.product_date = product_date;
         this.vcolor = vcolor;
         this.buystore = buystore;
+        this.buydate = buydate;
         this.vpurl = vpurl;
         this.vtype = vtype;
         this.license_plate = license_plate;
@@ -169,6 +170,7 @@ public class Vehicle implements Serializable {
         this.hwisUpdate = hwisUpdate;
         this.softVersion = softVersion;
         this.hardVersion = hardVersion;
+        this.version = version;
     }
 
     @Id
@@ -434,5 +436,15 @@ public class Vehicle implements Serializable {
 
     public void setSoftVersion(String softVersion) {
         this.softVersion = softVersion;
+    }
+
+    @Basic
+    @Column(name = "version", nullable = true, insertable = true, updatable = true)
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

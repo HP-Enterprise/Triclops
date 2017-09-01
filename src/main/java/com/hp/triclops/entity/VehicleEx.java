@@ -38,6 +38,7 @@ public class VehicleEx implements Serializable {
     private Integer hwisUpdate; //固件是否升级
     private String softVersion; //版本号
     private String hardVersion; //固件版本号
+    private String version;//当前已完成升级版本号
 
     public VehicleEx() {
     }
@@ -65,6 +66,7 @@ public class VehicleEx implements Serializable {
         this.hwisUpdate = vehicleExShow.getHwisUpdate();
         this.softVersion = vehicleExShow.getSoftVersion();
         this.hardVersion = vehicleExShow.getHardVersion();
+        this.version = vehicleExShow.getVersion();
     }
 
     @Id
@@ -286,5 +288,15 @@ public class VehicleEx implements Serializable {
 
     public void setSoftVersion(String softVersion) {
         this.softVersion = softVersion;
+    }
+
+    @Basic
+    @Column(name = "version", nullable = true, insertable = true, updatable = true)
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
