@@ -230,7 +230,7 @@ public class DataHandleService {
         rd.setServiceIntervall(-200);//在协议0628已经删除此项数据
         Short fuelOil = bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil();
         float val = 0f;
-        if(isM8X) {
+        if(vehicleModel == 0 || vehicleModel == 1 || vehicleModel == 2) {
             if(fuelOil > 0 && fuelOil < 56){
                 val = (float)Math.round(((float)fuelOil/56f)*100f);
             }else if(fuelOil >= 56){
@@ -242,10 +242,22 @@ public class DataHandleService {
             rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
             rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
             rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
-        }else{//todo 在协议0628中F60无此数据 预留
+        }else if(vehicleModel == 3 || vehicleModel == 5){//todo 在协议0628中F60无此数据 预留
             if(fuelOil > 0 && fuelOil < 52){
                 val = (float)Math.round(((float)fuelOil/52f)*100f);
             }else if(fuelOil >= 52){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(0.0f);
+            rd.setLeftRearTirePressure(0.0f);
+            rd.setRightFrontTirePressure(0.0f);
+            rd.setRightRearTirePressure(0.0f);
+        }else if(vehicleModel == 4){//F70
+            if(fuelOil > 0 && fuelOil < 46){
+                val = (float)Math.round(((float)fuelOil/46f)*100f);
+            }else if(fuelOil >= 46){
                 val = 100f;
             }else if(fuelOil == -200){
                 val = -200f;
@@ -360,7 +372,7 @@ public class DataHandleService {
         rd.setServiceIntervall(0);//在协议0628已经删除此项数据
         Short fuelOil = bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil();
         float val = 0f;
-        if(isM8X) {
+        if(vehicleModel == 0 || vehicleModel == 1 || vehicleModel == 2) {
             if(fuelOil > 0 && fuelOil < 56){
                 val = (float)Math.round(((float)fuelOil/56f)*100f);
             }else if(fuelOil >= 56){
@@ -372,10 +384,22 @@ public class DataHandleService {
             rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
             rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
             rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
-        }else{//在协议0628中F60无此数据 预留
+        }else if(vehicleModel == 3 || vehicleModel == 5){//在协议0628中F60无此数据 预留
             if(fuelOil > 0 && fuelOil < 52){
                 val = (float)Math.round(((float)fuelOil/52f)*100f);
             }else if(fuelOil >= 52){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(0.0f);
+            rd.setLeftRearTirePressure(0.0f);
+            rd.setRightFrontTirePressure(0.0f);
+            rd.setRightRearTirePressure(0.0f);
+        }else if(vehicleModel == 4){//F70
+            if(fuelOil > 0 && fuelOil < 46){
+                val = (float)Math.round(((float)fuelOil/46f)*100f);
+            }else if(fuelOil >= 46){
                 val = 100f;
             }else if(fuelOil == -200){
                 val = -200f;

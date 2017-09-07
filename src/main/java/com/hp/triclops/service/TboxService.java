@@ -77,14 +77,22 @@ public class TboxService {
             if(vehicleModelConfig!=null){
                 _vehicle.setModel(vehicleModelConfig.getModelName());
                 _logger.info("更新车辆对应的车型信息:"+modelId+" "+vehicleModelConfig.getModelName());
-                sVehicle=vehicleRepository.save(_vehicle);
             }else{
-                sVehicle = _vehicle;
+//                sVehicle = _vehicle;
                 _logger.info("没有查询到对应的车型信息:"+modelId);
             }
+            _vehicle.setTboxsn(t_sn);
+            sVehicle=vehicleRepository.save(_vehicle);
         }
             //更新TBox信息
         if(tb!=null){//已经存在TBox 激活TBox
+            //查询该tbox激活前对应的车辆信息
+            Vehicle oldVehicle = vehicleRepository.findByVin(tb.getVin());
+            if(oldVehicle != null){
+                //清除tboxsn
+                oldVehicle.setTboxsn("");
+                vehicleRepository.save(oldVehicle);
+            }
             tb.setIs_activated(1);
             tb.setActivation_time(new Date());
             tb.setVin(vin);
