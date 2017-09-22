@@ -507,7 +507,131 @@ public class VehicleDataService {
           }
         return 0;//响应超时
     }
+    /**
+     * 获取车辆实时数据
+     * @param vin vin
+     * @return 封装数据的vo实体
+     */
+    public RealTimeDataShow getRealTimeDataDict(String vin){
 
+        GpsData gd=null;
+        RealTimeReportData rd = realTimeReportDataRespository.getLatestOneByVin(vin);
+        if(rd != null){
+            List<GpsData> gdList=gpsDataRepository.findByVinAndSendingTime(vin,rd.getSendingTime());
+            if(gdList!=null&&gdList.size()>0){
+                gd = gdList.get(0);
+            }
+        }
+
+        if(rd==null||gd==null){
+            return null;
+        }else{
+            RealTimeDataShow data=new RealTimeDataShow();
+            data.setId(rd.getId());
+            data.setVin(rd.getVin());
+            data.setImei(rd.getImei());
+            data.setApplicationId(rd.getApplicationId());
+            data.setMessageId(rd.getMessageId());
+            data.setSendingTime(rd.getSendingTime());
+            data.setReceiveTime(DateUtil.format(rd.getSendingTime(), "yyyy-MM-dd HH:mm:ss"));
+
+            data.setFuelOil(Math.round(rd.getFuelOil()));
+            data.setAvgOilA(rd.getAvgOilA());
+            data.setAvgOilB(rd.getAvgOilB());
+            data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
+            data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
+            data.setRightFrontTirePressure(rd.getRightFrontTirePressure());
+            data.setRightRearTirePressure(rd.getRightRearTirePressure());
+            data.setLeftFrontWindowInformation(rd.getLeftFrontWindowInformation());
+            data.setRightFrontWindowInformation(rd.getRightFrontWindowInformation());
+            data.setLeftRearWindowInformation(rd.getLeftRearWindowInformation());
+            data.setRightRearWindowInformation(rd.getRightRearWindowInformation());
+            data.setVehicleTemperature(rd.getVehicleTemperature());//
+            data.setVehicleOuterTemperature(rd.getVehicleOuterTemperature());
+            data.setLeftFrontDoorInformation(rd.getLeftFrontDoorInformation());
+            data.setLeftRearDoorInformation(rd.getLeftRearDoorInformation());
+            data.setRightFrontDoorInformation(rd.getRightFrontDoorInformation());
+            data.setRightRearDoorInformation(rd.getRightRearDoorInformation());
+
+            data.setOilLife(rd.getOilLife());
+            data.setParkingState(Integer.parseInt(rd.getParkingState()));
+            data.setMileageRange(rd.getMileageRange());
+            data.setDrivingRange(rd.getDrivingRange());
+            data.setDrivingTime(rd.getDrivingTime());
+            data.setSkylightState(Integer.parseInt(rd.getSkylightState()));
+            data.setEngineDoorInformation(Integer.parseInt(rd.getEngineCoverState()));
+            data.setTrunkDoorInformation(Integer.parseInt(rd.getTrunkLidState()));
+            data.setAverageSpeedA(rd.getAverageSpeedA());
+            data.setAverageSpeedB(rd.getAverageSpeedB());
+            data.setMtGearPostion(rd.getMtGearPostion());
+
+            data.setFmax("2.6");
+            data.setFmin("2.3");
+            data.setRmax("2.6");
+            data.setRmin("2.3");
+            data.setLfok(this.getLfokStatu(rd.getLeftFrontTirePressure()));
+            data.setLrok(this.getLrokStatu(rd.getLeftRearTirePressure()));
+            data.setRfok(this.getRfokStatu(rd.getRightFrontTirePressure()));
+            data.setRrok(this.getRrokStatu(rd.getRightRearTirePressure()));
+
+            data.setIsLocation(gd.getIsLocation());//
+            data.setNorthSouth(gd.getNorthSouth());//
+            data.setEastWest(gd.getEastWest());//
+            data.setLatitude(gd.getLatitude());
+            data.setLongitude(gd.getLongitude());
+            data.setSpeed(gd.getSpeed());
+            data.setHeading(gd.getHeading());
+            data.setBatteryVoltage(rd.getVoltage());
+            //数据转换处理
+//            int p = 100 * data.getFuelOil() / 64;
+//            p = p < 0 ? 0 : p;
+//            p = p > 100 ? 100 : p;
+//            data.setFuelOil(p);//返回百分比整数  64=100%  0-100
+//            if (rd.getFuelOil() == -200) {//保持无效值返回到api
+//                data.setFuelOil(-200);
+//            }
+            float _avgOilA = data.getAvgOilA();
+            BigDecimal bdA = new BigDecimal((double) _avgOilA);
+            bdA = bdA.setScale(1, BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+            data.setAvgOilA(bdA.floatValue());
+            if (rd.getAvgOilA() == -200) {//保持无效值返回到api
+                data.setAvgOilA(-200);
+            }
+            float _avgOilB = data.getAvgOilB();
+            BigDecimal bdB = new BigDecimal((double) _avgOilB);
+            bdB = bdB.setScale(1, BigDecimal.ROUND_HALF_DOWN);//四舍五入保留一位小数
+            data.setAvgOilB(bdB.floatValue());
+            if (rd.getAvgOilB() == -200) {//保持无效值返回到api
+                data.setAvgOilB(-200);
+            }
+            float _voltage = data.getBatteryVoltage();
+            BigDecimal bdC = new BigDecimal((double) _voltage);
+            bdC = bdC.setScale(2, BigDecimal.ROUND_HALF_DOWN);//四舍五入保留2位小数
+            data.setBatteryVoltage(bdC.floatValue());
+            if (rd.getVoltage() == -200) {//保持无效值返回到api
+                data.setBatteryVoltage(-200);
+            }
+            //胎压处理
+            data.setLeftFrontTirePressure(dataTool.getRoundHalfDown(rd.getLeftFrontTirePressure(), 1));
+            if (rd.getLeftFrontTirePressure() == -200) {//保持无效值返回到api
+                data.setLeftFrontTirePressure(-200);
+            }
+            data.setLeftRearTirePressure(dataTool.getRoundHalfDown(rd.getLeftRearTirePressure(), 1));
+            if (rd.getLeftRearTirePressure() == -200) {//保持无效值返回到api
+                data.setLeftRearTirePressure(-200);
+            }
+            data.setRightFrontTirePressure(dataTool.getRoundHalfDown(rd.getRightFrontTirePressure(), 1));
+            if (rd.getRightFrontTirePressure() == -200) {//保持无效值返回到api
+                data.setRightFrontTirePressure(-200);
+            }
+            data.setRightRearTirePressure(dataTool.getRoundHalfDown(rd.getRightRearTirePressure(), 1));
+            if (rd.getRightRearTirePressure() == -200) {//保持无效值返回到api
+                data.setRightRearTirePressure(-200);
+            }
+            return data;
+        }
+
+    }
     /**
      * 获取车辆实时数据
      * @param vin vin
