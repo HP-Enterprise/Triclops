@@ -84,7 +84,7 @@ public class TboxService {
             _vehicle.setTboxsn(t_sn);
             sVehicle=vehicleRepository.save(_vehicle);
         }
-            //更新TBox信息
+        //更新TBox信息
         if(tb!=null){//已经存在TBox 激活TBox
             //查询该tbox激活前对应的车辆信息
             Vehicle oldVehicle = vehicleRepository.findByVin(tb.getVin());
