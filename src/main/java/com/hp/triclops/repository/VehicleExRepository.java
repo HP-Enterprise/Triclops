@@ -38,8 +38,8 @@ public interface VehicleExRepository extends CrudRepository<VehicleEx, String> {
            "and (?3 is null or Ve.tboxsn like ?3) " +
            "and (?4 is null or Ve.vendor like ?4) " +
            "and (?5 is null or Ve.model like ?5) " +
-           "and (?6 is null or Ve.product_date >= ?6) " +
-           "and (?7 is null or Ve.product_date <= ?7) " +
+           "and (?6 is null or Ve.regTime >= ?6) " +
+           "and (?7 is null or Ve.regTime <= ?7) " +
            "and (?8 is null or Ve.license_plate like ?8) " +
            "and (?9 is null or Ve.t_flag=?9) " )
     Page<VehicleEx> selectVehicle(List<Integer> vids,String vin,String tboxsn,String vendor,String model,Date start_date,Date end_date,String license_plate,Integer t_flag, Pageable p);
@@ -50,8 +50,8 @@ public interface VehicleExRepository extends CrudRepository<VehicleEx, String> {
             "and (?3 is null or Ve.tboxsn like ?3) " +
             "and (?4 is null or Ve.vendor like ?4) " +
             "and (?5 is null or Ve.model like ?5) " +
-            "and (?6 is null or Ve.product_date >= ?6) " +
-            "and (?7 is null or Ve.product_date <= ?7) " +
+            "and (?6 is null or Ve.regTime >= ?6) " +
+            "and (?7 is null or Ve.regTime <= ?7) " +
             "and (?8 is null or Ve.license_plate like ?8) " +
             "and (?9 is null or Ve.t_flag=?9) " )
     Page<VehicleEx> selectVehicleAbsent(List<Integer> vids,String vin,String tboxsn,String vendor,String model,Date start_date,Date end_date,String license_plate,Integer t_flag,Pageable p);
@@ -62,8 +62,8 @@ public interface VehicleExRepository extends CrudRepository<VehicleEx, String> {
             "and (?2 is null or Ve.tboxsn like ?2) " +
             "and (?3 is null or Ve.vendor like ?3) " +
             "and (?4 is null or Ve.model like ?4) " +
-            "and (?5 is null or Ve.product_date >= ?5) " +
-            "and (?6 is null or Ve.product_date <= ?6) " +
+            "and (?5 is null or Ve.regTime >= ?5) " +
+            "and (?6 is null or Ve.regTime <= ?6) " +
             "and (?7 is null or Ve.license_plate like ?7) " +
             "and (?8 is null or Ve.t_flag=?8) " )
     Page<VehicleEx> selectVehicle(String vin, String tboxsn, String vendor, String model, Date start_date, Date end_date, String license_plate, Integer t_flag, Pageable p);
