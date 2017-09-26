@@ -97,6 +97,7 @@ public class TboxService {
             tb.setActivation_time(new Date());
             tb.setVin(vin);
             tb.setT_sn(t_sn);
+            tb.setVehicle(sVehicle);
             if(iccid!=null){
                 JSONObject obj = new JSONObject();
                 obj.put("iccid", iccid);
@@ -149,11 +150,12 @@ public class TboxService {
             return true;
         }else{//不存在TBox 新增TBox
             TBoxEx tBox=new TBoxEx();
-            if(_vehicle!=null){
-                tBox.setVid(_vehicle.getId());
-            }else{
-                tBox.setVid(sVehicle.getId());
-            }
+//            if(_vehicle!=null){
+//                tBox.setVid(_vehicle.getId());
+//            }else{
+//                tBox.setVid(sVehicle.getId());
+//            }
+            tBox.setVid(sVehicle.getId());
 
             if(iccid!=null){
                 JSONObject obj = new JSONObject();
