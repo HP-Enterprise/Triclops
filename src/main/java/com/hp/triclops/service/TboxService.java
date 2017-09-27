@@ -30,6 +30,8 @@ public class TboxService {
     VehicleModelConfigRepository vehicleModelConfigRepository;
     @Autowired
     HttpClientTool httpClientTool;
+    @Autowired
+    VehicleTBoxRelativeRepository vehicleTboxRelativeRepository;
 
     private Logger _logger = LoggerFactory.getLogger(TboxService.class);
 
@@ -54,6 +56,7 @@ public class TboxService {
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByImei(imei);
         Vehicle sVehicle=null;
+        VehicleTBoxRelative vehicleTBoxRelative = new VehicleTBoxRelative();
         //先查询有没有记录，有记录则激活没有记录新增记录
         if(_vehicle==null){//没有车辆新增车辆
             Vehicle vehicle=new Vehicle();
@@ -73,6 +76,7 @@ public class TboxService {
             vehicle.setRegTime(new Date());
             sVehicle=vehicleRepository.save(vehicle);
         }else{
+            vehicleTBoxRelative.setOldTboxsn(_vehicle.getTboxsn());
             VehicleModelConfig vehicleModelConfig=vehicleModelConfigRepository.findByModelId(modelId);
             if(vehicleModelConfig!=null){
                 _vehicle.setModel(vehicleModelConfig.getModelName());
@@ -84,14 +88,22 @@ public class TboxService {
             _vehicle.setTboxsn(t_sn);
             sVehicle=vehicleRepository.save(_vehicle);
         }
+
+        vehicleTBoxRelative.setVin(sVehicle.getVin());
+        vehicleTBoxRelative.setTboxsn(t_sn);
+        vehicleTBoxRelative.setCreateTime(new Date());
+
         //更新TBox信息
         if(tb!=null){//已经存在TBox 激活TBox
             //查询该tbox激活前对应的车辆信息
             Vehicle oldVehicle = vehicleRepository.findByVin(tb.getVin());
-            if(oldVehicle != null && !sVehicle.getVin().equals(oldVehicle.getVin())){
-                //清除tboxsn
-                oldVehicle.setTboxsn("");
-                vehicleRepository.save(oldVehicle);
+            if(oldVehicle != null) {
+                vehicleTBoxRelative.setOldVin(oldVehicle.getVin());
+                if(!sVehicle.getVin().equals(oldVehicle.getVin())){
+                    //清除tboxsn
+                    oldVehicle.setTboxsn("");
+                    vehicleRepository.save(oldVehicle);
+                }
             }
             tb.setIs_activated(1);
             tb.setActivation_time(new Date());
@@ -147,6 +159,10 @@ public class TboxService {
                 _logger.info("no iccid");
             }
             tBoxRepository.save(tb);
+
+            //保存变更关系
+            vehicleTboxRelativeRepository.save(vehicleTBoxRelative);
+
             return true;
         }else{//不存在TBox 新增TBox
             TBoxEx tBox=new TBoxEx();
@@ -212,6 +228,9 @@ public class TboxService {
             tBox.setImei(imei);
             tBox.setActivation_time(new Date());
             tBoxExRepository.save(tBox);
+
+            //保存变更关系
+            vehicleTboxRelativeRepository.save(vehicleTBoxRelative);
 
             //更新车辆表中的sn信息
             if(!sVehicle.getTboxsn().equals(tBox.getT_sn())){
