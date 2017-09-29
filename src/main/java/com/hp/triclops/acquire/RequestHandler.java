@@ -12,6 +12,7 @@ import com.hp.triclops.service.TboxService;
 import com.hp.triclops.service.VehicleDataService;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.MD5;
+import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -258,6 +259,31 @@ public class RequestHandler {
         dpw.fillBean(resp);
         ByteBuffer bbw=conversionTBox.generate(dpw);
         String byteStr=PackageEntityManager.getByteString(bbw);
+        return byteStr;
+    }
+
+    public String getRegisterResp(ByteBuf bb){
+        //请求解析到bean
+        RegisterResp resp=new RegisterResp();
+        resp.setHead(bb.readUnsignedShort());
+        resp.setLength(40);
+        bb.skipBytes(2);
+        resp.setTestFlag(bb.readUnsignedByte());
+        resp.setSendingTime(bb.readUnsignedInt());
+        resp.setApplicationID(bb.readUnsignedByte());
+        resp.setMessageID(((Integer)0x02).shortValue());
+        bb.skipBytes(1);
+        resp.setEventID(bb.readUnsignedInt());
+        resp.setRegisterResult((short) 1);
+        resp.setTotalSize(500l);
+        resp.setUsedSize(123l);
+        String randomKey="0123456789abcdef";
+        resp.setKeyInfo(randomKey.getBytes());
+        //注册响应
+        DataPackage dpw=new DataPackage("8995_19_2");
+        dpw.fillBean(resp);
+        ByteBuffer bbw = conversionTBox.generate(dpw);
+        String byteStr= PackageEntityManager.getByteString(bbw);
         return byteStr;
     }
 

@@ -1,5 +1,8 @@
 package com.hp.triclops.acquire;
 
+import com.hp.data.bean.tbox.RegisterResp;
+import com.hp.data.core.DataPackage;
+import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.utils.AES128Tool;
 import io.netty.buffer.ByteBuf;
@@ -9,6 +12,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static io.netty.buffer.Unpooled.buffer;
@@ -113,7 +117,23 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
                     tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//0x03才需要解密
                 }
             }else if (dataType == 0x13) {//注册业务如果解码失败，直接断开连接
-                tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//
+                try{
+                    tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//
+                }catch (Exception e){
+                    _logger.info("[注册]aes128 decrypt error:" + e);
+                    String  reportStr = requestHandler.getRegisterResp(dataTool.getByteBuf(dataTool.bytes2hex(content)));
+                    ByteBuf buf = dataTool.getByteBuf(reportStr);
+                    ch.writeAndFlush(buf);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                    tmp.release();
+                    rawData.release();
+                    ch.close();
+                    return null;
+                }
             } else {
                 try{
                     tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//如果要生成测试数据只需要把这一段改为加密即可
