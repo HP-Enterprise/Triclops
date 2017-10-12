@@ -837,9 +837,7 @@ public class VehicleDataService {
         List<RemoteControl> newList = new ArrayList<>();
         for(Object obj:list)
         {
-            RemoteControl rc = (RemoteControl) obj;
-            rc.setLicense_plate("");
-            newList.add(rc);
+            newList.add((RemoteControl) obj);
         }
 
         remoteControlPage.setItems(transFormRemoteControl(newList,vehicle));
@@ -853,8 +851,11 @@ public class VehicleDataService {
         List<RemoteControlShow> remoteControlAndVehicle=new ArrayList<>();
         for(int i=0;i<remoteControllList.size();i++){
             RemoteControlShow remoteControlShow = new RemoteControlShow();
+            remoteControlShow.setLicensePlate("");
            if (vehicle!=null) {
-               remoteControlShow.setLicensePlate(vehicle.getLicense_plate());
+               if (vehicle.getLicense_plate()!=null){
+                   remoteControlShow.setLicensePlate(vehicle.getLicense_plate());
+               }
            }
             remoteControlShow.setId(remoteControllList.get(i).getId());
             remoteControlShow.setSessionId(remoteControllList.get(i).getSessionId());
