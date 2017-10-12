@@ -837,7 +837,9 @@ public class VehicleDataService {
         List<RemoteControl> newList = new ArrayList<>();
         for(Object obj:list)
         {
-            newList.add((RemoteControl)obj);
+            RemoteControl rc = (RemoteControl) obj;
+            rc.setLicense_plate("");
+            newList.add(rc);
         }
 
         remoteControlPage.setItems(transFormRemoteControl(newList,vehicle));
