@@ -74,6 +74,7 @@ public class TboxService {
             vehicle.setSecurity_pwd("14427FF4F90B790CAED65FC2DD854351");
             vehicle.setSecurity_salt("a5pb");
             vehicle.setRegTime(new Date());
+            vehicle.setRealNameAuthentication("0");
             sVehicle=vehicleRepository.save(vehicle);
         }else{
             vehicleTBoxRelative.setOldTboxsn(_vehicle.getTboxsn());
