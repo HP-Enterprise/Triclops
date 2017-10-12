@@ -13,7 +13,6 @@ public class RemoteControl {
     private int uid;
     private String sessionId;
     private String vin;
-    @Transient
     private String license_plate;
     private Date sendingTime;
     private Short controlType;
@@ -44,6 +43,7 @@ public class RemoteControl {
     private Short isAnnounce;
     private Short remoteStartedCount;
 
+    @Transient
     public String getLicense_plate() {
         return license_plate;
     }
