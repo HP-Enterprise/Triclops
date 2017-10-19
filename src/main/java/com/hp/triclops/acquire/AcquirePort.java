@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 数据接收端口.<br>
@@ -69,6 +70,9 @@ public class AcquirePort {
     @Value("${com.hp.acquire.serverId}")
     private String _serverId;//serverId集群依赖这个值
 
+    @Value("${com.hp.acquire.nettySenderThreadPoolSize}")
+    private int _nettySenderThreadPoolSize;//下行命令线程池
+
     @Autowired
     SocketRedis socketRedis;
     @Autowired
@@ -101,7 +105,9 @@ public class AcquirePort {
         //生成数据
         ScheduledExecutorService  nettyServerScheduledService = Executors.newScheduledThreadPool(_nettyServerThreadPoolSize);
         ScheduledExecutorService  dataHandlerScheduledService = Executors.newScheduledThreadPool(_dataHandlerThreadPoolSize);
-        new NettySender(channels,socketRedis,_serverId,dataTool,outputHexService).start();    //netty发数据线程，根据需要 可以新建多个
+        ScheduledExecutorService  nettySenderScheduledService = Executors.newScheduledThreadPool(_nettySenderThreadPoolSize);
+
+        nettySenderScheduledService.schedule(new NettySender(channels, socketRedis, _serverId, dataTool, outputHexService), 1, TimeUnit.MILLISECONDS);    //netty发数据线程
 
         //多层开关，通过配置文件控制，支持部署专门的数据解析服务器
         if(!_datahandlerDisabled){

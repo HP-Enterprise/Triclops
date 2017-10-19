@@ -34,11 +34,11 @@ public class NettySender extends Thread{
     {
 
         while (true){
-            try{
-                Thread.sleep(10);//开发调试用
-            }catch (InterruptedException e){e.printStackTrace(); }
-            Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
-            //_logger.info("Connection count>>:" + channels.keySet().size()+"|Thread count>>:" + maps.size());
+//            try{
+//                Thread.sleep(10);//开发调试用
+//            }catch (InterruptedException e){e.printStackTrace(); }
+//            Map<Thread, StackTraceElement[]> maps = Thread.getAllStackTraces();
+//            _logger.info("Connection count>>:" + channels.keySet().size()+"|Thread count>>:" + maps.size());
             //读取数据库中所有的命令集合
             Set<String> setKey = socketRedis.getKeysSet(serverId+"-"+dataTool.out_cmd_preStr+"*");//read output:*  change to-> server1-output:*
             if(setKey.size()>0){   _logger.info( setKey.size()+" message wait to be handle "); }
