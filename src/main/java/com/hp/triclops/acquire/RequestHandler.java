@@ -38,6 +38,8 @@ public class RequestHandler {
     @Autowired
     TboxService tboxService;
     @Autowired
+    VehicleRepository vehicleRepository;
+    @Autowired
     OutputHexService outputHexService;
     @Autowired
     TBoxParmSetRepository tBoxParmSetRepository;
@@ -938,22 +940,56 @@ public class RequestHandler {
 
     /**
      *
-     * @param reqString 远程控制上行hex mid=2,4,5
+     * @param reqString 远程控制上行hex
      * @param vin vin码
      */
-    public void handleRemoteControlSettingRequest(String reqString,String vin) {
-        byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
-        byte messageId=dataTool.getMessageId(bytes);
-        if(messageId==0x02){
-            //todo 记录远程控制设置结果
-            ByteBuffer bb=PackageEntityManager.getByteBuffer(reqString);
-            DataPackage dp=conversionTBox.generate(bb);
-            RemoteSettingResp bean=dp.loadBean(RemoteSettingResp.class);
-            String key=vin+"-"+bean.getEventID();
-            String val=String.valueOf(bean.getResponse());
-            _logger.info("handle RemoteControl Setting resp"+key+":"+val);
-            socketRedis.saveHashString(dataTool.remoteControlSet_hashmap_name,key,val,-1);
+    public String handleRemoteControlSettingRequest(String reqString,String vin) {
+        String byteStr = null;
+
+        byte[] bytes = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId = dataTool.getMessageId(bytes);
+        if(messageId == 0x01){
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            RemoteSettingReq bean = dp.loadBean(RemoteSettingReq.class);
+            String key = vin + "-" + bean.getEventID();
+            Integer val = bean.getRemoteFunction();
+            _logger.info("handle RemoteControl Setting req" + key + ":" + val);
+            Vehicle vehicle = vehicleRepository.findByVin(vin);
+            if(vehicle != null){
+                char[] value = dataTool.getBitsFromInteger(val);
+                String activeState = value[0] + value[1] + value[2] + value[3] + value[4] + value[5] + "";
+                vehicle.setActiveState(activeState);
+                vehicleRepository.save(vehicle);
+
+                RemoteSettingResp resp = new RemoteSettingResp();
+                resp.setHead(bean.getHead());
+                resp.setTestFlag(bean.getTestFlag());
+                resp.setSendingTime((long) dataTool.getCurrentSeconds());
+                resp.setApplicationID(bean.getApplicationID());
+                resp.setMessageID((short) 2);
+                resp.setEventID(bean.getEventID());
+                resp.setResponse((short) 0);
+
+                DataPackage dpw = new DataPackage("8995_50_2");
+                dpw.fillBean(resp);
+                ByteBuffer bbw = conversionTBox.generate(dpw);
+                byteStr = PackageEntityManager.getByteString(bbw);
+            }
+
         }
+
+        return byteStr;
+//        if(messageId==0x02){
+//            //todo 记录远程控制设置结果
+//            ByteBuffer bb=PackageEntityManager.getByteBuffer(reqString);
+//            DataPackage dp=conversionTBox.generate(bb);
+//            RemoteSettingResp bean=dp.loadBean(RemoteSettingResp.class);
+//            String key=vin+"-"+bean.getEventID();
+//            String val=String.valueOf(bean.getResponse());
+//            _logger.info("handle RemoteControl Setting resp"+key+":"+val);
+//            socketRedis.saveHashString(dataTool.remoteControlSet_hashmap_name,key,val,-1);
+//        }
     }
 
     /**

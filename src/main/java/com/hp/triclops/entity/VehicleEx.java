@@ -40,6 +40,8 @@ public class VehicleEx implements Serializable {
     private String hardVersion; //固件版本号
     private String version;//当前已完成升级版本号
 
+    private String activeState;//激活状态
+
     public VehicleEx() {
     }
 
@@ -67,6 +69,7 @@ public class VehicleEx implements Serializable {
         this.softVersion = vehicleExShow.getSoftVersion();
         this.hardVersion = vehicleExShow.getHardVersion();
         this.version = vehicleExShow.getVersion();
+        this.activeState = vehicleExShow.getActiveState();
     }
 
     @Id
@@ -298,5 +301,15 @@ public class VehicleEx implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    @Basic
+    @Column(name = "active_state", nullable = true, insertable = true, updatable = true)
+    public String getActiveState() {
+        return activeState;
+    }
+
+    public void setActiveState(String activeState) {
+        this.activeState = activeState;
     }
 }

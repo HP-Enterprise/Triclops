@@ -270,8 +270,11 @@ public class RequestTask  implements Runnable{
                     return;
                 }
                  _vin=chKey;
-                requestHandler.handleRemoteControlSettingRequest(receiveDataHexString, _vin);
-                //远程控制上行处理，无数据下行
+                respStr = requestHandler.handleRemoteControlSettingRequest(receiveDataHexString, _vin);
+                if(respStr != null){
+                    buf = dataTool.getByteBuf(respStr);
+                    ch.writeAndFlush(buf);//回发数据直接回消息
+                }
                 break;
             case 0x41://参数查询响应(上行)
                 _logger.info("ParamStatus Ack");

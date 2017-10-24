@@ -137,13 +137,15 @@ public class Vehicle implements Serializable {
     private String hardVersion; //固件版本号
     private String version;//当前已完成升级版本号
 
+    private String activeState;//激活状态
+
     public Vehicle() {
         this.vinSet = new HashSet<UserVehicleRelatived>();
         this.organizationSet = new HashSet<Organization>();
         this.tboxSet = new HashSet<TBox>();
     }
 
-    public Vehicle(String tboxsn, int id, String vin, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, Date buydate, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt, Integer remoteCount, Set<TBox> tboxSet, Set<UserVehicleRelatived> vinSet, Set<Organization> organizationSet, Integer isUpdate, String realNameAuthentication, Date regTime, Integer hwisUpdate, String softVersion, String hardVersion, String version) {
+    public Vehicle(String tboxsn, int id, String vin, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, Date buydate, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt, Integer remoteCount, Set<TBox> tboxSet, Set<UserVehicleRelatived> vinSet, Set<Organization> organizationSet, Integer isUpdate, String realNameAuthentication, Date regTime, Integer hwisUpdate, String softVersion, String hardVersion, String version, String activeState) {
         this.tboxsn = tboxsn;
         this.id = id;
         this.vin = vin;
@@ -171,6 +173,7 @@ public class Vehicle implements Serializable {
         this.softVersion = softVersion;
         this.hardVersion = hardVersion;
         this.version = version;
+        this.activeState = activeState;
     }
 
     @Id
@@ -446,5 +449,15 @@ public class Vehicle implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    @Basic
+    @Column(name = "active_state", nullable = true, insertable = true, updatable = true)
+    public String getActiveState() {
+        return activeState;
+    }
+
+    public void setActiveState(String activeState) {
+        this.activeState = activeState;
     }
 }
