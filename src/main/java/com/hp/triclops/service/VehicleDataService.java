@@ -687,7 +687,16 @@ public class VehicleDataService {
             data.setReceiveTime(DateUtil.format(rd.getSendingTime(), "yyyy-MM-dd HH:mm:ss"));
 
             data.setFuelOil(Math.round(rd.getFuelOil()));
-            data.setAvgOilA(rd.getAvgOilA());
+            if (rd.getAvgOilA() < 30) {
+                data.setAvgOilA(rd.getAvgOilA());
+            }else{
+                data.setAvgOilA(30);
+            }
+            if (rd.getAvgOilB() < 30) {
+                data.setAvgOilB(rd.getAvgOilB());
+            }else{
+                data.setAvgOilB(30);
+            }
             data.setAvgOilB(rd.getAvgOilB());
             data.setLeftFrontTirePressure(rd.getLeftFrontTirePressure());
             data.setLeftRearTirePressure(rd.getLeftRearTirePressure());
