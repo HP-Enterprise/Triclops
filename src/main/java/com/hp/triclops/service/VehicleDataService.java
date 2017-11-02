@@ -121,6 +121,7 @@ public class VehicleDataService {
             rc.setRemarkEn("sending command");
             rc.setAvailable((short) 1);
             rc.setIsAnnounce((short)0);//默认要求直接做perform，会在后续处理逻辑处理
+            rc.setWindowStat(remoteControlBody.getWindowStat());
             if(isRefCommand){
                 rc.setAvailable((short) 0);
             }
@@ -889,6 +890,7 @@ public class VehicleDataService {
             remoteControlShow.setMasterLevel(remoteControllList.get(i).getMasterLevel());
             remoteControlShow.setSlaveStat(remoteControllList.get(i).getSlaveStat());
             remoteControlShow.setSlaveLevel(remoteControllList.get(i).getSlaveLevel());
+            remoteControlShow.setWindowStat(remoteControllList.get(i).getWindowStat());
 
             remoteControlShow.setVin(remoteControllList.get(i).getVin());
             remoteControlAndVehicle.add(remoteControlShow);

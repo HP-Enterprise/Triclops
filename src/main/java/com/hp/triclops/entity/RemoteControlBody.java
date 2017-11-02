@@ -21,6 +21,7 @@ public class RemoteControlBody {
     private short masterLevel;//主驾加热级别 1 低 2 中 3高 仅在cType=6生效
     private short slaveStat;//附驾驶加热状态0关闭 1 开启 仅在cType=6 7生效
     private short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
+    private short windowStat;//车窗状态 0开 1关 cType=11、12生效
     private long refId;
 
 
@@ -166,5 +167,13 @@ public class RemoteControlBody {
 
     public void setRefId(long refId) {
         this.refId = refId;
+    }
+
+    public short getWindowStat() {
+        return windowStat;
+    }
+
+    public void setWindowStat(short windowStat) {
+        this.windowStat = windowStat;
     }
 }

@@ -33,6 +33,7 @@ public class RemoteControlShow {
     private Short masterLevel;//主驾加热级别 1 低 2 中 3高 仅在cType=6生效
     private Short slaveStat;//附驾驶加热状态0关闭 1 开启 仅在cType=6 7生效
     private Short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
+    private Short windowStat;//车窗状态 0开 1关 cType=11、12生效
 
     private Short status;
     private String remark;
@@ -228,5 +229,13 @@ public class RemoteControlShow {
 
     public void setRemarkEn(String remarkEn) {
         this.remarkEn = remarkEn;
+    }
+
+    public Short getWindowStat() {
+        return windowStat;
+    }
+
+    public void setWindowStat(Short windowStat) {
+        this.windowStat = windowStat;
     }
 }

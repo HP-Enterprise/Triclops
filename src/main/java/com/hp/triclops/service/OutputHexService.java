@@ -327,6 +327,24 @@ public class OutputHexService {
                 }
                 _remoteFindCar[3]=(byte)(_remoteFindB*4+_remoteFindA);
                 break;
+            case 11://远程控制车窗
+                _cType = 6;
+                Short stat = remoteControl.getWindowStat();
+                if(stat == 0){//开
+                    _remoteStartEngine = (byte)85;//01 01 01 01
+                }else if(stat == 1){//关
+                    _remoteStartEngine = (byte)170;//10 10 10 10
+                }
+                break;
+            case 12://远程控制天窗窗
+                _cType = 7;
+                stat = remoteControl.getWindowStat();
+                if(stat == 0){//开
+                    _remoteStartEngine = (byte)1;//
+                }else if(stat == 1){//关
+                    _remoteStartEngine = (byte)2;//
+                }
+                break;
             default:
                 _logger.info("[0x31]未知的远程控制类别"+remoteControl.getControlType().intValue());
                 break;
@@ -1946,7 +1964,7 @@ public class OutputHexService {
             }else if(result==(short)1){
                 pushMsg="远程命令执行失败。";
                 pushMsgEn="Remote command execution failed";
-            }else if(result==(short)0x20){
+            }else if(result == (short)0x20){
                 pushMsg="远程指令未执行，请求未完成。";
                 pushMsgEn="remote command not implemented, request not completed";
             }else if(result==(short)0x21){
@@ -1993,6 +2011,12 @@ public class OutputHexService {
 //                pushMsgEn="Engine start is more than allowed times 2,invalid start request";
                 pushMsg = "远程指令未执行,由于发动机启动已超出允许启动次数2次。";
                 pushMsgEn = "remote command not implemented, engine start is more than allowed times 2";
+            }
+            if(controlType == 10){//车窗结果
+
+            }
+            if(controlType == 11){//天窗结果
+
             }
             String _dbReMark=pushMsg;
             rc.setRemark(_dbReMark);

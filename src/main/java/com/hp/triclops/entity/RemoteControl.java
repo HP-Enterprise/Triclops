@@ -41,6 +41,7 @@ public class RemoteControl {
     private Long refId;
     private Short isAnnounce;
     private Short remoteStartedCount;
+    private Short windowStat;//车窗状态 0开 1关 cType=11、12生效
 
 
     @Id
@@ -316,5 +317,15 @@ public class RemoteControl {
 
     public void setRemoteStartedCount(Short remoteStartedCount) {
         this.remoteStartedCount = remoteStartedCount;
+    }
+
+    @Basic
+    @Column(name = "window_stat", nullable = false, insertable = true, updatable = true)
+    public Short getWindowStat() {
+        return windowStat;
+    }
+
+    public void setWindowStat(Short windowStat) {
+        this.windowStat = windowStat;
     }
 }
