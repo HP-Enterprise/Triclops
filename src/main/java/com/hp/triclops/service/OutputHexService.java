@@ -1859,11 +1859,13 @@ public class OutputHexService {
             if(result==(short)0){//Rst 0：无效 1：命令已接收
                 _logger.info("[0x31]关联远程控制应答处理开始");
                 //返回无效才更新db记录 不阻塞
-                rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
+//                rc.setRemark("命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效");
+                rc.setRemark("命令执行失败:TBOX提示命令无效");
                 rc.setRemarkEn("Command execution failed, dependent remote start engine command execution failed: TBOX prompt command is invalid");
                 rc.setStatus((short) 0);
                 remoteControlRepository.save(rc);
-                String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效";
+//                String pushMsg="命令执行失败,依赖的远程启动发动机命令执行未能成功:TBOX提示命令无效";
+                String pushMsg="命令执行失败:TBOX提示命令无效";
                 try {
                     this.pushRemoteControlResult(rc.getId(),rc.getVin(),rc.getSessionId(),0,pushMsg);
                 }catch (RuntimeException e){_logger.info(e.getMessage());}
@@ -2109,7 +2111,8 @@ public class OutputHexService {
                 pushMsg = "远程指令未执行,请求未完成";
                 pushMsgEn = "remote command not implemented, request not completed";
             }
-            String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
+//            String _dbReMark="命令执行失败,依赖的远程启动发动机命令执行未能成功:"+pushMsg;
+            String _dbReMark="命令执行失败:"+pushMsg;
             rc.setRemark(_dbReMark);
             rc.setRemarkEn(pushMsgEn);
             if(result==(short)0){
