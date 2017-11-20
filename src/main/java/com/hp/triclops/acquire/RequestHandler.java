@@ -958,6 +958,7 @@ public class RequestHandler {
             Vehicle vehicle = vehicleRepository.findByVin(vin);
             if(vehicle != null){
                 char[] value = dataTool.getBitsFromShort(val);
+                _logger.info("activeState value：" + value );
                 String activeState = value[7] + value[6] + value[5] + value[4] + value[3] + value[2] + value[1] + value[0] + "";
                 vehicle.setActiveState(activeState);
                 vehicleRepository.save(vehicle);
