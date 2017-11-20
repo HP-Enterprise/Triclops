@@ -95,7 +95,7 @@ public class OutputHexService {
         int value=show.getStartEngine()+ 2*show.getCentralLock() +4* show.getFindCar() +8*show.getAc()
                 +16 *show.getSeatHeating() +32* show.getRemindFailure() +64 *show.getLocation() +128 *show.getSms();
         value=value>255?255:value;
-        hr.setRemoteFunction(value);//01111111
+        hr.setRemoteFunction((short)value);//01111111
         DataPackage dpw=new DataPackage("8995_50_1");//>>>
         dpw.fillBean(hr);
         ByteBuffer bbw=conversionTBox.generate(dpw);
