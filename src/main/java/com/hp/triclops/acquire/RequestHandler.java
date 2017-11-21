@@ -959,9 +959,9 @@ public class RequestHandler {
             if(vehicle != null){
                 char[] value = dataTool.getBitsFromInteger(val);
                 String activeState="";
-                for (int i=15;i>=01;i--){
+                for (int i=value.length-1;i>=01;i--){
                     activeState+=value[i];
-                    _logger.info("value[i];" + value[i]);
+                    _logger.info("value["+i+"];" + value[i]);
                 }
                 _logger.info("activeState value：" + activeState );
                 vehicle.setActiveState(activeState);
