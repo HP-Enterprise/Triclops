@@ -953,13 +953,13 @@ public class RequestHandler {
             DataPackage dp = conversionTBox.generate(bb);
             RemoteSettingReq bean = dp.loadBean(RemoteSettingReq.class);
             String key = vin + "-" + bean.getEventID();
-            Short val = bean.getRemoteFunction();
+            Integer val = bean.getRemoteFunction();
             _logger.info("handle RemoteControl Setting req" + key + ":" + val);
             Vehicle vehicle = vehicleRepository.findByVin(vin);
             if(vehicle != null){
-                char[] value = dataTool.getBitsFromShort(val);
+                char[] value = dataTool.getBitsFromInteger(val);
                 String activeState="";
-                for (int i=7;i>-1;i--){
+                for (int i=15;i>=01;i--){
                     activeState+=value[i];
                     _logger.info("value[i];" + value[i]);
                 }
