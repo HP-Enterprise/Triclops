@@ -960,7 +960,7 @@ public class RequestHandler {
                 char[] value = dataTool.getBitsFromInteger(val);
                 String activeState="";
                 if (value.length ==16){
-                    for (int i = 7; i >= 01; i--) {
+                    for (int i = 7; i >= 0; i--) {
                         activeState += value[i];
                         _logger.info("value[" + i + "];" + value[i]);
                     }
@@ -970,7 +970,7 @@ public class RequestHandler {
                     }
 
                 }else {
-                    for (int i = value.length - 1; i >= 01; i--) {
+                    for (int i = value.length - 1; i >= 0; i--) {
                         activeState += value[i];
                         _logger.info("value[" + i + "];" + value[i]);
                     }
