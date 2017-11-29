@@ -283,7 +283,7 @@ public class VehicleDataService {
         while (count<checkCount){
             //发送一次短信，然后间隔1s检测连接是否建立
             count++;
-            if(count == 40){
+            if(count == 20){
                 wakeup(vin);//40秒之后后台再retry一次
             }
             try{
