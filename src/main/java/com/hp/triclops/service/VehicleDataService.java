@@ -162,7 +162,7 @@ public class VehicleDataService {
             _logger.info("[0x31]Precondition请求hex:"+byteStr);
             return rc;
         }else{
-            rc.setRemark("远程指令未执行,由于网络信号质量差或电瓶电量低，车联网远程控制功能暂时无法使用");
+            rc.setRemark("车联网服务已关闭，请确认网络信号和车辆电瓶状态");
             rc.setRemarkEn("remote command not implemented, due to poor network signal quality or low battery power, car networking remote control function temporarily unavailable");
             rc.setStatus((short)0);
             remoteControlRepository.save(rc);
