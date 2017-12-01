@@ -137,6 +137,8 @@ public class Vehicle implements Serializable {
     private String hardVersion; //固件版本号
     private String version;//当前已完成升级版本号
 
+    private String srcVersion;//原固件版本号
+
     private String activeState;//激活状态
 
     public Vehicle() {
@@ -145,7 +147,7 @@ public class Vehicle implements Serializable {
         this.tboxSet = new HashSet<TBox>();
     }
 
-    public Vehicle(String tboxsn, int id, String vin, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, Date buydate, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt, Integer remoteCount, Set<TBox> tboxSet, Set<UserVehicleRelatived> vinSet, Set<Organization> organizationSet, Integer isUpdate, String realNameAuthentication, Date regTime, Integer hwisUpdate, String softVersion, String hardVersion, String version, String activeState) {
+    public Vehicle(String tboxsn, int id, String vin, String vendor, String model, String displacement, Date product_date, String vcolor, String buystore, Date buydate, String vpurl, Integer vtype, String license_plate, Integer t_flag, String security_pwd, String security_salt, Integer remoteCount, Set<TBox> tboxSet, Set<UserVehicleRelatived> vinSet, Set<Organization> organizationSet, Integer isUpdate, String realNameAuthentication, Date regTime, Integer hwisUpdate, String softVersion, String hardVersion, String version, String activeState, String srcVersion) {
         this.tboxsn = tboxsn;
         this.id = id;
         this.vin = vin;
@@ -174,6 +176,7 @@ public class Vehicle implements Serializable {
         this.hardVersion = hardVersion;
         this.version = version;
         this.activeState = activeState;
+        this.srcVersion = srcVersion;
     }
 
     @Id
@@ -459,5 +462,15 @@ public class Vehicle implements Serializable {
 
     public void setActiveState(String activeState) {
         this.activeState = activeState;
+    }
+
+    @Basic
+    @Column(name = "src_version", nullable = true, insertable = true, updatable = true)
+    public String getSrcVersion() {
+        return srcVersion;
+    }
+
+    public void setSrcVersion(String srcVersion) {
+        this.srcVersion = srcVersion;
     }
 }

@@ -3,6 +3,7 @@ package com.hp.triclops.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hp.triclops.entity.*;
+import com.hp.triclops.management.OrganizationVehicleManagement;
 import com.hp.triclops.repository.*;
 import com.hp.triclops.utils.HttpClientTool;
 import io.netty.util.internal.StringUtil;
@@ -32,6 +33,8 @@ public class TboxService {
     HttpClientTool httpClientTool;
     @Autowired
     VehicleTBoxRelativeRepository vehicleTboxRelativeRepository;
+    @Autowired
+    OrganizationVehicleManagement organizationVehicleManagement;
 
     private Logger _logger = LoggerFactory.getLogger(TboxService.class);
 
@@ -75,7 +78,10 @@ public class TboxService {
             vehicle.setSecurity_salt("a5pb");
             vehicle.setRegTime(new Date());
             vehicle.setRealNameAuthentication("0");
-            sVehicle=vehicleRepository.save(vehicle);
+            sVehicle = vehicleRepository.save(vehicle);
+
+            organizationVehicleManagement.addVehicle(1, sVehicle.getId());   // 默认添加到华晨汽车根组织
+            organizationVehicleManagement.addVehicle(2, sVehicle.getId());   // 默认添加到生产辅助根组织
         }else{
             vehicleTBoxRelative.setOldTboxsn(_vehicle.getTboxsn());
             VehicleModelConfig vehicleModelConfig=vehicleModelConfigRepository.findByModelId(modelId);

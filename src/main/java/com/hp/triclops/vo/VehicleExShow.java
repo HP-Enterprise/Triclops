@@ -35,6 +35,7 @@ public class VehicleExShow {
     private String softVersion; //版本号
     private String hardVersion; //固件版本号
     private String version;//当前已完成升级版本号
+    private String srcVersion;//原固件版本号
 
     private String activeState;//激活状态
 
@@ -67,6 +68,7 @@ public class VehicleExShow {
         this.hardVersion = vehicleEx.getHardVersion();
         this.version = vehicleEx.getVersion();
         this.activeState = vehicleEx.getActiveState();
+        this.srcVersion = vehicleEx.getSrcVersion();
     }
 
     /**
@@ -293,5 +295,13 @@ public class VehicleExShow {
 
     public void setActiveState(String activeState) {
         this.activeState = activeState;
+    }
+
+    public String getSrcVersion() {
+        return srcVersion;
+    }
+
+    public void setSrcVersion(String srcVersion) {
+        this.srcVersion = srcVersion;
     }
 }

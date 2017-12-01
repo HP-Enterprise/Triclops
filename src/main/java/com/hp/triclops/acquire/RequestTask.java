@@ -304,6 +304,34 @@ public class RequestTask  implements Runnable{
                 _vin=chKey;
                 requestHandler.handleParmSetAck(receiveDataHexString, _vin);
                 break;
+            case 0x54://T-Box Ftp 远程软件升级
+                _logger.info("T-Box Ftp 远程软件升级");
+                chKey = geVinByAddress(ch.remoteAddress().toString());
+                if(chKey == null){
+                    _logger.info("报文对应的连接没有注册，不处理报文");
+                    return;
+                }
+                _vin = chKey;
+                respStr = requestHandler.handleSoftUpdate(receiveDataHexString, _vin);
+                if(respStr != null){
+                    buf = dataTool.getByteBuf(respStr);
+                    ch.writeAndFlush(buf);//回发数据直接回消息
+                }
+                break;
+            case 0x55://T-Box Ftp 远程固件升级
+                _logger.info("T-Box Ftp 远程固件升级");
+                chKey = geVinByAddress(ch.remoteAddress().toString());
+                if(chKey == null){
+                    _logger.info("报文对应的连接没有注册，不处理报文");
+                    return;
+                }
+                _vin = chKey;
+                respStr = requestHandler.handleHardUpdate(receiveDataHexString, _vin);
+                if(respStr != null){
+                    buf = dataTool.getByteBuf(respStr);
+                    ch.writeAndFlush(buf);//回发数据直接回消息
+                }
+                break;
             case 0x61://解密失败报告(上行)
                 _logger.info("[0x61]收到解密失败报告，即将断开连接...");
                 ch.close();

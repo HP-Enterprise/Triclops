@@ -13,6 +13,7 @@ import com.hp.triclops.service.VehicleDataService;
 import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.MD5;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,12 @@ public class RequestHandler {
     GpsTool gpsTool;
     @Autowired
     TBoxRepository tBoxRepository;
+    @Autowired
+    UploadPackageEntityRepository uploadPackageEntityRepository;
+    @Autowired
+    FtpSettingRepository ftpSettingRepository;
+    @Autowired
+    FtpDataRepository ftpDataRepository;
     @Value("${com.hp.acquire.serverId}")
     private String _serverId;//serverId集群依赖这个值
 
@@ -254,6 +261,10 @@ public class RequestHandler {
             socketRedis.saveHashString(dataTool.tboxkey_hashmap_name, vin, randomKey, -1);
             //更新车型信息
             modifyVehicleInfo(vin,bean.getVehicleModel());
+            //更新固件版本号
+            Vehicle vehicle = vehicleRepository.findByVin(vin);
+            vehicle.setHardVersion(bean.getFwVersion());
+            vehicleRepository.save(vehicle);
         }
         resp.setKeyInfo(randomKey.getBytes());
         //注册响应
@@ -1583,6 +1594,303 @@ public class RequestHandler {
             //保存Ack数据
             diagnosticDataRepository.save(diagnosticData);
         }
+    }
+
+    /**
+     * T-Box Ftp 远程软件升级
+     * @param reqString
+     * @param vin
+     */
+    public String handleSoftUpdate(String reqString,String vin){
+        String result = "";
+
+        FtpData ftpData = new FtpData();
+
+        //处理远程软件升级上行的16进制字符串
+        byte[] bytes = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId = dataTool.getMessageId(bytes);
+        if(messageId == 0x01){
+            //上行
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            SoftFtpUpdateCheck bean = dp.loadBean(SoftFtpUpdateCheck.class);
+
+            Vehicle vehicle = vehicleRepository.findByVin(vin);
+            UploadPackageEntity uploadPackageEntity = uploadPackageEntityRepository.findByModelAndVersion(3, vehicle.getSoftVersion());
+            FtpSetting ftpSetting = ftpSettingRepository.findById(1);
+
+            //下行
+            ByteBuf buf = Unpooled.buffer();
+            buf.writeShort(0x2323);//Short((short) 0x2323);
+            buf.markWriterIndex();
+            buf.writeShort(0x0000);//消息长度
+            buf.writeByte(0x0);//Test Flag
+            buf.writeInt(dataTool.getCurrentSeconds());//Sending Time
+            buf.writeByte(0x54);//Application Id
+            buf.writeByte(0x02);//Message Id
+
+            //MID2 - TBOX_FtpUpdateCheckResp
+            buf.writeInt(bean.getEventID().intValue());
+            buf.writeByte(3);
+            String versionStr = vehicle.getSoftVersion();
+            if(versionStr.length() == 5){
+                buf.writeBytes(versionStr.getBytes());
+            }else if(versionStr.length() < 5){
+                buf.writeBytes(versionStr.getBytes());
+                for(int i = 0;i < 5 - versionStr.length();i ++){
+                    buf.writeByte(0x00);
+                }
+            }else if(versionStr.length() > 5){
+                buf.writeBytes(versionStr.substring(0, 5).getBytes());
+            }
+            String fileName = uploadPackageEntity.getFileName();
+            if(fileName.length() == 10){
+                buf.writeBytes(fileName.getBytes());
+            }else if(fileName.length() < 10){
+                buf.writeBytes(fileName.getBytes());
+                for(int i = 0;i < 9 - fileName.length();i ++){
+                    buf.writeByte(0x00);
+                }
+            }else if(fileName.length() > 10){
+                buf.writeBytes(fileName.substring(0, 10).getBytes());
+            }
+            buf.writeByte(vehicle.getIsUpdate());
+            Integer len = 27 + ftpSetting.getSoftUrl().length();
+            buf.writeBytes(ftpSetting.getSoftUrl().getBytes());
+            buf.writeByte(dataTool.getCheckSum(DataTool.getBytesFromByteBuf(buf)));
+
+            int index = buf.writerIndex();
+            buf.resetWriterIndex();
+            buf.writeShort(len);
+            buf.writerIndex(index);
+
+            //返回结果
+            result = dataTool.bytes2hex(DataTool.getBytesFromByteBuf(buf));
+
+            //保存记录
+            ftpData.setVin(vin);
+            ftpData.setModel(5);
+            ftpData.setVersion(vehicle.getSoftVersion());
+            ftpData.setIsUpdate(vehicle.getIsUpdate());
+            ftpData.setUpdateStep(0);
+            ftpData.setCreateTime(new Date());
+            ftpDataRepository.save(ftpData);
+        }else if(messageId == 0x03){
+            //上行
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            SoftFtpUpdateFileDownLoadRst bean = dp.loadBean(SoftFtpUpdateFileDownLoadRst.class);
+
+            //下行
+            SoftFtpUpdateFileDownLoadAck resp=new SoftFtpUpdateFileDownLoadAck();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 2);
+            resp.setEventID(bean.getEventID());
+            //响应
+            DataPackage dpw=new DataPackage("8995_54_4");
+            dpw.fillBean(resp);
+            ByteBuffer bbw=conversionTBox.generate(dpw);
+
+            //返回结果
+            result = PackageEntityManager.getByteString(bbw);
+
+            //保存记录
+            ftpData.setVin(vin);
+            ftpData.setModel(3);
+            ftpData.setVersion(bean.getDestVersion());
+            ftpData.setUpdateStep(bean.getUpdateStep().intValue());
+            ftpData.setDownloadResult(bean.getDownloadResult().intValue());
+            ftpData.setErrorCode(bean.getErrorCode().intValue());
+            ftpData.setCreateTime(new Date());
+            ftpDataRepository.save(ftpData);
+        }else if(messageId == 0x05){
+            //上行
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            SoftFtpUpdateResult bean = dp.loadBean(SoftFtpUpdateResult.class);
+
+            //下行
+            SoftFtpUpdateResultAck resp=new SoftFtpUpdateResultAck();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 2);
+            resp.setEventID(bean.getEventID());
+            //响应
+            DataPackage dpw=new DataPackage("8995_54_6");
+            dpw.fillBean(resp);
+            ByteBuffer bbw=conversionTBox.generate(dpw);
+
+            //返回结果
+            result = PackageEntityManager.getByteString(bbw);
+
+            //保存记录
+            ftpData.setVin(vin);
+            ftpData.setModel(3);
+            ftpData.setVersion(bean.getDestVersion());
+            ftpData.setUpdateStep(bean.getUpdateStep().intValue());
+            ftpData.setDownloadResult(bean.getDownloadResult().intValue());
+            ftpData.setErrorCode(bean.getErrorCode().intValue());
+            ftpData.setCreateTime(new Date());
+            ftpDataRepository.save(ftpData);
+        }
+        return result;
+    }
+
+    /**
+     * T-Box Ftp 远程固件升级
+     * @param reqString
+     * @param vin
+     */
+    public String handleHardUpdate(String reqString,String vin){
+        String result = "";
+
+        FtpData ftpData = new FtpData();
+
+        //处理远程固件升级上行的16进制字符串
+        byte[] bytes = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId = dataTool.getMessageId(bytes);
+        if(messageId == 0x01){
+            //上行
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            HardFtpUpdateCheck bean = dp.loadBean(HardFtpUpdateCheck.class);
+
+            Vehicle vehicle = vehicleRepository.findByVin(vin);
+            UploadPackageEntity uploadPackageEntity = uploadPackageEntityRepository.findByModelAndVersion(5, vehicle.getSoftVersion());
+            FtpSetting ftpSetting = ftpSettingRepository.findById(1);
+
+            //下行
+            HardFtpUpdateCheckResp resp=new HardFtpUpdateCheckResp();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 2);
+            resp.setEventID(bean.getEventID());
+
+            Integer model = 5;
+            resp.setModel(model.shortValue());
+            resp.setFwDestVersion(vehicle.getHardVersion());
+            resp.setFileName(uploadPackageEntity.getFileName());
+            resp.setIsUpdate(vehicle.getHwisUpdate().shortValue());
+            String srcVersion = vehicle.getSrcVersion();
+            if(srcVersion != null && !"".equals(srcVersion)){
+                resp.setFwSrcVersion(srcVersion);
+            }else{
+                byte[] versionBytes = new byte[20];
+                for(int i = 0;i < 20;i ++){
+                    versionBytes[i] = 0x0;
+                }
+                resp.setFwSrcVersion(new String(versionBytes));
+            }
+            String ftpIp = ftpSetting.getFtpIp();
+            if(ftpIp != null && !"".equals(ftpIp)){
+                String[] ips = ftpIp.split(".");
+                byte[] ipBytes = new byte[4];
+                Integer ip0 = Integer.parseInt(ips[0]);
+                ipBytes[0] = ip0.byteValue();
+                Integer ip1 = Integer.parseInt(ips[1]);
+                ipBytes[1] = ip1.byteValue();
+                Integer ip2 = Integer.parseInt(ips[2]);
+                ipBytes[2] = ip2.byteValue();
+                Integer ip3 = Integer.parseInt(ips[3]);
+                ipBytes[3] = ip3.byteValue();
+
+                resp.setFtpIp(ipBytes);
+            }else{
+                byte[] ipBytes = new byte[4];
+                ipBytes[0] = 0;
+                ipBytes[1] = 0;
+                ipBytes[2] = 0;
+                ipBytes[3] = 0;
+
+                resp.setFtpIp(ipBytes);
+            }
+            resp.setFtpPort(ftpSetting.getFtpPort());
+            resp.setDialUserNumber(ftpSetting.getDialUserName());
+            resp.setDialPin(ftpSetting.getDialPin());
+
+            //响应
+            DataPackage dpw=new DataPackage("8995_55_4");
+            dpw.fillBean(resp);
+            ByteBuffer bbw=conversionTBox.generate(dpw);
+
+            //返回结果
+            result = PackageEntityManager.getByteString(bbw);
+        }else if(messageId == 0x03){
+            //上行
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            HardFtpUpdateFileDownLoadRst bean = dp.loadBean(HardFtpUpdateFileDownLoadRst.class);
+
+            //下行
+            HardFtpUpdateFileDownLoadAck resp=new HardFtpUpdateFileDownLoadAck();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 2);
+            resp.setEventID(bean.getEventID());
+            //响应
+            DataPackage dpw=new DataPackage("8995_55_4");
+            dpw.fillBean(resp);
+            ByteBuffer bbw=conversionTBox.generate(dpw);
+
+            //返回结果
+            result = PackageEntityManager.getByteString(bbw);
+
+            //保存记录
+            ftpData.setVin(vin);
+            ftpData.setModel(5);
+            ftpData.setVersion(bean.getDestVersion());
+            ftpData.setUpdateStep(bean.getUpdateStep().intValue());
+            ftpData.setDownloadResult(bean.getDownloadResult().intValue());
+            ftpData.setErrorCode(bean.getErrorCode().intValue());
+            ftpData.setCreateTime(new Date());
+            ftpDataRepository.save(ftpData);
+        }else if(messageId == 0x05){
+            //上行
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            HardFtpUpdateResult bean = dp.loadBean(HardFtpUpdateResult.class);
+
+            //下行
+            HardFtpUpdateResultAck resp=new HardFtpUpdateResultAck();
+            resp.setHead(bean.getHead());
+            resp.setTestFlag(bean.getTestFlag());
+            resp.setSendingTime((long) dataTool.getCurrentSeconds());
+            resp.setApplicationID(bean.getApplicationID());
+            resp.setMessageID((short) 2);
+            resp.setEventID(bean.getEventID());
+            //响应
+            DataPackage dpw = new DataPackage("8995_55_6");
+            dpw.fillBean(resp);
+            ByteBuffer bbw = conversionTBox.generate(dpw);
+
+            //返回结果
+            result = PackageEntityManager.getByteString(bbw);
+
+            //保存记录
+            ftpData.setVin(vin);
+            ftpData.setModel(5);
+            ftpData.setVersion(bean.getDestVersion());
+            ftpData.setUpdateStep(bean.getUpdateStep().intValue());
+            ftpData.setDownloadResult(bean.getDownloadResult().intValue());
+            ftpData.setErrorCode(bean.getErrorCode().intValue());
+            ftpData.setCreateTime(new Date());
+            ftpDataRepository.save(ftpData);
+
+            //更新版本号
+            Vehicle vehicle = vehicleRepository.findByVin(vin);
+            vehicle.setSrcVersion(bean.getDestVersion());
+            vehicleRepository.save(vehicle);
+        }
+        return result;
     }
 
 }
