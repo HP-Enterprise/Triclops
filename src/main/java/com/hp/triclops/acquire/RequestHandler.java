@@ -249,17 +249,17 @@ public class RequestHandler {
         Long eventID;
         //F70
         if("4".equals(model)){
-            registerReq = dp.loadBean(RegisterReq.class);
-            head = registerReq.getHead();
-            testFlag = registerReq.getTestFlag();
-            applicationId = registerReq.getApplicationID();
-            eventID = registerReq.getEventID();
-        }else{
             registerF70Req = dp.loadBean(RegisterF70Req.class);
             head = registerF70Req.getHead();
             testFlag = registerF70Req.getTestFlag();
             applicationId = registerF70Req.getApplicationID();
             eventID = registerF70Req.getEventID();
+        }else{
+            registerReq = dp.loadBean(RegisterReq.class);
+            head = registerReq.getHead();
+            testFlag = registerReq.getTestFlag();
+            applicationId = registerReq.getApplicationID();
+            eventID = registerReq.getEventID();
         }
 
         //请求解析到bean
