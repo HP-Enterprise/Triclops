@@ -237,19 +237,39 @@ public class RequestHandler {
      * @param checkRegister 注册是否通过
      * @return 响应hex
      */
-    public String getRegisterResp(String reqString,String vin,boolean checkRegister){
+    public String getRegisterResp(String reqString,String vin,boolean checkRegister, String model){
         //根据注册请求的16进制字符串，生成响应的16进制字符串
         ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
         DataPackage dp=conversionTBox.generate(bb);
-        RegisterReq bean=dp.loadBean(RegisterReq.class);
+        RegisterReq registerReq;
+        RegisterF70Req registerF70Req;
+        Integer head;
+        Short testFlag;
+        Short applicationId;
+        Long eventID;
+        //F70
+        if("4".equals(model)){
+            registerReq = dp.loadBean(RegisterReq.class);
+            head = registerReq.getHead();
+            testFlag = registerReq.getTestFlag();
+            applicationId = registerReq.getApplicationID();
+            eventID = registerReq.getEventID();
+        }else{
+            registerF70Req = dp.loadBean(RegisterF70Req.class);
+            head = registerF70Req.getHead();
+            testFlag = registerF70Req.getTestFlag();
+            applicationId = registerF70Req.getApplicationID();
+            eventID = registerF70Req.getEventID();
+        }
+
         //请求解析到bean
         RegisterResp resp=new RegisterResp();
-        resp.setHead(bean.getHead());
-        resp.setTestFlag(bean.getTestFlag());
+        resp.setHead(head);
+        resp.setTestFlag(testFlag);
         resp.setSendingTime((long) dataTool.getCurrentSeconds());
-        resp.setApplicationID(bean.getApplicationID());
+        resp.setApplicationID(applicationId);
         resp.setMessageID((short) 2);
-        resp.setEventID(bean.getEventID());
+        resp.setEventID(eventID);
         short registerResult = checkRegister ? (short)0 : (short)1;
         resp.setRegisterResult(registerResult);
         resp.setTotalSize(500l);
@@ -260,11 +280,7 @@ public class RequestHandler {
             _logger.info("[0x13]注册时给vin:" + vin + "生成的AES key:" + randomKey);
             socketRedis.saveHashString(dataTool.tboxkey_hashmap_name, vin, randomKey, -1);
             //更新车型信息
-            modifyVehicleInfo(vin,bean.getVehicleModel());
-            //更新固件版本号
-            Vehicle vehicle = vehicleRepository.findByVin(vin);
-            vehicle.setHardVersion(bean.getFwVersion());
-            vehicleRepository.save(vehicle);
+            modifyVehicleInfo(vin, Short.parseShort(model));
         }
         resp.setKeyInfo(randomKey.getBytes());
         //注册响应

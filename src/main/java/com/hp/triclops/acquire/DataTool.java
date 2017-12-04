@@ -667,6 +667,7 @@ public class DataTool {
         String serialNum="";
         String vin="";
         int eventId=0;
+        int model = 0;
         HashMap<String,String> re=new HashMap<String ,String>();
         if(data!=null){
             if(data.length>67) {
@@ -676,11 +677,13 @@ public class DataTool {
                 bb.put(data);
                 bb.flip();
                 eventId=  bb.getInt(33);
+                model = bb.get(28);
             }
         }
         re.put("eventId",String.valueOf(eventId));
         re.put("vin", vin);
         re.put("serialNum", serialNum);
+        re.put("model", String.valueOf(model));
         return re;
     }
 
