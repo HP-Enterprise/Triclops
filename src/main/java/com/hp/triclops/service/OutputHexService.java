@@ -330,18 +330,18 @@ public class OutputHexService {
             case 11://远程控制车窗
                 _cType = 6;
                 Short stat = remoteControl.getWindowStat();
-                if(stat == 0){//开
+                if(stat == 1){//开
                     _remoteStartEngine = (byte)85;//01 01 01 01
-                }else if(stat == 1){//关
+                }else if(stat == 0){//关
                     _remoteStartEngine = (byte)170;//10 10 10 10
                 }
                 break;
             case 12://远程控制天窗窗
                 _cType = 7;
                 stat = remoteControl.getWindowStat();
-                if(stat == 0){//开
+                if(stat == 1){//开
                     _remoteStartEngine = (byte)1;//
-                }else if(stat == 1){//关
+                }else if(stat == 0){//关
                     _remoteStartEngine = (byte)2;//
                 }
                 break;
@@ -2014,10 +2014,10 @@ public class OutputHexService {
                 pushMsg = "远程指令未执行,由于发动机启动已超出允许启动次数2次。";
                 pushMsgEn = "remote command not implemented, engine start is more than allowed times 2";
             }
-            if(controlType == 10){//车窗结果
+            if(controlType == 11){//车窗结果
 
             }
-            if(controlType == 11){//天窗结果
+            if(controlType == 12){//天窗结果
 
             }
             String _dbReMark=pushMsg;

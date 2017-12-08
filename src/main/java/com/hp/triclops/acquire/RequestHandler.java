@@ -831,8 +831,12 @@ public class RequestHandler {
                     msgEn="Engine has been started, not allowed to unlock";
                 }
                 if(preconditionRespCheck == 11){
-                    msg="远程寻车失败，操作条件不满足";
-                    msgEn="Remote search failed, the operating conditions are not satisfied";
+                    msg="远程指令未执行，操作条件不满足";
+                    msgEn="remote command not implemented, the operating conditions are not satisfied";
+                }
+                if(preconditionRespCheck == 12){
+                    msg="远程指令未执行，操作条件不满足";
+                    msgEn="remote command not implemented, the operating conditions are not satisfied";
                 }
                 if((preconditionRespCheck==4||preconditionRespCheck==5||preconditionRespCheck==6||preconditionRespCheck==7) && currentRefId!=-2){
                     if(currentRefId ==-1){//-1的情况
@@ -1191,24 +1195,26 @@ public class RequestHandler {
                     handBrakeCheck=true;
                 }
             }
-            byte sunroof=remoteControlPreconditionResp.getBcm_Stat_window2();
-            char[] sunroof_char=dataTool.getBitsFromByte(sunroof);
-            //if(sunroof_char[6]=='0'&&sunroof_char[7]=='1'){
-                sunroofCheck = true;
-            //}
 
-            byte[] windows=remoteControlPreconditionResp.getBcm_Stat_window();
-            char[] windows_char = dataTool.getBitsFrom2Byte(windows);
-            if(isM8X){
+//            byte sunroof=remoteControlPreconditionResp.getBcm_Stat_window2();
+//            char[] sunroof_char=dataTool.getBitsFromByte(sunroof);
+//            if(sunroof_char[6]=='0'&&sunroof_char[7]=='1'){
+//                sunroofCheck = true;
+//            }
+
+
+//            byte[] windows=remoteControlPreconditionResp.getBcm_Stat_window();
+//            char[] windows_char = dataTool.getBitsFrom2Byte(windows);
+//            if(isM8X){
                 //todo 关于车窗全部屏蔽检查，后续实车加上
-            //if(windows_char[14]=='1'&&windows_char[15]=='0' && windows_char[12]=='1'&&windows_char[13]=='0' && windows_char[10]=='1'&&windows_char[11]=='0' && windows_char[8]=='1'&&windows_char[9]=='0'){
-                windowsCheck=true;
-            //}
-            }else{
-                //if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
-                windowsCheck=true;
-                //}
-            }
+//                if(windows_char[14]=='1'&&windows_char[15]=='0' && windows_char[12]=='1'&&windows_char[13]=='0' && windows_char[10]=='1'&&windows_char[11]=='0' && windows_char[8]=='1'&&windows_char[9]=='0'){
+//                    windowsCheck=true;
+//                }
+//            }else{
+//                if(windows_char[6]=='1'&&windows_char[7]=='0' && windows_char[4]=='1'&&windows_char[5]=='0' && windows_char[2]=='1'&&windows_char[3]=='0' && windows_char[0]=='1'&&windows_char[1]=='0'){
+//                    windowsCheck=true;
+//                }
+//            }
 
             byte[] doors=remoteControlPreconditionResp.getBcm_Stat_Door_Flap();
             char[] doors_char=dataTool.getBitsFrom2Byte(doors);
@@ -1257,6 +1263,12 @@ public class RequestHandler {
             }
             if(sesam_clamp_stat2_char[5]=='0'&&sesam_clamp_stat2_char[6]=='1'&&sesam_clamp_stat2_char[7]=='1'){//0x3 Engine start
                 powerStatusIsOnCheck=true;//Engine start
+            }
+
+            //车窗、天窗
+            if(doorsCheck && trunkCheck && bonnetCheck && centralLockCheck && powerStatusCheck){
+                windowsCheck = true;
+                sunroofCheck = true;
             }
 
             //不再检查M8X
@@ -1467,12 +1479,29 @@ public class RequestHandler {
                     }
 //                    reint = 10;
                 }
-            }else if(controlType==(short)11){//10：远程寻车->11鸣笛
-                re = doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
+            }
+//            else if(controlType==(short)11){//10：远程寻车->11鸣笛
+//                re = doorsCheck  && hazardLightsCheck && trunkCheck && bonnetCheck;
+//                if(re){
+//                    reint = 0;
+//                }else{
+//                    reint = 11;
+//                }
+//            }
+            //0638协议
+            else if(controlType==(short)11){//11：远程控制车窗
+                re = windowsCheck;
                 if(re){
                     reint = 0;
                 }else{
                     reint = 11;
+                }
+            }else if(controlType==(short)12){//12：远程控制天窗
+                re = sunroofCheck;
+                if(re){
+                    reint = 0;
+                }else{
+                    reint = 12;
                 }
             }
         }
@@ -1484,10 +1513,10 @@ public class RequestHandler {
                 +"-"+ transmissionGearPositionCheck +"-"+ handBrakeCheck +"-"+ sunroofCheck +"-"+ windowsCheck
                 +"-"+ doorsCheck +"-"+ trunkCheck +"-"+ bonnetCheck +"-"+ centralLockCheck +"-"+ crashStatusCheck
                 +"-"+ remainingFuelCheck);
-        if(controlType==(short)0||controlType==(short)4||controlType==(short)5||controlType==(short)6||controlType==(short)7||controlType==(short)2||controlType==(short)3||controlType==(short)10){
+        if(controlType==(short)0||controlType==(short)4||controlType==(short)5||controlType==(short)6||controlType==(short)7||controlType==(short)2||controlType==(short)3||controlType==(short)10 || controlType==(short)11 || controlType==(short)12){
 
         }else{
-            _logger.info("除启动发动机、空调、座椅加热、远程上锁、远程解锁、远程寻车外的操作，Precondition校验会直接通过。");
+            _logger.info("除启动发动机、空调、座椅加热、远程上锁、远程解锁、远程寻车、车窗控制、天窗控制外的操作，Precondition校验会直接通过。");
             reint=0;//临时处理
         }
         _logger.info("[0x31]Precondition响应校验结果:"+reint+" 车型:"+vehicleModel+"(0:M82;1:M82;2:M85;3:F60;4:F70;5:F60电动车) 是否M8X:"+isM8X);
