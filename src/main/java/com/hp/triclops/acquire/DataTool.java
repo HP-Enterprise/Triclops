@@ -168,6 +168,16 @@ public class DataTool {
         return data;
     }
 
+    public  byte getModelType(byte[] bytes){
+        //返回数据包车辆类型对应的byte
+        byte data = 0;
+        if(bytes != null){
+            if(bytes.length > 28) {
+                data = bytes[28];
+            }
+        }
+        return data;
+    }
 
     public  String bytes2hex(byte[] bArray) {
         //字节数据转16进制字符串

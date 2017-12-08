@@ -360,6 +360,14 @@ public class RealTimeDataShow {
     private int averageSpeedB;
     private String mtGearPostion;
 
+    private int engineState;
+    private int lfLockState;
+    private int lrLockState;
+    private int rfLockState;
+    private int rrLockState;
+    private int blow;
+    private int acState;
+
     public String getReceiveTime() {
         return receiveTime;
     }
@@ -770,5 +778,61 @@ public class RealTimeDataShow {
 
     public void setMtGearPostion(String mtGearPostion) {
         this.mtGearPostion = mtGearPostion;
+    }
+
+    public int getEngineState() {
+        return engineState;
+    }
+
+    public void setEngineState(int engineState) {
+        this.engineState = engineState;
+    }
+
+    public int getLfLockState() {
+        return lfLockState;
+    }
+
+    public void setLfLockState(int lfLockState) {
+        this.lfLockState = lfLockState;
+    }
+
+    public int getLrLockState() {
+        return lrLockState;
+    }
+
+    public void setLrLockState(int lrLockState) {
+        this.lrLockState = lrLockState;
+    }
+
+    public int getRfLockState() {
+        return rfLockState;
+    }
+
+    public void setRfLockState(int rfLockState) {
+        this.rfLockState = rfLockState;
+    }
+
+    public int getRrLockState() {
+        return rrLockState;
+    }
+
+    public void setRrLockState(int rrLockState) {
+        this.rrLockState = rrLockState;
+    }
+
+    public int getBlow() {
+        return blow;
+    }
+
+    public void setBlow(int blow) {
+        this.blow = blow;
+    }
+
+    public int getAcState() {
+        return acState;
+    }
+
+    public void setAcState(int acState) {
+        this.acState = acState;
     }
 }

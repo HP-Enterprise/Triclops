@@ -793,6 +793,43 @@ public class VehicleDataService {
             if (rd.getRightRearTirePressure() == -200) {//保持无效值返回到api
                 data.setRightRearTirePressure(-200);
             }
+
+            if(rd.getEngineState() == null){
+                data.setEngineState(-200);
+            }else{
+                data.setEngineState(rd.getEngineState());
+            }
+            if(rd.getLfLockState() == null){
+                data.setLfLockState(-200);
+            }else{
+                data.setLfLockState(rd.getLfLockState());
+            }
+            if(rd.getLrLockState() == null){
+                data.setLrLockState(-200);
+            }else{
+                data.setLrLockState(rd.getLrLockState());
+            }
+            if(rd.getRfLockState() == null){
+                data.setRfLockState(-200);
+            }else{
+                data.setRfLockState(rd.getRfLockState());
+            }
+            if(rd.getRrLockState() == null){
+                data.setRrLockState(-200);
+            }else{
+                data.setRrLockState(rd.getRrLockState());
+            }
+            if(rd.getBlow() == null){
+                data.setBlow(-200);
+            }else{
+                data.setBlow(rd.getBlow());
+            }
+            if(rd.getAcState() == null){
+                data.setAcState(-200);
+            }else{
+                data.setAcState(rd.getAcState());
+            }
+
             return data;
         }
 

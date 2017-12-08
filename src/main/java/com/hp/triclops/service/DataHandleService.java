@@ -47,18 +47,29 @@ public class DataHandleService {
     public void saveMessage(String vin,String msg){
        //数据保存，传入原始消息数据hex
        //根据application id分析消息类型，然后调用具体的保存方法
-        byte[] receiveData=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
-        byte dataType=dataTool.getApplicationType(receiveData);
+        byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
+        byte dataType = dataTool.getApplicationType(receiveData);
+        byte modelType = dataTool.getModelType(receiveData);
         switch(dataType)
         {
             case 0x21://固定数据
                 saveRegularReportMes(vin,msg);
                 break;
             case 0x22://实时数据
-                saveRealTimeReportMes(vin, msg);
+                //M82车型
+                if(modelType == 0 || modelType == 1){
+                    saveRealTimeReportMesM82(vin, msg);
+                }else{
+                    saveRealTimeReportMes(vin, msg);
+                }
                 break;
             case 0x23://补发实时数据
-                saveDataResendRealTimeMes(vin, msg);
+                //M82车型
+                if(modelType == 0 || modelType == 1){
+                    saveDataResendRealTimeMesM82(vin, msg);
+                }else{
+                    saveDataResendRealTimeMes(vin, msg);
+                }
                 break;
             case 0x24://报警数据
                 outputHexService.getWarningMessage(vin, msg, 1);
@@ -205,6 +216,11 @@ public class DataHandleService {
 
     }
 
+    /**
+     * 保存非M82车型实时数据
+     * @param vin
+     * @param msg
+     */
     public void saveRealTimeReportMes(String vin,String msg){
         _logger.info("[0x22]>>保存上报的实时数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
@@ -324,7 +340,13 @@ public class DataHandleService {
         }else{
             rd.setMtGearPostion(dataTool.getMtGearPostion(bean.getMt_gear_position()));
         }
-
+        rd.setEngineState(-200);
+        rd.setLfLockState(-200);
+        rd.setLrLockState(-200);
+        rd.setRfLockState(-200);
+        rd.setRrLockState(-200);
+        rd.setBlow(-200);
+        rd.setAcState(-200);
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -346,6 +368,206 @@ public class DataHandleService {
         gpsDataRepository.save(gd);
     }
 
+    /**
+     * 保存M82车型实时数据
+     * 协议0638
+     * @param vin
+     * @param msg
+     */
+    public void saveRealTimeReportMesM82(String vin,String msg){
+        _logger.info("[0x22]>>保存上报的实时数据:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp=conversionTBox.generate(bb);
+        RealTimeReportMesM82 bean=dp.loadBean(RealTimeReportMesM82.class);
+        short vehicleModel=bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
+        boolean isM8X=true;
+        if(vehicleModel>(short)2){
+            isM8X=false;
+        }
+        RealTimeReportData rd=new RealTimeReportData();
+        rd.setVin(vin);
+        rd.setImei(bean.getImei());
+        rd.setApplicationId(bean.getApplicationID());
+        rd.setMessageId(bean.getMessageID());
+        Date receiveDate=new Date();
+        rd.setSendingTime(receiveDate);//服务器时间
+        rd.setTripId(bean.getTripID());
+
+//        rd.setFuelOil(bean.getFuelOil()==0xff?-200:bean.getFuelOil()* 1f);//0xff无效值
+        rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
+        rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
+        rd.setServiceIntervall(-200);//在协议0628已经删除此项数据
+        Short fuelOil = bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil();
+        float val = 0f;
+        if(vehicleModel == 0 || vehicleModel == 1 || vehicleModel == 2) {
+            if(fuelOil > 0 && fuelOil < 56){
+                val = (float)Math.round(((float)fuelOil/56f)*100f);
+            }else if(fuelOil >= 56){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(dataTool.getTrueTirePressure(bean.getLeftFrontTirePressure()));//有效值0-125
+            rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
+            rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
+            rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
+        }else if(vehicleModel == 3 || vehicleModel == 5){//todo 在协议0628中F60无此数据 预留
+            if(fuelOil > 0 && fuelOil < 52){
+                val = (float)Math.round(((float)fuelOil/52f)*100f);
+            }else if(fuelOil >= 52){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(0.0f);
+            rd.setLeftRearTirePressure(0.0f);
+            rd.setRightFrontTirePressure(0.0f);
+            rd.setRightRearTirePressure(0.0f);
+        }else if(vehicleModel == 4){//F70
+            if(fuelOil > 0 && fuelOil < 46){
+                val = (float)Math.round(((float)fuelOil/46f)*100f);
+            }else if(fuelOil >= 46){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(0.0f);
+            rd.setLeftRearTirePressure(0.0f);
+            rd.setRightFrontTirePressure(0.0f);
+            rd.setRightRearTirePressure(0.0f);
+        }
+        rd.setFuelOil(val);
+        char[] windows=dataTool.getBitsFromInteger(bean.getWindowInformation());//
+        if(isM8X) {
+            rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[12]) + String.valueOf(windows[13])));
+            rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11])));
+            rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[8]) + String.valueOf(windows[9])));
+        }else{//
+            //车窗信息 0开1半开2关3信号异常
+            rd.setLeftFrontWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[10]) + String.valueOf(windows[11]) + String.valueOf(windows[12])));
+            rd.setLeftRearWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[7]) + String.valueOf(windows[8]) + String.valueOf(windows[9])));
+            rd.setRightRearWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[4]) + String.valueOf(windows[5]) + String.valueOf(windows[6])));
+        }
+        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//
+        rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
+        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit 大端传输
+
+        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6]) + String.valueOf(doors[7])));
+        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4]) + String.valueOf(doors[5])));
+        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2]) + String.valueOf(doors[3])));
+        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0]) + String.valueOf(doors[1])));
+
+
+        // waiting for protocol after 6.1.7
+        rd.setDrivingTime(0);
+        rd.setOilLife((short) 0);
+        rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
+//        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
+        if(bean.getDrivingRange() == 0xfff || bean.getDrivingRange() < 50){
+            rd.setMileageRange(-200);
+        }else{
+            rd.setMileageRange(bean.getDrivingRange());
+        }
+        char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
+        rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
+        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
+        char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
+        rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[5]) + String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+        rd.setParkingState("0");
+        char[] vBytes=dataTool.getBitsFromInteger(bean.getVoltage());
+        if(isM8X) {
+            //长度： 14bit
+            int value=dataTool.getValueFromBytes(vBytes,14);
+            rd.setVoltage(value==0x3fff?-200:(value * 0.0009765625f + 3.0f));//pdf 0628 part5.4 No24
+        }else{
+            //F60 长度： 8bit
+            int value=dataTool.getValueFromBytes(vBytes,8);
+            rd.setVoltage(value * 0.1f);
+        }
+        rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
+        rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
+        if(isM8X){
+            rd.setMtGearPostion("-200");
+        }else{
+            rd.setMtGearPostion(dataTool.getMtGearPostion(bean.getMt_gear_position()));
+        }
+
+        //发动机状态
+        int engineState = bean.getEngineState();
+        if(engineState == 0x80){
+            rd.setEngineState(0);
+        }else if(engineState == 0x82){
+            rd.setEngineState(1);
+        }else{
+            rd.setEngineState(2);
+        }
+        //车锁状态
+        Byte lockState = bean.getDoorLockState();
+        char[] lockBytes = dataTool.getBitsFromByte(lockState);
+        if(lockBytes[6] == 0 && lockBytes[7] == 0){
+            rd.setLfLockState(0);
+        }else if(lockBytes[6] == 0 && lockBytes[7] == 1){
+            rd.setLfLockState(1);
+        }else if(lockBytes[6] == 1 && lockBytes[7] == 0){
+            rd.setLfLockState(2);
+        }else if(lockBytes[6] == 1 && lockBytes[7] == 1){
+            rd.setLfLockState(3);
+        }
+        if(lockBytes[5] == 0){
+            rd.setLrLockState(0);
+        }else if(lockBytes[5] == 0){
+            rd.setLrLockState(1);
+        }else{
+            rd.setLrLockState(3);
+        }
+        if(lockBytes[4] == 0){
+            rd.setRfLockState(0);
+        }else if(lockBytes[4] == 0){
+            rd.setRfLockState(1);
+        }else{
+            rd.setRfLockState(3);
+        }
+        if(lockBytes[3] == 0){
+            rd.setRrLockState(0);
+        }else if(lockBytes[3] == 0){
+            rd.setRrLockState(1);
+        }else{
+            rd.setRrLockState(3);
+        }
+        //空调风量状态
+        int blow = bean.getBlowState();
+        rd.setBlow(blow);
+        //空调ac状态
+        int acState = bean.getAcState();
+        rd.setAcState(acState);
+
+        realTimeReportDataRespository.save(rd);
+        //普通实时数据和位置数据分表存储
+        GpsData gd=new GpsData();
+        gd.setVin(vin);
+        gd.setImei(bean.getImei());
+        gd.setApplicationId(bean.getApplicationID());
+        gd.setMessageId(bean.getMessageID());
+        gd.setSendingTime(receiveDate);//服务器时间
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        gd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        gd.setNorthSouth(location[6]=='0'?"N":"S");//bit1 0北纬 1南纬
+        gd.setEastWest(location[5]=='0'?"E":"W");//bit2 0东经 1西经
+        gd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        gd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        gd.setHeading(bean.getHeading());
+        gpsDataRepository.save(gd);
+    }
+
+    /**
+     * 保存非M82车型补传实时数据
+     * @param vin
+     * @param msg
+     */
     public void saveDataResendRealTimeMes(String vin,String msg){
         //补发数据保存
         _logger.info("[0x23]>>保存上报的补发实时数据:"+msg);
@@ -470,7 +692,13 @@ public class DataHandleService {
         }else{
             rd.setMtGearPostion(dataTool.getMtGearPostion(bean.getMt_gear_position()));
         }
-
+        rd.setEngineState(-200);
+        rd.setLfLockState(-200);
+        rd.setLrLockState(-200);
+        rd.setRfLockState(-200);
+        rd.setRrLockState(-200);
+        rd.setBlow(-200);
+        rd.setAcState(-200);
 
         realTimeReportDataRespository.save(rd);
         //普通实时数据和位置数据分表存储
@@ -491,6 +719,206 @@ public class DataHandleService {
         gd.setHeading(bean.getHeading());
         gpsDataRepository.save(gd);
     }
+
+    /**
+     * 保存M82车型补传实时数据
+     * @param vin
+     * @param msg
+     */
+    public void saveDataResendRealTimeMesM82(String vin,String msg){
+        //补发数据保存
+        _logger.info("[0x23]>>保存上报的补发实时数据:"+msg);
+        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp = conversionTBox.generate(bb);
+        DataResendRealTimeMesM82 bean = dp.loadBean(DataResendRealTimeMesM82.class);
+        short vehicleModel=bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
+        boolean isM8X=true;
+        if(vehicleModel>(short)2){
+            isM8X=false;
+        }
+        RealTimeReportData rd=new RealTimeReportData();
+        rd.setVin(vin);
+        rd.setImei(bean.getImei());
+        rd.setApplicationId(bean.getApplicationID());
+        rd.setMessageId(bean.getMessageID());
+        Date receiveDate=new Date();
+        rd.setSendingTime(receiveDate);//服务器时间
+        rd.setTripId(bean.getTripID());
+
+//        rd.setFuelOil(bean.getFuelOil()==0xff?-200:bean.getFuelOil()* 1f);//0xff无效值
+        rd.setAvgOilA(dataTool.getTrueAvgOil(bean.getAvgOilA()));
+        rd.setAvgOilB(dataTool.getTrueAvgOil(bean.getAvgOilB()));
+        rd.setServiceIntervall(0);//在协议0628已经删除此项数据
+        Short fuelOil = bean.getFuelOil() == 0xff ? -200 : bean.getFuelOil();
+        float val = 0f;
+        if(vehicleModel == 0 || vehicleModel == 1 || vehicleModel == 2) {
+            if(fuelOil > 0 && fuelOil < 56){
+                val = (float)Math.round(((float)fuelOil/56f)*100f);
+            }else if(fuelOil >= 56){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(dataTool.getTrueTirePressure(bean.getLeftFrontTirePressure()));//有效值0-125
+            rd.setLeftRearTirePressure(dataTool.getTrueTirePressure(bean.getLeftRearTirePressure()));
+            rd.setRightFrontTirePressure(dataTool.getTrueTirePressure(bean.getRightFrontTirePressure()));
+            rd.setRightRearTirePressure(dataTool.getTrueTirePressure(bean.getRightRearTirePressure()));
+        }else if(vehicleModel == 3 || vehicleModel == 5){//在协议0628中F60无此数据 预留
+            if(fuelOil > 0 && fuelOil < 52){
+                val = (float)Math.round(((float)fuelOil/52f)*100f);
+            }else if(fuelOil >= 52){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(0.0f);
+            rd.setLeftRearTirePressure(0.0f);
+            rd.setRightFrontTirePressure(0.0f);
+            rd.setRightRearTirePressure(0.0f);
+        }else if(vehicleModel == 4){//F70
+            if(fuelOil > 0 && fuelOil < 46){
+                val = (float)Math.round(((float)fuelOil/46f)*100f);
+            }else if(fuelOil >= 46){
+                val = 100f;
+            }else if(fuelOil == -200){
+                val = -200f;
+            }
+            rd.setLeftFrontTirePressure(0.0f);
+            rd.setLeftRearTirePressure(0.0f);
+            rd.setRightFrontTirePressure(0.0f);
+            rd.setRightRearTirePressure(0.0f);
+        }
+        rd.setFuelOil(val);
+        char[] windows=dataTool.getBitsFromInteger(bean.getWindowInformation());//
+        if(isM8X) {
+            rd.setLeftFrontWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[13]) +String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[10]) +String.valueOf(windows[11]) + String.valueOf(windows[12])));
+            rd.setLeftRearWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[5]) +String.valueOf(windows[6]) + String.valueOf(windows[7])));
+            rd.setRightRearWindowInformation(dataTool.getF60WindowStatus(String.valueOf(windows[2]) +String.valueOf(windows[3]) + String.valueOf(windows[4])));
+        }else{//在协议0628中F60无此数据 预留
+            rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[12]) + String.valueOf(windows[13])));
+            rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11])));
+            rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[8]) + String.valueOf(windows[9])));
+        }
+        rd.setVehicleTemperature(dataTool.getInternTrueTmp(bean.getVehicleTemperature()));//
+        rd.setVehicleOuterTemperature(dataTool.getOuterTrueTmp(bean.getVehicleOuterTemperature()));
+        char[] doors=dataTool.getBitsFromShort(bean.getDoorInformation());//门 1开0关  bit 大端传输
+
+        rd.setLeftFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[6]) + String.valueOf(doors[7])));
+        rd.setRightFrontDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[4]) + String.valueOf(doors[5])));
+        rd.setLeftRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[2]) + String.valueOf(doors[3])));
+        rd.setRightRearDoorInformation(dataTool.getDoorStatus(String.valueOf(doors[0]) + String.valueOf(doors[1])));
+
+
+        // waiting for protocol after 6.1.7
+        rd.setDrivingTime(0);
+        rd.setOilLife((short) 0);
+        rd.setDrivingRange(dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage()));//行驶里程
+//        rd.setMileageRange(bean.getDrivingRange()==0xfff?-200:bean.getDrivingRange());//续航里程
+        if(bean.getDrivingRange() == 0xfff || bean.getDrivingRange() < 50){
+            rd.setMileageRange(-200);
+        }else{
+            rd.setMileageRange(bean.getDrivingRange());
+        }
+        char[] bonnetAndTrunk=dataTool.getBitsFromShort(bean.getBonnetAndTrunk());
+        rd.setEngineCoverState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[6]) + String.valueOf(bonnetAndTrunk[7])));
+        rd.setTrunkLidState(dataTool.getDoorStatus(String.valueOf(bonnetAndTrunk[4]) + String.valueOf(bonnetAndTrunk[5])));
+        char[] statWindow=dataTool.getBitsFromShort(bean.getStatWindow());
+        if(isM8X) {
+            rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[5]) + String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+        }else{
+            //F60
+            rd.setSkylightState(dataTool.getSkyWindowStatus(String.valueOf(statWindow[5]) + String.valueOf(statWindow[6]) + String.valueOf(statWindow[7])));
+        }
+        rd.setParkingState("0");
+        char[] vBytes=dataTool.getBitsFromInteger(bean.getVoltage());
+        if(isM8X) {
+            //长度： 14bit
+            int value=dataTool.getValueFromBytes(vBytes,14);
+            rd.setVoltage(value==0x3ff?-200:(value * 0.0009765625f + 3.0f));//pdf 0628 part5.4 No24
+        }else{
+            //F60 长度： 8bit
+            int value=dataTool.getValueFromBytes(vBytes,8);
+            rd.setVoltage(value==0xff?-200:(value * 0.1f));
+        }
+        rd.setAverageSpeedA(dataTool.getTrueAvgSpeed(bean.getAverageSpeedA()));
+        rd.setAverageSpeedB(dataTool.getTrueAvgSpeed(bean.getAverageSpeedB()));
+        if(isM8X){
+            rd.setMtGearPostion("-200");
+        }else{
+            rd.setMtGearPostion(dataTool.getMtGearPostion(bean.getMt_gear_position()));
+        }
+
+        //发动机状态
+        int engineState = bean.getEngineState();
+        if(engineState == 0x80){
+            rd.setEngineState(0);
+        }else if(engineState == 0x82){
+            rd.setEngineState(1);
+        }else{
+            rd.setEngineState(2);
+        }
+        //车锁状态
+        Byte lockState = bean.getDoorLockState();
+        char[] lockBytes = dataTool.getBitsFromByte(lockState);
+        if(lockBytes[6] == 0 && lockBytes[7] == 0){
+            rd.setLfLockState(0);
+        }else if(lockBytes[6] == 0 && lockBytes[7] == 1){
+            rd.setLfLockState(1);
+        }else if(lockBytes[6] == 1 && lockBytes[7] == 0){
+            rd.setLfLockState(2);
+        }else if(lockBytes[6] == 1 && lockBytes[7] == 1){
+            rd.setLfLockState(3);
+        }
+        if(lockBytes[5] == 0){
+            rd.setLrLockState(0);
+        }else if(lockBytes[5] == 0){
+            rd.setLrLockState(1);
+        }else{
+            rd.setLrLockState(3);
+        }
+        if(lockBytes[4] == 0){
+            rd.setRfLockState(0);
+        }else if(lockBytes[4] == 0){
+            rd.setRfLockState(1);
+        }else{
+            rd.setRfLockState(3);
+        }
+        if(lockBytes[3] == 0){
+            rd.setRrLockState(0);
+        }else if(lockBytes[3] == 0){
+            rd.setRrLockState(1);
+        }else{
+            rd.setRrLockState(3);
+        }
+        //空调风量状态
+        int blow = bean.getBlowState();
+        rd.setBlow(blow);
+        //空调ac状态
+        int acState = bean.getAcState();
+        rd.setAcState(acState);
+
+        realTimeReportDataRespository.save(rd);
+        //普通实时数据和位置数据分表存储
+        GpsData gd=new GpsData();
+        gd.setVin(vin);
+        gd.setImei(bean.getImei());
+        gd.setApplicationId(bean.getApplicationID());
+        gd.setMessageId(bean.getMessageID());
+        gd.setSendingTime(receiveDate);//服务器时间
+        //分解IsIsLocation信息
+        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        gd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
+        gd.setNorthSouth(location[6]=='0'?"N":"S");//bit1 0北纬 1南纬
+        gd.setEastWest(location[5]=='0'?"E":"W");//bit2 0东经 1西经
+        gd.setLatitude(dataTool.getTrueLatAndLon(bean.getLatitude()));
+        gd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
+        gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
+        gd.setHeading(bean.getHeading());
+        gpsDataRepository.save(gd);
+    }
+
     public void saveWarningMessage(String vin,String msg){
         //报警数据保存
         _logger.info("[0x24]>>保存上报的报警数据:" + msg);

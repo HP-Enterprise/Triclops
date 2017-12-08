@@ -48,6 +48,13 @@ public class RealTimeReportData {
     private int averageSpeedA;
     private int averageSpeedB;
     private String mtGearPostion;
+    private Integer engineState;
+    private Integer lfLockState;
+    private Integer lrLockState;
+    private Integer rfLockState;
+    private Integer rrLockState;
+    private Integer blow;
+    private Integer acState;
 
 
     @Id
@@ -417,5 +424,75 @@ public class RealTimeReportData {
 
     public void setMtGearPostion(String mtGearPostion) {
         this.mtGearPostion = mtGearPostion;
+    }
+
+    @Basic
+    @Column(name = "engine_state", nullable = false, insertable = true, updatable = true)
+    public Integer getEngineState() {
+        return engineState;
+    }
+
+    public void setEngineState(Integer engineState) {
+        this.engineState = engineState;
+    }
+
+    @Basic
+    @Column(name = "lf_lock_state", nullable = false, insertable = true, updatable = true)
+    public Integer getLfLockState() {
+        return lfLockState;
+    }
+
+    public void setLfLockState(Integer lfLockState) {
+        this.lfLockState = lfLockState;
+    }
+
+    @Basic
+    @Column(name = "lr_lock_state", nullable = false, insertable = true, updatable = true)
+    public Integer getLrLockState() {
+        return lrLockState;
+    }
+
+    public void setLrLockState(Integer lrLockState) {
+        this.lrLockState = lrLockState;
+    }
+
+    @Basic
+    @Column(name = "rf_lock_state", nullable = false, insertable = true, updatable = true)
+    public Integer getRfLockState() {
+        return rfLockState;
+    }
+
+    public void setRfLockState(Integer rfLockState) {
+        this.rfLockState = rfLockState;
+    }
+
+    @Basic
+    @Column(name = "rr_lock_state", nullable = false, insertable = true, updatable = true)
+    public Integer getRrLockState() {
+        return rrLockState;
+    }
+
+    public void setRrLockState(Integer rrLockState) {
+        this.rrLockState = rrLockState;
+    }
+
+    @Basic
+    @Column(name = "blow", nullable = false, insertable = true, updatable = true)
+    public Integer getBlow() {
+        return blow;
+    }
+
+    public void setBlow(Integer blow) {
+        this.blow = blow;
+    }
+
+    @Basic
+    @Column(name = "ac_state", nullable = false, insertable = true, updatable = true)
+    public Integer getAcState() {
+        return acState;
+    }
+
+    public void setAcState(Integer acState) {
+        this.acState = acState;
     }
 }
