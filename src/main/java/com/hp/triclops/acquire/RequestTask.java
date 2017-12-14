@@ -314,7 +314,7 @@ public class RequestTask  implements Runnable{
                 }
                 _vin = chKey;
                 respStr = requestHandler.handleSoftUpdate(receiveDataHexString, _vin);
-                if(respStr != null){
+                if(respStr != null && !"".equals(respStr)){
                     buf = dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
                 }
@@ -328,7 +328,7 @@ public class RequestTask  implements Runnable{
                 }
                 _vin = chKey;
                 respStr = requestHandler.handleHardUpdate(receiveDataHexString, _vin);
-                if(respStr != null){
+                if(respStr != null && !"".equals(respStr)){
                     buf = dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
                 }
