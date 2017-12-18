@@ -1662,7 +1662,6 @@ public class RequestHandler {
 
             Vehicle vehicle = vehicleRepository.findByVin(vin);
             UploadPackageEntity uploadPackageEntity = uploadPackageEntityRepository.findByModelAndVersion(3, vehicle.getSoftVersion());
-            FtpSetting ftpSetting = ftpSettingRepository.findById(1);
 
             //下行
             ByteBuf buf = Unpooled.buffer();
@@ -1700,8 +1699,9 @@ public class RequestHandler {
                 buf.writeBytes(fileName.substring(0, 10).getBytes());
             }
             buf.writeByte(vehicle.getIsUpdate());
-            Integer len = 27 + ftpSetting.getSoftUrl().length();
-            buf.writeBytes(ftpSetting.getSoftUrl().getBytes());
+            String url = "/api/download/" + uploadPackageEntity.getUploadName() + "?uploadName=" + uploadPackageEntity.getUploadName();
+            Integer len = 27 + url.length();
+            buf.writeBytes(url.getBytes());
             buf.writeByte(dataTool.getCheckSum(DataTool.getBytesFromByteBuf(buf)));
 
             int index = buf.writerIndex();
