@@ -1820,12 +1820,35 @@ public class RequestHandler {
 
             Integer model = 5;
             resp.setModel(model.shortValue());
-            resp.setFwDestVersion(vehicle.getHardVersion());
-            resp.setFileName(uploadPackageEntity.getFileName());
+            String hwVersion = vehicle.getHardVersion();
+            if(hwVersion.length() >= 20){
+                resp.setFwDestVersion(hwVersion.substring(0, 20));
+            }else{
+                for(int i = 0;i < 20 - hwVersion.length();i ++){
+                    hwVersion += "0";
+                }
+                resp.setFwDestVersion(hwVersion);
+            }
+            String fileName = uploadPackageEntity.getFileName();
+            if(fileName.length() >= 50){
+                resp.setFileName(fileName.substring(0, 20));
+            }else{
+                for(int i = 0;i < 50 - fileName.length();i ++){
+                    fileName += "0";
+                }
+                resp.setFileName(fileName);
+            }
             resp.setIsUpdate(vehicle.getHwisUpdate().shortValue());
             String srcVersion = vehicle.getSrcVersion();
             if(srcVersion != null && !"".equals(srcVersion)){
-                resp.setFwSrcVersion(srcVersion);
+                if(srcVersion.length() >= 20){
+                    resp.setFwSrcVersion(srcVersion.substring(0, 20));
+                }else{
+                    for(int i = 0;i < 20 - srcVersion.length();i ++){
+                        hwVersion += "0";
+                    }
+                    resp.setFwSrcVersion(srcVersion);
+                }
             }else{
                 byte[] versionBytes = new byte[20];
                 for(int i = 0;i < 20;i ++){
@@ -1837,15 +1860,21 @@ public class RequestHandler {
             if(ftpIp != null && !"".equals(ftpIp)){
                 String[] ips = ftpIp.split(".");
                 byte[] ipBytes = new byte[4];
-                Integer ip0 = Integer.parseInt(ips[0]);
-                ipBytes[0] = ip0.byteValue();
-                Integer ip1 = Integer.parseInt(ips[1]);
-                ipBytes[1] = ip1.byteValue();
-                Integer ip2 = Integer.parseInt(ips[2]);
-                ipBytes[2] = ip2.byteValue();
-                Integer ip3 = Integer.parseInt(ips[3]);
-                ipBytes[3] = ip3.byteValue();
-
+                if(ips != null && ips.length == 4){
+                    Integer ip0 = Integer.parseInt(ips[0]);
+                    ipBytes[0] = ip0.byteValue();
+                    Integer ip1 = Integer.parseInt(ips[1]);
+                    ipBytes[1] = ip1.byteValue();
+                    Integer ip2 = Integer.parseInt(ips[2]);
+                    ipBytes[2] = ip2.byteValue();
+                    Integer ip3 = Integer.parseInt(ips[3]);
+                    ipBytes[3] = ip3.byteValue();
+                }else{
+                    ipBytes[0] = 0;
+                    ipBytes[1] = 0;
+                    ipBytes[2] = 0;
+                    ipBytes[3] = 0;
+                }
                 resp.setFtpIp(ipBytes);
             }else{
                 byte[] ipBytes = new byte[4];
@@ -1853,12 +1882,27 @@ public class RequestHandler {
                 ipBytes[1] = 0;
                 ipBytes[2] = 0;
                 ipBytes[3] = 0;
-
                 resp.setFtpIp(ipBytes);
             }
             resp.setFtpPort(ftpSetting.getFtpPort());
-            resp.setDialUserNumber(ftpSetting.getDialUserName());
-            resp.setDialPin(ftpSetting.getDialPin());
+            String dialUserName = ftpSetting.getDialUserName();
+            if(dialUserName.length() >= 40){
+                resp.setDialUserNumber(dialUserName.substring(0, 40));
+            }else{
+                for(int i = 0;i < 40 - dialUserName.length();i ++){
+                    dialUserName += "0";
+                }
+                resp.setDialUserNumber(dialUserName);
+            }
+            String dialPin = ftpSetting.getDialPin();
+            if(dialPin.length() >= 40){
+                resp.setDialPin(dialPin.substring(0, 40));
+            }else{
+                for(int i = 0;i < 40 - dialPin.length();i ++){
+                    dialPin += "0";
+                }
+                resp.setDialPin(dialPin);
+            }
 
             //响应
             DataPackage dpw=new DataPackage("8995_55_4");
