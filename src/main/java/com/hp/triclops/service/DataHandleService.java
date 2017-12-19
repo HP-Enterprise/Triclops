@@ -376,9 +376,11 @@ public class DataHandleService {
      */
     public void saveRealTimeReportMesM82(String vin,String msg){
         _logger.info("[0x22]>>保存上报的实时数据:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        RealTimeReportMesM82 bean=dp.loadBean(RealTimeReportMesM82.class);
+//        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+//        DataPackage dp=conversionTBox.generate(bb);
+//        RealTimeReportMesM82 bean=dp.loadBean(RealTimeReportMesM82.class);
+        RealTimeReportMesM82 realTimeReportMesM82 = new RealTimeReportMesM82();
+        RealTimeReportMesM82 bean = realTimeReportMesM82.decode(dataTool.getByteBuf(msg));
         short vehicleModel=bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
         boolean isM8X=true;
         if(vehicleModel>(short)2){
@@ -495,7 +497,7 @@ public class DataHandleService {
         }
 
         //发动机状态
-        int engineState = bean.getEngineState();
+        Short engineState = bean.getEngineState();
         if(engineState == 0x80){
             rd.setEngineState(0);
         }else if(engineState == 0x82){
@@ -506,32 +508,32 @@ public class DataHandleService {
         //车锁状态
         Byte lockState = bean.getDoorLockState();
         char[] lockBytes = dataTool.getBitsFromByte(lockState);
-        if(lockBytes[6] == 0 && lockBytes[7] == 0){
+        if(lockBytes[6] == '0' && lockBytes[7] == '0'){
             rd.setLfLockState(0);
-        }else if(lockBytes[6] == 0 && lockBytes[7] == 1){
+        }else if(lockBytes[6] == '0' && lockBytes[7] == '1'){
             rd.setLfLockState(1);
-        }else if(lockBytes[6] == 1 && lockBytes[7] == 0){
+        }else if(lockBytes[6] == '1' && lockBytes[7] == '0'){
             rd.setLfLockState(2);
-        }else if(lockBytes[6] == 1 && lockBytes[7] == 1){
+        }else if(lockBytes[6] == '1' && lockBytes[7] == '1'){
             rd.setLfLockState(3);
         }
-        if(lockBytes[5] == 0){
+        if(lockBytes[5] == '0'){
             rd.setLrLockState(0);
-        }else if(lockBytes[5] == 0){
+        }else if(lockBytes[5] == '1'){
             rd.setLrLockState(1);
         }else{
             rd.setLrLockState(3);
         }
-        if(lockBytes[4] == 0){
+        if(lockBytes[4] == '0'){
             rd.setRfLockState(0);
-        }else if(lockBytes[4] == 0){
+        }else if(lockBytes[4] == '1'){
             rd.setRfLockState(1);
         }else{
             rd.setRfLockState(3);
         }
-        if(lockBytes[3] == 0){
+        if(lockBytes[3] == '0'){
             rd.setRrLockState(0);
-        }else if(lockBytes[3] == 0){
+        }else if(lockBytes[3] == '1'){
             rd.setRrLockState(1);
         }else{
             rd.setRrLockState(3);
@@ -728,9 +730,11 @@ public class DataHandleService {
     public void saveDataResendRealTimeMesM82(String vin,String msg){
         //补发数据保存
         _logger.info("[0x23]>>保存上报的补发实时数据:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp = conversionTBox.generate(bb);
-        DataResendRealTimeMesM82 bean = dp.loadBean(DataResendRealTimeMesM82.class);
+//        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
+//        DataPackage dp = conversionTBox.generate(bb);
+//        DataResendRealTimeMesM82 bean = dp.loadBean(DataResendRealTimeMesM82.class);
+        DataResendRealTimeMesM82 dataResendRealTimeMesM82 = new DataResendRealTimeMesM82();
+        DataResendRealTimeMesM82 bean = dataResendRealTimeMesM82.decode(dataTool.getByteBuf(msg));
         short vehicleModel=bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
         boolean isM8X=true;
         if(vehicleModel>(short)2){
@@ -851,7 +855,7 @@ public class DataHandleService {
         }
 
         //发动机状态
-        int engineState = bean.getEngineState();
+        Short engineState = bean.getEngineState();
         if(engineState == 0x80){
             rd.setEngineState(0);
         }else if(engineState == 0x82){
@@ -862,32 +866,32 @@ public class DataHandleService {
         //车锁状态
         Byte lockState = bean.getDoorLockState();
         char[] lockBytes = dataTool.getBitsFromByte(lockState);
-        if(lockBytes[6] == 0 && lockBytes[7] == 0){
+        if(lockBytes[6] == '0' && lockBytes[7] == '0'){
             rd.setLfLockState(0);
-        }else if(lockBytes[6] == 0 && lockBytes[7] == 1){
+        }else if(lockBytes[6] == '0' && lockBytes[7] == '1'){
             rd.setLfLockState(1);
-        }else if(lockBytes[6] == 1 && lockBytes[7] == 0){
+        }else if(lockBytes[6] == '1' && lockBytes[7] == '0'){
             rd.setLfLockState(2);
-        }else if(lockBytes[6] == 1 && lockBytes[7] == 1){
+        }else if(lockBytes[6] == '1' && lockBytes[7] == '1'){
             rd.setLfLockState(3);
         }
-        if(lockBytes[5] == 0){
+        if(lockBytes[5] == '0'){
             rd.setLrLockState(0);
-        }else if(lockBytes[5] == 0){
+        }else if(lockBytes[5] == '1'){
             rd.setLrLockState(1);
         }else{
             rd.setLrLockState(3);
         }
-        if(lockBytes[4] == 0){
+        if(lockBytes[4] == '0'){
             rd.setRfLockState(0);
-        }else if(lockBytes[4] == 0){
+        }else if(lockBytes[4] == '1'){
             rd.setRfLockState(1);
         }else{
             rd.setRfLockState(3);
         }
-        if(lockBytes[3] == 0){
+        if(lockBytes[3] == '0'){
             rd.setRrLockState(0);
-        }else if(lockBytes[3] == 0){
+        }else if(lockBytes[3] == '1'){
             rd.setRrLockState(1);
         }else{
             rd.setRrLockState(3);
