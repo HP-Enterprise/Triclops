@@ -1735,7 +1735,7 @@ public class RequestHandler {
             resp.setMessageID((short) 2);
             resp.setEventID(bean.getEventID());
             //响应
-            DataPackage dpw=new DataPackage("8995_54_4");
+            DataPackage dpw=new DataPackage("8995_84_4");
             dpw.fillBean(resp);
             ByteBuffer bbw=conversionTBox.generate(dpw);
 
@@ -1755,7 +1755,12 @@ public class RequestHandler {
             //上行
             ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp = conversionTBox.generate(bb);
-            SoftFtpUpdateResult bean = dp.loadBean(SoftFtpUpdateResult.class);
+            SoftFtpUpdateResult bean = null;
+            try {
+                bean = dp.loadBean(SoftFtpUpdateResult.class);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
 
             //下行
             SoftFtpUpdateResultAck resp=new SoftFtpUpdateResultAck();
@@ -1766,7 +1771,7 @@ public class RequestHandler {
             resp.setMessageID((short) 2);
             resp.setEventID(bean.getEventID());
             //响应
-            DataPackage dpw=new DataPackage("8995_54_6");
+            DataPackage dpw=new DataPackage("8995_84_6");
             dpw.fillBean(resp);
             ByteBuffer bbw=conversionTBox.generate(dpw);
 
@@ -1778,7 +1783,7 @@ public class RequestHandler {
             ftpData.setModel(3);
             ftpData.setVersion(bean.getDestVersion());
             ftpData.setUpdateStep(bean.getUpdateStep().intValue());
-            ftpData.setDownloadResult(bean.getDownloadResult().intValue());
+            ftpData.setDownloadResult(bean.getUpdateResult().intValue());
             ftpData.setErrorCode(bean.getErrorCode().intValue());
             ftpData.setCreateTime(new Date());
             ftpDataRepository.save(ftpData);
@@ -1905,7 +1910,7 @@ public class RequestHandler {
             }
 
             //响应
-            DataPackage dpw=new DataPackage("8995_55_4");
+            DataPackage dpw=new DataPackage("8995_85_2");
             dpw.fillBean(resp);
             ByteBuffer bbw=conversionTBox.generate(dpw);
 
@@ -1926,7 +1931,7 @@ public class RequestHandler {
             resp.setMessageID((short) 2);
             resp.setEventID(bean.getEventID());
             //响应
-            DataPackage dpw=new DataPackage("8995_55_4");
+            DataPackage dpw=new DataPackage("8995_85_4");
             dpw.fillBean(resp);
             ByteBuffer bbw=conversionTBox.generate(dpw);
 
@@ -1957,7 +1962,7 @@ public class RequestHandler {
             resp.setMessageID((short) 2);
             resp.setEventID(bean.getEventID());
             //响应
-            DataPackage dpw = new DataPackage("8995_55_6");
+            DataPackage dpw = new DataPackage("8995_85_6");
             dpw.fillBean(resp);
             ByteBuffer bbw = conversionTBox.generate(dpw);
 
