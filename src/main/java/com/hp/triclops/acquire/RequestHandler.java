@@ -1692,7 +1692,7 @@ public class RequestHandler {
                 buf.writeBytes(fileName.getBytes());
             }else if(fileName.length() < 10){
                 buf.writeBytes(fileName.getBytes());
-                for(int i = 0;i < 9 - fileName.length();i ++){
+                for(int i = 0;i < 10 - fileName.length();i ++){
                     buf.writeByte(0x00);
                 }
             }else if(fileName.length() > 10){
@@ -1826,22 +1826,36 @@ public class RequestHandler {
             Integer model = 5;
             resp.setModel(model.shortValue());
             String hwVersion = vehicle.getHardVersion();
-            if(hwVersion.length() >= 20){
+            if(hwVersion == null){
+                byte[] tempBytes = new byte[20];
+                for(int i = 0;i < 20;i ++){
+                    tempBytes[i] = 0x00;
+                }
+                resp.setFwDestVersion(new String(tempBytes));
+            }else if(hwVersion.length() >= 20){
                 resp.setFwDestVersion(hwVersion.substring(0, 20));
             }else{
+                byte[] tempBytes = new byte[20 - hwVersion.length()];
                 for(int i = 0;i < 20 - hwVersion.length();i ++){
-                    hwVersion += "0";
+                    tempBytes[i] = 0x00;
                 }
-                resp.setFwDestVersion(hwVersion);
+                resp.setFwDestVersion(hwVersion + new String(tempBytes));
             }
             String fileName = uploadPackageEntity.getFileName();
-            if(fileName.length() >= 50){
+            if(fileName == null){
+                byte[] tempBytes = new byte[50];
+                for(int i = 0;i < 50;i ++){
+                    tempBytes[i] = 0x00;
+                }
+                resp.setFileName(new String(tempBytes));
+            }else if(fileName.length() >= 50){
                 resp.setFileName(fileName.substring(0, 20));
             }else{
+                byte[] tempBytes = new byte[50 - fileName.length()];
                 for(int i = 0;i < 50 - fileName.length();i ++){
-                    fileName += "0";
+                    tempBytes[i] = 0x00;
                 }
-                resp.setFileName(fileName);
+                resp.setFileName(fileName + new String(tempBytes));
             }
             resp.setIsUpdate(vehicle.getHwisUpdate().shortValue());
             String srcVersion = vehicle.getSrcVersion();
@@ -1849,10 +1863,11 @@ public class RequestHandler {
                 if(srcVersion.length() >= 20){
                     resp.setFwSrcVersion(srcVersion.substring(0, 20));
                 }else{
+                    byte[] tempBytes = new byte[20 - srcVersion.length()];
                     for(int i = 0;i < 20 - srcVersion.length();i ++){
-                        hwVersion += "0";
+                        tempBytes[i] = 0x00;
                     }
-                    resp.setFwSrcVersion(srcVersion);
+                    resp.setFwSrcVersion(srcVersion + new String(tempBytes));
                 }
             }else{
                 byte[] versionBytes = new byte[20];
@@ -1891,22 +1906,36 @@ public class RequestHandler {
             }
             resp.setFtpPort(ftpSetting.getFtpPort());
             String dialUserName = ftpSetting.getDialUserName();
-            if(dialUserName.length() >= 40){
+            if(dialUserName == null){
+                byte[] tempBytes = new byte[40];
+                for(int i = 0;i < 40;i ++){
+                    tempBytes[i] = 0x00;
+                }
+                resp.setDialUserNumber(new String(dialUserName));
+            }else if(dialUserName.length() >= 40){
                 resp.setDialUserNumber(dialUserName.substring(0, 40));
             }else{
+                byte[] tempBytes = new byte[40 - dialUserName.length()];
                 for(int i = 0;i < 40 - dialUserName.length();i ++){
-                    dialUserName += "0";
+                    tempBytes[i] = 0x00;
                 }
-                resp.setDialUserNumber(dialUserName);
+                resp.setDialUserNumber(dialUserName + new String(tempBytes));
             }
             String dialPin = ftpSetting.getDialPin();
-            if(dialPin.length() >= 40){
+            if(dialUserName == null){
+                byte[] tempBytes = new byte[40];
+                for(int i = 0;i < 40;i ++){
+                    tempBytes[i] = 0x00;
+                }
+                resp.setDialPin(new String(dialUserName));
+            }else if(dialPin.length() >= 40){
                 resp.setDialPin(dialPin.substring(0, 40));
             }else{
+                byte[] tempBytes = new byte[40 - dialPin.length()];
                 for(int i = 0;i < 40 - dialPin.length();i ++){
-                    dialPin += "0";
+                    tempBytes[i] = 0x00;
                 }
-                resp.setDialPin(dialPin);
+                resp.setDialPin(dialPin + new String(tempBytes));
             }
 
             //响应
