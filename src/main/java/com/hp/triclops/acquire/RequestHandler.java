@@ -62,7 +62,7 @@ public class RequestHandler {
     FtpDataRepository ftpDataRepository;
     @Value("${com.hp.acquire.serverId}")
     private String _serverId;//serverId集群依赖这个值
-    @Value("${com.hp.web.server.url }")
+    @Value("${com.hp.web.server.url}")
     private String _serverUrl;//软件/固件升级url
 
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
