@@ -62,6 +62,8 @@ public class RequestHandler {
     FtpDataRepository ftpDataRepository;
     @Value("${com.hp.acquire.serverId}")
     private String _serverId;//serverId集群依赖这个值
+    @Value("${com.hp.web.server.url }")
+    private String _serverUrl;//软件/固件升级url
 
     private Logger _logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -1699,7 +1701,7 @@ public class RequestHandler {
                 buf.writeBytes(fileName.substring(0, 10).getBytes());
             }
             buf.writeByte(vehicle.getIsUpdate());
-            String url = "/api/download/" + uploadPackageEntity.getUploadName() + "?uploadName=" + uploadPackageEntity.getUploadName();
+            String url = _serverUrl + "/api/download/" + uploadPackageEntity.getUploadName() + "?uploadName=" + uploadPackageEntity.getUploadName();
             Integer len = 27 + url.length();
             buf.writeBytes(url.getBytes());
             buf.writeByte(dataTool.getCheckSum(DataTool.getBytesFromByteBuf(buf)));
@@ -1732,7 +1734,7 @@ public class RequestHandler {
             resp.setTestFlag(bean.getTestFlag());
             resp.setSendingTime((long) dataTool.getCurrentSeconds());
             resp.setApplicationID(bean.getApplicationID());
-            resp.setMessageID((short) 2);
+            resp.setMessageID((short) 4);
             resp.setEventID(bean.getEventID());
             //响应
             DataPackage dpw=new DataPackage("8995_84_4");
@@ -1768,7 +1770,7 @@ public class RequestHandler {
             resp.setTestFlag(bean.getTestFlag());
             resp.setSendingTime((long) dataTool.getCurrentSeconds());
             resp.setApplicationID(bean.getApplicationID());
-            resp.setMessageID((short) 2);
+            resp.setMessageID((short) 6);
             resp.setEventID(bean.getEventID());
             //响应
             DataPackage dpw=new DataPackage("8995_84_6");
@@ -1957,7 +1959,7 @@ public class RequestHandler {
             resp.setTestFlag(bean.getTestFlag());
             resp.setSendingTime((long) dataTool.getCurrentSeconds());
             resp.setApplicationID(bean.getApplicationID());
-            resp.setMessageID((short) 2);
+            resp.setMessageID((short) 4);
             resp.setEventID(bean.getEventID());
             //响应
             DataPackage dpw=new DataPackage("8995_85_4");
@@ -1988,7 +1990,7 @@ public class RequestHandler {
             resp.setTestFlag(bean.getTestFlag());
             resp.setSendingTime((long) dataTool.getCurrentSeconds());
             resp.setApplicationID(bean.getApplicationID());
-            resp.setMessageID((short) 2);
+            resp.setMessageID((short) 6);
             resp.setEventID(bean.getEventID());
             //响应
             DataPackage dpw = new DataPackage("8995_85_6");
