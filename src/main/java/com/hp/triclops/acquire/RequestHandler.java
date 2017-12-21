@@ -1848,7 +1848,10 @@ public class RequestHandler {
                 }
                 resp.setFwDestVersion(hwVersion + new String(tempBytes));
             }
-            String fileName = uploadPackageEntity.getFileName();
+            String fileName = null;
+            if(uploadPackageEntity != null){
+                fileName = uploadPackageEntity.getFileName();
+            }
             if(fileName == null){
                 byte[] tempBytes = new byte[50];
                 for(int i = 0;i < 50;i ++){
@@ -1864,7 +1867,11 @@ public class RequestHandler {
                 }
                 resp.setFileName(fileName + new String(tempBytes));
             }
-            resp.setIsUpdate(vehicle.getHwisUpdate().shortValue());
+            Short isUpdate = 1;
+            if(vehicle.getHwisUpdate() != null){
+                isUpdate = vehicle.getHwisUpdate().shortValue();
+            }
+            resp.setIsUpdate(isUpdate);
             String srcVersion = vehicle.getSrcVersion();
             if(srcVersion != null && !"".equals(srcVersion)){
                 if(srcVersion.length() >= 20){
