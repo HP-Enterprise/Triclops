@@ -1789,6 +1789,11 @@ public class RequestHandler {
             ftpData.setErrorCode(bean.getErrorCode().intValue());
             ftpData.setCreateTime(new Date());
             ftpDataRepository.save(ftpData);
+
+            //更新升级标志
+            Vehicle vehicle = vehicleRepository.findByVin(vin);
+            vehicle.setIsUpdate(0);
+            vehicleRepository.save(vehicle);
         }
         return result;
     }
@@ -2010,8 +2015,9 @@ public class RequestHandler {
             ftpData.setCreateTime(new Date());
             ftpDataRepository.save(ftpData);
 
-            //更新版本号
+            //更新版本号及升级标志
             Vehicle vehicle = vehicleRepository.findByVin(vin);
+            vehicle.setHwisUpdate(0);
             vehicle.setSrcVersion(bean.getDestVersion());
             vehicleRepository.save(vehicle);
         }
