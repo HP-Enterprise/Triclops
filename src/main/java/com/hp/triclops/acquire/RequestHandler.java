@@ -1936,7 +1936,7 @@ public class RequestHandler {
                 resp.setDialUserNumber(dialUserName + new String(tempBytes));
             }
             String dialPin = ftpSetting.getDialPin();
-            if(dialUserName == null){
+            if(dialPin == null){
                 byte[] tempBytes = new byte[40];
                 for(int i = 0;i < 40;i ++){
                     tempBytes[i] = 0x00;
