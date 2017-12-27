@@ -1679,6 +1679,7 @@ public class RequestHandler {
             buf.writeInt(bean.getEventID().intValue());
             buf.writeByte(3);
             String versionStr = vehicle.getSoftVersion();
+
             if(versionStr.length() == 5){
                 buf.writeBytes(versionStr.getBytes());
             }else if(versionStr.length() < 5){
@@ -1689,17 +1690,27 @@ public class RequestHandler {
             }else if(versionStr.length() > 5){
                 buf.writeBytes(versionStr.substring(0, 5).getBytes());
             }
-            String fileName = uploadPackageEntity.getFileName();
-            if(fileName.length() == 10){
-                buf.writeBytes(fileName.getBytes());
-            }else if(fileName.length() < 10){
-                buf.writeBytes(fileName.getBytes());
-                for(int i = 0;i < 10 - fileName.length();i ++){
+
+            if(uploadPackageEntity == null){
+                for(int i = 0;i < 10;i ++){
                     buf.writeByte(0x00);
                 }
-            }else if(fileName.length() > 10){
-                buf.writeBytes(fileName.substring(0, 10).getBytes());
+            }else{
+                String fileName = uploadPackageEntity.getFileName();
+                if(fileName == null){
+                    for(int i = 0;i < 10;i ++){
+                        buf.writeByte(0x00);
+                    }
+                }else if(fileName.length() >= 10){
+                    buf.writeBytes(fileName.substring(0, 10).getBytes());
+                }else if(fileName.length() < 10){
+                    buf.writeBytes(fileName.getBytes());
+                    for(int i = 0;i < 10 - fileName.length();i ++){
+                        buf.writeByte(0x00);
+                    }
+                }
             }
+
             buf.writeByte(vehicle.getIsUpdate());
             String url = _serverUrl + "/api/download/" + uploadPackageEntity.getUploadName() + "?uploadName=" + uploadPackageEntity.getUploadName();
             Integer len = 27 + url.length();
@@ -1790,10 +1801,12 @@ public class RequestHandler {
             ftpData.setCreateTime(new Date());
             ftpDataRepository.save(ftpData);
 
-            //更新升级标志
-            Vehicle vehicle = vehicleRepository.findByVin(vin);
-            vehicle.setIsUpdate(0);
-            vehicleRepository.save(vehicle);
+            if(bean.getUpdateResult() == 0){
+                //更新升级标志
+                Vehicle vehicle = vehicleRepository.findByVin(vin);
+                vehicle.setIsUpdate(0);
+                vehicleRepository.save(vehicle);
+            }
         }
         return result;
     }
@@ -1832,6 +1845,7 @@ public class RequestHandler {
 
             Integer model = 5;
             resp.setModel(model.shortValue());
+
             String hwVersion = vehicle.getHardVersion();
             if(hwVersion == null){
                 byte[] tempBytes = new byte[20];
@@ -1848,6 +1862,7 @@ public class RequestHandler {
                 }
                 resp.setFwDestVersion(hwVersion + new String(tempBytes));
             }
+
             String fileName = null;
             if(uploadPackageEntity != null){
                 fileName = uploadPackageEntity.getFileName();
@@ -1867,11 +1882,13 @@ public class RequestHandler {
                 }
                 resp.setFileName(fileName + new String(tempBytes));
             }
+
             Short isUpdate = 1;
             if(vehicle.getHwisUpdate() != null){
                 isUpdate = vehicle.getHwisUpdate().shortValue();
             }
             resp.setIsUpdate(isUpdate);
+
             String srcVersion = vehicle.getSrcVersion();
             if(srcVersion != null && !"".equals(srcVersion)){
                 if(srcVersion.length() >= 20){
@@ -1890,6 +1907,7 @@ public class RequestHandler {
                 }
                 resp.setFwSrcVersion(new String(versionBytes));
             }
+
             String ftpIp = ftpSetting.getFtpIp();
             if(ftpIp != null && !"".equals(ftpIp)){
                 String[] ips = ftpIp.split(".");
@@ -2017,16 +2035,19 @@ public class RequestHandler {
             ftpData.setModel(5);
             ftpData.setVersion(bean.getDestVersion());
             ftpData.setUpdateStep(bean.getUpdateStep().intValue());
-            ftpData.setDownloadResult(bean.getDownloadResult().intValue());
+            ftpData.setDownloadResult(bean.getUpdateResult().intValue());
             ftpData.setErrorCode(bean.getErrorCode().intValue());
             ftpData.setCreateTime(new Date());
             ftpDataRepository.save(ftpData);
 
-            //更新版本号及升级标志
-            Vehicle vehicle = vehicleRepository.findByVin(vin);
-            vehicle.setHwisUpdate(0);
-            vehicle.setSrcVersion(bean.getDestVersion());
-            vehicleRepository.save(vehicle);
+            if(bean.getUpdateResult() == 0){
+                //更新版本号及升级标志
+                Vehicle vehicle = vehicleRepository.findByVin(vin);
+                vehicle.setHwisUpdate(0);
+                vehicle.setSrcVersion(bean.getDestVersion());
+                vehicleRepository.save(vehicle);
+            }
+
         }
         return result;
     }
