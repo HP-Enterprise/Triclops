@@ -1313,7 +1313,7 @@ public class OutputHexService {
 //        }
         //RealTimeDataShow realTimeDataShow = vehicleDataService.getRealTimeData(vin);
         //生成故障信息
-        Map<String,Object> failureString=buildFailureString(wd, rd);
+        Map<String,Object> failureString=buildFailureString(wd, rd, bean.getVehicleModel());
         return failureString;
     }
 
@@ -1354,7 +1354,7 @@ public class OutputHexService {
 //            rd = rdList.get(0);
 //        }
         //生成故障信息
-        Map<String,Object> failureString=buildFailureString(wd, rd);
+        Map<String,Object> failureString=buildFailureString(wd, rd, bean.getVehicleModel());
         return failureString;
     }
 
@@ -1621,7 +1621,7 @@ public class OutputHexService {
      * @param realTimeReportData 实时数据实体类
      * @return 便于阅读的消息
      */
-    public Map<String,Object> buildFailureString(FailureMessageData wd,RealTimeReportData realTimeReportData){
+    public Map<String,Object> buildFailureString(FailureMessageData wd,RealTimeReportData realTimeReportData, Short model){
         Map<String,Object> dataMap = new HashMap<String,Object>();
 
         Map<String,Object> jsonMap = new HashMap<String,Object>();
@@ -1658,7 +1658,11 @@ public class OutputHexService {
             for(int j=0;j<allList.size();j++){
                 WarningMessageConversion warningMessageConversion=allList.get(j);
                 if(warningMessageConversion.getMessageId().equals(failureId[i])){
-                    failInfo.add(warningMessageConversion.getGroupMessage());
+                    if(model == 3 && warningMessageConversion.getType() == 2){//F60
+                        failInfo.add(warningMessageConversion.getGroupMessage());
+                    }else if(model != 3 && warningMessageConversion.getType() != 2){
+                        failInfo.add(warningMessageConversion.getGroupMessage());
+                    }
                 }
             }
         }

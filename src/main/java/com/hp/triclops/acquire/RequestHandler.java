@@ -1680,23 +1680,28 @@ public class RequestHandler {
             buf.writeByte(3);
             String versionStr = vehicle.getSoftVersion();
 
-            if(versionStr.length() == 5){
-                buf.writeBytes(versionStr.getBytes());
-            }else if(versionStr.length() < 5){
-                buf.writeBytes(versionStr.getBytes());
-                for(int i = 0;i < 5 - versionStr.length();i ++){
+            if(versionStr == null){
+                for(int i = 0;i < 5;i ++){
                     buf.writeByte(0x00);
                 }
-            }else if(versionStr.length() > 5){
-                buf.writeBytes(versionStr.substring(0, 5).getBytes());
+            }else{
+                if(versionStr.length() >= 5){
+                    buf.writeBytes(versionStr.substring(0, 5).getBytes());
+                }else if(versionStr.length() < 5){
+                    buf.writeBytes(versionStr.getBytes());
+                    for(int i = 0;i < 5 - versionStr.length();i ++){
+                        buf.writeByte(0x00);
+                    }
+                }
             }
 
+            String fileName = "";
             if(uploadPackageEntity == null){
                 for(int i = 0;i < 10;i ++){
                     buf.writeByte(0x00);
                 }
             }else{
-                String fileName = uploadPackageEntity.getFileName();
+                fileName = uploadPackageEntity.getFileName();
                 if(fileName == null){
                     for(int i = 0;i < 10;i ++){
                         buf.writeByte(0x00);
@@ -1711,8 +1716,12 @@ public class RequestHandler {
                 }
             }
 
-            buf.writeByte(vehicle.getIsUpdate());
-            String url = _serverUrl + "/api/download/" + uploadPackageEntity.getUploadName() + "?uploadName=" + uploadPackageEntity.getUploadName();
+            Integer isUpdate = 1;
+            if(vehicle.getIsUpdate() != null){
+                isUpdate = vehicle.getIsUpdate();
+            }
+            buf.writeByte(isUpdate);
+            String url = _serverUrl + "/api/download/" + fileName + "?uploadName=" + fileName;
             Integer len = 27 + url.length();
             buf.writeBytes(url.getBytes());
             buf.writeByte(dataTool.getCheckSum(DataTool.getBytesFromByteBuf(buf)));
@@ -1727,7 +1736,7 @@ public class RequestHandler {
 
             //保存记录
             ftpData.setVin(vin);
-            ftpData.setModel(5);
+            ftpData.setModel(3);
             ftpData.setVersion(vehicle.getSoftVersion());
             ftpData.setIsUpdate(vehicle.getIsUpdate());
             ftpData.setUpdateStep(0);
@@ -1977,6 +1986,15 @@ public class RequestHandler {
 
             //返回结果
             result = PackageEntityManager.getByteString(bbw);
+
+            //保存记录
+            ftpData.setVin(vin);
+            ftpData.setModel(5);
+            ftpData.setVersion(vehicle.getHardVersion());
+            ftpData.setIsUpdate(vehicle.getHwisUpdate());
+            ftpData.setUpdateStep(0);
+            ftpData.setCreateTime(new Date());
+            ftpDataRepository.save(ftpData);
         }else if(messageId == 0x03){
             //上行
             ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);

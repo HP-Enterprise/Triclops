@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Table(name = "t_warning_message_conversion")
 public class WarningMessageConversion {
     private int id;
+    private Integer type;
     private String messageId;
     private String messageZh;
     private String messageEn;
@@ -25,6 +26,16 @@ public class WarningMessageConversion {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "type", nullable = false, insertable = true, updatable = true)
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     @Basic
