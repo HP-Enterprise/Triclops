@@ -946,6 +946,7 @@ public class VehicleDataService {
         if(failureMessageData==null){
             return null;
         }
+        Vehicle vehicle = vehicleRepository.findByVin(vin);
         DiagnosticDataShow diagnosticDataShow=new DiagnosticDataShow();
         diagnosticDataShow.setId(failureMessageData.getId());
         diagnosticDataShow.setVin(failureMessageData.getVin());
@@ -953,7 +954,7 @@ public class VehicleDataService {
         diagnosticDataShow.setEventId((long) dataTool.getCurrentSeconds());
         diagnosticDataShow.setSendDate(failureMessageData.getSendingTime());
         diagnosticDataShow.setReceiveDate(failureMessageData.getSendingTime());
-        HashMap<String,String>  content=getDiagDataFromFailure(failureMessageData,lang);
+        HashMap<String,String>  content=getDiagDataFromFailure(failureMessageData,lang, vehicle.getModel());
         diagnosticDataShow.setList(content);
         return  diagnosticDataShow;
     }
@@ -963,7 +964,7 @@ public class VehicleDataService {
      * @param failureMessageData 故障数据
      * @return DiagnosticData或者null
      */
-    public HashMap<String,String> getDiagDataFromFailure(FailureMessageData failureMessageData,int lang){
+    public HashMap<String,String> getDiagDataFromFailure(FailureMessageData failureMessageData,int lang, String model){
         //todo 转换逻辑暂缺
         if(failureMessageData!=null){
             List<WarningMessageConversion> allList=warningMessageConversionRepository.findAll();
@@ -983,10 +984,28 @@ public class VehicleDataService {
                 for(int j=0;j<allList.size();j++){
                     WarningMessageConversion warningMessageConversion=allList.get(j);
                     if(warningMessageConversion.getMessageId().equals(failureId[i])){
-                        if(lang==1){
-                            content.put(warningMessageConversion.getGroupMessage(), "1");
+                        if(model == null){
+                            if(warningMessageConversion.getType() == 1){
+                                if(lang==1){
+                                    content.put(warningMessageConversion.getGroupMessage(), "1");
+                                }else{
+                                    content.put(warningMessageConversion.getGroupMessageEn(), "1");
+                                }
+                            }
                         }else{
-                            content.put(warningMessageConversion.getGroupMessageEn(), "1");
+                            if("F60".equals(model) && warningMessageConversion.getType() == 2){//F60
+                                if(lang==1){
+                                    content.put(warningMessageConversion.getGroupMessage(), "1");
+                                }else{
+                                    content.put(warningMessageConversion.getGroupMessageEn(), "1");
+                                }
+                            }else if(!"F60".equals(model) && warningMessageConversion.getType() == 1){
+                                if(lang==1){
+                                    content.put(warningMessageConversion.getGroupMessage(), "1");
+                                }else{
+                                    content.put(warningMessageConversion.getGroupMessageEn(), "1");
+                                }
+                            }
                         }
                     }
                 }

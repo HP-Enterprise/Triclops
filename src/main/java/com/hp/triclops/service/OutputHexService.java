@@ -1660,7 +1660,7 @@ public class OutputHexService {
                 if(warningMessageConversion.getMessageId().equals(failureId[i])){
                     if(model == 3 && warningMessageConversion.getType() == 2){//F60
                         failInfo.add(warningMessageConversion.getGroupMessage());
-                    }else if(model != 3 && warningMessageConversion.getType() != 2){
+                    }else if(model != 3 && warningMessageConversion.getType() == 1){
                         failInfo.add(warningMessageConversion.getGroupMessage());
                     }
                 }
