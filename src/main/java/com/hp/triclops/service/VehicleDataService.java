@@ -973,11 +973,24 @@ public class VehicleDataService {
             HashMap<String,String>  content=new HashMap<>();
 
             for(int i=0;i<allList.size();i++){
-                WarningMessageConversion warningMessageConversion=allList.get(i);
-                if(lang==1){
-                    content.put(warningMessageConversion.getGroupMessage(), "0");
+                if(model != null && "F60".equals(model)){
+                    WarningMessageConversion warningMessageConversion=allList.get(i);
+                    if(warningMessageConversion.getType() == 2){
+                        if(lang==1){
+                            content.put(warningMessageConversion.getGroupMessage(), "0");
+                        }else{
+                            content.put(warningMessageConversion.getGroupMessageEn(), "0");
+                        }
+                    }
                 }else{
-                    content.put(warningMessageConversion.getGroupMessageEn(), "0");
+                    WarningMessageConversion warningMessageConversion=allList.get(i);
+                    if(warningMessageConversion.getType() == 1){
+                        if(lang==1){
+                            content.put(warningMessageConversion.getGroupMessage(), "0");
+                        }else{
+                            content.put(warningMessageConversion.getGroupMessageEn(), "0");
+                        }
+                    }
                 }
             }
             for (int i = 0; i <failureId.length ; i++) {
