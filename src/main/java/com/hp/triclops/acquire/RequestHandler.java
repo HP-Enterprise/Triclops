@@ -1840,7 +1840,7 @@ public class RequestHandler {
             HardFtpUpdateCheck bean = dp.loadBean(HardFtpUpdateCheck.class);
 
             Vehicle vehicle = vehicleRepository.findByVin(vin);
-            UploadPackageEntity uploadPackageEntity = uploadPackageEntityRepository.findByModelAndVersion(5, vehicle.getSoftVersion());
+            UploadPackageEntity uploadPackageEntity = uploadPackageEntityRepository.findByModelAndVersion(5, vehicle.getHardVersion());
             FtpSetting ftpSetting = ftpSettingRepository.findById(1);
 
             //下行
@@ -1919,7 +1919,7 @@ public class RequestHandler {
 
             String ftpIp = ftpSetting.getFtpIp();
             if(ftpIp != null && !"".equals(ftpIp)){
-                String[] ips = ftpIp.split(".");
+                String[] ips = ftpIp.split("\\.");
                 byte[] ipBytes = new byte[4];
                 if(ips != null && ips.length == 4){
                     Integer ip0 = Integer.parseInt(ips[0]);
