@@ -20,6 +20,9 @@ public interface UserVehicleRelativeExRepository extends CrudRepository<UserVehi
     @Query("select uv from UserVehicleRelativeEx uv where uv.uid = ?1 and uv.vid = ?2 and uv.iflag = ?3")
     UserVehicleRelativeEx findOneReative(int uid, int vid, int iflag);
 
+    @Query("select uv from UserVehicleRelativeEx uv where uv.uid = ?1 and uv.vflag = ?2")
+    UserVehicleRelativeEx findOneByUid(int uid, int vflag);
+
     @Query("select uv from UserVehicleRelativeEx uv")
     Page<UserVehicleRelativeEx> findReative(Pageable p);
 
