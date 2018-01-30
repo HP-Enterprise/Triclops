@@ -15,15 +15,19 @@ public class UserAdvice {
     private int userId;
     private Date createTime;
     private int status;
+    private String name;
+    private String vin;
 
     public UserAdvice(){}
 
-    public UserAdvice(int id, String content, int userId, Date createTime, int status) {
+    public UserAdvice(int id, String content, int userId, Date createTime, int status,String name,String vin) {
         this.id = id;
         this.content = content;
         this.userId = userId;
         this.createTime = createTime;
         this.status = status;
+        this.name=name;
+        this.vin=vin;
     }
 
     @Id
@@ -71,5 +75,21 @@ public class UserAdvice {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
     }
 }

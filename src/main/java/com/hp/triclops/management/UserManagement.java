@@ -1,9 +1,10 @@
 package com.hp.triclops.management;
 
-import com.hp.triclops.entity.UserAdvice;
-import com.hp.triclops.entity.UserEx;
+import com.hp.triclops.entity.*;
 import com.hp.triclops.repository.UserAdviceRepository;
 import com.hp.triclops.repository.UserExRepository;
+import com.hp.triclops.repository.UserRepository;
+import com.hp.triclops.repository.UserVehicleRelativedRepository;
 import com.hp.triclops.vo.UserExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,12 @@ public class UserManagement {
 
     @Autowired
     UserAdviceRepository userAdviceRepository;
+
+    @Autowired
+    UserVehicleRelativedRepository userVehicleRelativedRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     /**
      * 新增用户
@@ -351,11 +358,23 @@ public class UserManagement {
      */
     public UserAdvice saveAdvice(String content, int userId)
     {
+
+        //获取vin码,保存vin和用户name
+        String vin="";
+        User user= userRepository.findById(userId);
+        List<UserVehicleRelatived> userVehicleRelativedList= userVehicleRelativedRepository.findByUidAndVflag(user,1);
+        if(userVehicleRelativedList!=null&&userVehicleRelativedList.size()>0){
+            Vehicle vehicle=userVehicleRelativedList.get(0).getVid();
+            vin=vehicle.getVin();
+        }
+
         UserAdvice userAdvice = new UserAdvice();
         userAdvice.setContent(content);
         userAdvice.setCreateTime(new Date());
         userAdvice.setStatus(1);
         userAdvice.setUserId(userId);
+        userAdvice.setVin(vin);
+        userAdvice.setName(user.getName());
 
         UserAdvice advice = userAdviceRepository.save(userAdvice);
         return advice;
