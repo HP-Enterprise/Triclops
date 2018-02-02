@@ -283,17 +283,18 @@ public class DataTool {
         //参考0.613
         //0x0： 00 Open--0
         //0x1： 01 Intermediate--1
-        //0x2： 10 Close--2
-        //0x3： 11 Signal invalid--3
+        //0x2： Between 80% to closed
+        //0x3： Between open to 80%
+        //0x7： Signal Invalid
         String re="2";
         if(bita_b!=null){
-            if(bita_b.equals("00")){
+            if(bita_b.equals("000")){
                 re="0";
-            }else if(bita_b.equals("01")){
+            }else if(bita_b.equals("001")){
                 re="1";
-            }else if(bita_b.equals("10")){
+            }else if(bita_b.equals("010") || bita_b.equals("011")){
                 re="2";
-            }else if(bita_b.equals("11")){
+            }else if(bita_b.equals("111")){
                 re="3";
             }
         }
