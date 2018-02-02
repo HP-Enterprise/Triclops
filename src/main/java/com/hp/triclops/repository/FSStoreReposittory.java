@@ -19,4 +19,10 @@ public interface FSStoreReposittory extends JpaRepository<Store4s,Integer>,JpaSp
             " and (?2 is null or s.province = ?2)" +
             " and (?3 is null or s.city  = ?3)")
     List<Store4s> findByKeys(Integer vehicleType, String province, String city);
+
+    @Query("select s.province from Store4s s group by s.province")
+    List<String> findProvinces();
+
+    @Query("select s.city from Store4s s where s.province = ?1 group by s.city")
+    List<String> findCitysByProvince(String province);
 }
