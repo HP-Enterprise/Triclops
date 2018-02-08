@@ -1898,7 +1898,13 @@ public class RequestHandler {
             }
             resp.setIsUpdate(isUpdate);
 
-            String srcVersion = vehicle.getSrcVersion();
+            String srcVersion = null;
+            if(fileName != null){
+                String[] first = fileName.split("-");
+                if(first != null && first.length > 0){
+                    srcVersion = first[0];
+                }
+            }
             if(srcVersion != null && !"".equals(srcVersion)){
                 if(srcVersion.length() >= 20){
                     resp.setFwSrcVersion(srcVersion.substring(0, 20));

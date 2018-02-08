@@ -441,10 +441,10 @@ public class DataHandleService {
         rd.setFuelOil(val);
         char[] windows=dataTool.getBitsFromInteger(bean.getWindowInformation());//
         if(isM8X) {//Bit0~2：STAT_WindowFL Bit3~5：STAT_WindowFR Bit6~8：STAT_WindowRL Bit9~11：STAT_WindowRR
-            rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
-            rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11]) + String.valueOf(windows[12])));
-            rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[7]) + String.valueOf(windows[8]) + String.valueOf(windows[9])));
-            rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5]) + String.valueOf(windows[6])));
+            rd.setLeftFrontWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11]) + String.valueOf(windows[12])));
+            rd.setLeftRearWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[7]) + String.valueOf(windows[8]) + String.valueOf(windows[9])));
+            rd.setRightRearWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5]) + String.valueOf(windows[6])));
         }else{//
             //车窗信息 0开1半开2关3信号异常
             rd.setLeftFrontWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
@@ -795,10 +795,10 @@ public class DataHandleService {
         rd.setFuelOil(val);
         char[] windows=dataTool.getBitsFromInteger(bean.getWindowInformation());//
         if(isM8X) {
-            rd.setLeftFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
-            rd.setRightFrontWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11]) + String.valueOf(windows[12])));
-            rd.setLeftRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[7]) + String.valueOf(windows[8]) + String.valueOf(windows[9])));
-            rd.setRightRearWindowInformation(dataTool.getWindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5]) + String.valueOf(windows[6])));
+            rd.setLeftFrontWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
+            rd.setRightFrontWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[10]) + String.valueOf(windows[11]) + String.valueOf(windows[12])));
+            rd.setLeftRearWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[7]) + String.valueOf(windows[8]) + String.valueOf(windows[9])));
+            rd.setRightRearWindowInformation(dataTool.getM82WindowStatus(String.valueOf(windows[4]) + String.valueOf(windows[5]) + String.valueOf(windows[6])));
         }else{//在协议0628中F60无此数据 预留
             rd.setLeftFrontWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[13]) + String.valueOf(windows[14]) + String.valueOf(windows[15])));
             rd.setRightFrontWindowInformation(dataTool.getWindowStatusFrom3Bits(String.valueOf(windows[10]) + String.valueOf(windows[11]) + String.valueOf(windows[12])));
