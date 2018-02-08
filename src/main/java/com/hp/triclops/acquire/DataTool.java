@@ -301,6 +301,29 @@ public class DataTool {
         return re;
     }
 
+    public String getM82WindowStatus(String bita_b){
+        //得到车窗状态 传入两个bit的字符表示,
+        // 数据库 车窗信息 0开1半开2关3信号异常
+        //0x0： 00 Close--2
+        //0x1： 01 open--0
+        //0x2： Between 80% to closed--1
+        //0x3： Between open to 80%--1
+        //0x7： Signal Invalid
+        String re="2";
+        if(bita_b!=null){
+            if(bita_b.equals("000")){
+                re="2";
+            }else if(bita_b.equals("001")){
+                re="0";
+            }else if(bita_b.equals("010") || bita_b.equals("011")){
+                re="1";
+            }else if(bita_b.equals("111")){
+                re="3";
+            }
+        }
+        return re;
+    }
+
     public String getWindowStatusFrom3Bits(String bita_b_c){
         //得到车窗状态 传入两个bit的字符表示,
         // 数据库 车窗信息 0开1半开2关3信号异常
@@ -1159,9 +1182,9 @@ public class DataTool {
         if(_tcu[5]== '0'){//bit2 0 warning MID=148
             sb.append(",148");
         }
-       /* if(_tcu[4]== '0'){//bit3 0 warning MID=88
+        if(_tcu[4]== '0'){//bit3 0 warning MID=88
             sb.append(",88");
-        }*/
+        }
         if(_tcu[3]== '0'){//bit4 0 warning MID=146
             sb.append(",146");
         }
