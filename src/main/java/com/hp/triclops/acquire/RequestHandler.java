@@ -1900,7 +1900,7 @@ public class RequestHandler {
 
             String srcVersion = null;
             if(fileName != null){
-                String[] first = fileName.split("-");
+                String[] first = fileName.split("_");
                 if(first != null && first.length > 0){
                     srcVersion = first[0];
                 }
