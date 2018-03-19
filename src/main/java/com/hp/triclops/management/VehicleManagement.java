@@ -411,4 +411,37 @@ public class VehicleManagement {
         return 0;
     }
 
+    /**
+     * 安防密码
+     * @param vid 车辆ID
+     * @param securityPwd 安防密码
+     * @return 校验状态  -2：车辆不存在  -1：未设置安防密码  0:安防密码验证失败 1：设置成功
+     */
+    public int changeSecurityPwd(int vid,String oldSecurityPwd,String securityPwd)
+    {
+        MD5 md5 = new MD5();
+        VehicleEx vehicle = vehicleExRepository.findById(vid);
+
+        if(vehicle == null)
+        {
+            return -2;
+        }
+
+        String security_pwd = vehicle.getSecurity_pwd();
+        if(security_pwd == null)
+        {
+            return -1;
+        }
+        String security_salt = vehicle.getSecurity_salt();
+        String pwdVerify = md5.getMD5ofStr(oldSecurityPwd + security_salt);
+
+        if(!security_pwd.equals(pwdVerify))
+        {
+            return 0;
+        }
+
+        String newSecurityPwd = md5.getMD5ofStr(securityPwd + security_salt);
+        vehicle.setSecurity_pwd(newSecurityPwd);
+        return 1;
+    }
 }
