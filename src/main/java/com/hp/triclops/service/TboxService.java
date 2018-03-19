@@ -77,7 +77,11 @@ public class TboxService {
             vehicle.setSecurity_pwd("14427FF4F90B790CAED65FC2DD854351");
             vehicle.setSecurity_salt("a5pb");
             vehicle.setRegTime(new Date());
-            vehicle.setRealNameAuthentication("0");
+            if (modelId ==1){
+                vehicle.setRealNameAuthentication("4");
+            }else{
+                vehicle.setRealNameAuthentication("0");
+            }
             sVehicle = vehicleRepository.save(vehicle);
 
             organizationVehicleManagement.addVehicle(1, sVehicle.getId());   // 默认添加到华晨汽车根组织
