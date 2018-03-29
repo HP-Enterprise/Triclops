@@ -672,7 +672,7 @@ public class RequestHandler {
             if(preconditionRespCheck==0 && dbRc.getControlType()!=0){//远程启动以外的 preconditionRespCheck=0为通过
                 fcCheckPass=true;
             }else if(preconditionRespCheck==0 && dbRc.getControlType()==0){//远程启动以外的 preconditionRespCheck=0为通过
-                if(_startedCount>=2 && dbRc.getIsAnnounce()==0 && dbRc.getRefId()!=-1){//FD要求检查次数 RefId()==-1 是初始命令
+                if(_startedCount>=2 ){//FD要求检查次数 RefId()==-1 是初始命令
                     fcCheckPass=false;
 //                    msg="发动机启动次数已超出2次，启动请求无效";
 //                    msgEn="Engine start number exceeded 2 times, invalid startup request";
@@ -1496,18 +1496,32 @@ public class RequestHandler {
 //            }
             //0638协议
             else if(controlType==(short)11){//11：远程控制车窗
-                re = windowsCheck;
-                if(re){
-                    reint = 0;
-                }else{
-                    reint = 11;
+                re= powerStatusCheck  && doorsCheck && trunkCheck && bonnetCheck  && centralLockCheck ;//车门 后备箱 引擎盖 车速
+                _logger.info("[0x31]车窗检查，是否:电源档位/车门/后备箱/引擎盖/中控锁--"+powerStatusCheck +"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+centralLockCheck+" 检查结果:"+re);
+                if(!powerStatusCheck){
+                    reint=0x10;
+                }else if(!doorsCheck){
+                    reint=0x13;
+                }else if(!trunkCheck){
+                    reint=0x14;
+                }else if(!bonnetCheck){
+                    reint=0x15;
+                }else if(!centralLockCheck){
+                    reint=0x17;
                 }
             }else if(controlType==(short)12){//12：远程控制天窗
-                re = sunroofCheck;
-                if(re){
-                    reint = 0;
-                }else{
-                    reint = 12;
+                re= powerStatusCheck  && doorsCheck && trunkCheck && bonnetCheck  && centralLockCheck ;//车门 后备箱 引擎盖 车速
+                _logger.info("[0x31]天窗检查，是否:电源档位/车门/后备箱/引擎盖/中控锁--"+powerStatusCheck +"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+centralLockCheck+" 检查结果:"+re);
+                if(!powerStatusCheck){
+                    reint=0x10;
+                }else if(!doorsCheck){
+                    reint=0x13;
+                }else if(!trunkCheck){
+                    reint=0x14;
+                }else if(!bonnetCheck){
+                    reint=0x15;
+                }else if(!centralLockCheck){
+                    reint=0x17;
                 }
             }
         }
