@@ -27,6 +27,7 @@ public class SessionRedis {
 
     private String[] preStr = {"session:","code:"};
     private String sessionKey = "";
+    private static final String ONLINE = "online:";
 
     ValueOperations<String,String> valOpts = null;
     ValueOperations<String,Object> valObjOpts = null;
@@ -86,6 +87,52 @@ public class SessionRedis {
         }
         return valOpts.get(sessionKey);
     }
+
+    /**
+     * 存储STRING类型数据
+     * @param sessionId 键
+     * @param sessionValue 值
+     * @param expireSeconds 该键值的过期时间，单位秒
+     */
+    public void saveOnlineSessionOfVal(String sessionId,String sessionValue,long ... expireSeconds){
+
+        sessionKey = ONLINE + sessionId;
+        this.valOpts = this.stringRedisTemplate.opsForValue();
+
+        if(!this.stringRedisTemplate.hasKey(sessionKey)){
+            valOpts.set(sessionKey, sessionValue);
+            if(expireSeconds.length != 0) {
+                this.stringRedisTemplate.expire(sessionKey, expireSeconds[0], TimeUnit.SECONDS);
+            }
+            else {
+                this.stringRedisTemplate.expire(sessionKey, this.defaultExpireSeconds(24), TimeUnit.SECONDS);
+            }
+        }
+
+    }
+
+    /**
+     * 获取键对应的值
+     * @param sessionId 键
+     * @return 键对应的值
+     */
+    public String getOnlineSessionOfVal(String sessionId){
+        sessionKey = ONLINE + sessionId;
+        this.valOpts = this.stringRedisTemplate.opsForValue();
+        if(!this.stringRedisTemplate.hasKey(sessionKey)){
+            return null;
+        }
+        return valOpts.get(sessionKey);
+    }
+
+
+
+
+
+
+
+
+
 
     /**
      * 更新已存在的键所对应的值

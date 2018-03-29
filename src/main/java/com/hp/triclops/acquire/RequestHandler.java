@@ -1152,7 +1152,11 @@ public class RequestHandler {
             byte ems = remoteControlPreconditionResp.getEms1_n_vehicleID();
             //F60才有此信号 是否手动档
             if(!isM8X){
-                if(ems == 0x02 || ems == 0x04 || ems == 0x05){
+                if (vehicleModel == 4) {
+                    if (ems == 0x01 || ems == 0x02 || ems == 0x03) {
+                        emsCheck = true;
+                    }
+                } else if (ems == 0x02 || ems == 0x04 || ems == 0x05){
                     emsCheck = true;
                 }
             }
