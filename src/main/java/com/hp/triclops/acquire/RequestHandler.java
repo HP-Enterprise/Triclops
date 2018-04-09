@@ -1498,30 +1498,38 @@ public class RequestHandler {
             else if(controlType==(short)11){//11：远程控制车窗
                 re= powerStatusCheck  && doorsCheck && trunkCheck && bonnetCheck  && centralLockCheck ;//车门 后备箱 引擎盖 车速
                 _logger.info("[0x31]车窗检查，是否:电源档位/车门/后备箱/引擎盖/中控锁--"+powerStatusCheck +"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+centralLockCheck+" 检查结果:"+re);
-                if(!powerStatusCheck){
-                    reint=0x10;
-                }else if(!doorsCheck){
-                    reint=0x13;
-                }else if(!trunkCheck){
-                    reint=0x14;
-                }else if(!bonnetCheck){
-                    reint=0x15;
-                }else if(!centralLockCheck){
-                    reint=0x17;
+                if(re){
+                    reint = 0;
+                }else {
+                    if (!powerStatusCheck) {
+                        reint = 0x10;
+                    } else if (!doorsCheck) {
+                        reint = 0x13;
+                    } else if (!trunkCheck) {
+                        reint = 0x14;
+                    } else if (!bonnetCheck) {
+                        reint = 0x15;
+                    } else if (!centralLockCheck) {
+                        reint = 0x17;
+                    }
                 }
             }else if(controlType==(short)12){//12：远程控制天窗
                 re= powerStatusCheck  && doorsCheck && trunkCheck && bonnetCheck  && centralLockCheck ;//车门 后备箱 引擎盖 车速
                 _logger.info("[0x31]天窗检查，是否:电源档位/车门/后备箱/引擎盖/中控锁--"+powerStatusCheck +"/"+doorsCheck+"/"+trunkCheck+"/"+bonnetCheck+"/"+centralLockCheck+" 检查结果:"+re);
-                if(!powerStatusCheck){
-                    reint=0x10;
-                }else if(!doorsCheck){
-                    reint=0x13;
-                }else if(!trunkCheck){
-                    reint=0x14;
-                }else if(!bonnetCheck){
-                    reint=0x15;
-                }else if(!centralLockCheck){
-                    reint=0x17;
+                if(re){
+                    reint = 0;
+                }else {
+                    if (!powerStatusCheck) {
+                        reint = 0x10;
+                    } else if (!doorsCheck) {
+                        reint = 0x13;
+                    } else if (!trunkCheck) {
+                        reint = 0x14;
+                    } else if (!bonnetCheck) {
+                        reint = 0x15;
+                    } else if (!centralLockCheck) {
+                        reint = 0x17;
+                    }
                 }
             }
         }
