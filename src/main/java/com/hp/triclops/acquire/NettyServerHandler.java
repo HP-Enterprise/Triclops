@@ -168,12 +168,12 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     }
 
     public void saveBytesToRedis(String scKey,byte[] bytes){
-        //存储接收数据到redis 采用redis Set结构，一个key对应一个Set<String>
+        //存储接收数据到redis 采用redis List（队列）结构，一个key对应一个 队列<String>
         if(dataTool.checkByteArray(bytes)){
             if(scKey!=null){
                 String inputKey="input:"+scKey;//保存数据包到redis里面的key，格式input:{vin}
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
-                socketRedis.saveSetString(inputKey, receiveDataHexString,-1);
+                socketRedis.pushListString(inputKey, receiveDataHexString,-1);
                 _logger.info("保存数据到Redis:" + inputKey);
             }else{
                 _logger.info("未能找到对应的vin，无法保存数据!");

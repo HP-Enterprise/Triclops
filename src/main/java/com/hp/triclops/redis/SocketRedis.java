@@ -21,6 +21,7 @@ public class SocketRedis {
     HashOperations<String,String,String> hashOpts=null;
 
     SetOperations<String,String> setOpts = null;
+    ListOperations<String, String> listOpts = null;
 
     /**
      *设置对象存储默认序列化对象
@@ -112,6 +113,19 @@ public class SocketRedis {
         }
     }
 
+    /**
+     * 存储STRING类型数据 LIST（从右边入队）
+     * @param key 键
+     * @param value 值
+     * @param expireSeconds 该键值的过期时间，单位秒
+     */
+    public void pushListString(String key, String value, long expireSeconds) {
+        this.listOpts = this.stringRedisTemplate.opsForList();
+        this.listOpts.rightPush(key, value);
+        if (expireSeconds > 0) {
+            this.stringRedisTemplate.expire(key, expireSeconds, TimeUnit.SECONDS);
+        }
+    }
 
 
     /**
@@ -128,7 +142,18 @@ public class SocketRedis {
 
     }
 
-
+    /**
+     * 获取键对应的值，取出后值会删除（从左边出队）
+     * @param key 键
+     * @return 键对应的值
+     */
+    public String popListString(String key) {
+        this.listOpts = this.stringRedisTemplate.opsForList();
+        if (!this.stringRedisTemplate.hasKey(key)) {
+            return "null";
+        }
+        return this.listOpts.leftPop(key);
+    }
 
     /**
      * 获取键对应的值

@@ -95,7 +95,7 @@ public class DataHandler extends Thread{
 
     public void handleInputData(String vin,String k){
         //将input:{vin}对应的十六进制字符串解析保存入db
-        String msg =socketRedis.popSetOneString(k);
+        String msg =socketRedis.popListString(k);
         _logger.info("vin>>" + vin + "|receive msg:" + msg);
         scheduledService.schedule(new DataHandlerTask(vin, socketRedis, dataHandleService, dataTool, msg), 1, TimeUnit.MILLISECONDS);
     }
