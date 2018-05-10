@@ -67,8 +67,9 @@ public class DataHandler extends Thread{
 
     public  synchronized void run()
     {
+        long time = System.currentTimeMillis();
         while (true){
-
+            long startTime = System.currentTimeMillis();
             //读取数据库中所有的数据集合
             String redisKeyFilter="input"+keySuffix+":*";
             if(keySuffix.equals("")){ //handle all input data
@@ -77,24 +78,26 @@ public class DataHandler extends Thread{
             Set<String> setKey = socketRedis.getKeysSet(redisKeyFilter);
             if(setKey.size()>0){   _logger.info(redisKeyFilter+" size:" + setKey.size()); }
             Iterator keys = setKey.iterator();
+            long middleTime = System.currentTimeMillis();
+            _logger.info("Read redis key time:" + (middleTime - startTime));
             while (keys.hasNext()){
                 //遍历待发数据,处理
                 String k=(String)keys.next();
                 String vin=dataTool.getVinFromkey(k);
                 handleInputData(vin, k);
             }
+            long endTime = System.currentTimeMillis();
+            _logger.info("handleInputData time:" + (endTime - middleTime));
+            _logger.info("Loop once time:" + (endTime - time));
+            time = endTime;
         }
     }
 
     public void handleInputData(String vin,String k){
         //将input:{vin}对应的十六进制字符串解析保存入db
-        long startTime = System.currentTimeMillis();
         String msg =socketRedis.popSetOneString(k);
-        long middleTime = System.currentTimeMillis();
         _logger.info("vin>>" + vin + "|receive msg:" + msg);
         scheduledService.schedule(new DataHandlerTask(vin, socketRedis, dataHandleService, dataTool, msg), 1, TimeUnit.MILLISECONDS);
-        long endTime = System.currentTimeMillis();
-        _logger.info("Get from redis time:"+(middleTime-startTime)+",thread imto db time:"+(endTime-middleTime));
     }
 
     class DataHandleHeartbeat implements Runnable{

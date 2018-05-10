@@ -25,7 +25,11 @@ public class DataHandlerTask implements Runnable{
     }
     public  synchronized void run()
     {
+        long startTime = System.currentTimeMillis();
         HandleMessage(vin,msg);
+        long time = System.currentTimeMillis() - startTime;
+        if (time > 100)
+            _logger.info("Handle msg time:" + time);
     }
 
     public void HandleMessage(String vin,String message){
