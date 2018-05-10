@@ -222,6 +222,7 @@ public class DataHandleService {
      * @param msg
      */
     public void saveRealTimeReportMes(String vin,String msg){
+        long startTime = System.currentTimeMillis();
         _logger.info("[0x22]>>保存上报的实时数据:"+msg);
         ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
         DataPackage dp=conversionTBox.generate(bb);
@@ -347,8 +348,9 @@ public class DataHandleService {
         rd.setRrLockState(-200);
         rd.setBlow(-200);
         rd.setAcState(-200);
-
+        long middleTime = System.currentTimeMillis();
         realTimeReportDataRespository.save(rd);
+        long middleTime2 = System.currentTimeMillis();
         //普通实时数据和位置数据分表存储
         GpsData gd=new GpsData();
         gd.setVin(vin);
@@ -365,7 +367,14 @@ public class DataHandleService {
         gd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
         gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
         gd.setHeading(bean.getHeading());
+        long middleTime3 = System.currentTimeMillis();
         gpsDataRepository.save(gd);
+        long endTime = System.currentTimeMillis();
+        if (endTime - startTime > 100) {
+            _logger.info("Analysis data time" + (middleTime - startTime));
+            _logger.info("First time save time" + (middleTime2 - middleTime));
+            _logger.info("Second time save time" + (endTime - middleTime3));
+        }
     }
 
     /**

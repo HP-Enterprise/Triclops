@@ -67,9 +67,9 @@ public class DataHandler extends Thread{
 
     public  synchronized void run()
     {
-        long time = System.currentTimeMillis();
+//        long time = System.currentTimeMillis();
         while (true){
-            long startTime = System.currentTimeMillis();
+//            long startTime = System.currentTimeMillis();
             //读取数据库中所有的数据集合
             String redisKeyFilter="input"+keySuffix+":*";
             if(keySuffix.equals("")){ //handle all input data
@@ -79,17 +79,17 @@ public class DataHandler extends Thread{
             if(setKey.size()>0){   _logger.info(redisKeyFilter+" size:" + setKey.size()); }
             Iterator keys = setKey.iterator();
             long middleTime = System.currentTimeMillis();
-            _logger.info("Read redis key time:" + (middleTime - startTime));
+//            _logger.info("Read redis key time:" + (middleTime - startTime));
             while (keys.hasNext()){
                 //遍历待发数据,处理
                 String k=(String)keys.next();
                 String vin=dataTool.getVinFromkey(k);
                 handleInputData(vin, k);
             }
-            long endTime = System.currentTimeMillis();
-            _logger.info("handleInputData time:" + (endTime - middleTime));
-            _logger.info("Loop once time:" + (endTime - time));
-            time = endTime;
+//            long endTime = System.currentTimeMillis();
+//            _logger.info("handleInputData time:" + (endTime - middleTime));
+//            _logger.info("Loop once time:" + (endTime - time));
+//            time = endTime;
         }
     }
 
