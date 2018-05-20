@@ -138,7 +138,7 @@ public class RequestTask  implements Runnable{
                     _logger.info("[0x21]报文对应的连接没有注册，不处理报文");
                     return;
                 }
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x22://实时数据上报
                 _logger.info("[0x22]收到实时数据上报...");
@@ -150,7 +150,7 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getRealTimeDataResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x23://补发实时数据上报
                 _logger.info("[0x23]收到补发实时数据上报...");
@@ -162,7 +162,7 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getResendRealTimeDataResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x24://报警数据上报
                 _logger.info("[0x24]收到报警数据上报");
@@ -174,7 +174,7 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getWarningMessageResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
-                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x25://补发报警数据上报
                 _logger.info("[0x25]收到补发报警数据上报");
@@ -186,7 +186,7 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getDataResendWarningDataResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
-                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //补发报警数据是否需要push
                 break;
             case 0x26://心跳
@@ -223,7 +223,7 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getFailureDataResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
-                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x29://补发故障数据上报
                 _logger.info("[0x29]收到补发故障数据上报");
@@ -235,7 +235,7 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getResendFailureDataResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
-                saveSpecialBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveSpecialBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 //补发故障数据是否需要push
                 break;
 
@@ -249,7 +249,7 @@ public class RequestTask  implements Runnable{
                 respStr=requestHandler.getDrivingBehaviorMesResp(receiveDataHexString);
                 buf=dataTool.getByteBuf(respStr);
                 ch.writeAndFlush(buf);//回发数据直接回消息
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
 
             case 0x31://远程控制响应(上行)包含mid 2 4 5
@@ -279,7 +279,7 @@ public class RequestTask  implements Runnable{
                 break;
             case 0x41://参数查询响应(上行)
                 _logger.info("ParamStatus Ack");
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x42://远程车辆诊断响应(上行)
                 _logger.info("DiagnosticCommand Ack");
@@ -293,7 +293,7 @@ public class RequestTask  implements Runnable{
                 break;
             case 0x51://上报数据设置响应(上行)
                 _logger.info("SignalSetting Ack");
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
             case 0x52://参数设置响应(上行)
                 _logger.info("PramSetupAck Ack");
@@ -340,7 +340,7 @@ public class RequestTask  implements Runnable{
             default:
                 _logger.info("未知类型的数据，记录到日志:" + receiveDataHexString);
                 //一般数据，判断是否已注册，注册的数据保存
-                saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+                saveBytesToRedis(dataType, geVinByAddress(ch.remoteAddress().toString()), receiveData);
                 break;
     }
     }
@@ -391,28 +391,28 @@ public class RequestTask  implements Runnable{
         }
     }
 
-    public void saveBytesToRedis(String scKey,byte[] bytes){
+    public void saveBytesToRedis(byte dataType, String vin, byte[] bytes){
         //存储接收数据到redis 采用redis List（队列）结构，一个key对应一个 队列<String>
         if(dataTool.checkByteArray(bytes)){
-            if(scKey!=null){
-                String inputKey="input"+dataTool.getRandomRealTimeDataSuffix()+":"+scKey;//保存数据包到redis里面的key，格式input:{vin}
-                String receiveDataHexString=dataTool.bytes2hex(bytes);
-                socketRedis.pushListString(inputKey, receiveDataHexString,-1);
+            if (vin != null) {
+                String inputKey = "input" + dataTool.getRandomRealTimeDataSuffix() + ":" + String.valueOf(dataType); // 保存vin和数据包到redis里面的，key格式input{suffix}:{dataType}，value格式vin:msg
+                String receiveDataHexString = dataTool.bytes2hex(bytes);
+                socketRedis.pushListString(inputKey, vin + ":" + receiveDataHexString,-1);
                 _logger.info("保存数据到Redis:" + inputKey);
-            }else{
+            } else {
                 _logger.info("未能找到对应的vin，无法保存数据!");
             }
         }
     }
-    public void saveSpecialBytesToRedis(String scKey,byte[] bytes){
-        //存储接收数据到redis 采用redis list结构，一个key对应一个list<String>
-        if(dataTool.checkByteArray(bytes)){
-            if(scKey!=null){
-                String inputKey="input"+dataTool.getWarningDataSuffix()+":"+scKey;//保存数据包到redis里面的key，格式input:{vin}
+    public void saveSpecialBytesToRedis(byte dataType, String vin, byte[] bytes){
+        //存储接收数据到redis 采用redis List（队列）结构，一个key对应一个 队列<String>
+        if (dataTool.checkByteArray(bytes)) {
+            if (vin != null) {
+                String inputKey = "input" + dataTool.getWarningDataSuffix() + ":" + String.valueOf(dataType); // 保存vin和数据包到redis里面的，key格式input{suffix}:{dataType}，value格式vin:msg
                 String receiveDataHexString=dataTool.bytes2hex(bytes);
-                socketRedis.pushListString(inputKey, receiveDataHexString,-1);
+                socketRedis.pushListString(inputKey, vin + ":" + receiveDataHexString,-1);
                 _logger.info("保存数据到Redis:" + inputKey);
-            }else{
+            } else {
                 _logger.info("未能找到对应的vin，无法保存数据!");
             }
         }

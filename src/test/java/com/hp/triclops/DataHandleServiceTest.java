@@ -18,7 +18,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by luj on 2015/9/29.
@@ -51,7 +53,9 @@ public class DataHandleServiceTest {
     public void test_saveRegularReportMes(){
         //测试固定数据保存
         String byteString="23 23 00 3D 01 56 04 BF DA 21 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 0A 00 0A 0A 00 0A 00 0A 01 00 01 64 31 32 33 34 35 31 32 33 34 35 00 0A 00 00 C0 A8 01 0B 23 28 16 ";
-        dataHandleService.saveMessage("12345678919991234",byteString);
+        List<String> msgList = new ArrayList<>();
+        msgList.add("12345678919991234:" + byteString);
+        dataHandleService.saveMessage((byte) 0x21, msgList);
     }
     @Test
     @Transactional
@@ -59,7 +63,9 @@ public class DataHandleServiceTest {
     public void test_saveRealTimeMessage(){
         //测试实时数据保存
         String byteString="23 23 00 3F 00 56 04 BF DA 22 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F 64 65 66 00 00 1E 28 C1 ";
-        dataHandleService.saveMessage("12345678919991234",byteString);
+        List<String> msgList = new ArrayList<>();
+        msgList.add("12345678919991234:" + byteString);
+        dataHandleService.saveMessage((byte) 0x22, msgList);
     }
     @Test
     @Transactional
@@ -67,7 +73,9 @@ public class DataHandleServiceTest {
     public void test_saveDataResendRealTimeMes(){
         //测试补发数据保存
         String byteString="23 23 00 3F 00 56 04 BF DA 23 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 63 00 7B 00 86 04 D2 64 65 66 67 0F 41 43 0F 64 65 66 00 00 1E 28 C0 ";
-        dataHandleService.saveMessage("12345678919991234",byteString);
+        List<String> msgList = new ArrayList<>();
+        msgList.add("12345678919991234:" + byteString);
+        dataHandleService.saveMessage((byte)0x23, msgList);
     }
     @Test
     @Transactional
@@ -75,7 +83,9 @@ public class DataHandleServiceTest {
     public void test_saveWarningMessage(){
         //测试报警数据保存
         String byteString="23 23 01 58 00 56 04 BF DA 24 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 01 01 02 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 B8 ";
-        dataHandleService.saveMessage("12345678919991234",byteString);
+        List<String> msgList = new ArrayList<>();
+        msgList.add("12345678919991234:" + byteString);
+        dataHandleService.saveMessage((byte)0x24, msgList);
     }
 
     @Test
@@ -84,7 +94,9 @@ public class DataHandleServiceTest {
     public void test_saveDataResendWarningMessage(){
         //测试补发报警数据保存
         String byteString="23 23 01 58 00 56 04 BF DA 25 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 01 01 02 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 00 64 B9 ";
-        dataHandleService.saveMessage("12345678919991234",byteString);
+        List<String> msgList = new ArrayList<>();
+        msgList.add("12345678919991234:" + byteString);
+        dataHandleService.saveMessage((byte) 0x25, msgList);
     }
 
     @Test
@@ -93,7 +105,9 @@ public class DataHandleServiceTest {
     public void test_saveFailureMessage(){
         //测试故障数据保存
         String byteString="23 23 00 3C 00 56 04 BF DA 28 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 34 00 35 36 00 00 00 37 00 38 39 00 3A 3B 3C 00 3D 3E 3F D3 ";
-        dataHandleService.saveMessage("12345678919991234",byteString);
+        List<String> msgList = new ArrayList<>();
+        msgList.add("12345678919991234:" + byteString);
+        dataHandleService.saveMessage((byte) 0x28, msgList);
     }
 
     @Test
@@ -102,7 +116,9 @@ public class DataHandleServiceTest {
     public void test_saveDataResendFailureMessage(){
         //测试补发故障数据保存
         String byteString="23 23 00 3C 00 56 04 BF DA 29 01 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 01 00 00 00 01 00 00 00 00 00 1E 41 00 00 72 1F 06 1F 00 EA 34 00 35 36 00 00 00 37 00 38 39 00 3A 3B 3C 00 3D 3E 3F D2 ";
-        dataHandleService.saveMessage("12345678919991234",byteString);
+        List<String> msgList = new ArrayList<>();
+        msgList.add("12345678919991234:" + byteString);
+        dataHandleService.saveMessage((byte)0x29, msgList);
     }
 
     @Ignore

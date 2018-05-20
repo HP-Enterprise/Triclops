@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -153,6 +154,25 @@ public class SocketRedis {
             return "null";
         }
         return this.listOpts.leftPop(key);
+    }
+
+    /**
+     * 获取键对应的值，取出后值会删除（从左边出队）
+     * @param key 键
+     * @param maxCount 取出的值的最大数量
+     * @return 键对应的值列表
+     */
+    public List<String> popListString(String key, int maxCount) {
+        List<String> list = new ArrayList<>();
+        this.listOpts = this.stringRedisTemplate.opsForList();
+        for (int i = 0; i < maxCount; i++) {
+            if (this.stringRedisTemplate.hasKey(key)) {
+                list.add(this.listOpts.leftPop(key));
+            } else {
+                break;
+            }
+        }
+        return list;
     }
 
     /**

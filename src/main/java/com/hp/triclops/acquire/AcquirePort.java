@@ -73,6 +73,9 @@ public class AcquirePort {
     @Value("${com.hp.acquire.nettySenderThreadPoolSize}")
     private int _nettySenderThreadPoolSize;//下行命令线程池
 
+    @Value("${com.hp.acquire.dataHandlerMaxCount}")
+    private int dataHandlerMaxCount;
+
     @Autowired
     SocketRedis socketRedis;
     @Autowired
@@ -113,12 +116,12 @@ public class AcquirePort {
         if(!_datahandlerDisabled){
             List<String> HandleSuffixes=dataTool.getHandleSuffix();
             if(HandleSuffixes.size()==0){
-                new DataHandler(channels, hearts, socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,_datahandlerHeartInterval,_datahandlerHeartTTL,dataTool,dataHandlerScheduledService, _serverId).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(channels, hearts, socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,_datahandlerHeartInterval,_datahandlerHeartTTL,dataTool,dataHandlerScheduledService, _serverId, dataHandlerMaxCount).start();    //netty数据处理入库线程，内部采用线程池处理数据入库
             }else if(HandleSuffixes.size()==1&&HandleSuffixes.get(0).equalsIgnoreCase("ALL")){
-                new DataHandler(channels, hearts, socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,_datahandlerHeartInterval,_datahandlerHeartTTL,dataTool,dataHandlerScheduledService, _serverId).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
+                new DataHandler(channels, hearts, socketRedis,dataHandleService,"",_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,_datahandlerHeartInterval,_datahandlerHeartTTL,dataTool,dataHandlerScheduledService, _serverId, dataHandlerMaxCount).start();    //netty实时数据处理入库线程，内部采用线程池处理数据入库
             }else{
                 for(String k:HandleSuffixes)  {
-                    new DataHandler(channels, hearts, socketRedis,dataHandleService,k,_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,_datahandlerHeartInterval,_datahandlerHeartTTL,dataTool,dataHandlerScheduledService, _serverId).start();
+                    new DataHandler(channels, hearts, socketRedis,dataHandleService,k,_datahandlerHeartbeatInterval,_datahandlerHeartbeatTTL,_datahandlerHeartInterval,_datahandlerHeartTTL,dataTool,dataHandlerScheduledService, _serverId, dataHandlerMaxCount).start();
                 }
                  //netty数据处理入库线程，内部采用线程池处理数据入库
             }

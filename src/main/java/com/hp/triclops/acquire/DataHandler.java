@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,7 +35,8 @@ public class DataHandler extends Thread{
     private int heartTTL;
     private ConcurrentHashMap<String,Channel> channels;
     private ConcurrentHashMap<String,String> hearts;
-    public DataHandler(ConcurrentHashMap<String,Channel> channels,ConcurrentHashMap<String,String> hearts, SocketRedis s,DataHandleService dataHandleService,String keySuffix,int heartbeatInterval,int heartbeatTTL,int heartInterval,int heartTTL,DataTool dt,ScheduledExecutorService scheduledService, String serverId){
+    private int dataHandlerMaxCount;
+    public DataHandler(ConcurrentHashMap<String,Channel> channels,ConcurrentHashMap<String,String> hearts, SocketRedis s,DataHandleService dataHandleService,String keySuffix,int heartbeatInterval,int heartbeatTTL,int heartInterval,int heartTTL,DataTool dt,ScheduledExecutorService scheduledService, String serverId, int dataHandlerMaxCount){
         this.channels = channels;
         this.hearts = hearts;
         this.socketRedis=s;
@@ -47,6 +49,7 @@ public class DataHandler extends Thread{
         this.dataTool=dt;
         this.scheduledService=scheduledService;
         this.serverId=serverId;
+        this.dataHandlerMaxCount = dataHandlerMaxCount;
         this._logger = LoggerFactory.getLogger(DataHandler.class);
         _logger.info(">>>>>>>>>>start data Handler handle key->:input" + keySuffix);
         if(!keySuffix.equals("")){
@@ -67,9 +70,7 @@ public class DataHandler extends Thread{
 
     public  synchronized void run()
     {
-//        long time = System.currentTimeMillis();
         while (true){
-//            long startTime = System.currentTimeMillis();
             //读取数据库中所有的数据集合
             String redisKeyFilter="input"+keySuffix+":*";
             if(keySuffix.equals("")){ //handle all input data
@@ -78,26 +79,21 @@ public class DataHandler extends Thread{
             Set<String> setKey = socketRedis.getKeysSet(redisKeyFilter);
             if(setKey.size()>0){   _logger.info(redisKeyFilter+" size:" + setKey.size()); }
             Iterator keys = setKey.iterator();
-            long middleTime = System.currentTimeMillis();
-//            _logger.info("Read redis key time:" + (middleTime - startTime));
             while (keys.hasNext()){
                 //遍历待发数据,处理
-                String k=(String)keys.next();
-                String vin=dataTool.getVinFromkey(k);
-                handleInputData(vin, k);
+                String key = (String)keys.next();
+                String dataTypeString = dataTool.getVinFromkey(key); // 这里使用的是dataType做为key（格式：input{suffix}：{key}）
+                handleInputData(Byte.valueOf(dataTypeString), key);
             }
-//            long endTime = System.currentTimeMillis();
-//            _logger.info("handleInputData time:" + (endTime - middleTime));
-//            _logger.info("Loop once time:" + (endTime - time));
-//            time = endTime;
         }
     }
 
-    public void handleInputData(String vin,String k){
-        //将input:{vin}对应的十六进制字符串解析保存入db
-        String msg =socketRedis.popListString(k);
-        _logger.info("vin>>" + vin + "|receive msg:" + msg);
-        scheduledService.schedule(new DataHandlerTask(vin, socketRedis, dataHandleService, dataTool, msg), 1, TimeUnit.MILLISECONDS);
+    public void handleInputData(byte dataType, String key) {
+        // 将input:{vin}对应的十六进制字符串解析保存入db
+//        String msg = socketRedis.popListString(key);
+//        _logger.info("dataType>>" + dataType + "|receive vin:msg>>" + msg);
+        List<String> msgList = socketRedis.popListString(key, dataHandlerMaxCount);
+        scheduledService.schedule(new DataHandlerTask(dataType, socketRedis, dataHandleService, dataTool, msgList), 1, TimeUnit.MILLISECONDS);
     }
 
     class DataHandleHeartbeat implements Runnable{
