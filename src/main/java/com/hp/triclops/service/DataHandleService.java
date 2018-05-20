@@ -108,7 +108,7 @@ public class DataHandleService {
 //                outputHexService.getWarningMessageAndSms(vin, msg, 3);
                 saveWarningMessage(msgList);
                 break;
-            case 0x25://补发报警数据0
+            case 0x25://补发报警数据
                 for (String message : msgList) {
                     String[] tmp = message.split(":");
                     String vin = tmp[0];

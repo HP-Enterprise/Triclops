@@ -19,7 +19,7 @@ com.hp.acquire:
     nettyServerThreadPoolSize: 20
     nettyServerTcpBacklog: 100000
     dataHandlerThreadPoolSize: 20
-    dataHandlerMaxCount: 100 #实时数据每次处理数据量
+    dataHandlerMaxCount: 300 #实时数据每次处理数据量
 
 #remoteControl maxDistance
 com.hp.remoteControl.maxDistance: 2000
