@@ -82,18 +82,25 @@ public class DataHandler extends Thread{
             while (keys.hasNext()){
                 //遍历待发数据,处理
                 String key = (String)keys.next();
-                String dataTypeString = dataTool.getVinFromkey(key); // 这里使用的是dataType做为key（格式：input{suffix}：{key}）
-                handleInputData(Byte.valueOf(dataTypeString), key);
+                handleInputData(key);
             }
         }
     }
 
-    public void handleInputData(byte dataType, String key) {
+    public void handleInputData(String key) {
         // 将input:{vin}对应的十六进制字符串解析保存入db
 //        String msg = socketRedis.popListString(key);
 //        _logger.info("dataType>>" + dataType + "|receive vin:msg>>" + msg);
-        List<String> msgList = socketRedis.popListString(key, dataHandlerMaxCount);
-        scheduledService.schedule(new DataHandlerTask(dataType, socketRedis, dataHandleService, dataTool, msgList), 1, TimeUnit.MILLISECONDS);
+        try {
+            List<String> msgList = socketRedis.popListString(key, dataHandlerMaxCount);
+
+            String dataTypeString = dataTool.getVinFromkey(key);
+            byte dataType = Byte.valueOf(dataTypeString);
+            scheduledService.schedule(new DataHandlerTask(dataType, socketRedis, dataHandleService, dataTool, msgList), 1, TimeUnit.MILLISECONDS);
+        } catch (Exception ex) {
+            _logger.info("这里可能读取到了VIN码");
+            ex.printStackTrace();
+        }
     }
 
     class DataHandleHeartbeat implements Runnable{
