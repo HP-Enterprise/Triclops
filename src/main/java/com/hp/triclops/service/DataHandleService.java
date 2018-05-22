@@ -169,6 +169,7 @@ public class DataHandleService {
             String vin = tmp[0];
             String msg = tmp[1];
             _logger.info("[0x21]>>保存上报的固定数据:"+msg);
+            long startTime = System.currentTimeMillis();
             ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
             DataPackage dp=conversionTBox.generate(bb);
             RegularReportMes bean=dp.loadBean(RegularReportMes.class);
@@ -192,7 +193,13 @@ public class DataHandleService {
             //ip地址转换
             rd.setEnterpriseBroadcastAddress(dataTool.getIp(bean.getEnterpriseBroadcastAddress()));
             rd.setEnterpriseBroadcastPort(bean.getEnterpriseBroadcastPort());
+            long middleTime = System.currentTimeMillis();
             regularReportDataRespository.save(rd);
+            long endTime = System.currentTimeMillis();
+            if (endTime - startTime > 100) {
+                _logger.info("saveRegularReportMes Analysis data time" + (middleTime - startTime));
+                _logger.info("saveRegularReportMes First time save time" + (endTime - middleTime));
+            }
         }
     }
 
@@ -285,6 +292,7 @@ public class DataHandleService {
             String vin = tmp[0];
             String msg = tmp[1];
             _logger.info("[0x22]>>保存上报的实时数据:" + msg);
+            long startTime = System.currentTimeMillis();
             ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
             DataPackage dp = conversionTBox.generate(bb);
             RealTimeReportMes bean = dp.loadBean(RealTimeReportMes.class);
@@ -409,7 +417,9 @@ public class DataHandleService {
             rd.setRrLockState(-200);
             rd.setBlow(-200);
             rd.setAcState(-200);
+            long middleTime = System.currentTimeMillis();
             realTimeReportDataRespository.save(rd);
+            long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
             gd.setVin(vin);
@@ -429,6 +439,11 @@ public class DataHandleService {
             long middleTime3 = System.currentTimeMillis();
             gpsDataRepository.save(gd);
             long endTime = System.currentTimeMillis();
+            if (endTime - startTime > 100) {
+                _logger.info("saveRealTimeReportMes Analysis data time" + (middleTime - startTime));
+                _logger.info("saveRealTimeReportMes First time save time" + (middleTime2 - middleTime));
+                _logger.info("saveRealTimeReportMes Second time save time" + (endTime - middleTime3));
+            }
         }
     }
 
@@ -443,6 +458,7 @@ public class DataHandleService {
             String vin = tmp[0];
             String msg = tmp[1];
             _logger.info("[0x22]>>保存上报的实时数据:" + msg);
+            long startTime = System.currentTimeMillis();
             RealTimeReportMesM82 realTimeReportMesM82 = new RealTimeReportMesM82();
             RealTimeReportMesM82 bean = realTimeReportMesM82.decode(dataTool.getByteBuf(msg));
             short vehicleModel = bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
@@ -608,8 +624,9 @@ public class DataHandleService {
             //空调ac状态
             int acState = bean.getAcState();
             rd.setAcState(acState);
-
+            long middleTime = System.currentTimeMillis();
             realTimeReportDataRespository.save(rd);
+            long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
             gd.setVin(vin);
@@ -628,6 +645,12 @@ public class DataHandleService {
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
             gpsDataRepository.save(gd);
+            long endTime = System.currentTimeMillis();
+            if (endTime - startTime > 100) {
+                _logger.info("saveRealTimeReportMesM82 Analysis data time" + (middleTime - startTime));
+                _logger.info("saveRealTimeReportMesM82 First time save time" + (middleTime2 - middleTime));
+                _logger.info("saveRealTimeReportMesM82 Second time save time" + (endTime - middleTime3));
+            }
         }
     }
 
@@ -642,6 +665,7 @@ public class DataHandleService {
             String msg = tmp[1];
             //补发数据保存
             _logger.info("[0x23]>>保存上报的补发实时数据:" + msg);
+            long startTime = System.currentTimeMillis();
             ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
             DataPackage dp = conversionTBox.generate(bb);
             DataResendRealTimeMes bean = dp.loadBean(DataResendRealTimeMes.class);
@@ -770,8 +794,9 @@ public class DataHandleService {
             rd.setRrLockState(-200);
             rd.setBlow(-200);
             rd.setAcState(-200);
-
+            long middleTime = System.currentTimeMillis();
             realTimeReportDataRespository.save(rd);
+            long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
             gd.setVin(vin);
@@ -788,7 +813,14 @@ public class DataHandleService {
             gd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
+            long middleTime3 = System.currentTimeMillis();
             gpsDataRepository.save(gd);
+            long endTime = System.currentTimeMillis();
+            if (endTime - startTime > 100) {
+                _logger.info("saveDataResendRealTimeMes Analysis data time" + (middleTime - startTime));
+                _logger.info("saveDataResendRealTimeMes First time save time" + (middleTime2 - middleTime));
+                _logger.info("saveDataResendRealTimeMes Second time save time" + (endTime - middleTime3));
+            }
         }
     }
 
@@ -803,6 +835,7 @@ public class DataHandleService {
             String msg = tmp[1];
             //补发数据保存
             _logger.info("[0x23]>>保存上报的补发实时数据:" + msg);
+            long startTime = System.currentTimeMillis();
 //        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
 //        DataPackage dp = conversionTBox.generate(bb);
 //        DataResendRealTimeMesM82 bean = dp.loadBean(DataResendRealTimeMesM82.class);
@@ -975,8 +1008,9 @@ public class DataHandleService {
             //空调ac状态
             int acState = bean.getAcState();
             rd.setAcState(acState);
-
+            long middleTime = System.currentTimeMillis();
             realTimeReportDataRespository.save(rd);
+            long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
             gd.setVin(vin);
@@ -993,13 +1027,21 @@ public class DataHandleService {
             gd.setLongitude(dataTool.getTrueLatAndLon(bean.getLongitude()));
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
+            long middleTime3 = System.currentTimeMillis();
             gpsDataRepository.save(gd);
+            long endTime = System.currentTimeMillis();
+            if (endTime - startTime > 100) {
+                _logger.info("saveDataResendRealTimeMesM82 Analysis data time" + (middleTime - startTime));
+                _logger.info("saveDataResendRealTimeMesM82 First time save time" + (middleTime2 - middleTime));
+                _logger.info("saveDataResendRealTimeMesM82 Second time save time" + (endTime - middleTime3));
+            }
         }
     }
 
     @Transactional
     public void saveWarningMessage(List<String> msgList){
         for (String message : msgList) {
+            long startTime = System.currentTimeMillis();
             String[] tmp = message.split(":");
             String vin = tmp[0];
             String msg = tmp[1];
@@ -1027,14 +1069,20 @@ public class DataHandleService {
             wd.setAtaWarning(dataTool.getWarningInfoFromByte(bean.getAtaWarning()));
             wd.setSafetyBeltCount(bean.getSafetyBeltCount());
             wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
-
+            long middleTime = System.currentTimeMillis();
             warningMessageDataRespository.save(wd);
+            long endTime = System.currentTimeMillis();
+            if (endTime - startTime > 100) {
+                _logger.info("saveWarningMessage Analysis data time" + (middleTime - startTime));
+                _logger.info("saveWarningMessage First time save time" + (endTime - middleTime));
+            }
         }
     }
 
     @Transactional
     public void saveDataResendWarningMessage(List<String> msgList){
         for (String message : msgList) {
+            long startTime = System.currentTimeMillis();
             String[] tmp = message.split(":");
             String vin = tmp[0];
             String msg = tmp[1];
@@ -1064,7 +1112,13 @@ public class DataHandleService {
             wd.setSafetyBeltCount(bean.getSafetyBeltCount());
             wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
+            long middleTime = System.currentTimeMillis();
             warningMessageDataRespository.save(wd);
+            long endTime = System.currentTimeMillis();
+            if (endTime - startTime > 100) {
+                _logger.info("saveDataResendWarningMessage Analysis data time" + (middleTime - startTime));
+                _logger.info("saveDataResendWarningMessage First time save time" + (endTime - middleTime));
+            }
         }
     }
 
