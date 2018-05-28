@@ -59,6 +59,7 @@ public class TboxService {
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByImei(imei);
         Vehicle sVehicle=null;
+        long startTime = System.currentTimeMillis();
         VehicleTBoxRelative vehicleTBoxRelative = new VehicleTBoxRelative();
         //先查询有没有记录，有记录则激活没有记录新增记录
         if(_vehicle==null){//没有车辆新增车辆
@@ -103,7 +104,7 @@ public class TboxService {
         vehicleTBoxRelative.setVin(sVehicle.getVin());
         vehicleTBoxRelative.setTboxsn(t_sn);
         vehicleTBoxRelative.setCreateTime(new Date());
-
+        long middleTime = System.currentTimeMillis();
         //更新TBox信息
         if(tb!=null){//已经存在TBox 激活TBox
             //查询该tbox激活前对应的车辆信息
@@ -169,11 +170,16 @@ public class TboxService {
             }else{
                 _logger.info("no iccid");
             }
+            long middleTime1 = System.currentTimeMillis();
             tBoxRepository.save(tb);
-
+            long endTime = System.currentTimeMillis();
             //保存变更关系
             vehicleTboxRelativeRepository.save(vehicleTBoxRelative);
-
+            long endTime1 = System.currentTimeMillis();
+            _logger.info("saveVehicle data time" + (middleTime - startTime));
+            _logger.info("saveunicom data  time" + (middleTime1 - middleTime));
+            _logger.info("savetbox  time save time" + (endTime - middleTime1));
+            _logger.info("save vehicleTboxRelativeRepository  time" + (endTime1 - endTime));
             return true;
         }else{//不存在TBox 新增TBox
             TBoxEx tBox=new TBoxEx();
@@ -232,22 +238,28 @@ public class TboxService {
             }else{
                 _logger.info("no iccid");
             }
-
+            long middleTime1 = System.currentTimeMillis();
             tBox.setVin(vin);
             tBox.setT_sn(t_sn);
             tBox.setIs_activated(1);
             tBox.setImei(imei);
             tBox.setActivation_time(new Date());
             tBoxExRepository.save(tBox);
-
+            long endTime = System.currentTimeMillis();
             //保存变更关系
             vehicleTboxRelativeRepository.save(vehicleTBoxRelative);
-
+            long endTime1 = System.currentTimeMillis();
+            _logger.info("saveVehicle data time" + (middleTime - startTime));
+            _logger.info("saveunicom data  time" + (middleTime1 - middleTime));
+            _logger.info("savetbox  time save time" + (endTime - middleTime1));
+            _logger.info("save vehicleTboxRelativeRepository  time" + (endTime1 - endTime));
             //更新车辆表中的sn信息
             if(!sVehicle.getTboxsn().equals(tBox.getT_sn())){
                 sVehicle.setTboxsn(t_sn);
                 vehicleRepository.save(sVehicle);
             }
+            long endTime2 = System.currentTimeMillis();
+            _logger.info("update vehicle tbox  time" + (endTime2 - endTime1));
             return true;
         }
     }
