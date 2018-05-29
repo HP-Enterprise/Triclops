@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -56,7 +55,7 @@ public class TboxService {
         }
     }
 
-    @Transactional
+    //@Transactional
     public boolean activationTBox(String vin,Short modelId,String t_sn,String imei,String iccid){
         long startTime = System.currentTimeMillis();
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
@@ -134,7 +133,7 @@ public class TboxService {
             _logger.info(vin + " save vehicle  time" + (middleTime - startTime1));
             _logger.info(vin + " save tbox   time" + (endTime - middleTime));
             _logger.info(vin + " save vehicleTboxRelative time" + (endTime1 - endTime));
-            _logger.info(vin + "save sub total time" + (endTime1 - startTime));
+            _logger.info(vin + " save sub total time" + (endTime1 - startTime));
             return true;
         }else{//不存在TBox 新增TBox
             TBoxEx tBox=new TBoxEx();
@@ -157,8 +156,8 @@ public class TboxService {
             _logger.info(vin + " get vin and imei time" + (startTime1 - startTime));
             _logger.info(vin + " save vehicle  time" + (middleTime - startTime1));
             _logger.info(vin + " save tbox time" + (endTime - middleTime));
-            _logger.info(vin + "save vehicleTboxRelative  time" + (endTime1 - endTime));
-            _logger.info(vin + "save sub total time" + (endTime1 - startTime));
+            _logger.info(vin + " save vehicleTboxRelative  time" + (endTime1 - endTime));
+            _logger.info(vin + " save sub total time" + (endTime1 - startTime));
             //更新车辆表中的sn信息
             if(!sVehicle.getTboxsn().equals(tBox.getT_sn())){
                 sVehicle.setTboxsn(t_sn);
