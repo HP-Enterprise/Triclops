@@ -89,6 +89,7 @@ public class RequestHandler {
      */
     public String getActiveHandle(String reqString){
         //根据激活请求的16进制字符串，生成响应的16进制字符串
+        long startTime = System.currentTimeMillis();
         byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
         byte messageId=0;
         if(bytes!=null){
@@ -99,10 +100,11 @@ public class RequestHandler {
         if(messageId==0x01){
             //Active Request
             _logger.info("[0x12]收到激活请求>>>>>");
-            long startTime = System.currentTimeMillis();
+            long startTime1 = System.currentTimeMillis();
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp=conversionTBox.generate(bb);
             ActiveReq bean=dp.loadBean(ActiveReq.class);
+            long startTime2 = System.currentTimeMillis();
             //请求解析到bean
             //远程唤醒响应
            _logger.info(bean.getVin() + "|" + bean.getSerialNumber());
@@ -127,8 +129,10 @@ public class RequestHandler {
             ByteBuffer bbw=conversionTBox.generate(dpw);
             String byteStr=PackageEntityManager.getByteString(bbw);
             long endTime = System.currentTimeMillis();
-            _logger.info(bean.getVin() +" save data Time" + (middleTime - startTime));
-            _logger.info(bean.getVin() +" package Time" + (endTime - middleTime));
+            _logger.info(bean.getVin() +" prepare total Time" + (startTime - startTime1));
+            _logger.info(bean.getVin() +" get bean" + (startTime2 - startTime1));
+            _logger.info(bean.getVin() +" save data total Time" + (middleTime - startTime2));
+            _logger.info(bean.getVin() +" package total Time" + (endTime - middleTime));
             return byteStr;
         }else if(messageId==0x03){
             //Active Result
