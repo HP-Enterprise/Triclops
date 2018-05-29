@@ -76,7 +76,9 @@ public class RequestTask  implements Runnable{
                     buf=dataTool.getByteBuf(respStr);
                     ch.writeAndFlush(buf);//回发数据直接回消息
                 }
-                requestHandler.handerIccid(receiveDataHexString);
+                new Thread(()->{
+                    requestHandler.handerIccid(receiveDataHexString);
+                }).start();
                 break;
             case 0x13://注册
                 _logger.info("[0x13]收到注册请求...");
