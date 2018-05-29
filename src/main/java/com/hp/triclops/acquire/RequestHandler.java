@@ -138,6 +138,32 @@ public class RequestHandler {
     }
 
     /**
+     * @param reqString 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
+     * @return messageId=1返回处理后的resp,messageId=1返回null
+     */
+    public void handerIccid(String reqString) {
+        //根据激活请求的16进制字符串，生成响应的16进制字符串
+        byte[] bytes = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
+        byte messageId = 0;
+        if (bytes != null) {
+            if (bytes.length > 10) {
+                messageId = bytes[10];
+            }
+        }
+        if(messageId==0x01) {
+            //Active Request
+            _logger.info("[0x12]收到激活请求>>>>>");
+            long startTime = System.currentTimeMillis();
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(reqString);
+            DataPackage dp = conversionTBox.generate(bb);
+            ActiveReq bean = dp.loadBean(ActiveReq.class);
+            //请求解析到bean
+            //远程唤醒响应
+            boolean activeResult = tboxService.saveIccidPhone(bean.getVin(), bean.getImei(), bean.getIccid());//true成功 false失败
+            _logger.info(bean.getVin() + "handerIccid result:"+activeResult);
+        }
+    }
+    /**
      *
      * @param reqString 远程唤醒请求hex
      * @return 远程唤醒响应hex

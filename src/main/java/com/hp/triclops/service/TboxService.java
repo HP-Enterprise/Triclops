@@ -125,55 +125,6 @@ public class TboxService {
             tb.setVin(vin);
             tb.setT_sn(t_sn);
             tb.setVehicle(sVehicle);
-            if(iccid!=null){
-                JSONObject obj = new JSONObject();
-                obj.put("iccid", iccid);
-                //根据iccid查询手机号
-                String result = httpClientTool.doHttp("/api/terminal/getTerminalDetails", obj.toJSONString());
-                if(StringUtil.isNullOrEmpty(result)){
-                    _logger.info("没有查询到对应的手机号:" + iccid);
-                }else{
-                    JSONObject json = JSONObject.parseObject(result);
-                    String status = json.getString("status");
-                    if("success".equals(status)){
-                        JSONObject msg = json.getJSONObject("message");
-                        if(msg != null){
-                            JSONArray list = msg.getJSONArray("list");
-                            if(list != null && list.size() > 0){
-                                JSONObject info = list.getJSONObject(0);
-                                String phone = info.getString("msisdn");
-                                if(phone.length() > 12){
-                                    phone = phone.substring(2, 13);
-                                    tb.setMobile(phone);
-                                    //保存手机号到数据库
-                                    IccidPhone iccidPhone = iccidPhoneRepository.findByIccid(iccid);
-                                    if(iccidPhone == null){
-                                        iccidPhone = new IccidPhone();
-                                        iccidPhone.setIccid(iccid);
-                                        iccidPhone.setPhone(phone);
-                                        iccidPhoneRepository.save(iccidPhone);
-                                    }else if(iccidPhone != null && !phone.equals(iccidPhone.getPhone())){
-                                        iccidPhone.setPhone(phone);
-                                        iccidPhoneRepository.save(iccidPhone);
-                                    }
-                                }
-                            }
-                        }
-                    }else{
-                        _logger.info("getTerminalDetails接口调用失败:" + json.getString("message"));
-                    }
-                }
-//                IccidPhone iccidPhone=iccidPhoneRepository.findByIccid(iccid);
-//                if(iccidPhone!=null){
-//                    tb.setMobile(iccidPhone.getPhone());
-//                    _logger.info("find phone record for iccid:"+iccid+"-"+iccidPhone.getPhone());
-//                }else{
-//                    _logger.info("cann not find phone record for iccid:"+iccid);
-//                }
-            }else{
-                _logger.info("no iccid");
-            }
-            long middleTime1 = System.currentTimeMillis();
             tBoxRepository.save(tb);
             long endTime = System.currentTimeMillis();
             //保存变更关系
@@ -181,8 +132,7 @@ public class TboxService {
             long endTime1 = System.currentTimeMillis();
             _logger.info(vin + " get vin and imei time" + (startTime1 - startTime));
             _logger.info(vin + " save vehicle  time" + (middleTime - startTime));
-            _logger.info(vin + " save unicom data time" + (middleTime1 - middleTime));
-            _logger.info(vin + " save tbox   time" + (endTime - middleTime1));
+            _logger.info(vin + " save tbox   time" + (endTime - middleTime));
             _logger.info(vin + " save vehicleTboxRelative time" + (endTime1 - endTime));
             return true;
         }else{//不存在TBox 新增TBox
@@ -193,56 +143,6 @@ public class TboxService {
 //                tBox.setVid(sVehicle.getId());
 //            }
             tBox.setVid(sVehicle.getId());
-
-            if(iccid!=null){
-                JSONObject obj = new JSONObject();
-                obj.put("iccid", iccid);
-                //根据iccid查询手机号
-                String result = httpClientTool.doHttp("/api/terminal/getTerminalDetails", obj.toJSONString());
-                if(StringUtil.isNullOrEmpty(result)){
-                    _logger.info("没有查询到对应的手机号:" + iccid);
-                }else{
-                    JSONObject json = JSONObject.parseObject(result);
-                    String status = json.getString("status");
-                    if("success".equals(status)){
-                        JSONObject msg = json.getJSONObject("message");
-                        if(msg != null){
-                            JSONArray list = msg.getJSONArray("list");
-                            if(list != null && list.size() > 0){
-                                JSONObject info = list.getJSONObject(0);
-                                String phone = info.getString("msisdn");
-                                if(phone.length() > 12){
-                                    phone = phone.substring(2, 13);
-                                    tBox.setMobile(phone);
-                                    //保存手机号到数据库
-                                    IccidPhone iccidPhone = iccidPhoneRepository.findByIccid(iccid);
-                                    if(iccidPhone == null){
-                                        iccidPhone = new IccidPhone();
-                                        iccidPhone.setIccid(iccid);
-                                        iccidPhone.setPhone(phone);
-                                        iccidPhoneRepository.save(iccidPhone);
-                                    }else if(iccidPhone != null && !phone.equals(iccidPhone.getPhone())){
-                                        iccidPhone.setPhone(phone);
-                                        iccidPhoneRepository.save(iccidPhone);
-                                    }
-                                }
-                            }
-                        }
-                    }else{
-                        _logger.info("getTerminalDetails接口调用失败:" + json.getString("message"));
-                    }
-                }
-//                IccidPhone iccidPhone=iccidPhoneRepository.findByIccid(iccid);
-//                if(iccidPhone!=null){
-//                    tBox.setMobile(iccidPhone.getPhone());
-//                    _logger.info("find phone record for iccid:" + iccid + "-" + iccidPhone.getPhone());
-//                }else{
-//                    _logger.info("cann not find phone record for iccid:"+iccid);
-//                }
-            }else{
-                _logger.info("no iccid");
-            }
-            long middleTime1 = System.currentTimeMillis();
             tBox.setVin(vin);
             tBox.setT_sn(t_sn);
             tBox.setIs_activated(1);
@@ -255,8 +155,7 @@ public class TboxService {
             long endTime1 = System.currentTimeMillis();
             _logger.info(vin + " get vin and imei time" + (startTime1 - startTime));
             _logger.info(vin + " save vehicle  time" + (middleTime - startTime));
-            _logger.info(vin + " save unicom data time" + (middleTime1 - middleTime));
-            _logger.info(vin + " save tbox time" + (endTime - middleTime1));
+            _logger.info(vin + " save tbox time" + (endTime - middleTime));
             _logger.info(vin + "save vehicleTboxRelative  time" + (endTime1 - endTime));
             //更新车辆表中的sn信息
             if(!sVehicle.getTboxsn().equals(tBox.getT_sn())){
@@ -268,4 +167,56 @@ public class TboxService {
             return true;
         }
     }
+    public boolean saveIccidPhone(String vin,String imei,String iccid) {
+        long startTime = System.currentTimeMillis();
+        TBox tb=tBoxRepository.findByImei(imei);
+        if(iccid!=null){
+            JSONObject obj = new JSONObject();
+            obj.put("iccid", iccid);
+            //根据iccid查询手机号
+            String result = httpClientTool.doHttp("/api/terminal/getTerminalDetails", obj.toJSONString());
+            if(StringUtil.isNullOrEmpty(result)){
+                _logger.info("没有查询到对应的手机号:" + iccid);
+            }else{
+                JSONObject json = JSONObject.parseObject(result);
+                String status = json.getString("status");
+                if("success".equals(status)){
+                    JSONObject msg = json.getJSONObject("message");
+                    if(msg != null){
+                        JSONArray list = msg.getJSONArray("list");
+                        if(list != null && list.size() > 0){
+                            JSONObject info = list.getJSONObject(0);
+                            String phone = info.getString("msisdn");
+                            if(phone.length() > 12){
+                                phone = phone.substring(2, 13);
+                                tb.setMobile(phone);
+                                tBoxRepository.save(tb);
+                                //保存手机号到数据库
+                                IccidPhone iccidPhone = iccidPhoneRepository.findByIccid(iccid);
+                                if(iccidPhone == null){
+                                    iccidPhone = new IccidPhone();
+                                    iccidPhone.setIccid(iccid);
+                                    iccidPhone.setPhone(phone);
+                                    iccidPhoneRepository.save(iccidPhone);
+                                }else if(iccidPhone != null && !phone.equals(iccidPhone.getPhone())){
+                                    iccidPhone.setPhone(phone);
+                                    iccidPhoneRepository.save(iccidPhone);
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    _logger.info("getTerminalDetails接口调用失败:" + json.getString("message"));
+                    return false;
+                }
+            }
+        }else{
+            _logger.info("no iccid");
+            return false;
+        }
+        long endTime = System.currentTimeMillis();
+        _logger.info(vin + " save unicom data time" + (startTime - endTime));
+        return true;
+    }
+
 }
