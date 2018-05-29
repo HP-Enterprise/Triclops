@@ -96,7 +96,7 @@ public class DataHandler extends Thread{
 
             String dataTypeString = dataTool.getVinFromkey(key);
             byte dataType = Byte.valueOf(dataTypeString);
-            scheduledService.schedule(new DataHandlerTask(dataType, socketRedis, dataHandleService, dataTool, msgList), 1, TimeUnit.MILLISECONDS);
+            scheduledService.execute(new DataHandlerTask(dataType, socketRedis, dataHandleService, dataTool, msgList));
         } catch (Exception ex) {
             _logger.info("这里可能读取到了VIN码");
             ex.printStackTrace();

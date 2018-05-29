@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -55,6 +56,7 @@ public class TboxService {
         }
     }
 
+    @Transactional
     public boolean activationTBox(String vin,Short modelId,String t_sn,String imei,String iccid){
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByImei(imei);

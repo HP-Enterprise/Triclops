@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -77,7 +76,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 case 0x23://补发实时数据上报
                 case 0x24://报警数据上报
                 case 0x25://补发报警数据上报
-                    scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
                     break;
 
                 case 0x26://心跳
@@ -99,14 +99,16 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 case 0x2A://驾驶行为上报
                 case 0x31://远程控制响应(上行)包含mid 2 4 5
                 case 0x32://远程控制设置响应(上行)包含mid 2
-                    scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString));
                     break;
                 case 0x41://参数查询响应(上行)
                     _logger.info("ParamStatus Ack");
                     saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
                     break;
                 case 0x42://远程车辆诊断响应(上行)
-                    scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
                     break;
                 case 0x51://上报数据设置响应(上行)
                     _logger.info("SignalSetting Ack");
@@ -116,7 +118,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
                 case 0x54://T-Box Ftp 远程软件升级
                 case 0x55://T-Box Ftp 远程固件升级
                 case 0x61://解密失败报告
-                    scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
                     break;
                 default:
                     _logger.info("未知类型的数据，记录到日志：" + receiveDataHexString);

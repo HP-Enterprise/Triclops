@@ -87,7 +87,6 @@ public class RequestHandler {
      * @param reqString 处理激活数据，包括激活请求和激活结果，上行messageId 1或3 ，对于1下行2，对于3只接收无下行
      * @return messageId=1返回处理后的resp,messageId=1返回null
      */
-
     public String getActiveHandle(String reqString){
         //根据激活请求的16进制字符串，生成响应的16进制字符串
         byte[] bytes=dataTool.getBytesFromByteBuf(dataTool.getByteBuf(reqString));
