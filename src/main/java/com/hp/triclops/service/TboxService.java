@@ -131,9 +131,10 @@ public class TboxService {
             vehicleTboxRelativeRepository.save(vehicleTBoxRelative);
             long endTime1 = System.currentTimeMillis();
             _logger.info(vin + " get vin and imei time" + (startTime1 - startTime));
-            _logger.info(vin + " save vehicle  time" + (middleTime - startTime));
+            _logger.info(vin + " save vehicle  time" + (middleTime - startTime1));
             _logger.info(vin + " save tbox   time" + (endTime - middleTime));
             _logger.info(vin + " save vehicleTboxRelative time" + (endTime1 - endTime));
+            _logger.info(vin + "save sub total time" + (endTime1 - startTime));
             return true;
         }else{//不存在TBox 新增TBox
             TBoxEx tBox=new TBoxEx();
@@ -154,9 +155,10 @@ public class TboxService {
             vehicleTboxRelativeRepository.save(vehicleTBoxRelative);
             long endTime1 = System.currentTimeMillis();
             _logger.info(vin + " get vin and imei time" + (startTime1 - startTime));
-            _logger.info(vin + " save vehicle  time" + (middleTime - startTime));
+            _logger.info(vin + " save vehicle  time" + (middleTime - startTime1));
             _logger.info(vin + " save tbox time" + (endTime - middleTime));
             _logger.info(vin + "save vehicleTboxRelative  time" + (endTime1 - endTime));
+            _logger.info(vin + "save sub total time" + (endTime1 - startTime));
             //更新车辆表中的sn信息
             if(!sVehicle.getTboxsn().equals(tBox.getT_sn())){
                 sVehicle.setTboxsn(t_sn);
