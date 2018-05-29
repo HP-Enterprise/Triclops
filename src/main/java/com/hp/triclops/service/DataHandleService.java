@@ -162,7 +162,7 @@ public class DataHandleService {
         }
     }
 
-    @Transactional
+    //@Transactional
     public void saveRegularReportMes(List<String> msgList) {
         for (String message : msgList) {
             String[] tmp = message.split(":");
@@ -203,7 +203,7 @@ public class DataHandleService {
         }
     }
 
-    @Transactional
+    //@Transactional
     public void saveDrivingBehaviorData(List<String> msgList) {
         for (String message : msgList) {
             String[] tmp = message.split(":");
@@ -285,7 +285,7 @@ public class DataHandleService {
     /**
      * 保存非M82车型实时数据
      */
-    @Transactional
+   // @Transactional
     public void saveRealTimeReportMes(List<String> msgList){
         for (String message : msgList) {
             String[] tmp = message.split(":");
@@ -451,7 +451,7 @@ public class DataHandleService {
      * 保存M82车型实时数据
      * 协议0638
      */
-    @Transactional
+    //@Transactional
     public void saveRealTimeReportMesM82(List<String> msgList){
         for (String message : msgList) {
             String[] tmp = message.split(":");
@@ -657,7 +657,7 @@ public class DataHandleService {
     /**
      * 保存非M82车型补传实时数据
      */
-    @Transactional
+    //@Transactional
     public void saveDataResendRealTimeMes(List<String> msgList){
         for (String message : msgList) {
             String[] tmp = message.split(":");
@@ -827,7 +827,7 @@ public class DataHandleService {
     /**
      * 保存M82车型补传实时数据
      */
-    @Transactional
+    //@Transactional
     public void saveDataResendRealTimeMesM82(List<String> msgList){
         for (String message : msgList) {
             String[] tmp = message.split(":");
@@ -1038,7 +1038,7 @@ public class DataHandleService {
         }
     }
 
-    @Transactional
+    //@Transactional
     public void saveWarningMessage(List<String> msgList){
         for (String message : msgList) {
             long startTime = System.currentTimeMillis();
@@ -1079,7 +1079,7 @@ public class DataHandleService {
         }
     }
 
-    @Transactional
+    //@Transactional
     public void saveDataResendWarningMessage(List<String> msgList){
         for (String message : msgList) {
             long startTime = System.currentTimeMillis();
