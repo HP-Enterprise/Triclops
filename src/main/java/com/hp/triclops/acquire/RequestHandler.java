@@ -99,6 +99,7 @@ public class RequestHandler {
         if(messageId==0x01){
             //Active Request
             _logger.info("[0x12]收到激活请求>>>>>");
+            long startTime = System.currentTimeMillis();
             ByteBuffer bb= PackageEntityManager.getByteBuffer(reqString);
             DataPackage dp=conversionTBox.generate(bb);
             ActiveReq bean=dp.loadBean(ActiveReq.class);
@@ -106,6 +107,7 @@ public class RequestHandler {
             //远程唤醒响应
            _logger.info(bean.getVin() + "|" + bean.getSerialNumber());
             boolean activeResult=tboxService.activationTBox(bean.getVin(),bean.getVehicleModel(),bean.getSerialNumber(),bean.getImei(),bean.getIccid());//true成功 false失败
+            long middleTime = System.currentTimeMillis();
             short tBoxStatus=1; //0激活成功 1激活失败
             if(activeResult){
                 tBoxStatus=0;
@@ -124,6 +126,9 @@ public class RequestHandler {
             dpw.fillBean(resp);
             ByteBuffer bbw=conversionTBox.generate(dpw);
             String byteStr=PackageEntityManager.getByteString(bbw);
+            long endTime = System.currentTimeMillis();
+            _logger.info(bean.getVin() +" save data Time" + (middleTime - startTime));
+            _logger.info(bean.getVin() +" package Time" + (endTime - middleTime));
             return byteStr;
         }else if(messageId==0x03){
             //Active Result
