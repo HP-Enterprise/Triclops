@@ -47,7 +47,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     }
 
     @Override
-    public synchronized void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
+    public  void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
         Channel ch=ctx.channel();
         ByteBuf m = (ByteBuf) msg;
         String chKey;
