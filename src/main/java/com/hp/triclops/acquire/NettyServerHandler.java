@@ -2,7 +2,6 @@ package com.hp.triclops.acquire;
 
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.service.OutputHexService;
-import com.hp.triclops.utils.DateUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,10 +9,10 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -64,68 +63,69 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
             _logger.info(">>>>>报文非法，不处理");
         }else{
             byte dataType=dataTool.getApplicationType(receiveData);
-            switch(dataType)
-            {
-                case 0x11://电检
-                case 0x12://激活
-                case 0x13://注册
-                case 0x14://远程唤醒
-                case 0x15://流量查询请求
-                case 0x21://固定数据上报
-                case 0x22://实时数据上报
-                case 0x23://补发实时数据上报
-                case 0x24://报警数据上报
-                case 0x25://补发报警数据上报
-                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
-                    break;
-
-                case 0x26://心跳
-                    _logger.info("[0x26]收到心跳请求");
-                    chKey=geVinByAddress(ch.remoteAddress().toString());
-                    if(chKey==null){
-                        _logger.info("报文对应的连接没有注册，不处理报文");
-                        return;
-                    }
-                    String dateTime = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
-                    hearts.put(chKey, dateTime);//保存心跳时间
-                    respStr=requestHandler.getHeartbeatResp(receiveDataHexString);
-                    buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//心跳流程直接回消息
-                    break;
-                case 0x27://休眠请求
-                case 0x28://故障数据上报
-                case 0x29://补发故障数据上报
-                case 0x2A://驾驶行为上报
-                case 0x31://远程控制响应(上行)包含mid 2 4 5
-                case 0x32://远程控制设置响应(上行)包含mid 2
-                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString));
-                    break;
-                case 0x41://参数查询响应(上行)
-                    _logger.info("ParamStatus Ack");
-                    saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
-                    break;
-                case 0x42://远程车辆诊断响应(上行)
-                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
-                    break;
-                case 0x51://上报数据设置响应(上行)
-                    _logger.info("SignalSetting Ack");
-                    saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
-                    break;
-                case 0x52://参数设置响应(上行)
-                case 0x54://T-Box Ftp 远程软件升级
-                case 0x55://T-Box Ftp 远程固件升级
-                case 0x61://解密失败报告
-                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
-                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
-                    break;
-                default:
-                    _logger.info("未知类型的数据，记录到日志：" + receiveDataHexString);
-                    //一般数据，判断是否已注册，注册的数据保存
-                    break;
-            }
+            scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+//            switch(dataType)
+//            {
+//                case 0x11://电检
+//                case 0x12://激活
+//                case 0x13://注册
+//                case 0x14://远程唤醒
+//                case 0x15://流量查询请求
+//                case 0x21://固定数据上报
+//                case 0x22://实时数据上报
+//                case 0x23://补发实时数据上报
+//                case 0x24://报警数据上报
+//                case 0x25://补发报警数据上报
+//                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+//                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
+//                    break;
+//
+//                case 0x26://心跳
+//                    _logger.info("[0x26]收到心跳请求");
+//                    chKey=geVinByAddress(ch.remoteAddress().toString());
+//                    if(chKey==null){
+//                        _logger.info("报文对应的连接没有注册，不处理报文");
+//                        return;
+//                    }
+//                    String dateTime = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+//                    hearts.put(chKey, dateTime);//保存心跳时间
+//                    respStr=requestHandler.getHeartbeatResp(receiveDataHexString);
+//                    buf=dataTool.getByteBuf(respStr);
+//                    ch.writeAndFlush(buf);//心跳流程直接回消息
+//                    break;
+//                case 0x27://休眠请求
+//                case 0x28://故障数据上报
+//                case 0x29://补发故障数据上报
+//                case 0x2A://驾驶行为上报
+//                case 0x31://远程控制响应(上行)包含mid 2 4 5
+//                case 0x32://远程控制设置响应(上行)包含mid 2
+//                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+//                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService,serverId, receiveDataHexString));
+//                    break;
+//                case 0x41://参数查询响应(上行)
+//                    _logger.info("ParamStatus Ack");
+//                    saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+//                    break;
+//                case 0x42://远程车辆诊断响应(上行)
+//                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+//                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance, ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
+//                    break;
+//                case 0x51://上报数据设置响应(上行)
+//                    _logger.info("SignalSetting Ack");
+//                    saveBytesToRedis(geVinByAddress(ch.remoteAddress().toString()), receiveData);
+//                    break;
+//                case 0x52://参数设置响应(上行)
+//                case 0x54://T-Box Ftp 远程软件升级
+//                case 0x55://T-Box Ftp 远程固件升级
+//                case 0x61://解密失败报告
+//                    //scheduledService.schedule(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString), 1, TimeUnit.MILLISECONDS);
+//                    scheduledService.execute(new RequestTask(channels, connections, hearts, maxDistance,ch, socketRedis, dataTool, requestHandler, outputHexService, serverId,receiveDataHexString));
+//                    break;
+//                default:
+//                    _logger.info("未知类型的数据，记录到日志：" + receiveDataHexString);
+//                    //一般数据，判断是否已注册，注册的数据保存
+//                    break;
+//            }
         }
     }
     @Override

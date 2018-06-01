@@ -74,7 +74,13 @@ public class RequestTask  implements Runnable{
                 if(respStr!=null){
                     //如果是激活请求，会有messageId=2的响应，如果是激活结果 没有响应
                     buf=dataTool.getByteBuf(respStr);
-                    ch.writeAndFlush(buf);//回发数据直接回消息
+                    ChannelFuture future =  ch.writeAndFlush(buf);//回发数据直接回消息
+                    future.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+                            _logger.info("[0x12]激活请求完成回复....");
+                        }
+                    });
                 }
                 new Thread(()->{
                     requestHandler.handerIccid(receiveDataHexString);

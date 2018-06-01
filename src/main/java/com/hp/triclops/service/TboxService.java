@@ -157,14 +157,14 @@ public class TboxService {
             _logger.info(vin + " save vehicle  time" + (middleTime - startTime1));
             _logger.info(vin + " save tbox time" + (endTime - middleTime));
             _logger.info(vin + " save vehicleTboxRelative  time" + (endTime1 - endTime));
-            _logger.info(vin + " save sub total time" + (endTime1 - startTime));
             //更新车辆表中的sn信息
             if(!sVehicle.getTboxsn().equals(tBox.getT_sn())){
                 sVehicle.setTboxsn(t_sn);
                 vehicleRepository.save(sVehicle);
             }
             long endTime2 = System.currentTimeMillis();
-            _logger.info(vin +"update vehicle tbox  time" + (endTime2 - endTime1));
+            _logger.info(vin +" update vehicle tbox  time" + (endTime2 - endTime1));
+            _logger.info(vin + " save sub total time" + (endTime2 - startTime));
             return true;
         }
     }

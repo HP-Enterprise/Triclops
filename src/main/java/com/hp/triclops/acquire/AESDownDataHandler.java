@@ -39,6 +39,12 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
         String encodeStr=dataTool.bytes2hex(downDataFilter(sendData, ch));
         ByteBuf fire=dataTool.getByteBuf(encodeStr);
         _logger.info("发送报文 " + ch.remoteAddress() + ">>>处理:" + encodeStr);
+        promise.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                _logger.info("加密报文发送完成 " + ch.remoteAddress()  + encodeStr);
+            }
+        });
         super.write(ctx, fire, promise);
     }
 
