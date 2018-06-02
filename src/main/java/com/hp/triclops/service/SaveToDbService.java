@@ -69,7 +69,7 @@ public class SaveToDbService {
                             ps.setString(2, gpsData.getImei());
                             ps.setInt(3, gpsData.getApplicationId());
                             ps.setInt(4, gpsData.getMessageId());
-                            ps.setDate(5, new Date(gpsData.getSendingTime().getTime()));
+                            ps.setTimestamp(5, new Timestamp(gpsData.getSendingTime().getTime()));
                             ps.setInt(6, gpsData.getIsLocation());
                             ps.setString(7, gpsData.getNorthSouth());
                             ps.setString(8, gpsData.getEastWest());
