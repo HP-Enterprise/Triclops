@@ -64,8 +64,9 @@ spring:
         url: jdbc:mysql://127.0.0.1:3306/briair?characterEncoding=utf8&rewriteBatchedStatements=true
         username: javapp
         password:
+        auto-commit: true
     jpa:
-        show-sql: true
+        show-sql: false
         hibernate:
             # Hibernate DDL  auto: create, create-drop, update, validate
             ddl-auto: validate

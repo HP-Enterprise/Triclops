@@ -76,6 +76,7 @@ public class SaveToDbService {
                     String sql = "insert into t_data_gps(vin,imei,application_id,message_id,sending_time,is_location,north_south,east_west,latitude,longitude,speed,heading) " +
                             "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 
+
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -99,6 +100,8 @@ public class SaveToDbService {
                             return gpsDataList.size();
                         }
                     });
+
+
                     long endTime = System.currentTimeMillis();
                     _logger.warn("=====saveGpsData Analysis data time=====" + (endTime - startTime));
                     gpsDataQueue.offer(gpsData);
@@ -347,6 +350,8 @@ public class SaveToDbService {
                             return failureMessageDataList.size();
                         }
                     });
+
+
                     long endTime = System.currentTimeMillis();
                     _logger.warn("=====saveFailureMessageData Analysis data time=====" + (endTime - startTime));
                     failureMessageDataQueue.offer(failureMessageData);
