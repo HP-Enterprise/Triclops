@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -64,6 +65,7 @@ public class SaveToDbService {
      *
      * @param gpsData
      */
+    @Transactional
     public void saveGpsData(GpsData gpsData) {
 
         if (!gpsDataQueue.offer(gpsData)) {
@@ -116,6 +118,7 @@ public class SaveToDbService {
      *
      * @param reportData
      */
+    @Transactional
     public void saveRegularReportData(RegularReportData reportData) {
         if (!regularReportDataQueue.offer(reportData)) {
             synchronized (regularReportDataQueue) {
@@ -175,6 +178,7 @@ public class SaveToDbService {
      *
      * @param realTimeReportData
      */
+    @Transactional
     public void saveRealTimeReportData(RealTimeReportData realTimeReportData) {
         if (!realTimeReportDataQueue.offer(realTimeReportData)) {
             synchronized (realTimeReportDataQueue) {
@@ -261,6 +265,7 @@ public class SaveToDbService {
      *
      * @param warningMessageData
      */
+    @Transactional
     public void saveWarningMessageData(WarningMessageData warningMessageData) {
         if (!warningMessageDataQueue.offer(warningMessageData)) {
             synchronized (warningMessageDataQueue) {
@@ -314,6 +319,7 @@ public class SaveToDbService {
      *
      * @param failureMessageData
      */
+    @Transactional
     public void saveFailureMessageData(FailureMessageData failureMessageData) {
         if (!failureMessageDataQueue.offer(failureMessageData)) {
             synchronized (failureMessageDataQueue) {
@@ -381,6 +387,7 @@ public class SaveToDbService {
      *
      * @param drivingBehaviorData
      */
+    @Transactional
     public void saveDrivingBehaviorData(DrivingBehaviorData drivingBehaviorData) {
         if (!drivingBehaviorDataQueue.offer(drivingBehaviorData)) {
             synchronized (drivingBehaviorDataQueue) {
@@ -442,6 +449,7 @@ public class SaveToDbService {
      *
      * @param drivingBehavioOriginalData
      */
+    @Transactional
     public void saveDrivingBehaviorOriginalData(DrivingBehavioOriginalData drivingBehavioOriginalData) {
         if (!drivingBehaviorOriginalDataQueue.offer(drivingBehavioOriginalData)) {
             synchronized (drivingBehaviorOriginalDataQueue) {
