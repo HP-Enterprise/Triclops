@@ -327,8 +327,11 @@ public class SaveToDbService {
      */
     public FailureMessageData findLastFailureByVin(String vin) {
         String failureStr = socketRedis.getValueString("failure:" + vin);
-        FailureMessageData data = JSON.parseObject(failureStr, FailureMessageData.class);
-        return data;
+        if (failureStr != null) {
+            return JSON.parseObject(failureStr, FailureMessageData.class);
+        } else {
+            return null;
+        }
     }
 
     /**
