@@ -4,7 +4,7 @@ version "1.0"
 buildscript {
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        mavenCentral()
+      //  mavenCentral()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.+")
@@ -27,7 +27,7 @@ targetCompatibility = 1.8
 
 repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-    mavenCentral()
+  //  mavenCentral()
 }
 
 dependencies {
@@ -41,7 +41,7 @@ dependencies {
     compile("com.rabbitmq:amqp-client:3.5.+")
     compile("commons-lang:commons-lang:2.+")
     compile("joda-time:joda-time:2.9.+")
-    runtime("mysql:mysql-connector-java:5.1.+")
+    runtime("mysql:mysql-connector-java:5.+")
     testCompile("org.springframework.boot:spring-boot-starter-test:1.2+")
 }
 
