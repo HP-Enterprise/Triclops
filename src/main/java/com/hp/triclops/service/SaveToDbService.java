@@ -61,7 +61,10 @@ public class SaveToDbService {
                 if (!gpsDataQueue.offer(gpsData)) {
                     List<GpsData> gpsDataList = new ArrayList<>(30);
                     gpsDataQueue.drainTo(gpsDataList);
+                    long startTime = System.currentTimeMillis();
                     gpsDataRepository.save(gpsDataList);
+                    long endTime = System.currentTimeMillis();
+                    _logger.warn("saveGpsData Analysis data time" + (endTime - startTime));
                     gpsDataQueue.offer(gpsData);
                 }
             }
@@ -80,7 +83,10 @@ public class SaveToDbService {
                 if (!regularReportDataQueue.offer(reportData)) {
                     List<RegularReportData> regularReportDataList = new ArrayList<>(30);
                     regularReportDataQueue.drainTo(regularReportDataList);
+                    long startTime = System.currentTimeMillis();
                     regularReportDataRespository.save(regularReportDataList);
+                    long endTime = System.currentTimeMillis();
+                    _logger.warn("saveRegularReportData Analysis data time" + (endTime - startTime));
                     regularReportDataQueue.offer(reportData);
                 }
             }
@@ -99,7 +105,10 @@ public class SaveToDbService {
                 if (!realTimeReportDataQueue.offer(realTimeReportData)) {
                     List<RealTimeReportData> realTimeReportDataList = new ArrayList<>(30);
                     realTimeReportDataQueue.drainTo(realTimeReportDataList);
+                    long startTime = System.currentTimeMillis();
                     realTimeReportDataRespository.save(realTimeReportDataList);
+                    long endTime = System.currentTimeMillis();
+                    _logger.warn("saveRealTimeReportData Analysis data time" + (endTime - startTime));
                     realTimeReportDataQueue.offer(realTimeReportData);
                 }
             }
@@ -117,7 +126,10 @@ public class SaveToDbService {
                 if (!warningMessageDataQueue.offer(warningMessageData)) {
                     List<WarningMessageData> warningMessageDataList = new ArrayList<>(30);
                     warningMessageDataQueue.drainTo(warningMessageDataList);
+                    long startTime = System.currentTimeMillis();
                     warningMessageDataRespository.save(warningMessageDataList);
+                    long endTime = System.currentTimeMillis();
+                    _logger.warn("saveWarningMessageData Analysis data time" + (endTime - startTime));
                     warningMessageDataQueue.offer(warningMessageData);
                 }
             }
@@ -135,7 +147,10 @@ public class SaveToDbService {
                 if (!failureMessageDataQueue.offer(failureMessageData)) {
                     List<FailureMessageData> failureMessageDataList = new ArrayList<>(30);
                     failureMessageDataQueue.drainTo(failureMessageDataList);
+                    long startTime = System.currentTimeMillis();
                     failureMessageDataRespository.save(failureMessageDataList);
+                    long endTime = System.currentTimeMillis();
+                    _logger.warn("saveFailureMessageData Analysis data time" + (endTime - startTime));
                     failureMessageDataQueue.offer(failureMessageData);
                 }
             }
@@ -169,7 +184,10 @@ public class SaveToDbService {
                 if (!drivingBehaviorDataQueue.offer(drivingBehaviorData)) {
                     List<DrivingBehaviorData> drivingBehaviorDataList = new ArrayList<>(30);
                     drivingBehaviorDataQueue.drainTo(drivingBehaviorDataList);
+                    long startTime = System.currentTimeMillis();
                     drivingBehaviorDataRepository.save(drivingBehaviorDataList);
+                    long endTime = System.currentTimeMillis();
+                    _logger.warn("saveDrivingBehaviorData Analysis data time" + (endTime - startTime));
                     drivingBehaviorDataQueue.offer(drivingBehaviorData);
                 }
             }
@@ -187,7 +205,10 @@ public class SaveToDbService {
                 if (!drivingBehaviorOriginalDataQueue.offer(drivingBehavioOriginalData)) {
                     List<DrivingBehavioOriginalData> drivingBehavioOriginalDataList = new ArrayList<>(30);
                     drivingBehaviorOriginalDataQueue.drainTo(drivingBehavioOriginalDataList);
+                    long startTime = System.currentTimeMillis();
                     drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalDataList);
+                    long endTime = System.currentTimeMillis();
+                    _logger.warn("saveDrivingBehaviorOriginalData Analysis data time" + (endTime - startTime));
                     drivingBehaviorOriginalDataQueue.offer(drivingBehavioOriginalData);
                 }
             }
