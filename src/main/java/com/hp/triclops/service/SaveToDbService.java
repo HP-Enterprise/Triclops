@@ -3,12 +3,12 @@ package com.hp.triclops.service;
 import com.alibaba.fastjson.JSON;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
-import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +49,7 @@ public class SaveToDbService {
     @Autowired
     SocketRedis socketRedis;
 
+
     private Logger _logger = LoggerFactory.getLogger(SaveToDbService.class);
 
     private ArrayBlockingQueue<GpsData> gpsDataQueue = new ArrayBlockingQueue<>(30);
@@ -68,6 +69,7 @@ public class SaveToDbService {
     @Transactional
     public void saveGpsData(GpsData gpsData) {
 
+
         if (!gpsDataQueue.offer(gpsData)) {
             synchronized (gpsDataQueue) {
                 if (!gpsDataQueue.offer(gpsData)) {
@@ -76,30 +78,56 @@ public class SaveToDbService {
                     long startTime = System.currentTimeMillis();
                     //  gpsDataRepository.save(gpsDataList);
                     String sql = "insert into t_data_gps(vin,imei,application_id,message_id,sending_time,is_location,north_south,east_west,latitude,longitude,speed,heading) " +
-                            "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+                            "values(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
+                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
+                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
+                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
+                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
+                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-                    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+//                    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+//                        @Override
+//                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+//                            GpsData gpsData = gpsDataList.get(i);
+//                            ps.setString(1, gpsData.getVin());
+//                            ps.setString(2, gpsData.getImei());
+//                            ps.setInt(3, gpsData.getApplicationId());
+//                            ps.setInt(4, gpsData.getMessageId());
+//                            ps.setDate(5, new Date(gpsData.getSendingTime().getTime()));
+//                            ps.setInt(6, gpsData.getIsLocation());
+//                            ps.setString(7, gpsData.getNorthSouth());
+//                            ps.setString(8, gpsData.getEastWest());
+//                            ps.setDouble(9, gpsData.getLatitude());
+//                            ps.setDouble(10, gpsData.getLongitude());
+//                            ps.setFloat(11, gpsData.getSpeed());
+//                            ps.setInt(12, gpsData.getHeading());
+//                        }
+//
+//                        @Override
+//                        public int getBatchSize() {
+//                            return gpsDataList.size();
+//                        }
+//                    });
+
+                    jdbcTemplate.update(sql, new PreparedStatementSetter() {
                         @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            GpsData gpsData = gpsDataList.get(i);
-                            ps.setString(1, gpsData.getVin());
-                            ps.setString(2, gpsData.getImei());
-                            ps.setInt(3, gpsData.getApplicationId());
-                            ps.setInt(4, gpsData.getMessageId());
-                            ps.setDate(5, new Date(gpsData.getSendingTime().getTime()));
-                            ps.setInt(6, gpsData.getIsLocation());
-                            ps.setString(7, gpsData.getNorthSouth());
-                            ps.setString(8, gpsData.getEastWest());
-                            ps.setDouble(9, gpsData.getLatitude());
-                            ps.setDouble(10, gpsData.getLongitude());
-                            ps.setFloat(11, gpsData.getSpeed());
-                            ps.setInt(12, gpsData.getHeading());
-                        }
-
-                        @Override
-                        public int getBatchSize() {
-                            return gpsDataList.size();
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            for (int i = 0; i < 30; i++) {
+                                GpsData gpsData = gpsDataList.get(i);
+                                ps.setString(12 * i + 1, gpsData.getVin());
+                                ps.setString(12 * i + 2, gpsData.getImei());
+                                ps.setInt(12 * i + 3, gpsData.getApplicationId());
+                                ps.setInt(12 * i + 4, gpsData.getMessageId());
+                                ps.setDate(12 * i + 5, new Date(gpsData.getSendingTime().getTime()));
+                                ps.setInt(12 * i + 6, gpsData.getIsLocation());
+                                ps.setString(12 * i + 7, gpsData.getNorthSouth());
+                                ps.setString(12 * i + 8, gpsData.getEastWest());
+                                ps.setDouble(12 * i + 9, gpsData.getLatitude());
+                                ps.setDouble(12 * i + 10, gpsData.getLongitude());
+                                ps.setFloat(12 * i + 11, gpsData.getSpeed());
+                                ps.setInt(12 * i + 12, gpsData.getHeading());
+                            }
                         }
                     });
 
