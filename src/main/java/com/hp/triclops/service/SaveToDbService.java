@@ -10,11 +10,11 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -27,22 +27,6 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 @Component
 public class SaveToDbService {
-//    @Autowired
-//    GpsDataRepository gpsDataRepository;
-//    @Autowired
-//    RegularReportDataRespository regularReportDataRespository;
-//    @Autowired
-//    RealTimeReportDataRespository realTimeReportDataRespository;
-//    @Autowired
-//    WarningMessageDataRespository warningMessageDataRespository;
-//    @Autowired
-//    FailureMessageDataRespository failureMessageDataRespository;
-//    @Autowired
-//    DrivingBehaviorDataRepository drivingBehaviorDataRepository;
-//    @Autowired
-//    DrivingBehaviorOriginalDataRepository drivingBehaviorOriginalDataRepository;
-
-
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -55,8 +39,6 @@ public class SaveToDbService {
     private ArrayBlockingQueue<GpsData> gpsDataQueue = new ArrayBlockingQueue<>(30);
     private ArrayBlockingQueue<RegularReportData> regularReportDataQueue = new ArrayBlockingQueue<>(30);
     private ArrayBlockingQueue<RealTimeReportData> realTimeReportDataQueue = new ArrayBlockingQueue<>(30);
-    private ArrayBlockingQueue<WarningMessageData> warningMessageDataQueue = new ArrayBlockingQueue<>(30);
-    private ArrayBlockingQueue<FailureMessageData> failureMessageDataQueue = new ArrayBlockingQueue<>(30);
     private ArrayBlockingQueue<DrivingBehaviorData> drivingBehaviorDataQueue = new ArrayBlockingQueue<>(30);
     private ArrayBlockingQueue<DrivingBehavioOriginalData> drivingBehaviorOriginalDataQueue = new ArrayBlockingQueue<>(30);
 
@@ -66,7 +48,6 @@ public class SaveToDbService {
      *
      * @param gpsData
      */
-    @Transactional
     public void saveGpsData(GpsData gpsData) {
 
 
@@ -76,61 +57,33 @@ public class SaveToDbService {
                     List<GpsData> gpsDataList = new ArrayList<>(30);
                     gpsDataQueue.drainTo(gpsDataList);
                     long startTime = System.currentTimeMillis();
-                    //  gpsDataRepository.save(gpsDataList);
                     String sql = "insert into t_data_gps(vin,imei,application_id,message_id,sending_time,is_location,north_south,east_west,latitude,longitude,speed,heading) " +
-                            "values(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
-                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
-                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
-                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
-                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)," +
-                            "(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?,?,?,?,?)";
+                        "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-//                    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-//                        @Override
-//                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-//                            GpsData gpsData = gpsDataList.get(i);
-//                            ps.setString(1, gpsData.getVin());
-//                            ps.setString(2, gpsData.getImei());
-//                            ps.setInt(3, gpsData.getApplicationId());
-//                            ps.setInt(4, gpsData.getMessageId());
-//                            ps.setDate(5, new Date(gpsData.getSendingTime().getTime()));
-//                            ps.setInt(6, gpsData.getIsLocation());
-//                            ps.setString(7, gpsData.getNorthSouth());
-//                            ps.setString(8, gpsData.getEastWest());
-//                            ps.setDouble(9, gpsData.getLatitude());
-//                            ps.setDouble(10, gpsData.getLongitude());
-//                            ps.setFloat(11, gpsData.getSpeed());
-//                            ps.setInt(12, gpsData.getHeading());
-//                        }
-//
-//                        @Override
-//                        public int getBatchSize() {
-//                            return gpsDataList.size();
-//                        }
-//                    });
-
-                    jdbcTemplate.update(sql, new PreparedStatementSetter() {
+                    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                         @Override
-                        public void setValues(PreparedStatement ps) throws SQLException {
-                            for (int i = 0; i < 30; i++) {
-                                GpsData gpsData = gpsDataList.get(i);
-                                ps.setString(12 * i + 1, gpsData.getVin());
-                                ps.setString(12 * i + 2, gpsData.getImei());
-                                ps.setInt(12 * i + 3, gpsData.getApplicationId());
-                                ps.setInt(12 * i + 4, gpsData.getMessageId());
-                                ps.setDate(12 * i + 5, new Date(gpsData.getSendingTime().getTime()));
-                                ps.setInt(12 * i + 6, gpsData.getIsLocation());
-                                ps.setString(12 * i + 7, gpsData.getNorthSouth());
-                                ps.setString(12 * i + 8, gpsData.getEastWest());
-                                ps.setDouble(12 * i + 9, gpsData.getLatitude());
-                                ps.setDouble(12 * i + 10, gpsData.getLongitude());
-                                ps.setFloat(12 * i + 11, gpsData.getSpeed());
-                                ps.setInt(12 * i + 12, gpsData.getHeading());
-                            }
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            GpsData gpsData = gpsDataList.get(i);
+                            ps.setString(1, gpsData.getVin());
+                            ps.setString(2, gpsData.getImei());
+                            ps.setInt(3, gpsData.getApplicationId());
+                            ps.setInt(4, gpsData.getMessageId());
+                            ps.setDate(5, new Date(gpsData.getSendingTime().getTime()));
+                            ps.setInt(6, gpsData.getIsLocation());
+                            ps.setString(7, gpsData.getNorthSouth());
+                            ps.setString(8, gpsData.getEastWest());
+                            ps.setDouble(9, gpsData.getLatitude());
+                            ps.setDouble(10, gpsData.getLongitude());
+                            ps.setFloat(11, gpsData.getSpeed());
+                            ps.setInt(12, gpsData.getHeading());
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return gpsDataList.size();
                         }
                     });
-
 
                     long endTime = System.currentTimeMillis();
                     _logger.warn("=====saveGpsData Analysis data time=====" + (endTime - startTime));
@@ -146,7 +99,6 @@ public class SaveToDbService {
      *
      * @param reportData
      */
-    @Transactional
     public void saveRegularReportData(RegularReportData reportData) {
         if (!regularReportDataQueue.offer(reportData)) {
             synchronized (regularReportDataQueue) {
@@ -154,13 +106,12 @@ public class SaveToDbService {
                     List<RegularReportData> regularReportDataList = new ArrayList<>(30);
                     regularReportDataQueue.drainTo(regularReportDataList);
                     long startTime = System.currentTimeMillis();
-                    //regularReportDataRespository.save(regularReportDataList);
                     String sql = "INSERT INTO t_data_regular_report(`vin`, `imei`, `application_id`, `message_id`, `sending_time`, " +
-                            "`frequency_for_realtime_report`, `frequency_for_warning_report`, `frequency_heartbeat`, " +
-                            "`timeout_for_terminal_search`, `timeout_for_server_search`, `vehicle_type`, `vehicle_models`, " +
-                            "`max_speed`, `hardware_version`, `software_version`, `frequency_save_local_media`, " +
-                            "`enterprise_broadcast_address`, `enterprise_broadcast_port`) " +
-                            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                        "`frequency_for_realtime_report`, `frequency_for_warning_report`, `frequency_heartbeat`, " +
+                        "`timeout_for_terminal_search`, `timeout_for_server_search`, `vehicle_type`, `vehicle_models`, " +
+                        "`max_speed`, `hardware_version`, `software_version`, `frequency_save_local_media`, " +
+                        "`enterprise_broadcast_address`, `enterprise_broadcast_port`) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -171,7 +122,7 @@ public class SaveToDbService {
                             ps.setString(2, reportData.getImei());
                             ps.setInt(3, reportData.getApplicationId());
                             ps.setInt(4, reportData.getMessageId());
-                            ps.setDate(5, new Date(reportData.getSendingTime().getTime()));
+                            ps.setTimestamp(5, new Timestamp(reportData.getSendingTime().getTime()));
                             ps.setInt(6, reportData.getFrequencyForRealTimeReport());
                             ps.setInt(7, reportData.getFrequencyForWarningReport());
                             ps.setInt(8, reportData.getFrequencyHeartbeat());
@@ -206,7 +157,6 @@ public class SaveToDbService {
      *
      * @param realTimeReportData
      */
-    @Transactional
     public void saveRealTimeReportData(RealTimeReportData realTimeReportData) {
         if (!realTimeReportDataQueue.offer(realTimeReportData)) {
             synchronized (realTimeReportDataQueue) {
@@ -214,16 +164,16 @@ public class SaveToDbService {
                     List<RealTimeReportData> realTimeReportDataList = new ArrayList<>(30);
                     realTimeReportDataQueue.drainTo(realTimeReportDataList);
                     long startTime = System.currentTimeMillis();
-                    // realTimeReportDataRespository.save(realTimeReportDataList);
+
                     String sql = "INSERT INTO t_data_realtime_report(`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `driving_time`, " +
-                            "`trip_id`, `oil_life`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `driving_range`, `mileage_range`, `service_intervall`, " +
-                            "`left_front_tire_pressure`, `left_rear_tire_pressure`, `right_front_tire_pressure`, `right_rear_tire_pressure`, " +
-                            "`left_front_window_information`, `left_rear_window_information`, `right_front_window_information`, " +
-                            "`right_rear_window_information`, `vehicle_temperature`, `vehicle_outer_temperature`, `left_front_door_information`, " +
-                            "`left_rear_door_information`, `right_front_door_information`, `right_rear_door_information`, `engine_cover_state`, " +
-                            "`trunk_lid_state`, `skylight_state`, `parking_state`, `voltage`, `average_speed_a`, `average_speed_b`, " +
-                            "`mt_gear_postion`, `engine_state`, `lf_lock_state`, `lr_lock_state`, `rf_lock_state`, `rr_lock_state`, `blow`, `ac_state`)" +
-                            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                        "`trip_id`, `oil_life`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `driving_range`, `mileage_range`, `service_intervall`, " +
+                        "`left_front_tire_pressure`, `left_rear_tire_pressure`, `right_front_tire_pressure`, `right_rear_tire_pressure`, " +
+                        "`left_front_window_information`, `left_rear_window_information`, `right_front_window_information`, " +
+                        "`right_rear_window_information`, `vehicle_temperature`, `vehicle_outer_temperature`, `left_front_door_information`, " +
+                        "`left_rear_door_information`, `right_front_door_information`, `right_rear_door_information`, `engine_cover_state`, " +
+                        "`trunk_lid_state`, `skylight_state`, `parking_state`, `voltage`, `average_speed_a`, `average_speed_b`, " +
+                        "`mt_gear_postion`, `engine_state`, `lf_lock_state`, `lr_lock_state`, `rf_lock_state`, `rr_lock_state`, `blow`, `ac_state`)" +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -234,7 +184,7 @@ public class SaveToDbService {
                             ps.setString(2, realTimeReportData.getImei());
                             ps.setInt(3, realTimeReportData.getApplicationId());
                             ps.setInt(4, realTimeReportData.getMessageId());
-                            ps.setDate(5, new Date(realTimeReportData.getSendingTime().getTime()));
+                            ps.setTimestamp(5, new Timestamp(realTimeReportData.getSendingTime().getTime()));
                             ps.setInt(6, realTimeReportData.getDrivingTime());
                             ps.setInt(7, realTimeReportData.getTripId());
                             ps.setInt(8, realTimeReportData.getOilLife());
@@ -293,107 +243,78 @@ public class SaveToDbService {
      *
      * @param warningMessageData
      */
-    @Transactional
     public void saveWarningMessageData(WarningMessageData warningMessageData) {
-        if (!warningMessageDataQueue.offer(warningMessageData)) {
-            synchronized (warningMessageDataQueue) {
-                if (!warningMessageDataQueue.offer(warningMessageData)) {
-                    List<WarningMessageData> warningMessageDataList = new ArrayList<>(30);
-                    warningMessageDataQueue.drainTo(warningMessageDataList);
-                    long startTime = System.currentTimeMillis();
-                    //  warningMessageDataRespository.save(warningMessageDataList);
-                    String sql = "INSERT INTO `t_data_warning_message` (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, `speed`, `heading`, `srs_warning`, `crash_warning`, `ata_warning`, `safety_belt_count`, `vehicle_hit_speed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        long startTime = System.currentTimeMillis();
+        String sql = "INSERT INTO t_data_warning_message (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, " +
+            "`receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, " +
+            "`speed`, `heading`, `srs_warning`, `crash_warning`, `ata_warning`, `safety_belt_count`, `vehicle_hit_speed`) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-                    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            WarningMessageData warningMessageData = warningMessageDataList.get(i);
-                            ps.setString(1, warningMessageData.getVin());
-                            ps.setString(2, warningMessageData.getImei());
-                            ps.setInt(3, warningMessageData.getApplicationId());
-                            ps.setInt(4, warningMessageData.getMessageId());
-                            ps.setDate(5, new Date(warningMessageData.getSendingTime().getTime()));
-                            ps.setDate(6, new Date(warningMessageData.getReceiveTime().getTime()));
-                            ps.setInt(7, warningMessageData.getIsLocation());
-                            ps.setString(8, warningMessageData.getNorthSouth());
-                            ps.setString(9, warningMessageData.getEastWest());
-                            ps.setDouble(10, warningMessageData.getLatitude());
-                            ps.setDouble(11, warningMessageData.getLongitude());
-                            ps.setFloat(12, warningMessageData.getSpeed());
-                            ps.setInt(13, warningMessageData.getHeading());
-                            ps.setInt(14, warningMessageData.getSrsWarning());
-                            ps.setInt(15, warningMessageData.getCrashWarning());
-                            ps.setInt(16, warningMessageData.getAtaWarning());
-                            ps.setInt(17, warningMessageData.getSafetyBeltCount());
-                            ps.setInt(18, warningMessageData.getVehicleHitSpeed());
-                        }
-
-                        @Override
-                        public int getBatchSize() {
-                            return warningMessageDataList.size();
-                        }
-                    });
-                    long endTime = System.currentTimeMillis();
-                    _logger.warn("=====saveWarningMessageData Analysis data time=====" + (endTime - startTime));
-                    warningMessageDataQueue.offer(warningMessageData);
-                }
+        jdbcTemplate.update(sql, new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, warningMessageData.getVin());
+                ps.setString(2, warningMessageData.getImei());
+                ps.setInt(3, warningMessageData.getApplicationId());
+                ps.setInt(4, warningMessageData.getMessageId());
+                ps.setTimestamp(5, new Timestamp(warningMessageData.getSendingTime().getTime()));
+                ps.setTimestamp(6, new Timestamp(warningMessageData.getReceiveTime().getTime()));
+                ps.setInt(7, warningMessageData.getIsLocation());
+                ps.setString(8, warningMessageData.getNorthSouth());
+                ps.setString(9, warningMessageData.getEastWest());
+                ps.setDouble(10, warningMessageData.getLatitude());
+                ps.setDouble(11, warningMessageData.getLongitude());
+                ps.setFloat(12, warningMessageData.getSpeed());
+                ps.setInt(13, warningMessageData.getHeading());
+                ps.setInt(14, warningMessageData.getSrsWarning());
+                ps.setInt(15, warningMessageData.getCrashWarning());
+                ps.setInt(16, warningMessageData.getAtaWarning());
+                ps.setInt(17, warningMessageData.getSafetyBeltCount());
+                ps.setInt(18, warningMessageData.getVehicleHitSpeed());
             }
-        }
+        });
+
+        long endTime = System.currentTimeMillis();
+        _logger.warn("=====saveWarningMessageData Analysis data time=====" + (endTime - startTime));
     }
 
     /**
-     * 失效数据14
+     * 故障数据14
      *
      * @param failureMessageData
      */
-    @Transactional
     public void saveFailureMessageData(FailureMessageData failureMessageData) {
-        if (!failureMessageDataQueue.offer(failureMessageData)) {
-            synchronized (failureMessageDataQueue) {
-                if (!failureMessageDataQueue.offer(failureMessageData)) {
-                    List<FailureMessageData> failureMessageDataList = new ArrayList<>(30);
-                    failureMessageDataQueue.drainTo(failureMessageDataList);
-                    long startTime = System.currentTimeMillis();
-                    // failureMessageDataRespository.save(failureMessageDataList);
-                    String sql = "INSERT INTO `t_data_failure_message` (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, `speed`, `heading`, `info`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        long startTime = System.currentTimeMillis();
+        String sql = "INSERT INTO t_data_failure_message (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, " +
+            "`east_west`, `latitude`, `longitude`, `speed`, `heading`, `info`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-                    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            FailureMessageData failureMessageData = failureMessageDataList.get(i);
-                            ps.setString(1, failureMessageData.getVin());
-                            ps.setString(2, failureMessageData.getImei());
-                            ps.setInt(3, failureMessageData.getApplicationId());
-                            ps.setInt(4, failureMessageData.getMessageId());
-                            ps.setDate(5, new Date(failureMessageData.getSendingTime().getTime()));
-                            ps.setDate(6, new Date(failureMessageData.getReceiveTime().getTime()));
-                            ps.setInt(7, failureMessageData.getIsLocation());
-                            ps.setString(8, failureMessageData.getNorthSouth());
-                            ps.setString(9, failureMessageData.getEastWest());
-                            ps.setDouble(10, failureMessageData.getLatitude());
-                            ps.setDouble(11, failureMessageData.getLongitude());
-                            ps.setFloat(12, failureMessageData.getSpeed());
-                            ps.setInt(13, failureMessageData.getHeading());
-                            ps.setString(14, failureMessageData.getInfo());
-                        }
-
-                        @Override
-                        public int getBatchSize() {
-                            return failureMessageDataList.size();
-                        }
-                    });
-
-
-                    long endTime = System.currentTimeMillis();
-                    _logger.warn("=====saveFailureMessageData Analysis data time=====" + (endTime - startTime));
-                    failureMessageDataQueue.offer(failureMessageData);
-                }
+        jdbcTemplate.update(sql, new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, failureMessageData.getVin());
+                ps.setString(2, failureMessageData.getImei());
+                ps.setInt(3, failureMessageData.getApplicationId());
+                ps.setInt(4, failureMessageData.getMessageId());
+                ps.setTimestamp(5, new Timestamp(failureMessageData.getSendingTime().getTime()));
+                ps.setTimestamp(6, new Timestamp(failureMessageData.getReceiveTime().getTime()));
+                ps.setInt(7, failureMessageData.getIsLocation());
+                ps.setString(8, failureMessageData.getNorthSouth());
+                ps.setString(9, failureMessageData.getEastWest());
+                ps.setDouble(10, failureMessageData.getLatitude());
+                ps.setDouble(11, failureMessageData.getLongitude());
+                ps.setFloat(12, failureMessageData.getSpeed());
+                ps.setInt(13, failureMessageData.getHeading());
+                ps.setString(14, failureMessageData.getInfo());
             }
-        }
+        });
 
-        failureMessageDataQueue.offer(failureMessageData);
+
+        long endTime = System.currentTimeMillis();
+        _logger.warn("=====saveFailureMessageData Analysis data time=====" + (endTime - startTime));
+
         //保存最新的故障信息
         socketRedis.saveValueString("failure:" + failureMessageData.getVin(), JSON.toJSONString(failureMessageData), -1);
     }
@@ -406,7 +327,7 @@ public class SaveToDbService {
      */
     public FailureMessageData findLastFailureByVin(String vin) {
         String failureStr = socketRedis.getValueString("failure:" + vin);
-        FailureMessageData data = (FailureMessageData) JSON.parse(failureStr);
+        FailureMessageData data = JSON.parseObject(failureStr, FailureMessageData.class);
         return data;
     }
 
@@ -415,7 +336,6 @@ public class SaveToDbService {
      *
      * @param drivingBehaviorData
      */
-    @Transactional
     public void saveDrivingBehaviorData(DrivingBehaviorData drivingBehaviorData) {
         if (!drivingBehaviorDataQueue.offer(drivingBehaviorData)) {
             synchronized (drivingBehaviorDataQueue) {
@@ -423,8 +343,7 @@ public class SaveToDbService {
                     List<DrivingBehaviorData> drivingBehaviorDataList = new ArrayList<>(30);
                     drivingBehaviorDataQueue.drainTo(drivingBehaviorDataList);
                     long startTime = System.currentTimeMillis();
-                    // drivingBehaviorDataRepository.save(drivingBehaviorDataList);
-                    String sql = "INSERT INTO `t_data_driving_behavior` (`vin`, `imei`, `application_id`, `message_id`, `trip_id`, `sending_time`, `receive_time`, `speed_up`, `speed_down`, `speed_turn`, `trip_a`, `trip_b`, `seatbelt_fl`, `seatbelt_fr`, `seatbelt_rl`, `seatbelt_rm`, `seatbelt_rr`, `driving_range`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `speed_1_count`, `speed_1_45_count`, `speed_45_90_count`, `speed_90_count`, `speed_up_count`, `max_speed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                    String sql = "INSERT INTO `t_data_driving_behavior` (`vin`, `imei`, `application_id`, `message_id`, `trip_id`, `sending_time`, `receive_time`, `speed_up`, `speed_down`, `speed_turn`, `trip_a`, `trip_b`, `seatbelt_fl`, `seatbelt_fr`, `seatbelt_rl`, `seatbelt_rm`, `seatbelt_rr`, `driving_range`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `speed_1_count`, `speed_1_45_count`, `speed_45_90_count`, `speed_90_count`, `speed_up_count`, `max_speed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                         @Override
@@ -435,8 +354,8 @@ public class SaveToDbService {
                             ps.setInt(3, drivingBehaviorData.getApplicationId());
                             ps.setInt(4, drivingBehaviorData.getMessageId());
                             ps.setInt(5, drivingBehaviorData.getTripId());
-                            ps.setDate(6, new Date(drivingBehaviorData.getSendingTime().getTime()));
-                            ps.setDate(7, new Date(drivingBehaviorData.getReceiveTime().getTime()));
+                            ps.setTimestamp(5, new Timestamp(drivingBehaviorData.getSendingTime().getTime()));
+                            ps.setTimestamp(6, new Timestamp(drivingBehaviorData.getReceiveTime().getTime()));
                             ps.setInt(8, drivingBehaviorData.getSpeedUp());
                             ps.setInt(9, drivingBehaviorData.getSpeedDown());
                             ps.setInt(10, drivingBehaviorData.getSpeedTurn());
@@ -477,7 +396,6 @@ public class SaveToDbService {
      *
      * @param drivingBehavioOriginalData
      */
-    @Transactional
     public void saveDrivingBehaviorOriginalData(DrivingBehavioOriginalData drivingBehavioOriginalData) {
         if (!drivingBehaviorOriginalDataQueue.offer(drivingBehavioOriginalData)) {
             synchronized (drivingBehaviorOriginalDataQueue) {
@@ -485,8 +403,7 @@ public class SaveToDbService {
                     List<DrivingBehavioOriginalData> drivingBehavioOriginalDataList = new ArrayList<>(30);
                     drivingBehaviorOriginalDataQueue.drainTo(drivingBehavioOriginalDataList);
                     long startTime = System.currentTimeMillis();
-                    //  drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalDataList);
-                    String sql = "INSERT INTO `t_data_original_driving_behavior` (`vin`, `imei`, `hex_string`, `receive_time`) VALUES (?, ?, ?, ?);";
+                    String sql = "INSERT INTO `t_data_original_driving_behavior` (`vin`, `imei`, `hex_string`, `receive_time`) VALUES (?, ?, ?, ?)";
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                         @Override
@@ -495,7 +412,7 @@ public class SaveToDbService {
                             ps.setString(1, drivingBehavioOriginalData.getVin());
                             ps.setString(2, drivingBehavioOriginalData.getImei());
                             ps.setString(3, drivingBehavioOriginalData.getHexString());
-                            ps.setDate(4, new Date(drivingBehavioOriginalData.getReceiveTime().getTime()));
+                            ps.setTimestamp(4, new Timestamp(drivingBehavioOriginalData.getReceiveTime().getTime()));
                         }
 
                         @Override
