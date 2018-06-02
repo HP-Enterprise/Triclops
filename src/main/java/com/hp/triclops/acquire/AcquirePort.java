@@ -87,7 +87,7 @@ public class AcquirePort {
     @Autowired
     OutputHexService outputHexService;
 
-    private Logger _logger= LoggerFactory.getLogger(AcquirePort.class);;
+    private Logger _logger= LoggerFactory.getLogger(AcquirePort.class);
 
     private Selector selector = null;
 

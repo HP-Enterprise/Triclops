@@ -4,6 +4,7 @@
 *.log
 build/
 /*.properties
+out/
 
 /src/*/resources/application-*.properties
 /src/*/resources/application-*.yml

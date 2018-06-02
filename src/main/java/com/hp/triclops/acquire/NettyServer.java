@@ -26,35 +26,37 @@ public class NettyServer {
     private int port;
     private SocketRedis socketRedis;
     private DataTool dataTool;
-    private ConcurrentHashMap<String,Channel> channels;
-    private ConcurrentHashMap<String,String> connections;
-    private ConcurrentHashMap<String,String> hearts;
+    private ConcurrentHashMap<String, Channel> channels;
+    private ConcurrentHashMap<String, String> connections;
+    private ConcurrentHashMap<String, String> hearts;
     private RequestHandler requestHandler;
     private OutputHexService outputHexService;
     private Logger _logger;
-    private  ScheduledExecutorService scheduledService;
+    private ScheduledExecutorService scheduledService;
     private int backlog;
     private int maxDistance;
     private String serverId;
 
-    public NettyServer(ConcurrentHashMap<String, Channel> cs,ConcurrentHashMap<String, String> connections,ConcurrentHashMap<String, String> hearts,int maxDistance,int _backlog,SocketRedis s,DataTool dt,RequestHandler rh,OutputHexService ohs,int port,String serverId,ScheduledExecutorService scheduledService) {
-        this.channels=cs;
-        this.connections=connections;
-        this.hearts=hearts;
-        this.maxDistance=maxDistance;
-        this.backlog=_backlog;
-        this.socketRedis=s;
-        this.dataTool=dt;
-        this.requestHandler=rh;
-        this.outputHexService=ohs;
+    public NettyServer(ConcurrentHashMap<String, Channel> cs, ConcurrentHashMap<String, String> connections, ConcurrentHashMap<String, String> hearts, int maxDistance, int _backlog, SocketRedis s, DataTool dt, RequestHandler rh, OutputHexService ohs, int port, String serverId, ScheduledExecutorService scheduledService) {
+        this.channels = cs;
+        this.connections = connections;
+        this.hearts = hearts;
+        this.maxDistance = maxDistance;
+        this.backlog = _backlog;
+        this.socketRedis = s;
+        this.dataTool = dt;
+        this.requestHandler = rh;
+        this.outputHexService = ohs;
         this.port = port;
-        this.serverId=serverId;
-        this.scheduledService=scheduledService;
+        this.serverId = serverId;
+        this.scheduledService = scheduledService;
         this._logger = LoggerFactory.getLogger(NettyServer.class);
     }
-    static int connectionCount=0;
-    public  void run()  {
-        try{
+
+    static int connectionCount = 0;
+
+    public void run() {
+        try {
 
             EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
             EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -67,9 +69,9 @@ public class NettyServer {
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024, 2, 2, 2, 0));
-                                ch.pipeline().addLast(new AESUpDataHandler(socketRedis,connections,requestHandler,dataTool));
-                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, hearts, maxDistance,socketRedis, dataTool, requestHandler, outputHexService, serverId,scheduledService));
-                                ch.pipeline().addLast(new AESDownDataHandler(socketRedis,connections,requestHandler,dataTool));
+                                ch.pipeline().addLast(new AESUpDataHandler(socketRedis, connections, requestHandler, dataTool));
+                                ch.pipeline().addLast(new NettyServerHandler(channels, connections, hearts, maxDistance, socketRedis, dataTool, requestHandler, outputHexService, serverId, scheduledService));
+                                ch.pipeline().addLast(new AESDownDataHandler(socketRedis, connections, requestHandler, dataTool));
                                 connectionCount++;
                                 // _logger.info("real connectionCount>>>>>>>>>>>>>>>>:"+connectionCount);
                             }
@@ -89,7 +91,9 @@ public class NettyServer {
                 bossGroup.shutdownGracefully();
             }
 
-        }catch (Exception e){e.printStackTrace();_logger.info("exception:"+e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            _logger.info("exception:" + e);
         }
     }
 

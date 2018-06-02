@@ -27,9 +27,12 @@ public class DataHandlerTask implements Runnable {
         this._logger = LoggerFactory.getLogger(DataHandlerTask.class);
     }
 
-    public synchronized void run() {
+    //todo 删除synchronized
+    @Override
+    public void run() {
 //        long startTime = System.currentTimeMillis();
         handleMessageList(dataType, msgList);
+        _logger.info("======================DataHandlerTask==================");
 //        long time = System.currentTimeMillis() - startTime;
 //        if (time > 100)
 //            _logger.info("Handle msg time:" + time);
