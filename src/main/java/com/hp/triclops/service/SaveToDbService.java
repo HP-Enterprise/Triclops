@@ -354,8 +354,8 @@ public class SaveToDbService {
                             ps.setInt(3, drivingBehaviorData.getApplicationId());
                             ps.setInt(4, drivingBehaviorData.getMessageId());
                             ps.setInt(5, drivingBehaviorData.getTripId());
-                            ps.setTimestamp(5, new Timestamp(drivingBehaviorData.getSendingTime().getTime()));
-                            ps.setTimestamp(6, new Timestamp(drivingBehaviorData.getReceiveTime().getTime()));
+                            ps.setTimestamp(6, new Timestamp(drivingBehaviorData.getSendingTime().getTime()));
+                            ps.setTimestamp(7, new Timestamp(drivingBehaviorData.getReceiveTime().getTime()));
                             ps.setInt(8, drivingBehaviorData.getSpeedUp());
                             ps.setInt(9, drivingBehaviorData.getSpeedDown());
                             ps.setInt(10, drivingBehaviorData.getSpeedTurn());
