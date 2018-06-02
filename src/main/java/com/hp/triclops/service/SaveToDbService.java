@@ -109,7 +109,7 @@ public class SaveToDbService {
     }
 
     /**
-     * 额定数据表
+     * 额定数据表 18
      *
      * @param reportData
      */
@@ -188,7 +188,7 @@ public class SaveToDbService {
                             "`left_rear_door_information`, `right_front_door_information`, `right_rear_door_information`, `engine_cover_state`, " +
                             "`trunk_lid_state`, `skylight_state`, `parking_state`, `voltage`, `average_speed_a`, `average_speed_b`, " +
                             "`mt_gear_postion`, `engine_state`, `lf_lock_state`, `lr_lock_state`, `rf_lock_state`, `rr_lock_state`, `blow`, `ac_state`)" +
-                            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -254,7 +254,7 @@ public class SaveToDbService {
     }
 
     /**
-     * 报警数据表
+     * 报警数据表18
      *
      * @param warningMessageData
      */
@@ -266,7 +266,7 @@ public class SaveToDbService {
                     warningMessageDataQueue.drainTo(warningMessageDataList);
                     long startTime = System.currentTimeMillis();
                     //  warningMessageDataRespository.save(warningMessageDataList);
-                    String sql = "INSERT INTO `t_data_warning_message` (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, `speed`, `heading`, `srs_warning`, `crash_warning`, `ata_warning`, `safety_belt_count`, `vehicle_hit_speed`) VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);";
+                    String sql = "INSERT INTO `t_data_warning_message` (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, `speed`, `heading`, `srs_warning`, `crash_warning`, `ata_warning`, `safety_belt_count`, `vehicle_hit_speed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -307,7 +307,7 @@ public class SaveToDbService {
     }
 
     /**
-     * 失效数据
+     * 失效数据14
      *
      * @param failureMessageData
      */
@@ -372,7 +372,7 @@ public class SaveToDbService {
     }
 
     /**
-     * 驾驶行为原始报文数据表
+     * 驾驶行为原始报文数据表 27
      *
      * @param drivingBehaviorData
      */
@@ -433,7 +433,7 @@ public class SaveToDbService {
     }
 
     /**
-     * 驾驶行为数据表
+     * 驾驶行为数据表4
      *
      * @param drivingBehavioOriginalData
      */
@@ -445,7 +445,7 @@ public class SaveToDbService {
                     drivingBehaviorOriginalDataQueue.drainTo(drivingBehavioOriginalDataList);
                     long startTime = System.currentTimeMillis();
                     //  drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalDataList);
-                    String sql = "INSERT INTO `t_data_original_driving_behavior` (`vin`, `imei`, `hex_string`, `receive_time`) VALUES (?, ?, ?, ?, ?);";
+                    String sql = "INSERT INTO `t_data_original_driving_behavior` (`vin`, `imei`, `hex_string`, `receive_time`) VALUES (?, ?, ?, ?);";
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                         @Override
