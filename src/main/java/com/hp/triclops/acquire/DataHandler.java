@@ -70,7 +70,7 @@ public class DataHandler extends Thread {
     }
 
     //todo 删除synchronized
-    public  void run() {
+    public void run() {
         while (true) {
             //读取数据库中所有的数据集合
             String redisKeyFilter = "input" + keySuffix + ":*";
@@ -102,7 +102,6 @@ public class DataHandler extends Thread {
             String dataTypeString = dataTool.getVinFromkey(key);
             byte dataType = Byte.valueOf(dataTypeString);
             scheduledService.execute(new DataHandlerTask(dataType, socketRedis, dataHandleService, dataTool, msgList));
-            _logger.info("======================handleInputData==================");
         } catch (Exception ex) {
             _logger.info("这里可能读取到了VIN码");
             ex.printStackTrace();
@@ -120,7 +119,7 @@ public class DataHandler extends Thread {
 
         //todo 删除synchronized
         @Override
-        public   void run() {
+        public void run() {
             socketRedis.saveSetString("available-data-handler", key, ttl_seconds);
         }
     }
@@ -135,7 +134,7 @@ public class DataHandler extends Thread {
 
         //todo 删除synchronized
         @Override
-        public  void run() {
+        public void run() {
             //处理心跳数据
             Set<String> setKey = hearts.keySet();
             Date date = new Date();

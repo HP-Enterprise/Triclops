@@ -6,6 +6,7 @@ import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
+import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,37 +24,44 @@ import java.util.List;
  */
 @Component
 public class DataHandleService {
-    @Autowired
-    GpsDataRepository gpsDataRepository;
-    @Autowired
-    RegularReportDataRespository regularReportDataRespository;
-    @Autowired
-    RealTimeReportDataRespository realTimeReportDataRespository;
-    @Autowired
-    WarningMessageDataRespository warningMessageDataRespository;
-    @Autowired
-    FailureMessageDataRespository failureMessageDataRespository;
-    @Autowired
-    DrivingBehaviorDataRepository drivingBehaviorDataRepository;
-    @Autowired
-    DrivingBehaviorOriginalDataRepository drivingBehaviorOriginalDataRepository;
+    //    @Autowired
+//    GpsDataRepository gpsDataRepository;
+//    @Autowired
+//    RegularReportDataRespository regularReportDataRespository;
+//    @Autowired
+//    RealTimeReportDataRespository realTimeReportDataRespository;
+//    @Autowired
+//    WarningMessageDataRespository warningMessageDataRespository;
+//    @Autowired
+//    FailureMessageDataRespository failureMessageDataRespository;
+//    @Autowired
+//    DrivingBehaviorDataRepository drivingBehaviorDataRepository;
+//    @Autowired
+//    DrivingBehaviorOriginalDataRepository drivingBehaviorOriginalDataRepository;
     @Autowired
     OutputHexService outputHexService;
 
 
+    /**
+     * 实时数据保存
+     */
+    @Autowired
+    SaveToDbService saveToDbService;
+
+
     @Autowired
     Conversion conversionTBox;
-    private Logger _logger= LoggerFactory.getLogger(DataHandleService.class);
+    private Logger _logger = LoggerFactory.getLogger(DataHandleService.class);
 
     @Autowired
     DataTool dataTool;
-    public void saveMessage(byte dataType, List<String> msgList){
-       //数据保存，传入原始消息数据hex
-       //根据application id分析消息类型，然后调用具体的保存方法
+
+    public void saveMessage(byte dataType, List<String> msgList) {
+        //数据保存，传入原始消息数据hex
+        //根据application id分析消息类型，然后调用具体的保存方法
 //        byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
 //        byte modelType = dataTool.getModelType(receiveData);
-        switch(dataType)
-        {
+        switch (dataType) {
             case 0x21://固定数据
                 saveRegularReportMes(msgList);
                 break;
@@ -64,7 +72,7 @@ public class DataHandleService {
                     String msg = message.split(":")[1];
                     byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
                     byte modelType = dataTool.getModelType(receiveData);
-                    if(modelType == 0 || modelType == 1) {//M82车型
+                    if (modelType == 0 || modelType == 1) {//M82车型
                         carM82MessageList.add(message);
                     } else {
                         carMessageList.add(message);
@@ -81,7 +89,7 @@ public class DataHandleService {
                     String msg = message.split(":")[1];
                     byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
                     byte modelType = dataTool.getModelType(receiveData);
-                    if(modelType == 0 || modelType == 1) {//M82车型
+                    if (modelType == 0 || modelType == 1) {//M82车型
                         carM82MessageList2.add(message);
                     } else {
                         carMessageList2.add(message);
@@ -168,12 +176,12 @@ public class DataHandleService {
             String[] tmp = message.split(":");
             String vin = tmp[0];
             String msg = tmp[1];
-            _logger.info("[0x21]>>保存上报的固定数据:"+msg);
+            _logger.info("[0x21]>>保存上报的固定数据:" + msg);
             long startTime = System.currentTimeMillis();
-            ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-            DataPackage dp=conversionTBox.generate(bb);
-            RegularReportMes bean=dp.loadBean(RegularReportMes.class);
-            RegularReportData rd=new RegularReportData();
+            ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
+            DataPackage dp = conversionTBox.generate(bb);
+            RegularReportMes bean = dp.loadBean(RegularReportMes.class);
+            RegularReportData rd = new RegularReportData();
             rd.setVin(vin);
             rd.setImei(bean.getImei());
             rd.setApplicationId(bean.getApplicationID());
@@ -194,7 +202,9 @@ public class DataHandleService {
             rd.setEnterpriseBroadcastAddress(dataTool.getIp(bean.getEnterpriseBroadcastAddress()));
             rd.setEnterpriseBroadcastPort(bean.getEnterpriseBroadcastPort());
             long middleTime = System.currentTimeMillis();
-            regularReportDataRespository.save(rd);
+            //   regularReportDataRespository.save(rd);
+            //========保存额定数据=============//
+            saveToDbService.saveRegularReportData(rd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveRegularReportMes Analysis data time" + (middleTime - startTime));
@@ -263,7 +273,8 @@ public class DataHandleService {
             dd.setMax_speed((short) dataTool.calcSpeedRang(bean.getSpeed(), 6));//最高车速
 
             long middleTime = System.currentTimeMillis();
-            drivingBehaviorDataRepository.save(dd);
+            //   drivingBehaviorDataRepository.save(dd);
+            saveToDbService.saveDrivingBehaviorData(dd);
             long middleTime2 = System.currentTimeMillis();
             //---保存原始驾驶行为报文数据--
             DrivingBehavioOriginalData drivingBehavioOriginalData = new DrivingBehavioOriginalData();
@@ -272,7 +283,8 @@ public class DataHandleService {
             drivingBehavioOriginalData.setHexString(msg);
             drivingBehavioOriginalData.setReceiveTime(new Date());
             long middleTime3 = System.currentTimeMillis();
-            drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalData);
+            //   drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalData);
+            saveToDbService.saveDrivingBehaviorOriginalData(drivingBehavioOriginalData);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveDrivingBehaviorData Analysis data time" + (middleTime - startTime));
@@ -285,8 +297,8 @@ public class DataHandleService {
     /**
      * 保存非M82车型实时数据
      */
-   // @Transactional
-    public void saveRealTimeReportMes(List<String> msgList){
+    // @Transactional
+    public void saveRealTimeReportMes(List<String> msgList) {
         for (String message : msgList) {
             String[] tmp = message.split(":");
             String vin = tmp[0];
@@ -418,7 +430,8 @@ public class DataHandleService {
             rd.setBlow(-200);
             rd.setAcState(-200);
             long middleTime = System.currentTimeMillis();
-            realTimeReportDataRespository.save(rd);
+            //  realTimeReportDataRespository.save(rd);
+            saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
@@ -437,7 +450,8 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            gpsDataRepository.save(gd);
+            //   gpsDataRepository.save(gd);
+            saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveRealTimeReportMes Analysis data time" + (middleTime - startTime));
@@ -452,7 +466,7 @@ public class DataHandleService {
      * 协议0638
      */
     //@Transactional
-    public void saveRealTimeReportMesM82(List<String> msgList){
+    public void saveRealTimeReportMesM82(List<String> msgList) {
         for (String message : msgList) {
             String[] tmp = message.split(":");
             String vin = tmp[0];
@@ -625,7 +639,8 @@ public class DataHandleService {
             int acState = bean.getAcState();
             rd.setAcState(acState);
             long middleTime = System.currentTimeMillis();
-            realTimeReportDataRespository.save(rd);
+            //   realTimeReportDataRespository.save(rd);
+            saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
@@ -644,7 +659,8 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            gpsDataRepository.save(gd);
+            //gpsDataRepository.save(gd);
+            saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveRealTimeReportMesM82 Analysis data time" + (middleTime - startTime));
@@ -658,7 +674,7 @@ public class DataHandleService {
      * 保存非M82车型补传实时数据
      */
     //@Transactional
-    public void saveDataResendRealTimeMes(List<String> msgList){
+    public void saveDataResendRealTimeMes(List<String> msgList) {
         for (String message : msgList) {
             String[] tmp = message.split(":");
             String vin = tmp[0];
@@ -795,7 +811,8 @@ public class DataHandleService {
             rd.setBlow(-200);
             rd.setAcState(-200);
             long middleTime = System.currentTimeMillis();
-            realTimeReportDataRespository.save(rd);
+            //realTimeReportDataRespository.save(rd);
+            saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
@@ -814,7 +831,8 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            gpsDataRepository.save(gd);
+            //   gpsDataRepository.save(gd);
+            saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveDataResendRealTimeMes Analysis data time" + (middleTime - startTime));
@@ -828,7 +846,7 @@ public class DataHandleService {
      * 保存M82车型补传实时数据
      */
     //@Transactional
-    public void saveDataResendRealTimeMesM82(List<String> msgList){
+    public void saveDataResendRealTimeMesM82(List<String> msgList) {
         for (String message : msgList) {
             String[] tmp = message.split(":");
             String vin = tmp[0];
@@ -1009,7 +1027,8 @@ public class DataHandleService {
             int acState = bean.getAcState();
             rd.setAcState(acState);
             long middleTime = System.currentTimeMillis();
-            realTimeReportDataRespository.save(rd);
+            //  realTimeReportDataRespository.save(rd);
+            saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
             GpsData gd = new GpsData();
@@ -1028,7 +1047,8 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            gpsDataRepository.save(gd);
+            //  gpsDataRepository.save(gd);
+            saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveDataResendRealTimeMesM82 Analysis data time" + (middleTime - startTime));
@@ -1039,7 +1059,7 @@ public class DataHandleService {
     }
 
     //@Transactional
-    public void saveWarningMessage(List<String> msgList){
+    public void saveWarningMessage(List<String> msgList) {
         for (String message : msgList) {
             long startTime = System.currentTimeMillis();
             String[] tmp = message.split(":");
@@ -1070,7 +1090,8 @@ public class DataHandleService {
             wd.setSafetyBeltCount(bean.getSafetyBeltCount());
             wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
             long middleTime = System.currentTimeMillis();
-            warningMessageDataRespository.save(wd);
+            //warningMessageDataRespository.save(wd);
+            saveToDbService.saveWarningMessageData(wd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveWarningMessage Analysis data time" + (middleTime - startTime));
@@ -1080,7 +1101,7 @@ public class DataHandleService {
     }
 
     //@Transactional
-    public void saveDataResendWarningMessage(List<String> msgList){
+    public void saveDataResendWarningMessage(List<String> msgList) {
         for (String message : msgList) {
             long startTime = System.currentTimeMillis();
             String[] tmp = message.split(":");
@@ -1113,7 +1134,8 @@ public class DataHandleService {
             wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
             long middleTime = System.currentTimeMillis();
-            warningMessageDataRespository.save(wd);
+            // warningMessageDataRespository.save(wd);
+            saveToDbService.saveWarningMessageData(wd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
                 _logger.info("saveDataResendWarningMessage Analysis data time" + (middleTime - startTime));
@@ -1124,33 +1146,36 @@ public class DataHandleService {
 
     /**
      * 判断是否是和最近一条故障消息内容一样
+     *
      * @param vin
      * @param msg
      * @return
      */
-    public boolean isDuplicateFailureMessage(String vin,String msg){
-        boolean result=false;
+    public boolean isDuplicateFailureMessage(String vin, String msg) {
+        boolean result = false;
         _logger.info("[0x28]>>检查是否是重复的故障数据");
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        FailureMessage bean=dp.loadBean(FailureMessage.class);
-        String info=dataTool.getFailureMesId(bean);//当前故障消息
-        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
-        if(lastData!=null){
-            if(lastData.getInfo().equals(info)){
-                result=true;
+        ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp = conversionTBox.generate(bb);
+        FailureMessage bean = dp.loadBean(FailureMessage.class);
+        String info = dataTool.getFailureMesId(bean);//当前故障消息
+        //  FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
+
+        FailureMessageData lastData = saveToDbService.findLastFailureByVin(vin);
+        if (lastData != null) {
+            if (lastData.getInfo().equals(info)) {
+                result = true;
             }
         }
         return result;
     }
 
-    public void saveFailureMessage(String vin,String msg){
+    public void saveFailureMessage(String vin, String msg) {
         //故障数据保存
-        _logger.info("[0x28]>>保存上报的故障数据:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        FailureMessage bean=dp.loadBean(FailureMessage.class);
-        FailureMessageData wd=new FailureMessageData();
+        _logger.info("[0x28]>>保存上报的故障数据:" + msg);
+        ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp = conversionTBox.generate(bb);
+        FailureMessage bean = dp.loadBean(FailureMessage.class);
+        FailureMessageData wd = new FailureMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
         wd.setApplicationId(bean.getApplicationID());
@@ -1158,7 +1183,7 @@ public class DataHandleService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         wd.setReceiveTime(new Date());
         //分解IsIsLocation信息
-        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        char[] location = dataTool.getBitsFromShort(bean.getIsLocation());
         wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
         wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
         wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
@@ -1168,37 +1193,42 @@ public class DataHandleService {
         wd.setHeading(bean.getHeading());
         wd.setInfo(dataTool.getFailureMesId(bean));
 
-        failureMessageDataRespository.save(wd);
+        //   failureMessageDataRespository.save(wd);
+
+        saveToDbService.saveFailureMessageData(wd);
     }
 
     /**
      * 判断是否是和最近一条故障消息内容一样
+     *
      * @param vin
      * @param msg
      * @return
      */
-    public boolean isDuplicateResendFailureMessage(String vin,String msg){
-        boolean result=false;
+    public boolean isDuplicateResendFailureMessage(String vin, String msg) {
+        boolean result = false;
         _logger.info("[0x29]>>检查是否是重复的补发故障数据");
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
-        String info=dataTool.getDataResendFailureMesId(bean);//当前故障消息
-        FailureMessageData lastData= failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
-        if(lastData!=null){
-            if(lastData.getInfo().equals(info)){
-                result=true;
+        ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp = conversionTBox.generate(bb);
+        DataResendFailureData bean = dp.loadBean(DataResendFailureData.class);
+        String info = dataTool.getDataResendFailureMesId(bean);//当前故障消息
+        //  FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
+        FailureMessageData lastData = saveToDbService.findLastFailureByVin(vin);
+        if (lastData != null) {
+            if (lastData.getInfo().equals(info)) {
+                result = true;
             }
         }
         return result;
     }
-    public void saveDataResendFailureMessage(String vin,String msg){
+
+    public void saveDataResendFailureMessage(String vin, String msg) {
         //补发故障数据保存
-        _logger.info("[0x29]>>保存上报的补发故障数据:"+msg);
-        ByteBuffer bb= PackageEntityManager.getByteBuffer(msg);
-        DataPackage dp=conversionTBox.generate(bb);
-        DataResendFailureData bean=dp.loadBean(DataResendFailureData.class);
-        FailureMessageData wd=new FailureMessageData();
+        _logger.info("[0x29]>>保存上报的补发故障数据:" + msg);
+        ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
+        DataPackage dp = conversionTBox.generate(bb);
+        DataResendFailureData bean = dp.loadBean(DataResendFailureData.class);
+        FailureMessageData wd = new FailureMessageData();
         wd.setVin(vin);
         wd.setImei(bean.getImei());
         wd.setApplicationId(bean.getApplicationID());
@@ -1206,7 +1236,7 @@ public class DataHandleService {
         wd.setSendingTime(dataTool.seconds2Date(bean.getSendingTime()));
         wd.setReceiveTime(new Date());
         //分解IsIsLocation信息
-        char[] location=dataTool.getBitsFromShort(bean.getIsLocation());
+        char[] location = dataTool.getBitsFromShort(bean.getIsLocation());
         wd.setIsLocation(location[7] == '0' ? (short) 0 : (short) 1);//bit0 0有效定位 1无效定位
         wd.setNorthSouth(location[6] == '0' ? "N" : "S");//bit1 0北纬 1南纬
         wd.setEastWest(location[5] == '0' ? "E" : "W");//bit2 0东经 1西经
@@ -1218,7 +1248,8 @@ public class DataHandleService {
         wd.setInfo(dataTool.getDataResendFailureMesId(bean));
 
 
-        failureMessageDataRespository.save(wd);
+        //   failureMessageDataRespository.save(wd);
+        saveToDbService.saveFailureMessageData(wd);
     }
 
 

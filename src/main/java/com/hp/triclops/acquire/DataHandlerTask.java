@@ -32,7 +32,6 @@ public class DataHandlerTask implements Runnable {
     public void run() {
 //        long startTime = System.currentTimeMillis();
         handleMessageList(dataType, msgList);
-        _logger.info("======================DataHandlerTask==================");
 //        long time = System.currentTimeMillis() - startTime;
 //        if (time > 100)
 //            _logger.info("Handle msg time:" + time);
