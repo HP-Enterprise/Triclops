@@ -6,13 +6,10 @@ import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
-import com.hp.triclops.redis.SocketRedis;
-import com.hp.triclops.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -41,10 +38,6 @@ public class DataHandleService {
     @Autowired
     OutputHexService outputHexService;
 
-
-    /**
-     * 实时数据保存
-     */
     @Autowired
     SaveToDbService saveToDbService;
 
@@ -202,8 +195,7 @@ public class DataHandleService {
             rd.setEnterpriseBroadcastAddress(dataTool.getIp(bean.getEnterpriseBroadcastAddress()));
             rd.setEnterpriseBroadcastPort(bean.getEnterpriseBroadcastPort());
             long middleTime = System.currentTimeMillis();
-            //   regularReportDataRespository.save(rd);
-            //========保存额定数据=============//
+            // regularReportDataRespository.save(rd);
             saveToDbService.saveRegularReportData(rd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -273,7 +265,7 @@ public class DataHandleService {
             dd.setMax_speed((short) dataTool.calcSpeedRang(bean.getSpeed(), 6));//最高车速
 
             long middleTime = System.currentTimeMillis();
-            //   drivingBehaviorDataRepository.save(dd);
+            // drivingBehaviorDataRepository.save(dd);
             saveToDbService.saveDrivingBehaviorData(dd);
             long middleTime2 = System.currentTimeMillis();
             //---保存原始驾驶行为报文数据--
@@ -283,7 +275,7 @@ public class DataHandleService {
             drivingBehavioOriginalData.setHexString(msg);
             drivingBehavioOriginalData.setReceiveTime(new Date());
             long middleTime3 = System.currentTimeMillis();
-            //   drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalData);
+            //drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalData);
             saveToDbService.saveDrivingBehaviorOriginalData(drivingBehavioOriginalData);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -430,7 +422,7 @@ public class DataHandleService {
             rd.setBlow(-200);
             rd.setAcState(-200);
             long middleTime = System.currentTimeMillis();
-            //  realTimeReportDataRespository.save(rd);
+            // realTimeReportDataRespository.save(rd);
             saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
@@ -450,7 +442,7 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            //   gpsDataRepository.save(gd);
+            //gpsDataRepository.save(gd);
             saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -639,7 +631,7 @@ public class DataHandleService {
             int acState = bean.getAcState();
             rd.setAcState(acState);
             long middleTime = System.currentTimeMillis();
-            //   realTimeReportDataRespository.save(rd);
+            // realTimeReportDataRespository.save(rd);
             saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
@@ -659,7 +651,7 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            //gpsDataRepository.save(gd);
+            //  gpsDataRepository.save(gd);
             saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -811,7 +803,7 @@ public class DataHandleService {
             rd.setBlow(-200);
             rd.setAcState(-200);
             long middleTime = System.currentTimeMillis();
-            //realTimeReportDataRespository.save(rd);
+            // realTimeReportDataRespository.save(rd);
             saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
@@ -831,7 +823,7 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            //   gpsDataRepository.save(gd);
+            //gpsDataRepository.save(gd);
             saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -1027,7 +1019,7 @@ public class DataHandleService {
             int acState = bean.getAcState();
             rd.setAcState(acState);
             long middleTime = System.currentTimeMillis();
-            //  realTimeReportDataRespository.save(rd);
+            // realTimeReportDataRespository.save(rd);
             saveToDbService.saveRealTimeReportData(rd);
             long middleTime2 = System.currentTimeMillis();
             //普通实时数据和位置数据分表存储
@@ -1047,7 +1039,7 @@ public class DataHandleService {
             gd.setSpeed(dataTool.getTrueSpeed(bean.getSpeed()));
             gd.setHeading(bean.getHeading());
             long middleTime3 = System.currentTimeMillis();
-            //  gpsDataRepository.save(gd);
+//            gpsDataRepository.save(gd);
             saveToDbService.saveGpsData(gd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -1090,7 +1082,7 @@ public class DataHandleService {
             wd.setSafetyBeltCount(bean.getSafetyBeltCount());
             wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
             long middleTime = System.currentTimeMillis();
-            //warningMessageDataRespository.save(wd);
+            //    warningMessageDataRespository.save(wd);
             saveToDbService.saveWarningMessageData(wd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -1134,7 +1126,7 @@ public class DataHandleService {
             wd.setVehicleHitSpeed(dataTool.getHitSpeed(bean.getVehicleSpeedLast()));
 
             long middleTime = System.currentTimeMillis();
-            // warningMessageDataRespository.save(wd);
+            //  warningMessageDataRespository.save(wd);
             saveToDbService.saveWarningMessageData(wd);
             long endTime = System.currentTimeMillis();
             if (endTime - startTime > 100) {
@@ -1158,8 +1150,7 @@ public class DataHandleService {
         DataPackage dp = conversionTBox.generate(bb);
         FailureMessage bean = dp.loadBean(FailureMessage.class);
         String info = dataTool.getFailureMesId(bean);//当前故障消息
-        //  FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
-
+        //     FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
         FailureMessageData lastData = saveToDbService.findLastFailureByVin(vin);
         if (lastData != null) {
             if (lastData.getInfo().equals(info)) {
@@ -1193,8 +1184,7 @@ public class DataHandleService {
         wd.setHeading(bean.getHeading());
         wd.setInfo(dataTool.getFailureMesId(bean));
 
-        //   failureMessageDataRespository.save(wd);
-
+//        failureMessageDataRespository.save(wd);
         saveToDbService.saveFailureMessageData(wd);
     }
 
@@ -1212,7 +1202,7 @@ public class DataHandleService {
         DataPackage dp = conversionTBox.generate(bb);
         DataResendFailureData bean = dp.loadBean(DataResendFailureData.class);
         String info = dataTool.getDataResendFailureMesId(bean);//当前故障消息
-        //  FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
+       // FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
         FailureMessageData lastData = saveToDbService.findLastFailureByVin(vin);
         if (lastData != null) {
             if (lastData.getInfo().equals(info)) {
@@ -1248,7 +1238,7 @@ public class DataHandleService {
         wd.setInfo(dataTool.getDataResendFailureMesId(bean));
 
 
-        //   failureMessageDataRespository.save(wd);
+//        failureMessageDataRespository.save(wd);
         saveToDbService.saveFailureMessageData(wd);
     }
 

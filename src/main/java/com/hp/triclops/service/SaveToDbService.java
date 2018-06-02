@@ -50,13 +50,13 @@ public class SaveToDbService {
 
     private Logger _logger = LoggerFactory.getLogger(SaveToDbService.class);
 
-    ArrayBlockingQueue<GpsData> gpsDataQueue = new ArrayBlockingQueue<>(30);
-    ArrayBlockingQueue<RegularReportData> regularReportDataQueue = new ArrayBlockingQueue<>(30);
-    ArrayBlockingQueue<RealTimeReportData> realTimeReportDataQueue = new ArrayBlockingQueue<>(30);
-    ArrayBlockingQueue<WarningMessageData> warningMessageDataQueue = new ArrayBlockingQueue<>(30);
-    ArrayBlockingQueue<FailureMessageData> failureMessageDataQueue = new ArrayBlockingQueue<>(30);
-    ArrayBlockingQueue<DrivingBehaviorData> drivingBehaviorDataQueue = new ArrayBlockingQueue<>(30);
-    ArrayBlockingQueue<DrivingBehavioOriginalData> drivingBehaviorOriginalDataQueue = new ArrayBlockingQueue<>(30);
+    private ArrayBlockingQueue<GpsData> gpsDataQueue = new ArrayBlockingQueue<>(30);
+    private ArrayBlockingQueue<RegularReportData> regularReportDataQueue = new ArrayBlockingQueue<>(30);
+    private ArrayBlockingQueue<RealTimeReportData> realTimeReportDataQueue = new ArrayBlockingQueue<>(30);
+    private ArrayBlockingQueue<WarningMessageData> warningMessageDataQueue = new ArrayBlockingQueue<>(30);
+    private ArrayBlockingQueue<FailureMessageData> failureMessageDataQueue = new ArrayBlockingQueue<>(30);
+    private ArrayBlockingQueue<DrivingBehaviorData> drivingBehaviorDataQueue = new ArrayBlockingQueue<>(30);
+    private ArrayBlockingQueue<DrivingBehavioOriginalData> drivingBehaviorOriginalDataQueue = new ArrayBlockingQueue<>(30);
 
 
     /**
@@ -179,7 +179,7 @@ public class SaveToDbService {
                     List<RealTimeReportData> realTimeReportDataList = new ArrayList<>(30);
                     realTimeReportDataQueue.drainTo(realTimeReportDataList);
                     long startTime = System.currentTimeMillis();
-                   // realTimeReportDataRespository.save(realTimeReportDataList);
+                    // realTimeReportDataRespository.save(realTimeReportDataList);
                     String sql = "INSERT INTO t_data_realtime_report(`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `driving_time`, " +
                             "`trip_id`, `oil_life`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `driving_range`, `mileage_range`, `service_intervall`, " +
                             "`left_front_tire_pressure`, `left_rear_tire_pressure`, `right_front_tire_pressure`, `right_rear_tire_pressure`, " +
@@ -265,7 +265,7 @@ public class SaveToDbService {
                     List<WarningMessageData> warningMessageDataList = new ArrayList<>(30);
                     warningMessageDataQueue.drainTo(warningMessageDataList);
                     long startTime = System.currentTimeMillis();
-                  //  warningMessageDataRespository.save(warningMessageDataList);
+                    //  warningMessageDataRespository.save(warningMessageDataList);
                     String sql = "INSERT INTO `t_data_warning_message` (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, `speed`, `heading`, `srs_warning`, `crash_warning`, `ata_warning`, `safety_belt_count`, `vehicle_hit_speed`) VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);";
 
 
@@ -318,7 +318,7 @@ public class SaveToDbService {
                     List<FailureMessageData> failureMessageDataList = new ArrayList<>(30);
                     failureMessageDataQueue.drainTo(failureMessageDataList);
                     long startTime = System.currentTimeMillis();
-                   // failureMessageDataRespository.save(failureMessageDataList);
+                    // failureMessageDataRespository.save(failureMessageDataList);
                     String sql = "INSERT INTO `t_data_failure_message` (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, `speed`, `heading`, `info`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 
@@ -383,7 +383,7 @@ public class SaveToDbService {
                     List<DrivingBehaviorData> drivingBehaviorDataList = new ArrayList<>(30);
                     drivingBehaviorDataQueue.drainTo(drivingBehaviorDataList);
                     long startTime = System.currentTimeMillis();
-                   // drivingBehaviorDataRepository.save(drivingBehaviorDataList);
+                    // drivingBehaviorDataRepository.save(drivingBehaviorDataList);
                     String sql = "INSERT INTO `t_data_driving_behavior` (`vin`, `imei`, `application_id`, `message_id`, `trip_id`, `sending_time`, `receive_time`, `speed_up`, `speed_down`, `speed_turn`, `trip_a`, `trip_b`, `seatbelt_fl`, `seatbelt_fr`, `seatbelt_rl`, `seatbelt_rm`, `seatbelt_rr`, `driving_range`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `speed_1_count`, `speed_1_45_count`, `speed_45_90_count`, `speed_90_count`, `speed_up_count`, `max_speed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -444,7 +444,7 @@ public class SaveToDbService {
                     List<DrivingBehavioOriginalData> drivingBehavioOriginalDataList = new ArrayList<>(30);
                     drivingBehaviorOriginalDataQueue.drainTo(drivingBehavioOriginalDataList);
                     long startTime = System.currentTimeMillis();
-                  //  drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalDataList);
+                    //  drivingBehaviorOriginalDataRepository.save(drivingBehavioOriginalDataList);
                     String sql = "INSERT INTO `t_data_original_driving_behavior` (`vin`, `imei`, `hex_string`, `receive_time`) VALUES (?, ?, ?, ?, ?);";
 
                     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
