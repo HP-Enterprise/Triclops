@@ -40,10 +40,25 @@ public class SaveToDbService {
 
     private Logger _logger = LoggerFactory.getLogger(SaveToDbService.class);
 
+    /**
+     * 位置数据
+     */
     private ArrayBlockingQueue<GpsData> gpsDataQueue = new ArrayBlockingQueue<>(30);
+    /**
+     * 额定数据
+     */
     private ArrayBlockingQueue<RegularReportData> regularReportDataQueue = new ArrayBlockingQueue<>(30);
+    /**
+     * 实时数据
+     */
     private ArrayBlockingQueue<RealTimeReportData> realTimeReportDataQueue = new ArrayBlockingQueue<>(30);
+    /**
+     * 驾驶行为数据
+     */
     private ArrayBlockingQueue<DrivingBehaviorData> drivingBehaviorDataQueue = new ArrayBlockingQueue<>(30);
+    /**
+     * 驾驶行为原始报文数据
+     */
     private ArrayBlockingQueue<DrivingBehavioOriginalData> drivingBehaviorOriginalDataQueue = new ArrayBlockingQueue<>(30);
 
 
@@ -54,18 +69,16 @@ public class SaveToDbService {
      */
     public void saveGpsData(GpsData gpsData) {
 
-
         if (!gpsDataQueue.offer(gpsData)) {
             synchronized (gpsDataQueue) {
                 if (!gpsDataQueue.offer(gpsData)) {
                     List<GpsData> gpsDataList = new ArrayList<>(30);
                     gpsDataQueue.drainTo(gpsDataList);
                     gpsDataQueue.offer(gpsData);
-
                     executor.execute(() -> {
                         long startTime = System.currentTimeMillis();
                         String sql = "insert into t_data_gps(vin,imei,application_id,message_id,sending_time,is_location,north_south,east_west,latitude,longitude,speed,heading) " +
-                            "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+                                "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 
                         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                             @Override
@@ -116,12 +129,11 @@ public class SaveToDbService {
                     executor.execute(() -> {
                         long startTime = System.currentTimeMillis();
                         String sql = "INSERT INTO t_data_regular_report(`vin`, `imei`, `application_id`, `message_id`, `sending_time`, " +
-                            "`frequency_for_realtime_report`, `frequency_for_warning_report`, `frequency_heartbeat`, " +
-                            "`timeout_for_terminal_search`, `timeout_for_server_search`, `vehicle_type`, `vehicle_models`, " +
-                            "`max_speed`, `hardware_version`, `software_version`, `frequency_save_local_media`, " +
-                            "`enterprise_broadcast_address`, `enterprise_broadcast_port`) " +
-                            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
+                                "`frequency_for_realtime_report`, `frequency_for_warning_report`, `frequency_heartbeat`, " +
+                                "`timeout_for_terminal_search`, `timeout_for_server_search`, `vehicle_type`, `vehicle_models`, " +
+                                "`max_speed`, `hardware_version`, `software_version`, `frequency_save_local_media`, " +
+                                "`enterprise_broadcast_address`, `enterprise_broadcast_port`) " +
+                                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
                         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                             @Override
@@ -177,15 +189,14 @@ public class SaveToDbService {
                     executor.execute(() -> {
                         long startTime = System.currentTimeMillis();
                         String sql = "INSERT INTO t_data_realtime_report(`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `driving_time`, " +
-                            "`trip_id`, `oil_life`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `driving_range`, `mileage_range`, `service_intervall`, " +
-                            "`left_front_tire_pressure`, `left_rear_tire_pressure`, `right_front_tire_pressure`, `right_rear_tire_pressure`, " +
-                            "`left_front_window_information`, `left_rear_window_information`, `right_front_window_information`, " +
-                            "`right_rear_window_information`, `vehicle_temperature`, `vehicle_outer_temperature`, `left_front_door_information`, " +
-                            "`left_rear_door_information`, `right_front_door_information`, `right_rear_door_information`, `engine_cover_state`, " +
-                            "`trunk_lid_state`, `skylight_state`, `parking_state`, `voltage`, `average_speed_a`, `average_speed_b`, " +
-                            "`mt_gear_postion`, `engine_state`, `lf_lock_state`, `lr_lock_state`, `rf_lock_state`, `rr_lock_state`, `blow`, `ac_state`)" +
-                            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
+                                "`trip_id`, `oil_life`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `driving_range`, `mileage_range`, `service_intervall`, " +
+                                "`left_front_tire_pressure`, `left_rear_tire_pressure`, `right_front_tire_pressure`, `right_rear_tire_pressure`, " +
+                                "`left_front_window_information`, `left_rear_window_information`, `right_front_window_information`, " +
+                                "`right_rear_window_information`, `vehicle_temperature`, `vehicle_outer_temperature`, `left_front_door_information`, " +
+                                "`left_rear_door_information`, `right_front_door_information`, `right_rear_door_information`, `engine_cover_state`, " +
+                                "`trunk_lid_state`, `skylight_state`, `parking_state`, `voltage`, `average_speed_a`, `average_speed_b`, " +
+                                "`mt_gear_postion`, `engine_state`, `lf_lock_state`, `lr_lock_state`, `rf_lock_state`, `rr_lock_state`, `blow`, `ac_state`)" +
+                                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
                         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                             @Override
@@ -258,9 +269,9 @@ public class SaveToDbService {
         executor.execute(() -> {
             long startTime = System.currentTimeMillis();
             String sql = "INSERT INTO t_data_warning_message (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, " +
-                "`receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, " +
-                "`speed`, `heading`, `srs_warning`, `crash_warning`, `ata_warning`, `safety_belt_count`, `vehicle_hit_speed`) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    "`receive_time`, `is_location`, `north_south`, `east_west`, `latitude`, `longitude`, " +
+                    "`speed`, `heading`, `srs_warning`, `crash_warning`, `ata_warning`, `safety_belt_count`, `vehicle_hit_speed`) " +
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             jdbcTemplate.update(sql, new PreparedStatementSetter() {
                 @Override
@@ -300,7 +311,7 @@ public class SaveToDbService {
         executor.execute(() -> {
             long startTime = System.currentTimeMillis();
             String sql = "INSERT INTO t_data_failure_message (`vin`, `imei`, `application_id`, `message_id`, `sending_time`, `receive_time`, `is_location`, `north_south`, " +
-                "`east_west`, `latitude`, `longitude`, `speed`, `heading`, `info`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    "`east_west`, `latitude`, `longitude`, `speed`, `heading`, `info`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             jdbcTemplate.update(sql, new PreparedStatementSetter() {
                 @Override
@@ -322,10 +333,10 @@ public class SaveToDbService {
                 }
             });
 
-
             long endTime = System.currentTimeMillis();
             _logger.warn("=====saveFailureMessageData Analysis data time=====" + (endTime - startTime));
         });
+
 
         //保存最新的故障信息
         socketRedis.saveValueString("failure:" + failureMessageData.getVin(), JSON.toJSONString(failureMessageData), -1);
@@ -344,10 +355,11 @@ public class SaveToDbService {
         } else {
             return null;
         }
+
     }
 
     /**
-     * 驾驶行为原始报文数据表 27
+     * 驾驶行为数据表 27
      *
      * @param drivingBehaviorData
      */
@@ -358,7 +370,6 @@ public class SaveToDbService {
                     List<DrivingBehaviorData> drivingBehaviorDataList = new ArrayList<>(30);
                     drivingBehaviorDataQueue.drainTo(drivingBehaviorDataList);
                     drivingBehaviorDataQueue.offer(drivingBehaviorData);
-
                     executor.execute(() -> {
                         long startTime = System.currentTimeMillis();
                         String sql = "INSERT INTO `t_data_driving_behavior` (`vin`, `imei`, `application_id`, `message_id`, `trip_id`, `sending_time`, `receive_time`, `speed_up`, `speed_down`, `speed_turn`, `trip_a`, `trip_b`, `seatbelt_fl`, `seatbelt_fr`, `seatbelt_rl`, `seatbelt_rm`, `seatbelt_rr`, `driving_range`, `fuel_oil`, `avg_oil_a`, `avg_oil_b`, `speed_1_count`, `speed_1_45_count`, `speed_45_90_count`, `speed_90_count`, `speed_up_count`, `max_speed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -410,7 +421,7 @@ public class SaveToDbService {
     }
 
     /**
-     * 驾驶行为数据表4
+     * 驾驶行为原始数据表4
      *
      * @param drivingBehavioOriginalData
      */
@@ -421,7 +432,6 @@ public class SaveToDbService {
                     List<DrivingBehavioOriginalData> drivingBehavioOriginalDataList = new ArrayList<>(30);
                     drivingBehaviorOriginalDataQueue.drainTo(drivingBehavioOriginalDataList);
                     drivingBehaviorOriginalDataQueue.offer(drivingBehavioOriginalData);
-
                     executor.execute(() -> {
                         long startTime = System.currentTimeMillis();
                         String sql = "INSERT INTO `t_data_original_driving_behavior` (`vin`, `imei`, `hex_string`, `receive_time`) VALUES (?, ?, ?, ?)";
