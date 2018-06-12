@@ -4,7 +4,6 @@ package com.hp.triclops.service;
  * Created by luj on 2015/10/12.
  */
 
-import com.hp.triclops.acquire.AcquirePort;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import com.hp.triclops.redis.SocketRedis;
@@ -14,7 +13,6 @@ import com.hp.triclops.utils.GpsTool;
 import com.hp.triclops.utils.Page;
 import com.hp.triclops.utils.SMSHttpTool;
 import com.hp.triclops.vo.RealTimeDataShow;
-import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

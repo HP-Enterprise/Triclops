@@ -6,6 +6,8 @@ import com.hp.data.core.DataPackage;
 import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
+import io.netty.buffer.ByteBufUtil;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +65,9 @@ public class DataHandleService {
                 List<String> carMessageList = new ArrayList<>();
                 for (String message : msgList) {
                     String msg = message.split(":")[1];
-                    byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
+                    //   byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
+                    //todo 修改byte[]转换方式
+                    byte[] receiveData = ByteBufUtil.decodeHexDump(msg.replace(" ", ""));
                     byte modelType = dataTool.getModelType(receiveData);
                     if (modelType == 0 || modelType == 1) {//M82车型
                         carM82MessageList.add(message);
@@ -80,7 +84,9 @@ public class DataHandleService {
                 List<String> carMessageList2 = new ArrayList<>();
                 for (String message : msgList) {
                     String msg = message.split(":")[1];
-                    byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
+                    //byte[] receiveData = dataTool.getBytesFromByteBuf(dataTool.getByteBuf(msg));
+                    //todo 修改byte[]转换方式
+                    byte[] receiveData = ByteBufUtil.decodeHexDump(msg.replace(" ", ""));
                     byte modelType = dataTool.getModelType(receiveData);
                     if (modelType == 0 || modelType == 1) {//M82车型
                         carM82MessageList2.add(message);
@@ -1202,7 +1208,7 @@ public class DataHandleService {
         DataPackage dp = conversionTBox.generate(bb);
         DataResendFailureData bean = dp.loadBean(DataResendFailureData.class);
         String info = dataTool.getDataResendFailureMesId(bean);//当前故障消息
-       // FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
+        // FailureMessageData lastData = failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
         FailureMessageData lastData = saveToDbService.findLastFailureByVin(vin);
         if (lastData != null) {
             if (lastData.getInfo().equals(info)) {
