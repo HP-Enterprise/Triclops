@@ -12,6 +12,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.ResourceLeakDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +67,8 @@ public class NettyServer {
             try {
                 ServerBootstrap b = new ServerBootstrap(); // (2)
                 b.group(bossGroup, workerGroup)
-                        .channel(NioServerSocketChannel.class) // (3)
+                        .channel(NioServerSocketChannel.class)
+//                        .handler(new LoggingHandler(LogLevel.INFO)) // (3)
                         .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                             @Override
                             public void initChannel(SocketChannel ch) throws Exception {
@@ -78,7 +82,7 @@ public class NettyServer {
                         })
                         .option(ChannelOption.SO_BACKLOG, backlog)          // (5)
                         .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
-
+                //ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
                 // Bind and start to accept incoming connections.
                 ChannelFuture f = b.bind(port).sync(); // (7)
 

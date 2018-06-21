@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.util.ResourceLeakDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +56,12 @@ public class RequestTask  implements Runnable{
         //_logger.info("handle request:" + receiveDataHexString);
         byte[] receiveData=dataTool.getBytesFromByteBuffer(dataTool.getByteBuffer(receiveDataHexString));
         byte dataType=dataTool.getApplicationType(receiveData);
+
         String chKey;
         String respStr;
         ByteBuf buf;
+
+//        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
         switch(dataType)
         {
             case 0x11://电检

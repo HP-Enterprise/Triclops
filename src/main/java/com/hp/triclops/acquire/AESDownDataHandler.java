@@ -3,8 +3,10 @@ package com.hp.triclops.acquire;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.utils.AES128Tool;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ResourceLeakDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,10 @@ public class AESDownDataHandler extends ChannelOutboundHandlerAdapter {
         ByteBuf m = (ByteBuf) msg;
 //        byte[] sendData=dataTool.getBytesFromByteBuf(m.copy());
         try {
-            byte[] sendData = dataTool.getBytesFromByteBuf(m);
+//            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
+           // byte[] sendData = dataTool.getBytesFromByteBuf(m);
+            byte[] sendData = new byte[m.readableBytes()];
+            m.readBytes(sendData);
             String sendDataHexString = dataTool.bytes2hex(sendData);
             _logger.info("发送报文 " + ch.remoteAddress() + ">>>原始:" + sendDataHexString);
             String encodeStr = dataTool.bytes2hex(downDataFilter(sendData, ch));

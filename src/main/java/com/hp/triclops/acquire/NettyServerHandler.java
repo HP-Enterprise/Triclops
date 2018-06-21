@@ -7,6 +7,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ResourceLeakDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
 //        String respStr;
 //        ByteBuf buf;
         //将缓冲区的数据读出到byte[]
-
+//        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
         try {
             byte[] receiveData = dataTool.getBytesFromByteBuf(m);
 

@@ -6,10 +6,13 @@ import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.redis.SocketRedis;
 import com.hp.triclops.utils.AES128Tool;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ResourceLeakDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +43,9 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
         Channel ch = ctx.channel();
         ByteBuf m = (ByteBuf) msg;
         try {
-            byte[] receiveData = dataTool.getBytesFromByteBuf(m.copy());
+//            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
+            byte[] receiveData = dataTool.getBytesFromByteBuf(m);
+
             String receiveDataHexString = dataTool.bytes2hex(receiveData);
             _logger.info("收到报文 " + ch.remoteAddress() + ">>>原始:" + receiveDataHexString);
             byte[] filterBytes = upDataFilter(receiveData, ch);
@@ -114,7 +119,8 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
                 return content;
             }
             ByteBuf tmp = buffer(1024);
-            ByteBuf rawData = dataTool.getByteBuf(dataTool.bytes2hex(content));
+           // ByteBuf rawData = dataTool.getByteBuf(dataTool.bytes2hex(content));
+            ByteBuf rawData = Unpooled.wrappedBuffer(content);
             rawData.readBytes(head, 0, 5 + 28);//包头部分 明文
             tmp.writeBytes(head);
             rawData.readBytes(data, 0, data.length);//待加解密data长度=总长度-包头33-checkSum1
@@ -129,9 +135,11 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
                     tmp.writeBytes(AES128Tool.decrypt(data, aesKey));//
                 } catch (Exception e) {
                     _logger.info("[注册]aes128 decrypt error:" + e);
-                    ByteBuf byteBuf = dataTool.getByteBuf(dataTool.bytes2hex(content));
+                    // ByteBuf byteBuf = dataTool.getByteBuf(dataTool.bytes2hex(content));
+                    ByteBuf byteBuf = Unpooled.wrappedBuffer(content);
                     String reportStr = requestHandler.getRegisterResp(byteBuf);
-                    ByteBuf buf = dataTool.getByteBuf(reportStr);
+                    //ByteBuf buf = dataTool.getByteBuf(reportStr);
+                    ByteBuf buf = Unpooled.wrappedBuffer(ByteBufUtil.decodeHexDump(reportStr.replace(" ", "")));
                     ch.writeAndFlush(buf);
                     try {
                         Thread.sleep(1000);
@@ -168,7 +176,7 @@ public class AESUpDataHandler extends ChannelInboundHandlerAdapter {
             tmp.resetWriterIndex();
             byte[] withOutCheckSum = dataTool.getBytesFromByteBuf(tmp);//without checkSum
             tmp.writeByte(dataTool.getCheckSum(withOutCheckSum));//checkSum
-            re = dataTool.getBytesFromByteBuf(tmp);//
+            re = dataTool.getBytesFromByteBuf(tmp);
             //todo 释放buffer
             ReferenceCountUtil.release(tmp);
             ReferenceCountUtil.release(rawData);
