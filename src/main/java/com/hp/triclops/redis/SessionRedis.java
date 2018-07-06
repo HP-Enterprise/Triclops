@@ -26,7 +26,6 @@ public class SessionRedis {
     RedisTemplate<String, Object> objectRedisTemplate;
 
     private String[] preStr = {"session:","code:"};
-    private String sessionKey = "";
     private static final String ONLINE = "online:";
 
     ValueOperations<String,String> valOpts = null;
@@ -59,7 +58,7 @@ public class SessionRedis {
      */
     public void saveSessionOfVal(String sessionId,String sessionValue,long ... expireSeconds){
 
-        sessionKey = setPreOfKey(1, sessionId);
+        String sessionKey = setPreOfKey(1, sessionId);
         this.valOpts = this.stringRedisTemplate.opsForValue();
 
         if(!this.stringRedisTemplate.hasKey(sessionKey)){
@@ -80,7 +79,7 @@ public class SessionRedis {
      * @return 键对应的值
      */
     public String getSessionOfVal(String sessionId){
-        sessionKey = setPreOfKey(1,sessionId);
+        String sessionKey = setPreOfKey(1,sessionId);
         this.valOpts = this.stringRedisTemplate.opsForValue();
         if(!this.stringRedisTemplate.hasKey(sessionKey)){
             return null;
@@ -96,7 +95,7 @@ public class SessionRedis {
      */
     public void saveOnlineSessionOfVal(String sessionId,String sessionValue,long ... expireSeconds){
 
-        sessionKey = ONLINE + sessionId;
+        String sessionKey = ONLINE + sessionId;
         this.valOpts = this.stringRedisTemplate.opsForValue();
 
         if(!this.stringRedisTemplate.hasKey(sessionKey)){
@@ -117,7 +116,7 @@ public class SessionRedis {
      * @return 键对应的值
      */
     public String getOnlineSessionOfVal(String sessionId){
-        sessionKey = ONLINE + sessionId;
+        String sessionKey = ONLINE + sessionId;
         this.valOpts = this.stringRedisTemplate.opsForValue();
         if(!this.stringRedisTemplate.hasKey(sessionKey)){
             return null;
@@ -141,7 +140,7 @@ public class SessionRedis {
      */
     public void updateSessionOfVal(String sessionId,String sessionValue){
 
-        sessionKey = setPreOfKey(1, sessionId);
+        String sessionKey = setPreOfKey(1, sessionId);
         long expireSeconds = this.stringRedisTemplate.getExpire(sessionKey);
         this.delSessionOfVal(sessionId);
         this.saveSessionOfVal(sessionId,sessionValue,expireSeconds);
@@ -153,7 +152,7 @@ public class SessionRedis {
      * @return 是否成功，true，成功；false，失败
      */
     public boolean delSessionOfVal(String sessionId){
-        sessionKey = setPreOfKey(1, sessionId);
+        String sessionKey = setPreOfKey(1, sessionId);
         boolean ret = true;
         if(this.stringRedisTemplate.hasKey(sessionKey)){
             this.stringRedisTemplate.delete(sessionKey);
@@ -192,7 +191,7 @@ public class SessionRedis {
      */
     public void saveSessionOfList(String sessionId,Object sessionValue,long ... expireSeconds){
 
-        sessionKey = setPreOfKey(0,sessionId);
+        String sessionKey = setPreOfKey(0,sessionId);
         this.setRedisTemplatePro();
         this.valObjOpts = this.objectRedisTemplate.opsForValue();
 
@@ -215,7 +214,7 @@ public class SessionRedis {
      * @return 指定键对应的对象
      */
     public Object getSessionOfList(String sessionId){
-        sessionKey = setPreOfKey(0,sessionId);
+        String sessionKey = setPreOfKey(0,sessionId);
         this.setRedisTemplatePro();
         this.valObjOpts = this.objectRedisTemplate.opsForValue();
         if(!this.objectRedisTemplate.hasKey(sessionKey)){
@@ -244,7 +243,7 @@ public class SessionRedis {
      * @param sessionValue 更新的值
      */
     public void updateSessionOfList(String sessionId,Object sessionValue){
-        sessionKey = setPreOfKey(0,sessionId);
+        String sessionKey = setPreOfKey(0,sessionId);
         long expireSeconds = this.objectRedisTemplate.getExpire(sessionKey);
         this.delSessionAllOfList(sessionId);
         this.saveSessionOfList(sessionId,sessionValue,expireSeconds);
@@ -257,7 +256,7 @@ public class SessionRedis {
      * @return 是否成功，true，成功；false，失败
      */
     public boolean delSessionAllOfList(String sessionId){
-        sessionKey = setPreOfKey(0,sessionId);
+        String sessionKey = setPreOfKey(0,sessionId);
         boolean ret = true;
         if(this.objectRedisTemplate.hasKey(sessionKey)){
             this.objectRedisTemplate.delete(sessionKey);
