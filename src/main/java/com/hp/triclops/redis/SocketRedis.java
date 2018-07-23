@@ -5,12 +5,11 @@ import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Component
+@Component("socketRedis")
 public class SocketRedis {
 
     @Autowired
@@ -220,8 +219,6 @@ public class SocketRedis {
         }
         return ret;
     }
-
-
 
     /**
      * 指定key的全部value
