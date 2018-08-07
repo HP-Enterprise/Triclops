@@ -36,6 +36,7 @@ public class TboxService {
     @Autowired
     OrganizationVehicleManagement organizationVehicleManagement;
 
+
     private Logger _logger = LoggerFactory.getLogger(TboxService.class);
 
     /**
@@ -61,6 +62,7 @@ public class TboxService {
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByImei(imei);
         Vehicle sVehicle=null;
+        int change=0;
         long startTime1 = System.currentTimeMillis();
         VehicleTBoxRelative vehicleTBoxRelative = new VehicleTBoxRelative();
         //先查询有没有记录，有记录则激活没有记录新增记录
@@ -101,6 +103,7 @@ public class TboxService {
             }
             _vehicle.setTboxsn(t_sn);
             sVehicle=vehicleRepository.save(_vehicle);
+            change=1;
         }
 
         vehicleTBoxRelative.setVin(sVehicle.getVin());
@@ -136,6 +139,10 @@ public class TboxService {
             _logger.info(vin + " save sub total time" + (endTime1 - startTime));
             return true;
         }else{//不存在TBox 新增TBox
+            if (change==1){
+                changeTbox(vin,iccid);
+            }
+
             TBoxEx tBox=new TBoxEx();
 //            if(_vehicle!=null){
 //                tBox.setVid(_vehicle.getId());
@@ -168,6 +175,12 @@ public class TboxService {
             return true;
         }
     }
+
+    private void changeTbox(String vin,String iccid){
+        String result = httpClientTool.doHttp("/api/real/name/update/vin/inside?vin="+vin+"&&newiccid="+iccid,null);
+        _logger.warn("changeTboxUnicom result:"+result);
+    }
+
     public boolean saveIccidPhone(String vin,String imei,String iccid) {
         long startTime = System.currentTimeMillis();
         TBox tb=tBoxRepository.findByImei(imei);
