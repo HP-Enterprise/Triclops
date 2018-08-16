@@ -62,7 +62,6 @@ public class TboxService {
         Vehicle _vehicle=vehicleRepository.findByVin(vin);
         TBox tb=tBoxRepository.findByImei(imei);
         Vehicle sVehicle=null;
-        int change=0;
         long startTime1 = System.currentTimeMillis();
         VehicleTBoxRelative vehicleTBoxRelative = new VehicleTBoxRelative();
         //先查询有没有记录，有记录则激活没有记录新增记录
@@ -101,9 +100,12 @@ public class TboxService {
 //                sVehicle = _vehicle;
                 _logger.info("没有查询到对应的车型信息:"+modelId);
             }
+            if (_vehicle.getTboxsn() !=null && !_vehicle.getTboxsn().equals("")){
+                changeTbox(vin,iccid);
+            }
             _vehicle.setTboxsn(t_sn);
             sVehicle=vehicleRepository.save(_vehicle);
-            change=1;
+
         }
 
         vehicleTBoxRelative.setVin(sVehicle.getVin());
@@ -139,9 +141,6 @@ public class TboxService {
             _logger.info(vin + " save sub total time" + (endTime1 - startTime));
             return true;
         }else{//不存在TBox 新增TBox
-            if (change==1){
-                changeTbox(vin,iccid);
-            }
 
             TBoxEx tBox=new TBoxEx();
 //            if(_vehicle!=null){
