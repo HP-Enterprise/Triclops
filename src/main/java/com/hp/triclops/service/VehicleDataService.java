@@ -941,22 +941,65 @@ public class VehicleDataService {
     public DiagnosticDataShow getDiagDataShowFromFailure(String vin,int lang){
         ///{lang} 1中文 2英文
         FailureMessageData failureMessageData=failureMessageDataRespository.findTopByVinOrderByReceiveTimeDescIdDesc(vin);
-        if(failureMessageData==null){
-            return null;
-        }
         Vehicle vehicle = vehicleRepository.findByVin(vin);
         DiagnosticDataShow diagnosticDataShow=new DiagnosticDataShow();
-        diagnosticDataShow.setId(failureMessageData.getId());
-        diagnosticDataShow.setVin(failureMessageData.getVin());
-        diagnosticDataShow.setHasAck((short) 1);
-        diagnosticDataShow.setEventId((long) dataTool.getCurrentSeconds());
-        diagnosticDataShow.setSendDate(failureMessageData.getSendingTime());
-        diagnosticDataShow.setReceiveDate(failureMessageData.getSendingTime());
-        HashMap<String,String>  content=getDiagDataFromFailure(failureMessageData,lang, vehicle.getModel());
-        diagnosticDataShow.setList(content);
+        if(failureMessageData==null){
+
+            diagnosticDataShow.setId(Long.valueOf(111111));
+            diagnosticDataShow.setVin(vin);
+            diagnosticDataShow.setHasAck((short) 1);
+            diagnosticDataShow.setEventId((long) dataTool.getCurrentSeconds());
+            Date now = new Date();
+            diagnosticDataShow.setSendDate(now);
+            diagnosticDataShow.setReceiveDate(now);
+            HashMap<String,String>  content=getDiagDataFrom(lang, vehicle.getModel());
+            diagnosticDataShow.setList(content);
+        }else {
+            diagnosticDataShow.setId(failureMessageData.getId());
+            diagnosticDataShow.setVin(failureMessageData.getVin());
+            diagnosticDataShow.setHasAck((short) 1);
+            diagnosticDataShow.setEventId((long) dataTool.getCurrentSeconds());
+            diagnosticDataShow.setSendDate(failureMessageData.getSendingTime());
+            diagnosticDataShow.setReceiveDate(failureMessageData.getSendingTime());
+            HashMap<String, String> content = getDiagDataFromFailure(failureMessageData, lang, vehicle.getModel());
+            diagnosticDataShow.setList(content);
+        }
         return  diagnosticDataShow;
     }
 
+    /**
+     * 获取数据框架，来自故障数据转换
+     * @param lang 故障数据
+     * @return DiagnosticData或者null
+     */
+    public HashMap<String,String> getDiagDataFrom(int lang, String model){
+        //todo 转换逻辑暂缺
+        List<WarningMessageConversion> allList=warningMessageConversionRepository.findAll();
+        HashMap<String,String>  content=new HashMap<>();
+
+        for(int i=0;i<allList.size();i++){
+            if(model != null && "F60".equals(model)){
+                WarningMessageConversion warningMessageConversion=allList.get(i);
+                if(warningMessageConversion.getType() == 2){
+                    if(lang==1){
+                        content.put(warningMessageConversion.getGroupMessage(), "0");
+                    }else{
+                        content.put(warningMessageConversion.getGroupMessageEn(), "0");
+                    }
+                }
+            }else{
+                WarningMessageConversion warningMessageConversion=allList.get(i);
+                if(warningMessageConversion.getType() == 1){
+                    if(lang==1) {
+                        content.put(warningMessageConversion.getGroupMessage(), "0");
+                    }else{
+                        content.put(warningMessageConversion.getGroupMessageEn(), "0");
+                    }
+                }
+            }
+        }
+        return content;
+    }
     /**
      * 获取诊断数据，来自故障数据转换
      * @param failureMessageData 故障数据
