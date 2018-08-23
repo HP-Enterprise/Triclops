@@ -100,7 +100,7 @@ public class TboxService {
 //                sVehicle = _vehicle;
                 _logger.info("没有查询到对应的车型信息:"+modelId);
             }
-            if (_vehicle.getTboxsn() !=null && !_vehicle.getTboxsn().equals("")){
+            if (_vehicle.getRealNameAuthentication().equals("1")){
                 changeTbox(vin,iccid);
             }
             _vehicle.setTboxsn(t_sn);
@@ -177,7 +177,7 @@ public class TboxService {
 
     private void changeTbox(String vin,String iccid){
         String result = httpClientTool.doHttp("/api/real/name/update/vin/inside?vin="+vin+"&&newiccid="+iccid,null);
-        _logger.warn("changeTboxUnicom result:"+result);
+        _logger.warn("changeTboxUnicom vin:"+vin+" result:"+result);
     }
 
     public boolean saveIccidPhone(String vin,String imei,String iccid) {
