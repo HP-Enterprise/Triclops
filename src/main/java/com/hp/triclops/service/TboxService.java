@@ -112,6 +112,16 @@ public class TboxService {
         vehicleTBoxRelative.setTboxsn(t_sn);
         vehicleTBoxRelative.setCreateTime(new Date());
         long middleTime = System.currentTimeMillis();
+        //修改tbox表中的vin
+        try {
+            TBox tb1=tBoxRepository.findByVin(vin);
+            if (tb1 !=null){
+                tb1.setVin(null);
+                tBoxRepository.save(tb1);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         //更新TBox信息
         if(tb!=null){//已经存在TBox 激活TBox
             //查询该tbox激活前对应的车辆信息
@@ -141,16 +151,7 @@ public class TboxService {
             _logger.info(vin + " save sub total time" + (endTime1 - startTime));
             return true;
         }else{//不存在TBox 新增TBox
-            //修改tbox表中的vin
-            try {
-                TBox tb1=tBoxRepository.findByVin(vin);
-                if (tb1 !=null){
-                    tb1.setVin(null);
-                    tBoxRepository.save(tb1);
-                }
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+
             TBoxEx tBox=new TBoxEx();
 //            if(_vehicle!=null){
 //                tBox.setVid(_vehicle.getId());
