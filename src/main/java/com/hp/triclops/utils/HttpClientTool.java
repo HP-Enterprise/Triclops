@@ -44,8 +44,9 @@ public class HttpClientTool {
             conn.setRequestProperty("Content-Type", "application/json;");
             conn.connect();
             dos = new DataOutputStream(conn.getOutputStream());
-
-            dos.writeBytes(param);
+            if (param != null){
+                dos.writeBytes(param);
+            }
             dos.flush();
             dos.close();
 
