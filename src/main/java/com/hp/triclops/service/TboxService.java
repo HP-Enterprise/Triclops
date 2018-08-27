@@ -141,7 +141,16 @@ public class TboxService {
             _logger.info(vin + " save sub total time" + (endTime1 - startTime));
             return true;
         }else{//不存在TBox 新增TBox
-
+            //修改tbox表中的vin
+            try {
+                TBox tb1=tBoxRepository.findByVin(vin);
+                if (tb1 !=null){
+                    tb1.setVin(null);
+                    tBoxRepository.save(tb1);
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             TBoxEx tBox=new TBoxEx();
 //            if(_vehicle!=null){
 //                tBox.setVid(_vehicle.getId());
@@ -168,6 +177,7 @@ public class TboxService {
                 sVehicle.setTboxsn(t_sn);
                 vehicleRepository.save(sVehicle);
             }
+
             long endTime2 = System.currentTimeMillis();
             _logger.info(vin +" update vehicle tbox  time" + (endTime2 - endTime1));
             _logger.info(vin + " save sub total time" + (endTime2 - startTime));
