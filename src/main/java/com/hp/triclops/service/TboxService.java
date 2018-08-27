@@ -100,12 +100,6 @@ public class TboxService {
 //                sVehicle = _vehicle;
                 _logger.info("没有查询到对应的车型信息:"+modelId);
             }
-            if (_vehicle.getRealNameAuthentication().equals("1")){
-                changeTbox(vin,iccid);
-            }
-            _vehicle.setTboxsn(t_sn);
-            sVehicle=vehicleRepository.save(_vehicle);
-            //修改tbox表中的vin
             try {
                 TBox tb1=tBoxRepository.findByVin(vin);
                 if (tb1 !=null){
@@ -115,6 +109,12 @@ public class TboxService {
             }catch(Exception e){
                 e.printStackTrace();
             }
+            if (_vehicle.getRealNameAuthentication().equals("1")){
+                changeTbox(vin,iccid);
+            }
+            _vehicle.setTboxsn(t_sn);
+            sVehicle=vehicleRepository.save(_vehicle);
+            //修改tbox表中的vin
         }
 
         vehicleTBoxRelative.setVin(sVehicle.getVin());
