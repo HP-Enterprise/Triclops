@@ -69,7 +69,7 @@ public class DataHandleService {
                     //todo 修改byte[]转换方式
                     byte[] receiveData = ByteBufUtil.decodeHexDump(msg.replace(" ", ""));
                     byte modelType = dataTool.getModelType(receiveData);
-                    if (modelType == 0 || modelType == 1) {//M82车型
+                    if (modelType == 0 || modelType == 1 || modelType == 2) {//M82车型
                         carM82MessageList.add(message);
                     } else {
                         carMessageList.add(message);
