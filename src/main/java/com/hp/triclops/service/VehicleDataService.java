@@ -640,8 +640,10 @@ public class VehicleDataService {
         if(!hasConnection(vin)){
             //如果不在线，先唤醒
             _logger.info("vin:"+vin+" 当前不在线，正在唤醒...");
-            int wakeUpResult = remoteWakeUp(vin,50);//唤醒后等待50s
-            _logger.info("vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
+            new Thread(()->{
+                int wakeUpResult = remoteWakeUp(vin,50);//唤醒后等待50s
+                _logger.info("vin:"+vin+" 唤醒结果:"+wakeUpResult+" (参考值1:成功 0:失败)");
+            }).start();
 //            try{
 //                _logger.info("vin："+vin+"不在线，发送唤醒请求后，等待一段时间再去获取最新实时数据，目前全过程时间50s");
 //                Thread.sleep(49 * 1000);
@@ -683,7 +685,7 @@ public class VehicleDataService {
             data.setApplicationId(rd.getApplicationId());
             data.setMessageId(rd.getMessageId());
             data.setSendingTime(rd.getSendingTime());
-            data.setReceiveTime(DateUtil.format(rd.getSendingTime(), "yyyy-MM-dd HH:mm:ss"));
+            data.setReceiveTime(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
             data.setFuelOil(Math.round(rd.getFuelOil()));
             if (rd.getAvgOilA() < 30) {
