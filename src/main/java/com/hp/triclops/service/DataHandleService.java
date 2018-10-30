@@ -7,7 +7,6 @@ import com.hp.data.util.PackageEntityManager;
 import com.hp.triclops.acquire.DataTool;
 import com.hp.triclops.entity.*;
 import io.netty.buffer.ByteBufUtil;
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
