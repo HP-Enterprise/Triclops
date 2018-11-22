@@ -831,7 +831,7 @@ public class RequestHandler {
                         msg = "发动机已启动，不允许解锁";
                         msgEn = "Engine has been started, not allowed to unlock";
                     }
-                    if (preconditionRespCheck == 4 || preconditionRespCheck == 5 || preconditionRespCheck == 6 || preconditionRespCheck == 7) {
+                    if (preconditionRespCheck == 4  || preconditionRespCheck == 6 ) {
                         //todo 生成启动发动机命令,建立关联关系
                         if (currentRefId == -1) {
                             long refId = dbRc.getId();
