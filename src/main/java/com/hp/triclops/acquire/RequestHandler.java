@@ -879,7 +879,7 @@ public class RequestHandler {
                         msg = "远程指令未执行，操作条件不满足";
                         msgEn = "remote command not implemented, the operating conditions are not satisfied";
                     }
-                    if ((preconditionRespCheck == 4 || preconditionRespCheck == 5 || preconditionRespCheck == 6 || preconditionRespCheck == 7) && currentRefId != -2) {
+                    if ((preconditionRespCheck == 4 || preconditionRespCheck == 5 || preconditionRespCheck == 6 ) && currentRefId != -2) {
                         if (currentRefId == -1) {//-1的情况
                             _logger.info("[0x31]正在尝试启动发动机...");
                         }
