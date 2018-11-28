@@ -1,10 +1,9 @@
 package com.hp.triclops.acquire;
 
 import com.hp.data.bean.tbox.*;
-import com.hp.triclops.entity.DiagnosticData;
 import com.hp.triclops.entity.Vehicle;
-import com.hp.triclops.entity.WarningMessageConversion;
 import com.hp.triclops.redis.SocketRedis;
+import com.hp.triclops.repository.VehicleRepository;
 import com.hp.triclops.utils.DateUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -13,18 +12,14 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.text.DecimalFormat;
-import java.util.*;
-
-import com.hp.triclops.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import static io.netty.buffer.Unpooled.*;
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.util.*;
+
+import static io.netty.buffer.Unpooled.buffer;
 
 /**
  * Created by luj on 2015/9/17.
@@ -1430,6 +1425,60 @@ public class DataTool {
         return warningMessage;
     }
 
+    /**
+     * 解码报警数据包
+     *
+     * @param msg
+     * @return
+     */
+    public WarningMessageM85 decodeWarningMessageM85(String msg) {
+        WarningMessageM85 warningMessageM85 = new WarningMessageM85();
+        ByteBuf buf = null;
+
+        try {
+            // byte[] data = getBytesFromByteBuf(getByteBuf(msg));
+            byte[] data = ByteBufUtil.decodeHexDump(msg.replace(" ", ""));
+            buf = Unpooled.wrappedBuffer(data);
+            warningMessageM85.setHead((int) buf.readShort());
+            warningMessageM85.setLength((int) buf.readShort());
+            warningMessageM85.setTestFlag((short) buf.readByte());
+            warningMessageM85.setSendingTime((long) buf.readInt());
+            warningMessageM85.setApplicationID((short) buf.readByte());
+            warningMessageM85.setMessageID((short) buf.readByte());
+            byte[] imeiBytes = new byte[15];
+            buf.readBytes(imeiBytes);
+            warningMessageM85.setImei(new String(imeiBytes));
+            warningMessageM85.setProtocolVersionNumber((short) buf.readByte());
+            warningMessageM85.setVehicleID((short) buf.readByte());
+            warningMessageM85.setVehicleModel((short) buf.readByte());
+            warningMessageM85.setTripID((int) buf.readShort());
+            warningMessageM85.setReserved((int) buf.readShort());
+            warningMessageM85.setEventID((long) buf.readInt());
+            warningMessageM85.setIsLocation((short) buf.readByte());
+            warningMessageM85.setLatitude((long) buf.readInt());
+            warningMessageM85.setLongitude((long) buf.readInt());
+            warningMessageM85.setSpeed((int) buf.readShort());
+            warningMessageM85.setHeading((int) buf.readShort());
+            warningMessageM85.setSrsWarning(buf.readByte());
+            warningMessageM85.setCrashWarning(buf.readByte());
+            warningMessageM85.setAtaWarning(buf.readByte());
+            // if(warningMessage.getSrsWarning()==(byte)1) { 协议0627改为始终发送车速报文
+            warningMessageM85.setSafetyBeltCount((short) buf.readByte());
+            byte[] speedLastBytes = new byte[300];
+            Integer[] speeds = new Integer[150];
+            buf.readBytes(speedLastBytes);
+            ByteBuf bu = getByteBuf(bytes2hex(speedLastBytes));
+            for (int i = 0; i < 150; i++) {
+                speeds[i] = (int) bu.readShort();
+            }
+            warningMessageM85.setVehicleSpeedLast(speeds);
+            warningMessageM85.setTowWarning(buf.readByte());
+            // }
+        } finally {
+            ReferenceCountUtil.release(buf);
+        }
+        return warningMessageM85;
+    }
     /**
      * todo 解决内存泄漏
      * 解码补发报警数据包
