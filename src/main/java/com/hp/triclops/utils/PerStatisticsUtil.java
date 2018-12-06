@@ -116,7 +116,7 @@ public  class PerStatisticsUtil {
      */
     public Integer getRedisCount(){
 
-        Integer redisCount = this.stringRedisTemplate.keys("session*").size();
+        Integer redisCount = 1000;
         return redisCount;
     }
 
