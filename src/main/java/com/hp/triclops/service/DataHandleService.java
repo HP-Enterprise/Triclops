@@ -305,12 +305,17 @@ public class DataHandleService {
             ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
             DataPackage dp = conversionTBox.generate(bb);
             RealTimeReportMes bean = dp.loadBean(RealTimeReportMes.class);
+            int kilometerMileage=dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage());
+            if(kilometerMileage==-200 || kilometerMileage==0){
+                continue;
+            }
             short vehicleModel = bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
             boolean isM8X = true;
             if (vehicleModel > (short) 2) {
                 isM8X = false;
             }
             RealTimeReportData rd = new RealTimeReportData();
+
             rd.setVin(vin);
             rd.setImei(bean.getImei());
             rd.setApplicationId(bean.getApplicationID());
@@ -472,12 +477,17 @@ public class DataHandleService {
             long startTime = System.currentTimeMillis();
             RealTimeReportMesM82 realTimeReportMesM82 = new RealTimeReportMesM82();
             RealTimeReportMesM82 bean = realTimeReportMesM82.decode(dataTool.getByteBuf(msg));
+            int kilometerMileage=dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage());
+            if(kilometerMileage==-200 || kilometerMileage==0){
+                continue;
+            }
             short vehicleModel = bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
             boolean isM8X = true;
             if (vehicleModel > (short) 2) {
                 isM8X = false;
             }
             RealTimeReportData rd = new RealTimeReportData();
+
             rd.setVin(vin);
             rd.setImei(bean.getImei());
             rd.setApplicationId(bean.getApplicationID());
