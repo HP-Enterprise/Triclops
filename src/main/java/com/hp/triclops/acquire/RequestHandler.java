@@ -1244,9 +1244,16 @@ public class RequestHandler {
                 handBrakeCheck = true;
 //                }
             } else {
-                if (handBrake_char[6] == '1' && handBrake_char[7] == '0') { //0x2
-                    handBrakeCheck = true;
+                if (vehicleModel == 4) {
+                    if (handBrake_char[6] == '0' && handBrake_char[7] == '1') { //0x1 F70车型
+                        handBrakeCheck = true;
+                    }
+                }else{
+                    if (handBrake_char[6] == '1' && handBrake_char[7] == '0') { //0x2
+                        handBrakeCheck = true;
+                    }
                 }
+
             }
 
 //            byte sunroof=remoteControlPreconditionResp.getBcm_Stat_window2();
