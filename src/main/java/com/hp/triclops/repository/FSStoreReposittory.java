@@ -16,8 +16,8 @@ import java.util.List;
 public interface FSStoreReposittory extends JpaRepository<Store4s,Integer>,JpaSpecificationExecutor<Store4s> {
     @Query("select s from Store4s s where " +
             "(?1 is null or s.vehicleType = ?1)" +
-            " and (?2 is null or s.province = ?2)" +
-            " and (?3 is null or s.city  = ?3)")
+            " and (?2 is null or s.province like CONCAT(?2,'%') )" +
+            " and (?3 is null or s.city   like CONCAT('%',?3,'%') )")
     List<Store4s> findByKeys(Integer vehicleType, String province, String city);
 
     @Query("select s.province from Store4s s group by s.province")
