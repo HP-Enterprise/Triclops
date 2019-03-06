@@ -1806,7 +1806,7 @@ public class RequestHandler {
                     isUpdate = vehicle.getIsUpdate();
                 }
                 buf.writeByte(isUpdate);
-                String url = _serverUrl + "/api/download/" + fileName + "?uploadName=" + fileName;
+                String url = _serverUrl + "/api/download/" + uploadPackageEntity.getUploadName() + "?uploadName=" + uploadPackageEntity.getUploadName();
                 Integer len = 27 + url.length();
                 buf.writeBytes(url.getBytes());
                 buf.writeByte(dataTool.getCheckSum(DataTool.getBytesFromByteBuf(buf)));
