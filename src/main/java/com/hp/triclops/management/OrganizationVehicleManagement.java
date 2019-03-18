@@ -2,14 +2,18 @@ package com.hp.triclops.management;
 
 import com.hp.triclops.entity.OrganisationVehicleRelativeEx;
 import com.hp.triclops.repository.OrganisationVehicleRelativeExRepository;
+import com.hp.triclops.vo.FailedVehicle;
 import com.hp.triclops.vo.OrganisationVehicleRelativeExShow;
+import com.hp.triclops.vo.VehicleExShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Teemol on 2016/1/22.
@@ -20,6 +24,9 @@ public class OrganizationVehicleManagement {
 
     @Autowired
     OrganisationVehicleRelativeExRepository organisationVehicleRelativeExRepository;
+
+    @Autowired
+    VehicleManagement vehicleManagement;
 
     /**
      * 向组织中增加车辆
@@ -104,6 +111,28 @@ public class OrganizationVehicleManagement {
         if(relative == null)
             return null;
         return new OrganisationVehicleRelativeExShow(relative);
+    }
+
+    /**
+     * 向组织批量插入车辆
+     *
+     * @param vehicleList 车辆列表
+     * @param oid         组织ID
+     * @return 插入失败列表
+     */
+    public List<FailedVehicle> addVehicleList(List<String> vehicleList, int oid) {
+        List<FailedVehicle> failedList = new ArrayList();
+        for (String vin : vehicleList) {
+            // 根据vin查询车辆信息
+            VehicleExShow vehicleExShow = vehicleManagement.findByVin(vin);
+
+            if (Objects.isNull(vehicleExShow)) {
+                failedList.add(new FailedVehicle(vin, "车辆不存在"));
+            } else {
+                this.addVehicle(oid, vehicleExShow.getId());
+            }
+        }
+        return failedList;
     }
 
 }
