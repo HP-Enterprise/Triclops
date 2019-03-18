@@ -132,7 +132,7 @@ public class OrganizationVehicleManagement {
             } else {
                 try {
                     this.addVehicle(oid, vehicleExShow.getId());
-                } catch (org.hibernate.exception.ConstraintViolationException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     failedList.add(new FailedVehicle(vin, "车辆已归属该组织"));
                 }
