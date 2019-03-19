@@ -81,7 +81,7 @@ public class TboxService {
             vehicle.setSecurity_pwd("14427FF4F90B790CAED65FC2DD854351");
             vehicle.setSecurity_salt("a5pb");
             vehicle.setRegTime(new Date());
-            if (modelId ==1){
+            if (modelId ==1 || modelId ==2){
                 vehicle.setRealNameAuthentication("4");
             }else{
                 vehicle.setRealNameAuthentication("0");
@@ -90,6 +90,7 @@ public class TboxService {
 
             organizationVehicleManagement.addVehicle(1, sVehicle.getId());   // 默认添加到华晨汽车根组织
             organizationVehicleManagement.addVehicle(2, sVehicle.getId());   // 默认添加到生产辅助根组织
+            if (modelId ==4) {organizationVehicleManagement.addVehicle(11, sVehicle.getId());}// F70默认添加到华晨雷诺
         }else{
             vehicleTBoxRelative.setOldTboxsn(_vehicle.getTboxsn());
             VehicleModelConfig vehicleModelConfig=vehicleModelConfigRepository.findByModelId(modelId);
