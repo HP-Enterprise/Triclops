@@ -1781,21 +1781,25 @@ public class RequestHandler {
                 }
 
                 String fileName = "";
+                int ifm85=10;
+                if (bean.getVehicleModel() == 2){
+                    ifm85=20;
+                }
                 if (uploadPackageEntity == null) {
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < ifm85; i++) {
                         buf.writeByte(0x00);
                     }
                 } else {
                     fileName = uploadPackageEntity.getFileName();
                     if (fileName == null) {
-                        for (int i = 0; i < 10; i++) {
+                        for (int i = 0; i < ifm85; i++) {
                             buf.writeByte(0x00);
                         }
-                    } else if (fileName.length() >= 10) {
-                        buf.writeBytes(fileName.substring(0, 10).getBytes());
-                    } else if (fileName.length() < 10) {
+                    } else if (fileName.length() >= ifm85) {
+                        buf.writeBytes(fileName.substring(0, ifm85).getBytes());
+                    } else if (fileName.length() < ifm85) {
                         buf.writeBytes(fileName.getBytes());
-                        for (int i = 0; i < 10 - fileName.length(); i++) {
+                        for (int i = 0; i < ifm85 - fileName.length(); i++) {
                             buf.writeByte(0x00);
                         }
                     }
