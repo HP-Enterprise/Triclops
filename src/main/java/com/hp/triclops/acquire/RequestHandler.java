@@ -1952,18 +1952,26 @@ public class RequestHandler {
                 Integer model = 5;
                 resp.setModel(model.shortValue());
 
+                int version85=20;
+                int filenamem85=50;
+                String splitch="_";
+                if (bean.getVehicleModel() == 2){
+                    version85=36;
+                    filenamem85=70;
+                    splitch="-";
+                }
                 String hwVersion = vehicle.getHardVersion();
                 if (hwVersion == null) {
-                    byte[] tempBytes = new byte[20];
-                    for (int i = 0; i < 20; i++) {
+                    byte[] tempBytes = new byte[version85];
+                    for (int i = 0; i < version85; i++) {
                         tempBytes[i] = 0x00;
                     }
                     resp.setFwDestVersion(new String(tempBytes));
-                } else if (hwVersion.length() >= 20) {
-                    resp.setFwDestVersion(hwVersion.substring(0, 20));
+                } else if (hwVersion.length() >= version85) {
+                    resp.setFwDestVersion(hwVersion.substring(0, version85));
                 } else {
-                    byte[] tempBytes = new byte[20 - hwVersion.length()];
-                    for (int i = 0; i < 20 - hwVersion.length(); i++) {
+                    byte[] tempBytes = new byte[version85 - hwVersion.length()];
+                    for (int i = 0; i < version85 - hwVersion.length(); i++) {
                         tempBytes[i] = 0x00;
                     }
                     resp.setFwDestVersion(hwVersion + new String(tempBytes));
@@ -1974,16 +1982,16 @@ public class RequestHandler {
                     fileName = uploadPackageEntity.getFileName();
                 }
                 if (fileName == null) {
-                    byte[] tempBytes = new byte[50];
-                    for (int i = 0; i < 50; i++) {
+                    byte[] tempBytes = new byte[filenamem85];
+                    for (int i = 0; i < filenamem85; i++) {
                         tempBytes[i] = 0x00;
                     }
                     resp.setFileName(new String(tempBytes));
-                } else if (fileName.length() >= 50) {
-                    resp.setFileName(fileName.substring(0, 20));
+                } else if (fileName.length() >= filenamem85) {
+                    resp.setFileName(fileName.substring(0, filenamem85));
                 } else {
-                    byte[] tempBytes = new byte[50 - fileName.length()];
-                    for (int i = 0; i < 50 - fileName.length(); i++) {
+                    byte[] tempBytes = new byte[filenamem85 - fileName.length()];
+                    for (int i = 0; i < filenamem85 - fileName.length(); i++) {
                         tempBytes[i] = 0x00;
                     }
                     resp.setFileName(fileName + new String(tempBytes));
@@ -1997,24 +2005,24 @@ public class RequestHandler {
 
                 String srcVersion = null;
                 if (fileName != null) {
-                    String[] first = fileName.split("_");
+                    String[] first = fileName.split(splitch);
                     if (first != null && first.length > 0) {
                         srcVersion = first[0];
                     }
                 }
                 if (srcVersion != null && !"".equals(srcVersion)) {
-                    if (srcVersion.length() >= 20) {
-                        resp.setFwSrcVersion(srcVersion.substring(0, 20));
+                    if (srcVersion.length() >= version85) {
+                        resp.setFwSrcVersion(srcVersion.substring(0, version85));
                     } else {
-                        byte[] tempBytes = new byte[20 - srcVersion.length()];
-                        for (int i = 0; i < 20 - srcVersion.length(); i++) {
+                        byte[] tempBytes = new byte[version85 - srcVersion.length()];
+                        for (int i = 0; i < version85 - srcVersion.length(); i++) {
                             tempBytes[i] = 0x00;
                         }
                         resp.setFwSrcVersion(srcVersion + new String(tempBytes));
                     }
                 } else {
-                    byte[] versionBytes = new byte[20];
-                    for (int i = 0; i < 20; i++) {
+                    byte[] versionBytes = new byte[version85];
+                    for (int i = 0; i < version85; i++) {
                         versionBytes[i] = 0x0;
                     }
                     resp.setFwSrcVersion(new String(versionBytes));
