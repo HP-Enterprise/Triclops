@@ -23,13 +23,24 @@ public class WarningMessageData {
     private double longitude;
     private float speed;
     private int heading;
-
     private Short srsWarning;
     private Short crashWarning;
     private Short ataWarning;
 
     private Short safetyBeltCount;
     private int  vehicleHitSpeed;
+    private Short towWarning;
+
+
+    @Basic
+    @Column(name = "tow_warning", nullable = false, insertable = false, updatable = false)
+    public Short getTowWarning() {
+        return towWarning;
+    }
+
+    public void setTowWarning(Short towWarning) {
+        this.towWarning = towWarning;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,38 +1,116 @@
-# Acquire port
-com.hp.acquire:
-    #disable  dataServer and dataHandler .if set this value true,neither dataServer nor dataHandler will work
-    disabled: true
-    #disable  dataServer.if set this value true,dataServer will not work
-    dataserver-disabled: true
-    #disable  dataHandler.if set this value true,dataHandler will not work
-    datahandler-disabled: true
-    #datahandler-heartbeat-interval  (seconds) by default 10s ,the data handler will loop sent heartbeat signal.by this, the data server will sent data to these groups
-    datahandler-heartbeat-interval: 10
-    #datahandler-heartbeat-ttl  the ttl for key in redis,if a server suspend,after ttl,no data will be send to this group
-    datahandler-heartbeat-ttl: 12
-    # save the warningData with specified suffix in redis,eg.value wr  the redis keys: inputwr:<vin>
-    dataserver-warningDataSuffix: wr
-    # if this server work as a data handler,it will only handle the data with the specified suffix in redis.eg.value 1,2 or ALL
-    datahandler-handleSuffix: ALL
-    #data server listen on this port
-    port: 9000
-    nettyServerThreadPoolSize: 20
-    nettyServerTcpBacklog: 100000
-    dataHandlerThreadPoolSize: 20
-    dataHandlerMaxCount: 300 #实时数据每次处理数据量
+# Tomcat
+server.port: 8080
 
-#remoteControl maxDistance
-com.hp.remoteControl.maxDistance: 2000
+#Jasper平台相关配置
+com.hp.jasper:
+    #命名空间
+    namespace_uri: http://api.jasperwireless.com/ws/schema
+    #前缀
+    prefix: jws
+    #接口地址
+    serverurl: https://api.10646.cn/ws/service
+    #SOAPMessage header-url
+    soapheaderurl: http://api.jasperwireless.com/ws/service
+    #licenese
+    licenesekey: 1cc20c29-31d5-465b-9bc1-65e50bb7ac92
+    #用户名
+    username: xuqian
+    #密码
+    password: BriAir123
+    #msgid
+    msgid: TCE-100-ABC-34084
+    #version
+    version: 1.0
 
-#remoteControl maxDistance
-com.hp.remoteControl.maxCount: 3
+#中聚元短信服务
+com.hp.zjy.sms:
+    #接口地址
+    url: http://www.zjysms.com/send/gsend.asp
+    #用户名
+    username: BriAir
+    #密码
+    pasword: BriAir123
+    #新接口地址
+    newUrl: http://59.110.53.172/sms.web.api/api/SendAPI
+    #cid
+    cid: 428
+    #密钥
+    cipher: 3fc71e4d4ade4a4f8f0ba4e7ce13c85d
 
-com.hp.mqtt:
-    queueName: queue
-    host: 127.0.0.1
-    port: 5672
-    userName:
-    password:
+# CMPP Gateway
+#是否禁用短信网关 禁用（true）的情况下 短信将通过sms.url配置的http接口发送
+com.hp.cmpp.disabled: true
+#短信网关IP
+com.hp.cmpp.ismgIp: 127.0.0.1
+#访问短信网关需要的密码
+com.hp.cmpp.sharedSecret: 123456
+#业务代码
+com.hp.cmpp.serviceId: 123456
+#由短信网关分配的SPID
+com.hp.cmpp.spId: 987654
+#短信网关端口，根据使用的CMPP协议不同而不同，如cmpp3.0长链接的端口为7890
+com.hp.cmpp.ismgPort: 7890
+#由短信网关分配的SPCODE,即用户接受到的短信显示的主叫号码
+com.hp.cmpp.spCode: 106123456
+#SOCKET超时链接时间，可根据需求自由修改，建议6000，单位为毫秒
+com.hp.cmpp.timeOut: 6000
+#SOCKET链接失败重试次数，及短信发送失败重新发送的次数
+com.hp.cmpp.connectCount: 3
+
+com.hp:
+    #新短信服务地址 http://localhost:8080/api/sms/sms (旧短信服务地址 sms.url: http://localhost:8080/api/sms/sms)
+    sms.url: http://localhost:8080/api/sms/sendMsg
+    #(旧短信服务:短信网关地址，不能使用应用本身，否则将会是一个回环)
+    acquire:
+        #数据收发服务集群部署时的服务端实例标识，不能包含'-'，同一集群中不可重复，示例server1 server2 ..  server id for cluster running eg.value server1 server2 ..
+        serverId: 1
+        #禁用数据收发服务和数据解析服务，如果设置为true，数据收发服务和数据解析服务都不会启动。disable  dataServer and dataHandler .if set this value true,neither dataServer nor dataHandler will work
+        disabled: true
+        #禁用数据收发服务，如果值为true，数据收发服务不启动。disable  dataServer.if set this value true,dataServer will not work
+        dataserver-disabled: true
+        #禁用数据解析服务，如果值为true，数据解析服务不启动。disable  dataHandler.if set this value true,dataHandler will not work
+        datahandler-disabled: true
+        #数据解析服务的心跳间隔（秒），通过心跳和TTL的配合，只有对应的解析服务可用，来自数据收发服务的数据才会被写入到这一group.datahandler-heartbeat-interval  (seconds) by default 10s ,the data handler will loop sent heartbeat signal.by this, the data server will sent data to these groups
+        datahandler-heartbeat-interval: 10
+        #数据解析服务key在redis中的ttl（秒），配合心跳来实现解析服务的注册及退出。ttl值应略大与心跳周期。datahandler-heartbeat-ttl  the ttl for key in redis,if a server suspend,after ttl,no data will be send to this group
+        datahandler-heartbeat-ttl: 12
+        # 报警数据解析服务处理的group标识。给报警数据一个特殊的group标识，可以启动专门的数据解析服务专门处理此类消息。save the warningData with specified suffix in redis,eg.value wr  the redis keys: inputwr:<vin>
+        dataserver-warningDataSuffix: wr
+        # 数据解析服务处理的group标识，如果值为ALL，则处理所有。示例值1，2，all . if this server work as a data handler,it will only handle the data with the specified suffix in redis.eg.value 1,2 or ALL
+        datahandler-handleSuffix: ALL
+        #数据接收服务监听端口 data server listen on this port
+        port: 9000
+        #主IO线程池大小
+        nettyServerThreadPoolSize: 20
+        #TCP backlog
+        nettyServerTcpBacklog: 100000
+        #数据解析服务线程池大小
+        dataHandlerThreadPoolSize: 20
+        # 心跳监控线程执行间隔(秒)
+        datahandler-heart-interval: 1
+        # 两次心跳最大间隔时间(秒)
+        datahandler-heart-ttl: 20
+        # 下行命令线程池大小
+        nettySenderThreadPoolSize: 20
+        dataHandlerMaxCount: 300 #实时数据每次处理数据量
+    mqtt:
+        queueName: queue
+        host: 127.0.0.1
+        port: 5672
+        userName: javapp
+        password:
+    sftp:
+        host: 127.0.0.1
+        port: 22
+        username:
+        password:
+        path:
+        iconPath:
+        messagePath:
+        files:
+        banner:
+        news:
+
 # apns cer password
 com.hp.apns.cer.password:
 
@@ -40,39 +118,110 @@ com.hp.apns.cer.password:
 com.hp.apns.p12:
 
 # com.hp.push.url
-com.hp.push.url: http://localhost:8080/api/message/filePush
+com.hp.push.url:
 
-# com.hp.web.server.host
-com.hp.web.server.host: 127.0.0.1
+# web server address
+com.hp.web.server.host : 127.0.0.1:8080
+
+# 通知短信中使用的车联网官网地址
+com.hp.web.webSiteLink : http://www.baidu.com
 
 # com.hp.web.server.baiduKey
 com.hp.web.server.baiduKey:
+
+# remoteControl maxCount
+com.hp.remoteControl.maxCount: 10
+
+# remoteControl app to car maxDistance( m)
+com.hp.remoteControl.maxDistance: 2000
+
+#唤醒等待时间，超过即为唤醒失败
+com.hp.remoteControl.wakeUpWaitSeconds: 90
+#远程控制API返回超时秒数（唤醒成功后等待时间）
+com.hp.remoteControl.remoteControlTimeOut: 70
+#远程设置超时秒数(唤醒成功后等待时间)
+com.hp.remoteControl.remoteSettingTimeOut: 40
+#平台下发消息超时时间
+com.hp.remoteControl.tboxTimeOut: 30
+
+#流量同步定时任务执行开关 开:true 关:false
+com.hp.task.flowQueryTask.enabled: false
+#驾驶行为汇总定时任务执行开关 开:true 关:false
+com.hp.task.driveBehaviorTask.enabled: false
+
+#在线商店登录用户名
+com.hp.onlineStore.username: brilliance-token
+#在线商店登录密码
+com.hp.onlineStore.password: 57fb7e008cd6d560
+#在线商店访问地址
+com.hp.onlineStore.url: https://www.zngyng.com
+#在线商店custCode
+com.hp.onlineStore.custcode: "016"
+#流量预警消息推送开关
+com.hp.onlineStore.msg.enabled: false
+#流量预警短信推送开关
+com.hp.onlineStore.sms.enabled: false
+#软件/固件升级地址
+com.hp.web.server.url: http://127.0.0.1:8080
+
+news:
+    url: http://www.zhonghuacar.com/index.php
+    para: option=com_api&task=news.getnews
+    imageUrl: http://www.zhonghuacar.com/
+
+threshhold:
+    HOST :  211.137.33.107
+    PORT :  6666
+    TRANS_URI : /level1/v1/trans
+    APP_ID : C46456A61E36B1E4
+    APP_SECRET : MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIclIozxKd0Ovjsykeg/uYyN0qMBbk5WKauOwjP6Wfqrvg2ga4cLVsMKcgz6AzPsonwMWQtB7UzyS/L4GFiPTuECAwEAAQ==
+
 
 # Logging level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 logging:
     level:
         org.hibernate: WARN
         org.springframework: WARN
+    file: BriAir.log
 
 # Spring settings
 spring:
     profiles.active: dev
     datasource:
-        max-active: 100
-        max-idle: 40
-        min-idle: 35
-        url: jdbc:mysql://127.0.0.1:3306/briair?characterEncoding=utf8&rewriteBatchedStatements=true
-        username: javapp
-        password:
-        auto-commit: true
+        url: jdbc:mysql://localhost:3306/briairdb?characterEncoding=utf8
+        username: root
+        password: root
+        #指定启动连接池时，初始建立的连接数量
+        initial-size: 5
+        #保持连接的最小值(For DBCP and Tomcat connection pools)
+        min-idle: 5
+        #指定连接池中最大的活跃连接数.
+        max-active: 20
+        #指定连接池等待连接返回的最大等待时间，毫秒单位.
+        max-wait: 60000
+        #指定空闲连接检查、废弃连接清理、空闲连接池大小调整之间的操作时间间隔
+        time-between-eviction-runs-millis: 60000
+        #当从连接池借用连接时，是否测试该连接.
+        test-on-borrow: true
+        #创建时，是否测试连接
+        test-on-connect: true
+        #指定获取连接时连接校验的sql查询语句.
+        validation-query: select 'test'
+        #在连接归还到连接池时是否测试该连接.
+        test-on-return: true
     jpa:
-        show-sql: false
+        show-sql: true
         hibernate:
             # Hibernate DDL  auto: create, create-drop, update, validate
             ddl-auto: validate
             naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
             properties:
                 hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+
+    mvc.view:
+        prefix: /WEB-INF/jsp/
+        suffix: .jsp
+
     redis:
         host: 127.0.0.1
         port: 6379
@@ -83,3 +232,22 @@ spring:
             min-idle: 0
             max-active: 8
             max-wait: -1
+    messages:
+            basename: messages
+            cache-seconds: -1
+            encoding: UTF-8
+    resources.cache-period: 7200
+
+# RealName Auth
+realname.auth.url: https://123.125.218.12:28801/esb/json
+realname.auth.username: hcop
+realname.auth.password: 96E79218965EB72C92A549DD5A330112
+realname.auth.open: false
+
+xiaoma.auth.url: http://hc.bj.1252871617.clb.myqcloud.com:8082
+
+# RealName Auth 82
+realname.auth.url.82: https://newrnr.cu-sc.com/esb/json
+realname.auth.username.82: HCJT_TBOX
+realname.auth.password.82: e954bc985b6713a04690aaac897811e1
+realname.auth.open.82: false

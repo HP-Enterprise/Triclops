@@ -97,6 +97,7 @@ public class DataHandleService {
                 saveDataResendRealTimeMesM82(carM82MessageList2);
                 saveDataResendRealTimeMes(carMessageList2);
                 break;
+            //TODO  报警数据 徐卫超
             case 0x24://报警数据
                 for (String message : msgList) {
                     String[] tmp = message.split(":");
@@ -105,6 +106,7 @@ public class DataHandleService {
                     outputHexService.getWarningMessage(vin, msg, 1);
                     outputHexService.getWarningMessage(vin, msg, 2);
                     outputHexService.getWarningMessage(vin, msg, 3);
+                    outputHexService.getWarningMessage(vin, msg, 4);
                 }
 //                outputHexService.getWarningMessageAndPush(vin, msg,1);
 //                outputHexService.getWarningMessageAndPush(vin, msg, 2);
@@ -305,8 +307,8 @@ public class DataHandleService {
             ByteBuffer bb = PackageEntityManager.getByteBuffer(msg);
             DataPackage dp = conversionTBox.generate(bb);
             RealTimeReportMes bean = dp.loadBean(RealTimeReportMes.class);
-            int kilometerMileage=dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage());
-            if(kilometerMileage==-200 || kilometerMileage==0){
+            int kilometerMileage = dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage());
+            if (kilometerMileage == -200 || kilometerMileage == 0) {
                 continue;
             }
             short vehicleModel = bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
@@ -477,8 +479,8 @@ public class DataHandleService {
             long startTime = System.currentTimeMillis();
             RealTimeReportMesM82 realTimeReportMesM82 = new RealTimeReportMesM82();
             RealTimeReportMesM82 bean = realTimeReportMesM82.decode(dataTool.getByteBuf(msg));
-            int kilometerMileage=dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage());
-            if(kilometerMileage==-200 || kilometerMileage==0){
+            int kilometerMileage = dataTool.getDriveRangeFrom3Bytes(bean.getKilometerMileage());
+            if (kilometerMileage == -200 || kilometerMileage == 0) {
                 continue;
             }
             short vehicleModel = bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
@@ -1075,7 +1077,16 @@ public class DataHandleService {
             //报警数据保存
             _logger.info("[0x24]>>保存上报的报警数据:" + msg);
             WarningMessage bean = dataTool.decodeWarningMessage(msg);
+            boolean isM85 = true;
             WarningMessageData wd = new WarningMessageData();
+            short vehicleModel = bean.getVehicleModel();//按照协议0628车型编号 0~255 0：默认值(M82)；1：M82；2：M85； 3：F60；4：F70； 5：F60电动车
+            if (vehicleModel == (short) 2) {
+                bean = dataTool.decodeWarningMessageM85(msg);
+                WarningMessageM85 beanM85 = (WarningMessageM85) bean;
+                if(beanM85.getTowWarning() != null){
+                    wd.setTowWarning(beanM85.getTowWarning().shortValue());
+                }
+            }
             wd.setVin(vin);
             wd.setImei(bean.getImei());
             wd.setApplicationId(bean.getApplicationID());

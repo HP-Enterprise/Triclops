@@ -16,6 +16,15 @@ public class UserExShow {
     private String contacts;
     private String contactsPhone;
     private String icon;
+    private int isWebLogin;
+
+    public int getIsWebLogin() {
+        return isWebLogin;
+    }
+
+    public void setIsWebLogin(int isWebLogin) {
+        this.isWebLogin = isWebLogin;
+    }
 
     public UserExShow() {}
 

@@ -25,15 +25,16 @@ public class User implements Serializable {
     private Set<Vehicle> vehicleSet;
     private String icon;
     private String lastDeviceId;
+    private Integer isWebLogin;
 
     public User() {
         this.userSet = new HashSet<UserVehicleRelatived>();
         this.parentUserSet = new HashSet<UserVehicleRelatived>();
         this.organizationSet = new HashSet<Organization>();
-        this.vehicleSet=new HashSet<Vehicle>();
+        this.vehicleSet = new HashSet<Vehicle>();
     }
 
-    public User(String name, Integer gender, String nick, String phone,int isVerified,String contacts,String contactsPhone) {
+    public User(String name, Integer gender, String nick, String phone, int isVerified, String contacts, String contactsPhone) {
         this.name = name;
         this.gender = gender;
         this.nick = nick;
@@ -41,6 +42,16 @@ public class User implements Serializable {
         this.isVerified = isVerified;
         this.contacts = contacts;
         this.contactsPhone = contactsPhone;
+    }
+
+    @Basic
+    @Column(name = "is_web_login", nullable = false, insertable = true, updatable = true, length = 50)
+    public Integer getIsWebLogin() {
+        return isWebLogin;
+    }
+
+    public void setIsWebLogin(Integer isWebLogin) {
+        this.isWebLogin = isWebLogin;
     }
 
     @Id
@@ -141,10 +152,11 @@ public class User implements Serializable {
     public void setParentUserSet(Set<UserVehicleRelatived> parentUserSet) {
         this.parentUserSet = parentUserSet;
     }
+
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "t_organization_user",
-            joinColumns ={@JoinColumn(name = "uid", referencedColumnName = "id") },
-            inverseJoinColumns = { @JoinColumn(name = "oid", referencedColumnName = "id")
+            joinColumns = {@JoinColumn(name = "uid", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "oid", referencedColumnName = "id")
             })
     public Set<Organization> getOrganizationSet() {
         return organizationSet;
@@ -156,8 +168,8 @@ public class User implements Serializable {
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "t_user_vehicle_relatived",
-            joinColumns ={@JoinColumn(name = "userid", referencedColumnName = "id") },
-            inverseJoinColumns = { @JoinColumn(name = "vid", referencedColumnName = "id")
+            joinColumns = {@JoinColumn(name = "userid", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "vid", referencedColumnName = "id")
             })
     public Set<Vehicle> getVehicleSet() {
         return vehicleSet;

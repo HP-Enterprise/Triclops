@@ -8,55 +8,55 @@ import com.hp.triclops.entity.User;
 
 /**
  * <table summary="UserShow" class="typeSummary">
- *     <thead>
- *         <tr>
- *             <th>字段</th>
- *             <th>数据类型</th>
- *             <th>说明</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>id</td>
- *             <td>int</td>
- *             <td>用户ID</td>
- *         </tr>
- *         <tr>
- *             <td>name</td>
- *             <td>String</td>
- *             <td>用户名称</td>
- *         </tr>
- *         <tr>
- *             <td>gender</td>
- *             <td>int</td>
- *             <td>性别</td>
- *         </tr>
- *         <tr>
- *             <td>nick</td>
- *             <td>String</td>
- *             <td>昵称,显示给他人看的名称</td>
- *         </tr>
- *         <tr>
- *             <td>phone</td>
- *             <td>String</td>
- *             <td>电话号码</td>
- *         </tr>
- *         <tr>
- *             <td>isVerified</td>
- *             <td>int</td>
- *             <td>电话号码是否已认证</td>
- *         </tr>
- *         <tr>
- *             <td>contacts</td>
- *             <td>String</td>
- *             <td>联系人姓名</td>
- *         </tr>
- *         <tr>
- *             <td>contactsPhone</td>
- *             <td>String</td>
- *             <td>联系人电话号码</td>
- *         </tr>
- *     </tbody>
+ * <thead>
+ * <tr>
+ * <th>字段</th>
+ * <th>数据类型</th>
+ * <th>说明</th>
+ * </tr>
+ * </thead>
+ * <tbody>
+ * <tr>
+ * <td>id</td>
+ * <td>int</td>
+ * <td>用户ID</td>
+ * </tr>
+ * <tr>
+ * <td>name</td>
+ * <td>String</td>
+ * <td>用户名称</td>
+ * </tr>
+ * <tr>
+ * <td>gender</td>
+ * <td>int</td>
+ * <td>性别</td>
+ * </tr>
+ * <tr>
+ * <td>nick</td>
+ * <td>String</td>
+ * <td>昵称,显示给他人看的名称</td>
+ * </tr>
+ * <tr>
+ * <td>phone</td>
+ * <td>String</td>
+ * <td>电话号码</td>
+ * </tr>
+ * <tr>
+ * <td>isVerified</td>
+ * <td>int</td>
+ * <td>电话号码是否已认证</td>
+ * </tr>
+ * <tr>
+ * <td>contacts</td>
+ * <td>String</td>
+ * <td>联系人姓名</td>
+ * </tr>
+ * <tr>
+ * <td>contactsPhone</td>
+ * <td>String</td>
+ * <td>联系人电话号码</td>
+ * </tr>
+ * </tbody>
  * </table>
  */
 public class UserShow {
@@ -70,8 +70,18 @@ public class UserShow {
     private String contacts;
     private String contactsPhone;
     private String icon;
+    private Integer isWebLogin;
 
-    public UserShow() {}
+    public Integer getIsWebLogin() {
+        return isWebLogin;
+    }
+
+    public void setIsWebLogin(Integer isWebLogin) {
+        this.isWebLogin = isWebLogin;
+    }
+
+    public UserShow() {
+    }
 
     public UserShow(User user) {
         this.id = user.getId();
@@ -83,6 +93,7 @@ public class UserShow {
         this.contacts = user.getContacts();
         this.contactsPhone = user.getContactsPhone();
         this.icon = user.getIcon();
+        this.isWebLogin = user.getIsWebLogin();
     }
 
     public int getId() {

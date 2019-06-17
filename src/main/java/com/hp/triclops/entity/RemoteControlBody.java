@@ -23,7 +23,15 @@ public class RemoteControlBody {
     private short slaveLevel;//附驾加热级别  1 低 2 中 3高 仅在cType=6生效
     private short windowStat;//车窗状态 0开 1关 cType=11、12生效
     private long refId;
+    private String securityPwd;
 
+    public String getSecurityPwd() {
+        return securityPwd;
+    }
+
+    public void setSecurityPwd(String securityPwd) {
+        this.securityPwd = securityPwd;
+    }
 
     public int getUid() {
         return uid;

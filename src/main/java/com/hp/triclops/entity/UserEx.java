@@ -21,6 +21,7 @@ public class UserEx {
     private String contacts;
     private String contactsPhone;
     private String icon;
+    private int isWebLogin;
 
     public UserEx() {}
 
@@ -34,7 +35,10 @@ public class UserEx {
         this.contacts = userExShow.getContacts();
         this.contactsPhone = userExShow.getContactsPhone();
         this.icon = userExShow.getIcon();
+        this.isWebLogin = userExShow.getIsWebLogin();
     }
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -121,6 +125,16 @@ public class UserEx {
     @Column(name = "icon", nullable = true, insertable = true, updatable = true)
     public String getIcon() {
         return icon;
+    }
+
+    @Basic
+    @Column(name = "is_web_login", nullable = true, insertable = true, updatable = true)
+    public int getIsWebLogin() {
+        return isWebLogin;
+    }
+
+    public void setIsWebLogin(int isWebLogin) {
+        this.isWebLogin = isWebLogin;
     }
 
     public void setIcon(String icon) {
