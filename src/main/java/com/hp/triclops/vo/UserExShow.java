@@ -38,6 +38,7 @@ public class UserExShow {
         this.contacts = userEx.getContacts();
         this.contactsPhone = userEx.getContactsPhone();
         this.icon = userEx.getIcon();
+        this.isWebLogin = userEx.getIsWebLogin();
     }
 
     /**
