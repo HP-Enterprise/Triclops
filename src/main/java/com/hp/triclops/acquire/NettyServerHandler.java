@@ -7,7 +7,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.ResourceLeakDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +117,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter { // (1)
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
         // Close the connection when an exception is raised.
         Channel ch = ctx.channel();
-        _logger.info("exceptionCaught" + ch.remoteAddress());
+        _logger.info("exceptionCaught:{},error msg:{}",ch.remoteAddress(),cause.getMessage());
+        _logger.error("netty err:{}",cause.getCause());
         cause.printStackTrace();
         ctx.close();
     }
