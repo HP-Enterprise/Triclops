@@ -338,7 +338,7 @@ public class SaveToDbService {
 
 
         //保存最新的故障信息
-        socketRedis.saveValueString("failure:" + failureMessageData.getVin(), JSON.toJSONString(failureMessageData), -1);
+        socketRedis.saveHashString("failurelist", "failure:"+failureMessageData.getVin(), JSON.toJSONString(failureMessageData), -1);
     }
 
     /**
@@ -348,7 +348,7 @@ public class SaveToDbService {
      * @return
      */
     public FailureMessageData findLastFailureByVin(String vin) {
-        String failureStr = socketRedis.getValueString("failure:" + vin);
+        String failureStr = socketRedis.getHashString("failurelist" ,"failure:"+vin);
         if (failureStr != null) {
             return JSON.parseObject(failureStr, FailureMessageData.class);
         } else {
